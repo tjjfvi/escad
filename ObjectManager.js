@@ -16,7 +16,7 @@ class ObjectManager {
     if(!buffer) return null;
     let split;
     for(let i = 0; i < buffer.length; i++)
-      if(buffer[i] === 10)
+      if(buffer[i] === 0)
         split = i;
     if(!split)
       return null;
@@ -27,8 +27,8 @@ class ObjectManager {
 
   async store(sha, object){
     let serialized = object.serialize();
-    let initial = Buffer.from(JSON.stringify(object.constructor.id) + "\n");
-    let buffer = Buffer.concat([initial, serialized], initial.length + serialized.length);
+    let initial = Buffer.from(JSON.stringify(object.constructor.id));
+    let buffer = Buffer.concat([initial, Buffer.from([0]), serialized], initial.length + serialized.length + 1);
     await fs.writeFile(path.join(this.dir, sha), buffer);
   }
 
