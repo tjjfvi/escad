@@ -13,6 +13,7 @@ class Work {
     this.args = this.transformArgs(...args);
     this.children = this.transformChildren(children);
     this.sha = hash(this.serialize());
+    Object.freeze(this);
   }
 
   serialize(){

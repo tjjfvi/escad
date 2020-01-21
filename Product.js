@@ -9,6 +9,7 @@ class Product {
 
   constructor(...args){
     this.construct(...args)
+    Object.freeze(this);
   }
 
   construct(...args){
