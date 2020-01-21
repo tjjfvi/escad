@@ -10,10 +10,12 @@ class Work {
   static id = null;
 
   constructor(children, ...args){
+    this.returnVal = this;
     this.args = this.transformArgs(...args);
     this.children = this.transformChildren(children);
     this.sha = hash(this.serialize());
     Object.freeze(this);
+    return this.returnVal;
   }
 
   serialize(){

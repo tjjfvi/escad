@@ -3,26 +3,13 @@ require("./builtins");
 const operators = require("./operators");
 const o = operators;
 
-let test0 = o.number(1);
-test0.add(2);
-test0.add(3);
-test0.add(4);
-test0.delay(1000);
-let test1 = o.sum(test0, o.number(5));
+let test0 = o.cube(1);
+let test1 = o.cube(1).translate([0, 0, 2]).translate([10, 0, 0]);
 
-true && (async () => {
-  console.log('Should only have one "SlowWork" and two "AddWork"\n');
-
-  console.time("test0");
-  test0.process();
-  test0.process();
-  test0.process();
+(async () => {
+  console.log(test0);
   console.log(await test0.process());
-  console.timeEnd("test0");
-
-  console.log();
-
-  console.time("test1");
-  console.log(await test1.process());
-  console.timeEnd("test1");
+  console.log(test1);
+  console.log((await test1.process()).faces[0]);
+  console.log("\nDone!");
 })()
