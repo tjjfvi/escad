@@ -5,16 +5,18 @@ const o = operators;
 
 let test0 = o.number(1);
 test0.add(2);
+test0.add(3);
+test0.add(4);
 test0.delay(1000);
-let test1 = o.sum(test0, o.number(3));
+let test1 = o.sum(test0, o.number(5));
 
 true && (async () => {
-  console.log("Should only have one \"SlowWork\"\n");
+  console.log('Should only have one "SlowWork" and two "AddWork"\n');
 
   console.time("test0");
-  console.log(test0.process());
-  console.log(test0.process());
-  console.log(test0.process());
+  test0.process();
+  test0.process();
+  test0.process();
   console.log(await test0.process());
   console.timeEnd("test0");
 
