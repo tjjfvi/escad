@@ -9,27 +9,36 @@ class ProductManager {
 
   constructor(name, base = os.tmpdir()){
     this.dir = fs.mkdtempSync(path.join(base, name));
+    this.current = {};
   }
 
   async lookup(sha){
-    let buffer = await fs.readFile(path.join(this.dir, sha)).catch(() => null);
-    if(!buffer) return null;
-    let split;
-    for(let i = 0; i < buffer.length; i++)
-      if(buffer[i] === 0)
-        split = i;
-    if(!split)
-      return null;
-    let key = JSON.parse(buffer.toString("utf8", 0, split));
-    let product = await Product.Registry.get(key).deserialize(buffer.slice(split + 1));
-    return product;
+    if(this.current[sha])
+      return this.current[sha];
+    return await (this.current[sha] = (async () => {
+      let buffer = await fs.readFile(path.join(this.dir, sha)).catch(() => null);
+      if(!buffer) return null;
+      let split;
+      for(let i = 0; i < buffer.length; i++)
+        if(buffer[i] === 0)
+          split = i;
+      if(!split)
+        return null;
+      let key = JSON.parse(buffer.toString("utf8", 0, split));
+      let product = await Product.Registry.get(key).deserialize(buffer.slice(split + 1));
+      delete this.current[sha];
+      return product;
+    })())
   }
 
-  async store(sha, product){
+  async store(sha, promise){
+    this.current[sha] = promise;
+    let product = await promise;
     let serialized = product.serialize();
     let initial = Buffer.from(JSON.stringify(product.constructor.id));
     let buffer = Buffer.concat([initial, Buffer.from([0]), serialized], initial.length + serialized.length + 1);
     await fs.writeFile(path.join(this.dir, sha), buffer);
+    delete this.current[sha];
   }
 
 }
