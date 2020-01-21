@@ -26,7 +26,7 @@ class Work {
   }
 
   transformChildren(children){
-    return children;
+    return children.map(c => c.isComponent ? c.tree : c);
   }
 
   async execute(inputs){
