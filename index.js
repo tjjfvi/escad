@@ -1,8 +1,8 @@
 
-const Object = require("./Object");
+const Product = require("./Product");
 const Work = require("./Work");
 
-class Number extends Object {
+class Number extends Product {
 
   static id = "Number";
 
@@ -54,7 +54,7 @@ class SlowWork extends Work {
 Work.Registry.register(LeafWork)
 Work.Registry.register(AddWork)
 Work.Registry.register(SlowWork)
-Object.Registry.register(Number);
+Product.Registry.register(Number);
 
 let test0 = new AddWork([new SlowWork([new AddWork([new LeafWork([], new Number(2)), new LeafWork([], new Number(1))])])], 3);
 let test1 = new AddWork([new SlowWork([new AddWork([new LeafWork([], new Number(2)), new LeafWork([], new Number(1))])])], 4);

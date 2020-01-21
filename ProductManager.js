@@ -3,9 +3,9 @@ const fs = require("fs-extra");
 const os = require("os");
 const path = require("path");
 
-const Object = require("./Object");
+const Product = require("./Product");
 
-class ObjectManager {
+class ProductManager {
 
   constructor(name, base = os.tmpdir()){
     this.dir = fs.mkdtempSync(path.join(base, name));
@@ -21,17 +21,17 @@ class ObjectManager {
     if(!split)
       return null;
     let key = JSON.parse(buffer.toString("utf8", 0, split));
-    let object = await Object.Registry.get(key).deserialize(buffer.slice(split + 1));
-    return object;
+    let product = await Product.Registry.get(key).deserialize(buffer.slice(split + 1));
+    return product;
   }
 
-  async store(sha, object){
-    let serialized = object.serialize();
-    let initial = Buffer.from(JSON.stringify(object.constructor.id));
+  async store(sha, product){
+    let serialized = product.serialize();
+    let initial = Buffer.from(JSON.stringify(product.constructor.id));
     let buffer = Buffer.concat([initial, Buffer.from([0]), serialized], initial.length + serialized.length + 1);
     await fs.writeFile(path.join(this.dir, sha), buffer);
   }
 
 }
 
-module.exports = new ObjectManager("escad-" + Date.now() + "-", __dirname + "/objects")
+module.exports = new ProductManager("escad-" + Date.now() + "-", __dirname + "/products")

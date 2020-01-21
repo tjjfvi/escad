@@ -1,7 +1,7 @@
 
 const hash = require("./hash");
 const Registry = require("./Registry");
-const ObjectManager = require("./ObjectManager");
+const ProductManager = require("./ProductManager");
 
 class Work {
 
@@ -35,12 +35,12 @@ class Work {
   }
 
   async process(){
-    let memoized = await ObjectManager.lookup(this.sha);
+    let memoized = await ProductManager.lookup(this.sha);
     if(memoized)
       return memoized;
     let inputs = await Promise.all(this.children.map(c => c.process()));
     let result = await this.execute(inputs);
-    ObjectManager.store(this.sha, result);
+    ProductManager.store(this.sha, result);
     return result;
   }
 

@@ -1,9 +1,9 @@
 
 const Registry = require("./Registry");
 
-class Object {
+class Product {
 
-  static Registry = new Registry("ObjectRegistry");
+  static Registry = new Registry("ProductRegistry");
 
   static id = null;
 
@@ -25,4 +25,4 @@ class Object {
 
 }
 
-module.exports = Object;
+module.exports = Product;
