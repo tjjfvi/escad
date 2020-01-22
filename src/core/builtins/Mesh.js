@@ -12,6 +12,7 @@ class Mesh extends Product {
 
   serialize(){
     return Buffer.concat(this.faces.flatMap(f => {
+      console.log(f);
       let buf = f.serialize();
       let lbuf = Buffer.alloc(4);
       lbuf.writeUInt32LE(buf.length)

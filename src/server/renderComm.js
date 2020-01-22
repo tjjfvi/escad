@@ -15,7 +15,7 @@ function reload(){
 
   childProcess = fork(require.resolve("./render"));
 
-  childProcess.send(["init", loadFile]);
+  childProcess.send(["init", loadFile, __dirname + "/../../products/"]);
 
   run().then(sha => {
     ee.emit("reload", sha);
@@ -44,5 +44,6 @@ async function run(){
   return await prom;
 }
 
-watch(loadDir, { recursive: true, filter: f => !/node_modules/.test(f) }, () => reload());
+watch(loadDir, { recursive: true, filter: f => !/node_modules|products/.test(f) }, () => reload());
 
+module.exports = { run, ee };

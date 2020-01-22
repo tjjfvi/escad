@@ -10,6 +10,7 @@ app.use(express.static(__dirname + "/../client/"));
 const uuidv4 = require("uuid/v4");
 const serverId = uuidv4();
 const config = require("./config");
+const render = require("./renderComm");
 
 app.ws("/ws", ws => {
   (async () => {
@@ -44,6 +45,8 @@ app.ws("/ws", ws => {
     ws.s("init", id, serverId)
 
     let interval = setInterval(() => ws.s("ping"), 1000);
+
+    render.ee.on("reload", sha => ws.s("sha", sha));
 
     ws.on("message", msg => {
       let [type, ...data] = JSON.parse(msg);

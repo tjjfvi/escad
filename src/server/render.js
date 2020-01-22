@@ -34,7 +34,9 @@ async function run(id){
     console.error(e);
     return;
   }
-  if(result instanceof escad.Work || result instanceof escad.Component)
+  if(!result)
+    return console.error(new Error("Invalud return type from exported function"));
+  if(result instanceof escad.Work || result.isComponent)
     result = await result.process();
   let sha = result.meta.sha;
   process.send(["finish", id, sha])

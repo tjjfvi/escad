@@ -1,9 +1,11 @@
 
 import React from "react";
+import Disconnected from "./Disconnected";
+import Preview from "./Preview";
 
-const App = () => {
-  console.log("HI!")
-  return <></>;
-}
+const App = () => <>
+  <Disconnected/>
+  <Preview/>
+</>
 
 export default App;

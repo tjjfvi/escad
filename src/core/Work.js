@@ -38,10 +38,10 @@ class Work {
   }
 
   async process(){
+    let memoized = await ProductManager.lookup(this.sha);
+    if(memoized)
+      return memoized;
     let prom = (async () => {
-      let memoized = await ProductManager.lookup(this.sha);
-      if(memoized)
-        return memoized;
       let inputs = await Promise.all(this.children.map(c => c.process()));
       let result = await this.execute(inputs);
       return result;

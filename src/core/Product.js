@@ -8,6 +8,7 @@ class Product {
   static id = null;
 
   constructor(...args){
+    this.meta = {};
     this.construct(...args)
     Object.freeze(this);
   }
