@@ -11,23 +11,15 @@ class Mesh extends Product {
   }
 
   serialize(){
-    return Buffer.concat(this.faces.flatMap(f => {
-      console.log(f);
-      let buf = f.serialize();
-      let lbuf = Buffer.alloc(4);
-      lbuf.writeUInt32LE(buf.length)
-      return [lbuf, buf];
-    }));
+    return Buffer.concat(this.faces.flatMap(f => f.serialize()));
   }
 
   static deserialize(buf){
+    const length = 4 * 3 * 3;
     let ind = 0;
     let faces = [];
-    while(ind < buf.length) {
-      let length = buf.readUInt32LE(ind);
-      ind += 4;
+    while(ind < buf.length)
       faces.push(Face.deserialize(buf.slice(ind, ind += length)));
-    }
     return new Mesh(faces);
   }
 

@@ -7,6 +7,8 @@ class Face extends Product {
   static id = "Face";
 
   construct(points){
+    if(points.length !== 3)
+      throw new Error("Faces can only be triangles");
     this.points = points;
   }
 
@@ -15,7 +17,7 @@ class Face extends Product {
   }
 
   static deserialize(buf){
-    return [...Array(buf.length / 24)].map((_, i) => Vector3.deserialize(buf.slice(i * 24, i * 24 + 24)));
+    return new Face([...Array(3)].map((_, i) => Vector3.deserialize(buf.slice(i * 12, i * 12 + 12))));
   }
 
 }

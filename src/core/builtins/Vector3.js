@@ -12,15 +12,15 @@ class Vector3 extends Product {
   }
 
   serialize(){
-    let buf = Buffer.alloc(24);
-    buf.writeDoubleLE(this.x, 0)
-    buf.writeDoubleLE(this.y, 8)
-    buf.writeDoubleLE(this.z, 16)
+    let buf = Buffer.alloc(12);
+    buf.writeFloatLE(this.x, 0)
+    buf.writeFloatLE(this.y, 4)
+    buf.writeFloatLE(this.z, 8)
     return buf;
   }
 
   static deserialize(buf){
-    return new Vector3(buf.readDoubleLE(0), buf.readDoubleLE(8), buf.readDoubleLE(16));
+    return new Vector3(buf.readFloatLE(0), buf.readFloatLE(4), buf.readFloatLE(8));
   }
 
   add(that){

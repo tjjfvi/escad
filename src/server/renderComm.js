@@ -45,5 +45,6 @@ async function run(){
 }
 
 watch(loadDir, { recursive: true, filter: f => !/node_modules|products/.test(f) }, () => reload());
+reload();
 
 module.exports = { run, ee };

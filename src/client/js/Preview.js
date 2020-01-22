@@ -49,11 +49,15 @@ const Preview = () => {
 
   scene.add(...axes);
 
-  state.ws.on("message", (type, data) => {
+  let mesh;
+
+  state.ws.on("message", async (type, sha) => {
     if(type !== "sha")
       return;
-    data;
-    // ...
+    scene.remove(mesh);
+    mesh = await fetch("/product/" + sha).then(r => r.arrayBuffer()).then(processMesh);
+    console.log(mesh);
+    scene.add(mesh);
   })
 
   function render(){
@@ -77,3 +81,15 @@ const Preview = () => {
 }
 
 export default Preview;
+
+function processMesh(buf){
+  console.log(buf);
+  let arr = new Float32Array(buf.slice(7));
+  let attr = new t.BufferAttribute(arr, 3);
+  let geo = new t.BufferGeometry();
+  geo.setAttribute("position", attr);
+  geo.computeVertexNormals();
+  let mat = new t.MeshNormalMaterial();
+  let mesh = new t.Mesh(geo, mat);
+  return mesh;
+}
