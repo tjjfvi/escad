@@ -1,0 +1,23 @@
+#!/usr/bin/env node
+
+const commander = require("commander");
+const path = require("path");
+
+commander
+	.usage("[options] <file>")
+	.option("-p, --port <port>", "port to host server on", 8080)
+	.option("-d, --watch-dir <dir>", "directory to watch (default: basedir of <file>)")
+	.parse(process.argv);
+
+if(commander.args.length !== 1)
+	return commander.outputHelp();
+
+let { port, watchDir } = commander;
+let [ file ] = commander.args;
+
+const loadFile = path.resolve(file);
+const loadDir = path.dirname(path.resolve(watchDir || loadFile));
+
+Object.assign(require("../src/server/config"), { port: +port, loadFile, loadDir });
+
+require("../src/server/server");
