@@ -1,7 +1,7 @@
 
 const { Work, Component, operators } = require(".");
 const { Mesh, Face, Vector3 } = require("./Mesh");
-const { PointMapWork } = require("./PointMapWork");
+// const { PointMapWork } = require("./PointMapWork");
 
 class CubeWork extends Work {
 
@@ -45,9 +45,9 @@ class CubeWork extends Work {
     ].map(ps => new Face(ps.map(i => points[i]))));
   }
 
-  [PointMapWork.consumer](func){
+  /* [PointMapWork.consumer](func){
     return new CubeWork([], ...this.args.slice(0, 4), x => func((this.args[4] || (x => x))(x)));
-  }
+  }*/
 
 }
 

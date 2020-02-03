@@ -54,8 +54,9 @@ const Preview = () => {
   state.ws.on("message", async (type, sha) => {
     if(type !== "sha")
       return;
+    let _mesh = await fetch("/product/" + sha).then(r => r.arrayBuffer()).then(processMesh);
     scene.remove(mesh);
-    mesh = await fetch("/product/" + sha).then(r => r.arrayBuffer()).then(processMesh);
+    mesh = _mesh;
     console.log(mesh);
     scene.add(mesh);
   })

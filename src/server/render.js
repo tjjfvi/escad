@@ -24,12 +24,21 @@ process.on("message", ([type, ...data]) => {
 })
 
 
-async function run(id){
+async function run(id, params){
   if(!func)
     return;
   let result;
+  let paramDef;
   try {
-    result = await func(escad);
+    result = await func(escad, def => {
+      paramDef = def;
+      let defaults = {};
+      def.map(d => {
+        if(d.default)
+          defaults[d.key] = d.default;
+      });
+      return Object.assign(defaults, params);
+    });
   } catch (e) {
     console.error(e);
     return;
@@ -39,5 +48,5 @@ async function run(id){
   if(result instanceof escad.Work || result.isComponent)
     result = await result.process();
   let sha = result.meta.sha;
-  process.send(["finish", id, sha])
+  process.send(["finish", id, sha, paramDef])
 }

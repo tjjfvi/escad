@@ -1,5 +1,9 @@
 
-module.exports = escad => {
-  console.log(escad);
-  return escad.cube(20).translate([0, 0, 10]);
+module.exports = (escad, p) => {
+  let params = p([
+    { key: "size", type: "number", default: 20 },
+    { key: "height", type: "number", default: 10 },
+  ]);
+  console.log(params);
+  return escad.cube(params.size).translate([0, 0, params.height]);
 }

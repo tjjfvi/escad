@@ -10,6 +10,13 @@ class State {
   connected = observable<boolean>(false);
   id = observable<string>();
   serverId = observable<string>();
+  paramDef = observable<any>([]);
+  params = observable<any>({});
+
+  constructor(){
+    this.ws.on("paramDef", d => this.paramDef(d));
+    this.params.ee.on("change", () => this.ws.s("params", this.params()))
+  }
 
 }
 

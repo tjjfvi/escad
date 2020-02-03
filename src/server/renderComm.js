@@ -17,26 +17,26 @@ function reload(){
 
   childProcess.send(["init", loadFile, __dirname + "/../../products/"]);
 
-  run().then(sha => {
-    ee.emit("reload", sha);
+  run().then(({ sha, paramDef }) => {
+    ee.emit("reload", { sha, paramDef });
   });
 }
 
-async function run(){
+async function run(params = null){
   let id = uuidv4();
 
-  childProcess.send(["run", id]);
+  childProcess.send(["run", id, params]);
 
   let res;
   let prom = new Promise(r => res = r);
 
-  let handler = ([type, _id, sha]) => {
+  let handler = ([type, _id, sha, paramDef]) => {
     if(type !== "finish" || _id !== id)
       return;
 
     childProcess.removeListener("message", handler);
 
-    res(sha);
+    res({ sha, paramDef });
   };
 
   childProcess.on("message", handler);

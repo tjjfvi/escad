@@ -15,7 +15,7 @@ let translate = (_x, _y, _z) => {
   );
   let translateVector = new Vector3(x, y, z);
 
-  return tree => new PointMapWork([tree], v => v.add(translateVector));
+  return tree => new PointMapWork([tree], v => v.add(translateVector), translateVector, "translate");
 };
 
 chainables.translate = (comp, ...args) => comp(translate(...args)(comp()));

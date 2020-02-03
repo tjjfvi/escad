@@ -14,8 +14,12 @@ const config = require("./config");
 const render = require("./renderComm");
 
 let curSha;
+let curParamDef;
 
-render.ee.on("reload", sha => curSha = sha);
+render.ee.on("reload", ({ sha, paramDef }) => {
+  curSha = sha;
+  curParamDef = paramDef;
+});
 
 app.ws("/ws", ws => {
   (async () => {
@@ -26,7 +30,7 @@ app.ws("/ws", ws => {
       this.send(JSON.stringify(data));
     };
 
-    let [requestedId, oldServerId] = await new Promise(res =>
+    let [requestedId, oldServerId, params] = await new Promise(res =>
       ws.once("message", msg => {
         let [type, ...data] = JSON.parse(msg);
 
@@ -44,6 +48,7 @@ app.ws("/ws", ws => {
       console.log("Client reattached; id:", id);
     } else {
       id = uuidv4();
+      params = null;
       console.log("Client attached; id:", id);
     }
 
@@ -51,18 +56,41 @@ app.ws("/ws", ws => {
 
     ws.s("init", id, serverId)
 
-    if(curSha)
+    if(params)
+      run();
+    else if(curSha) {
       ws.s("sha", curSha);
+      ws.s("paramDef", curParamDef);
+    }
 
     let interval = setInterval(() => ws.s("ping"), 1000);
 
-    let handler = sha => ws.s("sha", sha);
+    let handler = ({ sha, paramDef }) => {
+      if(params)
+        return run();
+      ws.s("sha", sha)
+      ws.s("paramDef", paramDef);
+    };
     render.ee.on("reload", handler);
 
     ws.on("message", msg => {
       let [type, ...data] = JSON.parse(msg);
-      type;
-      data;
+
+      if(type !== "params")
+        return;
+
+      let [p] = data;
+
+      if(p === null && params === null)
+        return;
+
+      params = p;
+
+      if(p !== null)
+        return run();
+
+      ws.s("sha", curSha);
+      ws.s("sha", curParamDef);
     })
 
     ws.on("close", () => {
@@ -71,6 +99,11 @@ app.ws("/ws", ws => {
       console.log("Client detached, id:", id);
     });
 
+    async function run(){
+      let { sha, paramDef } = await render.run(params);
+      ws.s("sha", sha);
+      ws.s("paramDef", paramDef);
+    }
   })().catch(e => console.error(e));
 });
 

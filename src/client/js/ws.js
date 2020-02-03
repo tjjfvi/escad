@@ -21,6 +21,7 @@ class WS extends EE {
   s(...data){
     if(this.ws.readyState !== 1)
       return;
+    console.log("→", ...data);
     this.ws.send(JSON.stringify(data));
   }
 
@@ -63,7 +64,7 @@ class WS extends EE {
       this.emit("message", type, ...data);
       this.emit(type, ...data);
 
-      console.log(type, ...data);
+      console.log("←", type, ...data);
     })
   }
 
