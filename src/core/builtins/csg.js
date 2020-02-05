@@ -90,8 +90,8 @@ class MeshToCsgWork extends Work {
   transformChildren(children){
     children = super.transformChildren(children);
     let [child] = children;
-    if(child instanceof CsgToMeshWork)
-      return this.returnVal = child.children[1];
+    // if(child instanceof CsgToMeshWork)
+    //  return this.returnVal = child.children[1];
     return [child];
   }
 
@@ -117,8 +117,8 @@ class CsgToMeshWork extends Work {
   transformChildren(children){
     children = super.transformChildren(children);
     let [child] = children;
-    if(child instanceof MeshToCsgWork)
-      return this.returnVal = child.children[1];
+    // if(child instanceof MeshToCsgWork)
+    //  return this.returnVal = child.children[1];
     return [child];
   }
 
@@ -129,7 +129,7 @@ class CsgWork extends Work {
   static id = "CsgWork";
 
   execute(inputs){
-    let nodes = inputs.map(i => i.node.clone());
+    let nodes = inputs.map(i => new CSG.Node(i.node.allPolygons()));
     this.args[0].map(arg => {
       if(arg[0] === "invert")
         return nodes[arg[1]].invert();
@@ -169,7 +169,58 @@ let _union = (...args) => {
   }), 0);
 }
 
+let _diff = (...args) => {
+  if(args.length === 0)
+    return;
+  args = [_union(args[0]), _union(args.slice(1))];
+  if(!args[1])
+    return args[0];
+  let a = 0;
+  let b = 1;
+  return _csg(args, [
+    ["invert", a],
+    ["clipTo", a, b],
+    ["clipTo", b, a],
+    ["invert", b],
+    ["clipTo", b, a],
+    ["invert", b],
+    ["build", a, b],
+    ["invert", a],
+  ], 0);
+}
+
+let _intersect = (...args) => {
+  args = args.flat(Infinity);
+  if(args.length === 0)
+    return;
+  if(args.length === 1)
+    return;
+  if(!args[1])
+    return args[0];
+  return _csg(args, [
+    ["invert", 0],
+    ...args.slice(1).flatMap((_, i) => {
+      let a = 0;
+      let b = i + 1;
+      return [
+        ["clipTo", b, a],
+        ["invert", b],
+        ["clipTo", a, b],
+        ["clipTo", b, a],
+        ["build", a, b],
+      ];
+    }),
+    ["invert", 0],
+  ], 0);
+}
+
 operators.union = (...args) => new Component(_union(...args));
 chainables.add = (comp, ...args) => comp(_union(comp(), ...args));
+
+operators.diff = operators.difference = (...args) => new Component(_diff(...args));
+chainables.sub = chainables.subtract = (comp, ...args) => comp(_diff(comp(), ...args));
+
+operators.intersection = (...args) => new Component(_intersect(...args));
+chainables.intersect = (comp, ...args) => comp(_intersect(comp(), ...args));
 
 module.exports = { MeshToCsgWork, CsgToMeshWork, CSGWrapper };
