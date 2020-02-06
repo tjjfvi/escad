@@ -50,6 +50,11 @@ class Work {
     return await prom;
   }
 
+  visualize(indent = 0){
+    console.log("  ".repeat(indent++) + "-", this.constructor.id);
+    this.children.map(c => c.visualize(indent))
+  }
+
 }
 
 module.exports = Work;

@@ -1,10 +1,11 @@
 
 const { Work, Product, operators, chainables, Component } = require(".");
-const { Mesh, Face, Vector3 } = require("./Mesh");
+const { Mesh, Vector3 } = require("./Mesh");
+const { Plane } = require("./Plane");
 
-class CSG extends Product {
+class BSP extends Product {
 
-  static id = "CSG";
+  static id = "BSP";
 
   construct(...as){
     if(!as.length) {
@@ -20,7 +21,7 @@ class CSG extends Product {
   }
 
   invert(){
-    return new CSG(
+    return new BSP(
       this.back && this.back.invert(),
       this.front && this.front.invert(),
       this.faces.map(p => p.flip()),
@@ -34,15 +35,13 @@ class CSG extends Product {
     let back = [];
     faces.map(f => this.plane.splitFace(f, front, back, front, back));
     if(this.front) front = this.front.clipFaces(front);
-    console.log(!!this.back, back.length)
     if(this.back) back = this.back.clipFaces(back);
     else back = []; // Remove the polygons; they must be inside the mesh
     return front.concat(back);
   }
 
   clipTo(node){
-    console.log("clipTo")
-    return new CSG(
+    return new BSP(
       this.front && this.front.clipTo(node),
       this.back && this.back.clipTo(node),
       node.clipFaces(this.faces),
@@ -64,12 +63,24 @@ class CSG extends Product {
     let back = [];
     let fs = [...this.faces];
     faces.map(f => plane.splitFace(f, fs, fs, front, back));
-    return new CSG(
-      !front.length ? this.front : (this.front || new CSG()).build(front),
-      !back.length ? this.back : (this.back || new CSG()).build(back),
+    return new BSP(
+      !front.length ? this.front : (this.front || new BSP()).build(front),
+      !back.length ? this.back : (this.back || new BSP()).build(back),
       fs,
       plane,
     );
+  }
+
+  trim(){
+    let front = this.front && this.front.trim();
+    let back = this.back && this.back.trim();
+    if(this.faces.length || (front && back))
+      return new BSP(front, back, this.faces, this.plane);
+    if(front && !back)
+      return front;
+    if(back && !front)
+      return back;
+    return null;
   }
 
   serialize(){
@@ -78,6 +89,7 @@ class CSG extends Product {
     let front = this.front ? this.front.serialize() : Buffer.alloc(0);
     let back = this.back ? this.back.serialize() : Buffer.alloc(0);
     let buf = Buffer.concat([
+      this.plane.serialize(),
       Buffer.alloc(6),
       ...ps,
       Buffer.alloc(6),
@@ -94,9 +106,10 @@ class CSG extends Product {
   static deserialize(buf){
     if(buf.length === 0)
       return null;
-    let l = buf.readUIntLE(0) * 12;
-    let fl = buf.readUIntLE(6 + l);
-    let bl = buf.readUIntLE(12 + l + fl);
+    let p = Plane.deserialize(buf.subarray(0, 16));
+    let l = buf.readUIntLE(16) * 12;
+    let fl = buf.readUIntLE(22 + l);
+    let bl = buf.readUIntLE(28 + l + fl);
     let faces = [];
     for(let i = 6; i < 6 + l;) {
       let pl = buf.readUInt8(i);
@@ -108,39 +121,40 @@ class CSG extends Product {
         let vert = new Vector3(...ns);
         verts.push(vert);
       }
-      let face = new CSG.Polygon(verts);
+      let face = new BSP.Polygon(verts);
       faces.push(face);
     }
-    return new CSG(
-      CSG.deserialize(buf.subarray(6 + l, 6 + l + fl)),
-      CSG.deserialize(buf.subarray(12 + l + fl, 12 + l + fl + bl)),
-      faces
+    return new BSP(
+      BSP.deserialize(buf.subarray(6 + l, 6 + l + fl)),
+      BSP.deserialize(buf.subarray(12 + l + fl, 12 + l + fl + bl)),
+      faces,
+      p,
     );
   }
 
 }
 
-class MeshToCsgWork extends Work {
+class MeshToBspWork extends Work {
 
-  static id="MeshToCsgWork";
+  static id="MeshToBspWork";
 
   execute([input]){
-    return new CSG().build(input.faces);
+    return new BSP().build(input.faces);
   }
 
   transformChildren(children){
     children = super.transformChildren(children);
     let [child] = children;
-    // if(child instanceof CsgToMeshWork)
-    //  return this.returnVal = child.children[1];
+    if(child instanceof BspToMeshWork)
+      this.returnVal = child.children[0];
     return [child];
   }
 
 }
 
-class CsgToMeshWork extends Work {
+class BspToMeshWork extends Work {
 
-  static id="CsgToMeshWork";
+  static id="BspToMeshWork";
 
   execute([input]){
     return new Mesh(input.allFaces());
@@ -149,8 +163,8 @@ class CsgToMeshWork extends Work {
   transformChildren(children){
     children = super.transformChildren(children);
     let [child] = children;
-    // if(child instanceof MeshToCsgWork)
-    //  return this.returnVal = child.children[1];
+    if(child instanceof MeshToBspWork)
+      this.returnVal = child.children[0];
     return [child];
   }
 
@@ -170,18 +184,17 @@ class CsgWork extends Work {
       if(arg[0] === "build")
         return nodes[arg[1]] = nodes[arg[1]].build(nodes[arg[2]].allFaces());
     })
-    console.log(this.args[0].length, nodes)
-    return nodes[this.args[1]];
+    return nodes[this.args[1]].trim();
   }
 
 }
 
-Product.Registry.register(CSG);
-Work.Registry.register(MeshToCsgWork);
-Work.Registry.register(CsgToMeshWork);
+Product.Registry.register(BSP);
+Work.Registry.register(MeshToBspWork);
+Work.Registry.register(BspToMeshWork);
 
 let _csg = (args, ops, ret) =>
-  new CsgToMeshWork([new CsgWork(args.map(a => new MeshToCsgWork([a])), ops, ret)])
+  new BspToMeshWork([new CsgWork(args.map(a => new MeshToBspWork([a])), ops, ret)])
 let _union = (...args) => {
   args = args.flat(Infinity);
   if(args.length === 0)
@@ -256,4 +269,4 @@ chainables.sub = chainables.subtract = (comp, ...args) => comp(_diff(comp(), ...
 operators.intersection = (...args) => new Component(_intersect(...args));
 chainables.intersect = (comp, ...args) => comp(_intersect(comp(), ...args));
 
-module.exports = { MeshToCsgWork, CsgToMeshWork, CSG };
+module.exports = { MeshToBspWork, BspToMeshWork, BSP };

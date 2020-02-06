@@ -1,12 +1,13 @@
 
+const { Product } = require(".");
 const { Vector3 } = require("./Vector3");
 const _Face = require("./Face");
 
 const epsilon = 1e-5;
 
-class Plane {
+class Plane extends Product {
 
-  constructor(points, w){
+  construct(points, w){
     if(points instanceof Vector3) {
       this.normal = points;
       this.w = w;
@@ -15,7 +16,6 @@ class Plane {
       this.normal = b.subtract(a).cross(c.subtract(a)).unit();
       this.w = this.normal.dot(a);
     }
-    Object.freeze(this);
   }
 
   flip(){
@@ -36,7 +36,6 @@ class Plane {
       return type;
     });
 
-    console.log(faceType);
     switch(faceType) {
       case Coplanar:
         (this.normal.dot(face.plane.normal) > 0 ? coplanarFront : coplanarBack).push(face);
@@ -64,13 +63,23 @@ class Plane {
           f.push(v);
           b.push(v);
         })
-        console.log(front.length, back.length);
         f.slice(2).map((_, i) => front.push(new _Face.Face([f[0], f[i + 1], f[i + 2]])));
         b.slice(2).map((_, i) => back.push(new _Face.Face([b[0], b[i + 1], b[i + 2]])));
-        console.log(front.length, back.length);
         break;
       }
     }
+  }
+
+  serialize(){
+    let buf = Buffer.alloc(4);
+    buf.writeFloatLE(this.w);
+    return Buffer.concat([buf, this.normal.serialize()]);
+  }
+
+  deserialize(buf){
+    let w = buf.readFloatLE(0);
+    let n = Vector3.deserialize(buf.subarray(4));
+    return new Plane(n, w)
   }
 
 }

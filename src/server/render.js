@@ -45,6 +45,7 @@ async function run(id, params){
   }
   if(!result)
     return console.error(new Error("Invalud return type from exported function"));
+  result.tree.visualize();
   if(result instanceof escad.Work || result.isComponent)
     result = await result.process();
   let sha = result.meta.sha;
