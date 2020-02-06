@@ -31,12 +31,44 @@ class Vector3 extends Product {
     return new Vector3(this.x - that.x, this.y - that.y, this.z - that.z);
   }
 
+  negate(){
+    return new Vector3(-this.x, -this.y, -this.z);
+  }
+
   multiplyComponents(that){
     return new Vector3(this.x * that.x, this.y * that.y, this.z * that.z);
   }
 
   multiplyScalar(n){
     return new Vector3(this.x * n, this.y * n, this.z * n);
+  }
+
+  divideScalar(n){
+    return this.multiplyScalar(1 / n);
+  }
+
+  dot(that){
+    return this.x * that.x + this.y * that.y + this.z * that.z;
+  }
+
+  lerp(that, t){
+    return this.add(that.subtract(this).multiplyScalar(t));
+  }
+
+  length(){
+    return Math.sqrt(this.dot(this));
+  }
+
+  unit(){
+    return this.divideScalar(this.length());
+  }
+
+  cross(that){
+    return new Vector3(
+      this.y * that.z - this.z * that.y,
+      this.z * that.x - this.x * that.z,
+      this.x * that.y - this.y * that.x,
+    );
   }
 
 }

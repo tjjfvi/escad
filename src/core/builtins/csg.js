@@ -1,78 +1,121 @@
 
 const { Work, Product, operators, chainables, Component } = require(".");
 const { Mesh, Face, Vector3 } = require("./Mesh");
-const CSG = require("csg");
 
-class CSGWrapper extends Product {
+class CSG extends Product {
 
-  static id = "CSGWrapper";
+  static id = "CSG";
 
-  construct(node){
-    this.node = node;
+  construct(...as){
+    if(!as.length) {
+      this.front = null;
+      this.back = null;
+      this.faces = [];
+      this.plane = null;
+    } else {
+      [this.front, this.back, this.faces = [], this.plane] = as;
+      if(!this.plane && this.faces[0])
+        this.plane = this.faces[0].plane;
+    }
+  }
+
+  invert(){
+    return new CSG(
+      this.back && this.back.invert(),
+      this.front && this.front.invert(),
+      this.faces.map(p => p.flip()),
+      this.plane && this.plane.flip(),
+    );
+  }
+
+  clipFaces(faces){
+    if(!this.plane) return faces;
+    let front = [];
+    let back = [];
+    faces.map(f => this.plane.splitFace(f, front, back, front, back));
+    if(this.front) front = this.front.clipFaces(front);
+    console.log(!!this.back, back.length)
+    if(this.back) back = this.back.clipFaces(back);
+    else back = []; // Remove the polygons; they must be inside the mesh
+    return front.concat(back);
+  }
+
+  clipTo(node){
+    console.log("clipTo")
+    return new CSG(
+      this.front && this.front.clipTo(node),
+      this.back && this.back.clipTo(node),
+      node.clipFaces(this.faces),
+      this.plane,
+    );
+  }
+
+  allFaces(){
+    let fs = [...this.faces];
+    if(this.front) fs.push(...this.front.allFaces());
+    if(this.back) fs.push(...this.back.allFaces());
+    return fs;
+  }
+
+  build(faces){
+    if(!faces.length) return this;
+    let plane = this.plane || faces[0].plane;
+    let front = [];
+    let back = [];
+    let fs = [...this.faces];
+    faces.map(f => plane.splitFace(f, fs, fs, front, back));
+    return new CSG(
+      !front.length ? this.front : (this.front || new CSG()).build(front),
+      !back.length ? this.back : (this.back || new CSG()).build(back),
+      fs,
+      plane,
+    );
   }
 
   serialize(){
-    function serializePoly(poly){
-      let buf = Buffer.alloc(poly.vertices.length * 6 * 4 + 1);
-      buf.writeUInt8(poly.vertices.length);
-      poly.vertices.map((v, i) => {
-        [v.pos.x, v.pos.y, v.pos.z, v.normal.x, v.normal.y, v.normal.z].map((x, j) =>
-          buf.writeFloatLE(x, (i * 6 + j) * 4 + 1)
-        )
-      })
-      return buf;
-    }
-
-    function serializeNode(node){
-      if(node === null)
-        return Buffer.alloc(0);
-      let ps = node.polygons.map(serializePoly)
-      let l = ps.map(x => x.length).reduce((a, b) => a + b, 0);
-      let front = serializeNode(node.front);
-      let back = serializeNode(node.back);
-      let buf = Buffer.concat([
-        Buffer.alloc(6),
-        ...ps,
-        Buffer.alloc(6),
-        front,
-        Buffer.alloc(6),
-        back
-      ], 18 + l + front.length + back.length);
-      buf.writeUIntLE(l, 0, 6);
-      buf.writeUIntLE(front.length, 6 + l, 6);
-      buf.writeUIntLE(l, 12 + l + front.length, 6);
-      return buf;
-    }
-
-    return serializeNode(this.node);
+    let ps = this.faces.map(f => f.serialize());
+    let l = ps.length * 12;
+    let front = this.front ? this.front.serialize() : Buffer.alloc(0);
+    let back = this.back ? this.back.serialize() : Buffer.alloc(0);
+    let buf = Buffer.concat([
+      Buffer.alloc(6),
+      ...ps,
+      Buffer.alloc(6),
+      front,
+      Buffer.alloc(6),
+      back
+    ], 18 + l + front.length + back.length);
+    buf.writeUIntLE(ps.length, 0, 6);
+    buf.writeUIntLE(front.length, 6 + l, 6);
+    buf.writeUIntLE(l, 12 + l + front.length, 6);
+    return buf;
   }
 
   static deserialize(buf){
-    function deserializeNode(buf){
-      if(buf.length === 0)
-        return null;
-      let l = buf.readUIntLE(0);
-      let fl = buf.readUIntLE(6 + l);
-      let bl = buf.readUIntLE(12 + l + fl);
-      let node = new CSG.Node();
-      for(let i = 6; i < 6 + l;) {
-        let pl = buf.readUInt8(i);
-        i++;
-        let I = i;
-        let verts = [];
-        for(; i < I + pl; i += 6 * 4) {
-          let ns = [0, 1, 2, 3, 4, 5].map(x => buf.readFloatLe(i + 4 * x));
-          let vert = new CSG.Vertex(ns.slice(0, 3), ns.slice(3));
-          verts.push(vert);
-        }
-        let poly = new CSG.Polygon(verts);
-        node.polygons.push(poly);
+    if(buf.length === 0)
+      return null;
+    let l = buf.readUIntLE(0) * 12;
+    let fl = buf.readUIntLE(6 + l);
+    let bl = buf.readUIntLE(12 + l + fl);
+    let faces = [];
+    for(let i = 6; i < 6 + l;) {
+      let pl = buf.readUInt8(i);
+      i++;
+      let I = i;
+      let verts = [];
+      for(; i < I + pl; i += 6 * 4) {
+        let ns = [0, 1, 2].map(x => buf.readFloatLe(i + 4 * x));
+        let vert = new Vector3(...ns);
+        verts.push(vert);
       }
-      node.front = deserializeNode(buf.subarray(6 + l, 6 + l + fl))
-      node.back = deserializeNode(buf.subarray(12 + l + fl, 12 + l + fl + bl))
+      let face = new CSG.Polygon(verts);
+      faces.push(face);
     }
-
-    return new CSGWrapper(deserializeNode(buf));
+    return new CSG(
+      CSG.deserialize(buf.subarray(6 + l, 6 + l + fl)),
+      CSG.deserialize(buf.subarray(12 + l + fl, 12 + l + fl + bl)),
+      faces
+    );
   }
 
 }
@@ -82,9 +125,7 @@ class MeshToCsgWork extends Work {
   static id="MeshToCsgWork";
 
   execute([input]){
-    let polygons = input.faces.map(f => new CSG.Polygon(f.points.map(v => new CSG.Vertex(new CSG.Vector(v), []))));
-    let node = new CSG.Node(polygons);
-    return new CSGWrapper(node);
+    return new CSG().build(input.faces);
   }
 
   transformChildren(children){
@@ -102,16 +143,7 @@ class CsgToMeshWork extends Work {
   static id="CsgToMeshWork";
 
   execute([input]){
-    let faces = [];
-
-    let tv = v => new Vector3(v.pos.x, v.pos.y, v.pos.z);
-    input.node.allPolygons().map(p => {
-      faces.push(...p.vertices.slice(2).map((_, i) =>
-        new Face([tv(p.vertices[0]), tv(p.vertices[i + 1]), tv(p.vertices[i + 2])])
-      ));
-    });
-
-    return new Mesh(faces);
+    return new Mesh(input.allFaces());
   }
 
   transformChildren(children){
@@ -129,21 +161,22 @@ class CsgWork extends Work {
   static id = "CsgWork";
 
   execute(inputs){
-    let nodes = inputs.map(i => new CSG.Node(i.node.allPolygons()));
+    let nodes = [...inputs];
     this.args[0].map(arg => {
       if(arg[0] === "invert")
-        return nodes[arg[1]].invert();
+        return nodes[arg[1]] = nodes[arg[1]].invert();
       if(arg[0] === "clipTo")
-        return nodes[arg[1]].clipTo(nodes[arg[2]]);
+        return nodes[arg[1]] = nodes[arg[1]].clipTo(nodes[arg[2]]);
       if(arg[0] === "build")
-        return nodes[arg[1]].build(nodes[arg[2]].allPolygons());
+        return nodes[arg[1]] = nodes[arg[1]].build(nodes[arg[2]].allFaces());
     })
-    return new CSGWrapper(nodes[this.args[1]]);
+    console.log(this.args[0].length, nodes)
+    return nodes[this.args[1]];
   }
 
 }
 
-Product.Registry.register(CSGWrapper);
+Product.Registry.register(CSG);
 Work.Registry.register(MeshToCsgWork);
 Work.Registry.register(CsgToMeshWork);
 
@@ -223,4 +256,4 @@ chainables.sub = chainables.subtract = (comp, ...args) => comp(_diff(comp(), ...
 operators.intersection = (...args) => new Component(_intersect(...args));
 chainables.intersect = (comp, ...args) => comp(_intersect(comp(), ...args));
 
-module.exports = { MeshToCsgWork, CsgToMeshWork, CSGWrapper };
+module.exports = { MeshToCsgWork, CsgToMeshWork, CSG };

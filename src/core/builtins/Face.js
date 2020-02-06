@@ -1,6 +1,7 @@
 
 const { Product } = require(".");
 const { Vector3 } = require("./Vector3");
+const { Plane } = require("./Plane");
 
 class Face extends Product {
 
@@ -10,6 +11,11 @@ class Face extends Product {
     if(points.length !== 3)
       throw new Error("Faces can only be triangles");
     this.points = points;
+    this.plane = new Plane(points);
+  }
+
+  flip(){
+    return new Face([...this.points].reverse());
   }
 
   serialize(){
@@ -24,4 +30,4 @@ class Face extends Product {
 
 Product.Registry.register(Face);
 
-module.exports = { Face, Vector3 };
+Object.assign(module.exports, { Face, Vector3 });

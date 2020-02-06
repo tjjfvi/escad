@@ -14,6 +14,6 @@ module.exports = (escad, p) => {
   //let d= a.intersect(b);
 
 
-  return a.add(c).sub(a);
+  return a.add(b);
   // return escad.cube(params.size).translate([0, 0, params.height]).add(escad.cube(1));
 };
