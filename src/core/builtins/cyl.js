@@ -2,7 +2,7 @@
 const { Work, Component, operators } = require(".");
 const { Mesh, Face, Vector3 } = require("./Mesh");
 
-const tau = 6.283185307179586472128676655;
+const { tau } = Math;
 
 class CylWork extends Work {
 

@@ -90,7 +90,7 @@ function processMesh(buf){
   let geo = new t.BufferGeometry();
   geo.setAttribute("position", attr);
   geo.computeVertexNormals();
-  let mat = new t.MeshNormalMaterial();
+  let mat = new t.MeshNormalMaterial({ wireframe: true });
   let mesh = new t.Mesh(geo, mat);
   return mesh;
 }
