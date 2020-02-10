@@ -1,6 +1,7 @@
 
 const { Work, Component, operators } = require(".");
 const { Mesh, Face, Vector3 } = require("./Mesh");
+const { _diff } = require("./csg");
 
 const { tau } = Math;
 
@@ -35,13 +36,25 @@ class CylWork extends Work {
 
 }
 
-operators.cyl = operators.cylinder = ({
+operators.cyl = operators.cylinder = operators.hollowCyl = operators.hollowCylinder = ({
   r = 1, r1 = r, r2 = r,
+  t, t1 = t || r1, t2 = t || r2,
+  i, i1 = i || r1 - t1, i2 = i || r2 - t2,
   l = 1, length = l, h = length, height = h,
   sides = 20,
   offsets = [[0, 0], [0, 0]], os = offsets,
   offset1 = os[0], o1 = offset1,
   offset2 = os[1], o2 = offset2,
+  iOffsets = [o1, o2], ios = iOffsets,
+  iOffset1 = ios[0], io1 = iOffset1,
+  iOffset2 = ios[1], io2 = iOffset2,
   center = true, c = center,
-}) => new Component(new CylWork([], r1, r2, height, sides, o1, o2, c))
+  unionDiff = false, ud = unionDiff,
+}) => {
+  let oc = new CylWork([], r1, r2, height, sides, o1, o2, c);
+  if(!i1 && !i2)
+    return new Component(oc)
+  let ic = new CylWork([], i1, i2, height, sides, io1, io2, c);
+  return new Component(ud ? [oc, ic] : _diff(oc, ic));
+}
 
