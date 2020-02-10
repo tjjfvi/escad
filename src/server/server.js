@@ -13,11 +13,11 @@ const serverId = uuidv4();
 const config = require("./config");
 const render = require("./renderComm");
 
-let curSha;
+let curShas;
 let curParamDef;
 
-render.ee.on("reload", ({ sha, paramDef }) => {
-  curSha = sha;
+render.ee.on("reload", ({ shas, paramDef }) => {
+  curShas = shas;
   curParamDef = paramDef;
 });
 
@@ -58,17 +58,17 @@ app.ws("/ws", ws => {
 
     if(params)
       run();
-    else if(curSha) {
-      ws.s("sha", curSha);
+    else if(curShas) {
+      ws.s("shas", curShas);
       ws.s("paramDef", curParamDef);
     }
 
     let interval = setInterval(() => ws.s("ping"), 1000);
 
-    let handler = ({ sha, paramDef }) => {
+    let handler = ({ shas, paramDef }) => {
       if(params)
         return run();
-      ws.s("sha", sha)
+      ws.s("shas", shas)
       ws.s("paramDef", paramDef);
     };
     render.ee.on("reload", handler);
@@ -89,8 +89,8 @@ app.ws("/ws", ws => {
       if(p !== null)
         return run();
 
-      ws.s("sha", curSha);
-      ws.s("sha", curParamDef);
+      ws.s("shas", curShas);
+      ws.s("shas", curParamDef);
     })
 
     ws.on("close", () => {
@@ -100,8 +100,8 @@ app.ws("/ws", ws => {
     });
 
     async function run(){
-      let { sha, paramDef } = await render.run(params);
-      ws.s("sha", sha);
+      let { shas, paramDef } = await render.run(params);
+      ws.s("shas", shas);
       ws.s("paramDef", paramDef);
     }
   })().catch(e => console.error(e));

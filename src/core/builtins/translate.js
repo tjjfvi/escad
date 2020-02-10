@@ -1,5 +1,5 @@
 
-const { chainables, operators, Component } = require(".");
+const { chainables, operators, Component, arrayish } = require(".");
 const { PointMapWork } = require("./PointMapWork");
 const { Vector3 } = require("./Vector3");
 
@@ -18,5 +18,5 @@ let translate = (_x, _y, _z) => {
   return tree => new PointMapWork([tree], v => v.add(translateVector), translateVector, "translate");
 };
 
-chainables.translate = (comp, ...args) => comp(translate(...args)(comp()));
-operators.translate = (...args) => tree => new Component(translate(...args)(tree));
+chainables.translate = (comp, ...args) => comp(arrayish.mapDeep(comp(), translate(...args)));
+operators.translate = (...args) => tree => new Component(arrayish.mapDeep(tree, translate(...args)));

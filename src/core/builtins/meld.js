@@ -1,5 +1,5 @@
 
-const { Work, operators, Component } = require(".");
+const { Work, operators, Component, arrayish } = require(".");
 const { Mesh } = require("./Mesh");
 
 class MeldWork extends Work {
@@ -14,7 +14,7 @@ class MeldWork extends Work {
 
 Work.Registry.register(MeldWork);
 
-operators.meld = (...args) => new Component(new MeldWork(args));
+operators.meld = (...args) => new Component(new MeldWork(arrayish.toArrayDeep(args)));
 
 module.exports = { MeldWork };
 

@@ -1,6 +1,6 @@
 
 
-const { chainables, operators, Component } = require(".");
+const { chainables, operators, Component, arrayish } = require(".");
 const { PointMapWork } = require("./PointMapWork");
 const { Vector3 } = require("./Vector3");
 
@@ -52,5 +52,5 @@ let rotate = (_x, _y, _z, opts) => {
   }, v), x, y, z, radians, "rotate");
 };
 
-chainables.rotate = (comp, ...args) => comp(rotate(...args)(comp()));
-operators.rotate = (...args) => tree => new Component(rotate(...args)(tree));
+chainables.rotate = (comp, ...args) => comp(arrayish.mapDeep(comp, rotate(...args)));
+operators.rotate = (...args) => tree => new Component(arrayish.mapDeep(tree, rotate(...args)));

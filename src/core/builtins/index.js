@@ -5,6 +5,7 @@ const ProductManager = require("../ProductManager");
 const Work = require("../Work");
 const chainables = require("../chainables");
 const operators = require("../operators");
+const arrayish = require("../arrayish");
 
 module.exports = {
   Component,
@@ -12,7 +13,8 @@ module.exports = {
   ProductManager,
   Work,
   chainables,
-  operators
+  operators,
+  arrayish,
 };
 
 Object.assign(

@@ -49,16 +49,20 @@ const Preview = () => {
 
   scene.add(...axes);
 
-  let mesh;
+  const group = new t.Group();
+  scene.add(group);
 
-  state.ws.on("message", async (type, sha) => {
-    if(type !== "sha")
+  state.ws.on("message", async (type, shas) => {
+    if(type !== "shas")
       return;
-    let _mesh = await fetch("/product/" + sha).then(r => r.arrayBuffer()).then(processMesh);
-    scene.remove(mesh);
-    mesh = _mesh;
-    console.log(mesh);
-    scene.add(mesh);
+
+    let meshes = await Promise.all(shas.map(sha =>
+      fetch("/product/" + sha).then(r => r.arrayBuffer()).then(processMesh))
+    );
+    console.log(meshes)
+    group.remove(...group.children);
+    group.add(...meshes);
+    console.log(group.children)
   })
 
   function render(){
@@ -84,13 +88,12 @@ const Preview = () => {
 export default Preview;
 
 function processMesh(buf){
-  console.log(buf);
   let arr = new Float32Array(buf.slice(7));
   let attr = new t.BufferAttribute(arr, 3);
   let geo = new t.BufferGeometry();
   geo.setAttribute("position", attr);
   geo.computeVertexNormals();
-  let mat = new t.MeshNormalMaterial({ wireframe: true });
+  let mat = new t.MeshNormalMaterial({ wireframe: false });
   let mesh = new t.Mesh(geo, mat);
   return mesh;
 }

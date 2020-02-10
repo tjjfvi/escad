@@ -28,6 +28,7 @@ class PointMapWork extends Work {
       let oldFunc = this.args[0];
       let childFunc = child.args[0];
       this.args[0] = x => oldFunc(childFunc(x));
+      this.args.push(...child.args.slice(1));
       return [child.children[0]];
     }
     if(PointMapWork.consumer in child)

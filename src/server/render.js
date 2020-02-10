@@ -2,6 +2,7 @@
 // Render Process
 
 const escad = require("../core");
+const arrayish = require("../core/arrayish");
 
 let file, func;
 
@@ -45,9 +46,10 @@ async function run(id, params){
   }
   if(!result)
     return console.error(new Error("Invalud return type from exported function"));
-  result.tree.visualize();
-  if(result instanceof escad.Work || result.isComponent)
-    result = await result.process();
-  let sha = result.meta.sha;
-  process.send(["finish", id, sha, paramDef])
+  let shas = (await Promise.all(arrayish.toArrayDeep(result, async x => {
+    if(x instanceof escad.Work)
+      return await x.process();
+    return x;
+  }))).map(r => r.meta.sha);
+  process.send(["finish", id, shas, paramDef])
 }

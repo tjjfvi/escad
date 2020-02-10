@@ -5,8 +5,9 @@ class Component {
 
   constructor(tree){
     let that = Object.setPrototypeOf((...args) => {
-      if(args.length)
-        that.tree = args[0];
+      if(!args.length)
+        return that.tree;
+      that.tree = args[0];
       return that;
     }, proto);
 
@@ -18,10 +19,6 @@ class Component {
 
   clone(){
     return new Component(this.tree);
-  }
-
-  process(){
-    return this.tree.process();
   }
 
 }

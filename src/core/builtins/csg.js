@@ -1,5 +1,5 @@
 
-const { Work, Product, operators, chainables, Component } = require(".");
+const { Work, Product, operators, chainables, Component, arrayish } = require(".");
 const { Mesh, Face, Vector3 } = require("./Mesh");
 const CSG = require("csg");
 
@@ -150,7 +150,7 @@ Work.Registry.register(CsgToMeshWork);
 let _csg = (args, ops, ret) =>
   new CsgToMeshWork([new CsgWork(args.map(a => new MeshToCsgWork([a])), ops, ret)])
 let _union = (...args) => {
-  args = args.flat(Infinity);
+  args = arrayish.toArrayDeep(args);
   if(args.length === 0)
     return;
   if(args.length === 1)
@@ -172,7 +172,10 @@ let _union = (...args) => {
 let _diff = (...args) => {
   if(args.length === 0)
     return;
-  args = [_union(args[0]), _union(args.slice(1))];
+  args = arrayish.toArrayDeep(args, x => x, false)
+  if(args.length === 1 && args[0] instanceof Array)
+    [args] = args;
+  args = [_union(args[0]), _union(...args.slice(1))];
   if(!args[1])
     return args[0];
   let a = 0;
@@ -190,7 +193,7 @@ let _diff = (...args) => {
 }
 
 let _intersect = (...args) => {
-  args = args.flat(Infinity);
+  args = arrayish.toArrayDeep(args);
   if(args.length === 0)
     return;
   if(args.length === 1)
