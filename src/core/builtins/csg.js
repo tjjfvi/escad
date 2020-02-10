@@ -146,6 +146,7 @@ class CsgWork extends Work {
 Product.Registry.register(CSGWrapper);
 Work.Registry.register(MeshToCsgWork);
 Work.Registry.register(CsgToMeshWork);
+Work.Registry.register(CsgWork);
 
 let _csg = (args, ops, ret) =>
   new CsgToMeshWork([new CsgWork(args.map(a => new MeshToCsgWork([a])), ops, ret)])
@@ -226,4 +227,4 @@ chainables.sub = chainables.subtract = (comp, ...args) => comp(_diff(comp(), ...
 operators.intersection = (...args) => new Component(_intersect(...args));
 chainables.intersect = (comp, ...args) => comp(_intersect(comp(), ...args));
 
-module.exports = { MeshToCsgWork, CsgToMeshWork, CSGWrapper };
+module.exports = { MeshToCsgWork, CsgToMeshWork, CSGWrapper, CsgWork, _csg, _union, _diff, _intersect };
