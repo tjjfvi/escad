@@ -17,7 +17,7 @@ class ProductManager {
       return this.current[sha];
     return await (this.current[sha] = (async () => {
       let buffer = await fs.readFile(path.join(this.dir, sha)).catch(() => null);
-      if(true) return null;
+      // if(true) return null;
       if(!buffer) return null;
       let split;
       for(let i = 0; i < buffer.length && !split; i++)

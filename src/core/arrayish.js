@@ -18,7 +18,7 @@ const mapDeep = (obj, func) =>
 
 const toArray = (obj, func, flat = false) => {
   if(obj && obj.isComponent)
-    return toArray(obj(), func);
+    return toArray(obj(), func, flat);
   if(!isArrayish(obj))
     return [func ? func(obj) : obj];
   if(obj instanceof Array)
@@ -28,7 +28,7 @@ const toArray = (obj, func, flat = false) => {
 
 const toArrayDeep = (obj, func, flat = true, keys = []) =>
   isArrayish(obj) ?
-    toArray(obj, (v, k) => toArrayDeep(v, func, keys.concat(k)), flat) :
+    toArray(obj, (v, k) => toArrayDeep(v, func, flat, keys.concat(k)), flat) :
     func ?
       func(obj, keys) :
       obj

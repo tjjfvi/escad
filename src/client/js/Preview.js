@@ -66,6 +66,8 @@ const Preview = () => {
   })
 
   function render(){
+    if(!el)
+      return;
     requestAnimationFrame(render);
 
     let width = el.clientWidth;

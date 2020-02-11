@@ -51,5 +51,6 @@ async function run(id, params){
       return await x.process();
     return x;
   }))).map(r => r.meta.sha);
+  console.log(shas.join("\n"))
   process.send(["finish", id, shas, paramDef])
 }
