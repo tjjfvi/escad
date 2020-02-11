@@ -12,7 +12,7 @@ class Work {
   constructor(children, ...args){
     this.returnVal = this;
     this.args = this.transformArgs(...args);
-    this.children = this.transformChildren(children);
+    this.children = this.transformChildren(children.map(c => c.isComponent ? c() : c));
     this.sha = hash(this.serialize());
     Object.freeze(this);
     return this.returnVal;
@@ -29,7 +29,7 @@ class Work {
   }
 
   transformChildren(children){
-    return children.map(c => c.isComponent ? c.tree : c);
+    return children;
   }
 
   async execute(inputs){

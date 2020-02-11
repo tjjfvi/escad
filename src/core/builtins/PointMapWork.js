@@ -6,8 +6,6 @@ class PointMapWork extends Work {
 
   static id="PointMapWork";
 
-  static consumer = Symbol("PointMapWork.consumer");
-
   execute(inputs){
     let input = inputs[0];
     if(input instanceof Mesh)
@@ -27,12 +25,12 @@ class PointMapWork extends Work {
     if(child instanceof PointMapWork) {
       let oldFunc = this.args[0];
       let childFunc = child.args[0];
-      this.args[0] = x => oldFunc(childFunc(x));
-      this.args.push(...child.args.slice(1));
-      return [child.children[0]];
+      let newArgs = this.args.slice();
+      newArgs[0] = x => oldFunc(childFunc(x));
+      newArgs.push(...child.args.slice(1));
+      this.returnVal = new PointMapWork([child.children[0]], ...newArgs);
+      return [];
     }
-    if(PointMapWork.consumer in child)
-      this.returnVal = child[PointMapWork.consumer](this.args[0]);
     return [child];
   }
 

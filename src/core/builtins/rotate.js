@@ -1,8 +1,7 @@
 
 
 const { chainables, operators, Component, arrayish } = require(".");
-const { PointMapWork } = require("./PointMapWork");
-const { Vector3 } = require("./Vector3");
+const { TransformWork, Matrix4 } = require("./TransformWork");
 
 let rotate = (_x, _y, _z, opts) => {
 
@@ -31,25 +30,12 @@ let rotate = (_x, _y, _z, opts) => {
 
   let { radians = false } = opts || {};
 
-  return tree => new PointMapWork([tree], v => [x, y, z].reduce((V, angle, i) => {
+  let matrix = [x, y, z].map((angle, i) => {
     angle *= radians ? 1 : Math.tau / 360;
+    return Matrix4["rotate" + "XYZ"[i]](angle);
+  }).reduce((a, b) => a.multiply(b));
 
-    let [xa, ya] = [[2, 1], [0, 2], [1, 0]][i];
-    let za = i;
-
-    let c = Math.cos(angle);
-    let s = Math.sin(angle);
-
-    let v = [V.x, V.y, V.z];
-    let nv = [];
-
-    nv[za] = v[za];
-    nv[xa] = v[xa] * c - v[ya] * s;
-    nv[ya] = v[xa] * s + v[ya] * c;
-
-    return new Vector3(...nv);
-
-  }, v), x, y, z, radians, "rotate");
+  return tree => new TransformWork([tree], matrix);
 };
 
 chainables.rotate = (comp, ...args) => comp(arrayish.mapDeep(comp, rotate(...args)));
