@@ -1,6 +1,6 @@
 
 
-const { chainables, operators, Component, arrayish } = require(".");
+const { chainables, operators, Component, arrayish, Hierarchy } = require(".");
 const { TransformWork, Matrix4 } = require("./TransformWork");
 
 let rotate = (_x, _y, _z, opts) => {
@@ -35,7 +35,7 @@ let rotate = (_x, _y, _z, opts) => {
     return Matrix4["rotate" + "XYZ"[i]](angle);
   }).reduce((a, b) => a.multiply(b));
 
-  return tree => new TransformWork([tree], matrix);
+  return tree => new TransformWork([tree], new Hierarchy("rotate", [tree]), matrix);
 };
 
 chainables.rotate = (comp, ...args) => comp(arrayish.mapDeep(comp, rotate(...args)));

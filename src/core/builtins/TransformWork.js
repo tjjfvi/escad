@@ -16,7 +16,7 @@ class TransformWork extends PointMapWork {
       throw new Error("TransformWork only accepts one child");
     let [child] = children;
     if(child instanceof TransformWork) {
-      this.returnVal = new TransformWork(child.children, this.args[1].multiply(child.args[1]))
+      this.returnVal = new TransformWork(child.children, this.hierarchy, this.args[1].multiply(child.args[1]))
       return [];
     }
     return super.transformChildren([child]);

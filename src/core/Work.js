@@ -9,11 +9,13 @@ class Work {
 
   static id = null;
 
-  constructor(children, ...args){
+  constructor(children, hierarchy, ...args){
     this.returnVal = this;
+    this.hierarchy = hierarchy;
     this.args = this.transformArgs(...args);
     this.children = this.transformChildren(children.map(c => c.isComponent ? c() : c));
     this.sha = hash(this.serialize());
+    this.hierarchy = this.hierarchy && this.hierarchy.clone(this.sha);
     Object.freeze(this);
     return this.returnVal;
   }
@@ -37,7 +39,7 @@ class Work {
     return null;
   }
 
-  async process(){
+  async process(waitStore){
     let memoized = await ProductManager.lookup(this.sha);
     if(memoized)
       return memoized;
@@ -46,7 +48,9 @@ class Work {
       let result = await this.execute(inputs);
       return result;
     })();
-    ProductManager.store(this.sha, prom);
+    let store = ProductManager.store(this.sha, prom);
+    if(waitStore)
+      await store;
     return await prom;
   }
 

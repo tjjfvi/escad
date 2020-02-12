@@ -1,5 +1,5 @@
 
-const { Work, Component, operators } = require(".");
+const { Work, Component, Hierarchy, operators } = require(".");
 const { Mesh, Face, Vector3 } = require("./Mesh");
 
 class CubeWork extends Work {
@@ -59,6 +59,6 @@ operators.cube = (n, _center = true) => {
       .map((p, i) => [centers[p], [cx, cy, cz][i]])
       .map(([a, b]) => a || b || (a == null && b == null)),
   } = typeof n === "object" ? n : { s: n };
-  return new Component(new CubeWork([], x, y, z, cs));
+  return new Component(new CubeWork([], new Hierarchy("cube"), x, y, z, cs));
 }
 

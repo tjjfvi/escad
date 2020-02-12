@@ -1,5 +1,5 @@
 
-const { Work, Product, operators, chainables, Component, arrayish } = require(".");
+const { Work, Product, operators, chainables, Component, Hierarchy, arrayish } = require(".");
 const { Mesh, Face, Vector3 } = require("./Mesh");
 const CSG = require("csg");
 
@@ -148,15 +148,15 @@ Work.Registry.register(MeshToCsgWork);
 Work.Registry.register(CsgToMeshWork);
 Work.Registry.register(CsgWork);
 
-let _csg = (args, ops, ret) =>
-  new CsgToMeshWork([new CsgWork(args.map(a => new MeshToCsgWork([a])), ops, ret)])
-let _union = (...args) => {
-  args = arrayish.toArrayDeep(args);
+let _csg = (args, h, ops, ret) =>
+  new CsgToMeshWork([new CsgWork(args.map(a => new MeshToCsgWork([a], null)), null, ops, ret)], h)
+let _union = (...oargs) => {
+  let args = arrayish.toArrayDeep(oargs);
   if(args.length === 0)
     return;
   if(args.length === 1)
     return args[0];
-  return _csg(args, args.slice(1).flatMap((_, i) => {
+  return _csg(args, new Hierarchy("union", oargs), args.slice(1).flatMap((_, i) => {
     let a = 0;
     let b = i + 1;
     return [
@@ -170,18 +170,18 @@ let _union = (...args) => {
   }), 0);
 }
 
-let _diff = (...args) => {
-  if(args.length === 0)
+let _diff = (...oargs) => {
+  if(oargs.length === 0)
     return;
-  args = arrayish.toArrayDeep(args, x => x, false)
-  if(args.length === 1 && args[0] instanceof Array)
-    [args] = args;
+  if(oargs.length === 1 && arrayish.isArrayish(oargs[0]))
+    [oargs] = oargs;
+  let args = arrayish.toArrayDeep(oargs, x => x, false)
   args = [_union(args[0]), _union(...args.slice(1))];
   if(!args[1])
     return args[0];
   let a = 0;
   let b = 1;
-  return _csg(args, [
+  return _csg(args, new Hierarchy("difference", oargs), [
     ["invert", a],
     ["clipTo", a, b],
     ["clipTo", b, a],
@@ -193,15 +193,15 @@ let _diff = (...args) => {
   ], 0);
 }
 
-let _intersect = (...args) => {
-  args = arrayish.toArrayDeep(args);
+let _intersect = (...oargs) => {
+  let args = arrayish.toArrayDeep(oargs);
   if(args.length === 0)
     return;
   if(args.length === 1)
     return;
   if(!args[1])
     return args[0];
-  return _csg(args, [
+  return _csg(args, new Hierarchy("intersection", oargs), [
     ["invert", 0],
     ...args.slice(1).flatMap((_, i) => {
       let a = 0;

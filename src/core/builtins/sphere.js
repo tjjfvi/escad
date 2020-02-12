@@ -1,5 +1,5 @@
 
-const { Work, Component, operators } = require(".");
+const { Work, Component, Hierarchy, operators } = require(".");
 const { Mesh, Face, Vector3 } = require("./Mesh");
 const { _diff } = require("./csg");
 
@@ -46,10 +46,10 @@ operators.hollowSphere = operators.sphere = ({
   i = r - t, ir = i,
   unionDiff = false, ud = unionDiff,
 }) => {
-  let os = new SphereWork([], r, slices, stacks);
+  let os = new SphereWork([], new Hierarchy("sphere"), r, slices, stacks);
   if(!ir)
     return new Component(os);
-  let is = new SphereWork([], i, slices, stacks);
+  let is = new SphereWork([], new Hierarchy("sphere-inner"), i, slices, stacks);
   return ud ? [os, is] : _diff(os, is);
 }
 

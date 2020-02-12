@@ -3,6 +3,7 @@
 
 const escad = require("../core");
 const arrayish = require("../core/arrayish");
+const Hierarchy = require("../core/Hierarchy");
 
 let file, func;
 
@@ -45,12 +46,15 @@ async function run(id, params){
     return;
   }
   if(!result)
-    return console.error(new Error("Invalud return type from exported function"));
+    return console.error(new Error("Invalid return type from exported function"));
   let shas = (await Promise.all(arrayish.toArrayDeep(result, async x => {
-    if(x instanceof escad.Work)
-      return await x.process();
-    return x;
-  }))).map(r => r.meta.sha);
+    if(!(x instanceof escad.Work))
+      throw new Error("Invalid return type from exported function")
+    await x.process(true);
+    return x.sha;
+  })));
+  let hierarchy = new Hierarchy(null, result);
+  hierarchy.log();
   console.log(shas.join("\n"))
   process.send(["finish", id, shas, paramDef])
 }

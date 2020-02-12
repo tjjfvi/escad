@@ -1,5 +1,5 @@
 
-const { Work, Component, operators } = require(".");
+const { Work, Component, Hierarchy, operators } = require(".");
 const { Mesh, Face, Vector3 } = require("./Mesh");
 const { _diff } = require("./csg");
 
@@ -51,10 +51,10 @@ operators.cyl = operators.cylinder = operators.hollowCyl = operators.hollowCylin
   center = true, c = center,
   unionDiff = false, ud = unionDiff,
 }) => {
-  let oc = new CylWork([], r1, r2, height, sides, o1, o2, c);
+  let oc = new CylWork([], new Hierarchy("cyl"), r1, r2, height, sides, o1, o2, c);
   if(!i1 && !i2)
     return new Component(oc)
-  let ic = new CylWork([], i1, i2, height, sides, io1, io2, c);
+  let ic = new CylWork([], new Hierarchy("cyl-inner"), i1, i2, height, sides, io1, io2, c);
   return new Component(ud ? [oc, ic] : _diff(oc, ic));
 }
 

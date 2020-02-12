@@ -28,7 +28,7 @@ class PointMapWork extends Work {
       let newArgs = this.args.slice();
       newArgs[0] = x => oldFunc(childFunc(x));
       newArgs.push(...child.args.slice(1));
-      this.returnVal = new PointMapWork([child.children[0]], ...newArgs);
+      this.returnVal = new PointMapWork([child.children[0]], this.hierarchy, ...newArgs);
       return [];
     }
     return [child];
