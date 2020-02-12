@@ -17,8 +17,8 @@ function reload(){
 
   childProcess.send(["init", loadFile, __dirname + "/../../products/"]);
 
-  run().then(({ shas, paramDef }) => {
-    ee.emit("reload", { shas, paramDef });
+  run().then(({ shas, paramDef, hierarchy }) => {
+    ee.emit("reload", { shas, paramDef, hierarchy });
   });
 }
 
@@ -30,13 +30,13 @@ async function run(params = null){
   let res;
   let prom = new Promise(r => res = r);
 
-  let handler = ([type, _id, shas, paramDef]) => {
+  let handler = ([type, _id, shas, hierarchy, paramDef]) => {
     if(type !== "finish" || _id !== id)
       return;
 
     childProcess.removeListener("message", handler);
 
-    res({ shas, paramDef });
+    res({ shas, paramDef, hierarchy });
   };
 
   childProcess.on("message", handler);

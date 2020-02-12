@@ -56,5 +56,5 @@ async function run(id, params){
   let hierarchy = new Hierarchy(null, result);
   hierarchy.log();
   console.log(shas.join("\n"))
-  process.send(["finish", id, shas, paramDef])
+  process.send(["finish", id, shas, hierarchy, paramDef])
 }

@@ -15,10 +15,12 @@ const render = require("./renderComm");
 
 let curShas;
 let curParamDef;
+let curHierarchy;
 
-render.ee.on("reload", ({ shas, paramDef }) => {
+render.ee.on("reload", ({ shas, paramDef, hierarchy }) => {
   curShas = shas;
   curParamDef = paramDef;
+  curHierarchy = hierarchy;
 });
 
 app.ws("/ws", ws => {
@@ -61,15 +63,17 @@ app.ws("/ws", ws => {
     else if(curShas) {
       ws.s("shas", curShas);
       ws.s("paramDef", curParamDef);
+      ws.s("hierarchy", curHierarchy);
     }
 
     let interval = setInterval(() => ws.s("ping"), 1000);
 
-    let handler = ({ shas, paramDef }) => {
+    let handler = ({ shas, paramDef, hierarchy }) => {
       if(params)
         return run();
       ws.s("shas", shas)
       ws.s("paramDef", paramDef);
+      ws.s("hierarchy", hierarchy);
     };
     render.ee.on("reload", handler);
 
@@ -90,7 +94,8 @@ app.ws("/ws", ws => {
         return run();
 
       ws.s("shas", curShas);
-      ws.s("shas", curParamDef);
+      ws.s("paramDef", curParamDef);
+      ws.s("hierarchy", curHierarchy);
     })
 
     ws.on("close", () => {
@@ -100,9 +105,10 @@ app.ws("/ws", ws => {
     });
 
     async function run(){
-      let { shas, paramDef } = await render.run(params);
+      let { shas, paramDef, hierarchy } = await render.run(params);
       ws.s("shas", shas);
       ws.s("paramDef", paramDef);
+      ws.s("hierarchy", hierarchy);
     }
   })().catch(e => console.error(e));
 });
