@@ -1,13 +1,13 @@
 
-const { operators, Component, arrayish } = require(".");
+const { operators, Component, arrayish, Hierarchy } = require(".");
 const { _union, _diff } = require("./csg");
 
-let _unionDiff = (...args) => {
-  if(args.length === 0)
+let _unionDiff = (...uargs) => {
+  if(uargs.length === 0)
     return;
-  if(args.length === 1)
-    [args] = args;
-  args = arrayish.toArrayDeep(args, x => x, false)
+  if(uargs.length === 1)
+    [uargs] = uargs;
+  let args = arrayish.toArrayDeep(uargs, x => x, false)
   let dargs = [[]];
   for(let arg of args)
     if(arg instanceof Array) {
@@ -16,7 +16,7 @@ let _unionDiff = (...args) => {
     } else dargs[0].push(arg);
   if(dargs.length === 1)
     return _union(...dargs[0]);
-  return _diff(...dargs);
+  return new Hierarchy("unionDiff", uargs).apply(_diff(...dargs));
 }
 
 operators.unionDifference = operators.unionDiff = (...args) => new Component(_unionDiff(...args));
