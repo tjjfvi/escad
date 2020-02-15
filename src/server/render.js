@@ -4,12 +4,15 @@
 const escad = require("../core");
 const arrayish = require("../core/arrayish");
 const Hierarchy = require("../core/Hierarchy");
+const ProductManager = require("../core/ProductManager");
 
 let file, func;
 
 process.on("message", ([type, ...data]) => {
   if(type === "run")
     return run(...data);
+  if(type === "export")
+    return exp(...data);
   if(type !== "init")
     return;
 
@@ -57,4 +60,9 @@ async function run(id, params){
   hierarchy.log();
   console.log(shas.join("\n"))
   process.send(["finish", id, shas, hierarchy, paramDef])
+}
+
+async function exp(id, sha, format){
+  await ProductManager.export(sha, format);
+  process.send(["finish", id]);
 }

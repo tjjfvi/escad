@@ -44,7 +44,29 @@ async function run(params = null){
   return await prom;
 }
 
+async function exp(sha, format){
+  let id = uuidv4();
+
+  childProcess.send(["export", id, sha, format]);
+
+  let res;
+  let prom = new Promise(r => res = r);
+
+  let handler = ([type, _id]) => {
+    if(type !== "finish" || _id !== id)
+      return;
+
+    childProcess.removeListener("message", handler);
+
+    res();
+  };
+
+  childProcess.on("message", handler);
+
+  return await prom;
+}
+
 watch(loadDir, { recursive: true, filter: f => !/node_modules|products/.test(f) }, () => reload());
 reload();
 
-module.exports = { run, ee };
+module.exports = { run, ee, export: exp, exp };

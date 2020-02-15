@@ -1,6 +1,8 @@
 
 require("./bundler.js");
 
+const fs = require("fs");
+
 const express = require("express");
 const app = express();
 require("express-ws")(app);
@@ -21,6 +23,15 @@ render.ee.on("reload", ({ shas, paramDef, hierarchy }) => {
   curShas = shas;
   curParamDef = paramDef;
   curHierarchy = hierarchy;
+});
+
+app.get("/product/:sha.:ext", async (req, res) => {
+  const { sha, ext } = req.params;
+  const format = "." + ext;
+
+  await render.export(sha, format);
+
+  fs.createReadStream(__dirname + "/../../products/" + sha + format).pipe(res);
 });
 
 app.ws("/ws", ws => {

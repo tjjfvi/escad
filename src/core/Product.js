@@ -25,6 +25,13 @@ class Product {
     return new this(...JSON.parse(buffer.toString("utf8")));
   }
 
+  static get exportTypes(){
+    console.log("hi")
+    if(Object.prototype.hasOwnProperty.call(this, "_exportTypes"))
+      return this._exportTypes;
+    return this._exportTypes = {};
+  }
+
 }
 
 module.exports = Product;
