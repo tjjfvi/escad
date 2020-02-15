@@ -52,18 +52,13 @@ const Preview = () => {
   const group = new t.Group();
   scene.add(group);
 
-  state.ws.on("message", async (type, shas) => {
-    if(type !== "shas")
-      return;
-
-    let meshes = await Promise.all(shas.map(sha =>
+  state.shas.ee.on("change", async () => {
+    let meshes = await Promise.all(state.shas().map(sha =>
       fetch("/product/" + sha).then(r => r.arrayBuffer()).then(processMesh))
     );
-    console.log(meshes)
     group.remove(...group.children);
     group.add(...meshes);
-    console.log(group.children)
-  })
+  });
 
   function render(){
     if(!el)

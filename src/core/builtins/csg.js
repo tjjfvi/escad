@@ -13,11 +13,11 @@ class CSGWrapper extends Product {
 
   serialize(){
     function serializePoly(poly){
-      let buf = Buffer.alloc(poly.vertices.length * 6 * 4 + 1);
+      let buf = Buffer.alloc(poly.vertices.length * 3 * 4 + 1);
       buf.writeUInt8(poly.vertices.length);
       poly.vertices.map((v, i) => {
-        [v.pos.x, v.pos.y, v.pos.z, v.normal.x, v.normal.y, v.normal.z].map((x, j) =>
-          buf.writeFloatLE(x, (i * 6 + j) * 4 + 1)
+        [v.pos.x, v.pos.y, v.pos.z].map((x, j) =>
+          buf.writeFloatLE(x, (i * 3 + j) * 4 + 1)
         )
       })
       return buf;
@@ -40,7 +40,7 @@ class CSGWrapper extends Product {
       ], 18 + l + front.length + back.length);
       buf.writeUIntLE(l, 0, 6);
       buf.writeUIntLE(front.length, 6 + l, 6);
-      buf.writeUIntLE(l, 12 + l + front.length, 6);
+      buf.writeUIntLE(back.length, 12 + l + front.length, 6);
       return buf;
     }
 
@@ -51,25 +51,32 @@ class CSGWrapper extends Product {
     function deserializeNode(buf){
       if(buf.length === 0)
         return null;
-      let l = buf.readUIntLE(0);
-      let fl = buf.readUIntLE(6 + l);
-      let bl = buf.readUIntLE(12 + l + fl);
-      let node = new CSG.Node();
+      let l = buf.readUIntLE(0, 6);
+      let fl = buf.readUIntLE(6 + l, 6);
+      let bl = buf.readUIntLE(12 + l + fl, 6);
+      if(!(l + fl + bl))
+        return null;
+      let polys = [];
       for(let i = 6; i < 6 + l;) {
         let pl = buf.readUInt8(i);
         i++;
         let I = i;
         let verts = [];
-        for(; i < I + pl; i += 6 * 4) {
-          let ns = [0, 1, 2, 3, 4, 5].map(x => buf.readFloatLe(i + 4 * x));
-          let vert = new CSG.Vertex(ns.slice(0, 3), ns.slice(3));
+        for(; i < I + pl * 3 * 4; i += 3 * 4) {
+          let ns = [0, 1, 2].map(x => buf.readFloatLE(i + 4 * x));
+          let vert = new CSG.Vertex(ns.slice(0, 3), [0, 0, 0]);
           verts.push(vert);
         }
         let poly = new CSG.Polygon(verts);
-        node.polygons.push(poly);
+        polys.push(poly);
       }
-      node.front = deserializeNode(buf.subarray(6 + l, 6 + l + fl))
-      node.back = deserializeNode(buf.subarray(12 + l + fl, 12 + l + fl + bl))
+      let node = new CSG.Node();
+      node.front = deserializeNode(buf.subarray(12 + l, 12 + l + fl))
+      node.back = deserializeNode(buf.subarray(18 + l + fl, 18 + l + fl + bl))
+      node.polygons = polys;
+      if(polys.length)
+        node.plane = polys[0].plane.clone();
+      return node;
     }
 
     return new CSGWrapper(deserializeNode(buf));

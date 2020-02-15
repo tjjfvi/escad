@@ -13,16 +13,18 @@ class State {
   paramDef = observable<any>([]);
   params = observable<any>({});
   hierarchy = observable<any>();
+  shas = observable<Array<string>>([]);
 
   constructor(){
     this.ws.on("hierarchy", d => this.hierarchy(this.processHierarchy(d)));
+    this.ws.on("shas", d => this.shas(d));
     this.ws.on("paramDef", d => this.paramDef(d));
     this.params.ee.on("change", () => this.ws.s("params", this.params()))
   }
 
-  processHierarchy({ name, important, sha, shas, children }){
+  processHierarchy({ name, important, shas, children }){
     children = children.map(x => this.processHierarchy(x));
-    shas = sha ? [sha] : children.flatMap(x => x.shas);
+    shas = shas.length ? shas : children.flatMap(x => (x.pre[0] || x).shas);
     let tree = { children, shas, name, important, pre: [], post: [] }
     let child = children.length === 1 ? children[0] : null;
     Object.assign(tree,

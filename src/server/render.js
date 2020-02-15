@@ -50,12 +50,12 @@ async function run(id, params){
   }
   if(!result)
     return console.error(new Error("Invalid return type from exported function"));
-  let shas = (await Promise.all(arrayish.toArrayDeep(result, async x => {
+  let shas = (await Promise.all([arrayish.toArrayDeep(result, async x => {
     if(!(x instanceof escad.Work))
       throw new Error("Invalid return type from exported function")
     await x.process(true);
     return x.sha;
-  })));
+  })].flat()));
   let hierarchy = new Hierarchy(null, result);
   hierarchy.log();
   console.log(shas.join("\n"))

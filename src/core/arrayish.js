@@ -33,6 +33,25 @@ const toArrayDeep = (obj, func, flat = true, keys = []) =>
       func(obj, keys) :
       obj
 
-const arrayish = { isArrayish, mapDeep, toArray, toArrayDeep };
+const length = obj =>
+  obj && obj.isComponent ?
+    length(obj()) :
+    !isArrayish(obj) ?
+      1 :
+      obj instanceof Array ?
+        obj.length :
+        Object.keys(obj).length;
+
+const element = (obj, ind) =>
+  obj && obj.isComponent ?
+    element(obj(), ind) :
+    !isArrayish(obj) ?
+      obj :
+      obj instanceof Array ?
+        obj[ind] :
+        obj[Object.keys(obj)[ind]];
+
+
+const arrayish = { isArrayish, mapDeep, toArray, toArrayDeep, length, element };
 
 module.exports = arrayish;

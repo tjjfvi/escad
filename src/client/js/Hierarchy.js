@@ -17,13 +17,13 @@ const SuperNode = observer(({ hierarchy }) => {
   const children = hierarchy.children.map((c, i) => <SuperNode key={i} hierarchy={c}/>);
   return collapse() ?
     <Node {...hierarchy} close={close.obs[hierarchy.pre.length]} collapse={collapse}>{children}</Node> :
-    [...hierarchy.pre, hierarchy, ...hierarchy.post].reduceRight((child, { name, important = false, pre }, i) =>
+    [...hierarchy.pre, hierarchy, ...hierarchy.post].reduceRight((child, { name, important = false, pre, shas }, i) =>
       // eslint-disable-next-line react/jsx-key
-      [<Node name={name} important={important} close={close.obs[i]} collapse={pre && collapse}>{child}</Node>]
+      [<Node key={0} {...{ name, important, shas }} close={close.obs[i]} collapse={pre && collapse}>{child}</Node>]
     , children)
 });
 
-const Node = observer(({ name, important, children, close, collapse }) =>
+const Node = observer(({ name, important, shas, children, close, collapse }) =>
   <div className="Node">
     <div className={"line " + (important ? "important" : "")}>
       <div className={
@@ -31,7 +31,9 @@ const Node = observer(({ name, important, children, close, collapse }) =>
         (close() ? "closed" : "") +
         (children.length ? "" : " leaf")
       } onClick={() => close.toggle()}></div>
-      <span>{name}</span>
+      <span onClick={() => {
+        state.shas(shas);
+      }}>{name}</span>
       {collapse && <div className="collapse" onClick={() => collapse.toggle()}>{
         [0, 0, 0].map((_, i) => <div key={i} className="dot"/>)
       }</div>}

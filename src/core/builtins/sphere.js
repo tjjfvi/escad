@@ -50,6 +50,6 @@ operators.hollowSphere = operators.sphere = ({
   if(!ir)
     return new Component(os);
   let is = new SphereWork([], new Hierarchy("sphere-inner"), i, slices, stacks);
-  return ud ? [os, is] : _diff(os, is);
+  return new Component(ud ? [os, is] : _diff(os, is));
 }
 

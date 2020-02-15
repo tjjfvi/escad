@@ -26,7 +26,6 @@ class Product {
   }
 
   static get exportTypes(){
-    console.log("hi")
     if(Object.prototype.hasOwnProperty.call(this, "_exportTypes"))
       return this._exportTypes;
     return this._exportTypes = {};

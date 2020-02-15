@@ -14,8 +14,10 @@ class MeldWork extends Work {
 
 Work.Registry.register(MeldWork);
 
-operators.meld = (...args) =>
-  new Component(new MeldWork(arrayish.toArrayDeep(args), new Hierarchy("meld", args)))
+const _meld = (...args) => new MeldWork(arrayish.toArrayDeep(args), new Hierarchy("meld", args));
 
-module.exports = { MeldWork };
+operators.meld = (...args) =>
+  new Component(_meld(...args));
+
+module.exports = { _meld, MeldWork };
 
