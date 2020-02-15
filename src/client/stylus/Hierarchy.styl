@@ -1,0 +1,77 @@
+
+.Hierarchy
+  flex 1
+  max-width 500px
+
+  background $black
+  border-left 5px solid $darkgrey
+
+  color $grey
+
+  font-weight normal
+
+  h1
+    font-size 30px
+    text-align center
+    padding-bottom 20px
+    margin-bottom 5px
+    border-bottom 2px solid $darkgrey
+    font-weight lighter
+
+  .Node
+    display flex
+    flex-direction column
+
+    .line
+      display flex
+      flex-direction row
+
+      height 25px
+      font-size 20px
+      color $lightgrey
+      &.important
+        color $white
+      
+      .arrow
+        display flex
+        justify-content center
+        align-items center
+
+        width 25px
+        height 25px
+
+        &:before
+          content ""
+          width 10px
+          height 10px
+          border 0px solid $lightgrey
+          border-right-width 1px
+          border-bottom-width 1px
+          transform rotate(45deg) translate(-2.5px, -2.5px)
+        &.closed:before
+          transform rotate(-45deg) translate(-2.5px, -2.5px)
+        &.leaf:before
+          border-right-width 0px
+          transform translate(0, -5px)
+        
+      .collapse
+        display flex
+        align-items center
+        justify-content flex-end
+        flex 1
+        .dot
+          border 2px solid $lightgrey
+          border-radius 100%
+          &:not(:first-child)
+            margin-left 4px
+          &:last-child
+            margin-right 12.5px
+        
+
+    .children
+      display flex
+      flex-direction column
+
+      margin-left 12px
+      padding-left 12px
+      border-left 1px solid $grey
