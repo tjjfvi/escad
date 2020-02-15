@@ -25,4 +25,5 @@ Object.assign(
     .readdirSync(__dirname)
     .filter(f => f !== "index.js")
     .map(f => require("./" + f))
+    .map(o => o._exclude ? {} : o)
 );

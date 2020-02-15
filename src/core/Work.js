@@ -2,6 +2,7 @@
 const hash = require("./hash");
 const Registry = require("./Registry");
 const ProductManager = require("./ProductManager");
+const Hierarchy = require("./Hierarchy");
 
 class Work {
 
@@ -18,6 +19,10 @@ class Work {
     this.hierarchy = this.hierarchy && this.hierarchy.clone(this.sha);
     Object.freeze(this);
     return this.returnVal;
+  }
+
+  clone(hierarchy = this.hierarchy){
+    return new this.constructor(this.children, hierarchy, ...this.args);
   }
 
   serialize(){
@@ -57,6 +62,14 @@ class Work {
   visualize(indent = 0){
     console.log("  ".repeat(indent++) + "-", this.constructor.id);
     this.children.map(c => c.visualize(indent))
+  }
+
+  get [Hierarchy.symbol](){
+    return this.hierarchy;
+  }
+
+  [Hierarchy.apply](hierarchy){
+    return this.clone(hierarchy);
   }
 
 }

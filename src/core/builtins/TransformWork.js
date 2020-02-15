@@ -7,7 +7,9 @@ class TransformWork extends PointMapWork {
 
   static id="TransformWork";
 
-  transformArgs(matrix){
+  transformArgs(matrix, _m){
+    if(typeof matrix === "function")
+      return [matrix, _m];
     return [v => matrix.multiplyVector(v), matrix];
   }
 

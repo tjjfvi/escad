@@ -136,7 +136,7 @@ class CsgWork extends Work {
       if(arg[0] === "clipTo")
         return nodes[arg[1]].clipTo(nodes[arg[2]]);
       if(arg[0] === "build")
-        return nodes[arg[1]].build(nodes[arg[2]].allPolygons());
+        return nodes[arg[1]] = new CSG.Node(nodes[arg[1]].allPolygons().concat(nodes[arg[2]].allPolygons()));
     })
     return new CSGWrapper(nodes[this.args[1]]);
   }

@@ -1,5 +1,6 @@
 
-const { chainables, operators, Hierarchy, Component, arrayish } = require(".");
+const { chainables, operators } = require(".");
+const { operatorMap } = require("./operatorMap");
 const { TransformWork, Matrix4 } = require("./TransformWork");
 
 let translate = (_x, _y, _z) => {
@@ -14,8 +15,8 @@ let translate = (_x, _y, _z) => {
   );
   let matrix = Matrix4.translate(x, y, z);
 
-  return tree => new TransformWork([tree], new Hierarchy("translate", tree), matrix);
+  return tree => new TransformWork([tree], null, matrix);
 };
 
-chainables.translate = (comp, ...args) => comp(arrayish.mapDeep(comp(), translate(...args)));
-operators.translate = (...args) => tree => new Component(arrayish.mapDeep(tree, translate(...args)));
+chainables.translate = (comp, ...args) => comp(operatorMap("translate", comp(), translate(...args)));
+operators.translate = (...args) => tree => operatorMap("translate", tree, translate(...args));

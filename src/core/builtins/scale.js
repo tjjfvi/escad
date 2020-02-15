@@ -1,5 +1,6 @@
 
-const { chainables, operators, Component, Hierarchy, arrayish } = require(".");
+const { chainables, operators } = require(".");
+const { operatorMap } = require("./operatorMap");
 const { TransformWork, Matrix4 } = require("./TransformWork");
 
 let scale = (_x, _y, _z) => {
@@ -14,8 +15,8 @@ let scale = (_x, _y, _z) => {
   );
   let matrix = Matrix4.scale(x, y, z);
 
-  return tree => new TransformWork([tree], new Hierarchy("scale", [tree]), matrix);
+  return tree => new TransformWork([tree], null, matrix);
 };
 
-chainables.scale = (comp, ...args) => comp(arrayish.mapDeep(comp(), scale(...args)));
-operators.scale = (...args) => tree => new Component(arrayish.mapDeep(tree, scale(...args)));
+chainables.scale = (comp, ...args) => comp(operatorMap("scale", comp(), scale(...args)));
+operators.scale = (...args) => tree => operatorMap("scale", tree, scale(...args));
