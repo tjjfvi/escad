@@ -3,6 +3,8 @@
 import React from "react";
 import state from "./State";
 import { observer, observable } from "rhobo";
+import Icon from "@mdi/react";
+import { mdiArrowExpandVertical, mdiArrowCollapseVertical } from "@mdi/js";
 
 const Hierarchy = () => <div className="Hierarchy">
   <h1>Hierarchy</h1>
@@ -56,9 +58,11 @@ const Node = x => observer(({ name, important, shas, children, close, collapse }
       <span onClick={() => {
         state.shas(shas);
       }}>{name}</span>
-      {collapse && <div className="collapse" onClick={() => collapse.toggle()}>{
-        [0, 0, 0].map((_, i) => <div key={i} className="dot"/>)
-      }</div>}
+      {collapse && <div className="collapse" onClick={() => collapse.toggle()}>
+        <Icon
+          path={collapse() ? mdiArrowExpandVertical : mdiArrowCollapseVertical}
+        />
+      </div>}
     </div>
     {close() || <div className="children">{children}</div>}
   </div>
