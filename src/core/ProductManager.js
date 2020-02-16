@@ -1,14 +1,14 @@
 
 const fs = require("fs-extra");
-const os = require("os");
 const path = require("path");
 
 const Product = require("./Product");
 
 class ProductManager {
 
-  constructor(name, base = os.tmpdir()){
-    this.dir = fs.mkdtempSync(path.join(base, name));
+  constructor(){
+    this.dir = "";
+    this.exportDir = "";
     this.current = {};
   }
 
@@ -51,7 +51,7 @@ class ProductManager {
     if(!f)
       throw new Error(`${p.constructor.name} cannot export to ${format}`);
     let b = f(sha, p);
-    await fs.writeFile(path.join(this.dir, sha + format), b);
+    await fs.writeFile(path.join(this.exportDir, sha + format), b);
   }
 
 }

@@ -7,9 +7,20 @@ class TransformWork extends PointMapWork {
 
   static id="TransformWork";
 
+  serializeArgs(){
+    return this.args[1].serialize().toString("base64");
+  }
+
+  static deserializeArgs(arg){
+    let m = Matrix4.deserialize(Buffer.from(arg, "base64"));
+    return [v => m.multiplyVector(v), m]
+  }
+
   transformArgs(matrix, _m){
     if(typeof matrix === "function")
       return [matrix, _m];
+    if(matrix == null)
+      matrix = _m;
     return [v => matrix.multiplyVector(v), matrix];
   }
 

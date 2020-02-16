@@ -3,10 +3,14 @@ const hash = require("./hash");
 const Registry = require("./Registry");
 const ProductManager = require("./ProductManager");
 const Hierarchy = require("./Hierarchy");
+const fs = require("fs-extra");
+
+const curDeserialize = {};
 
 class Work {
 
   static Registry = new Registry("WorkRegistry");
+  static dir = "";
 
   static id = null;
 
@@ -18,6 +22,8 @@ class Work {
     this.sha = hash(this.serialize());
     this.hierarchy = this.hierarchy && this.hierarchy.clone(this.sha);
     Object.freeze(this);
+    if(this === this.returnVal)
+      fs.writeFile(Work.dir + this.sha, JSON.stringify(this.serialize()));
     return this.returnVal;
   }
 
@@ -25,10 +31,35 @@ class Work {
     return new this.constructor(this.children, hierarchy, ...this.args);
   }
 
+  serializeArgs(){
+    return this.args;
+  }
+
+  static deserializeArgs(args){
+    return args;
+  }
+
   serialize(){
     if(this.constructor.id === null)
       throw new Error("Must supply ID to class " + this.constructor.name);
-    return [this.constructor.id, this.args, this.children.map(c => c.sha)];
+    return [
+      this.constructor.id,
+      this.children.map(c => c.sha),
+      this.serializeArgs(),
+    ];
+  }
+
+  static async deserialize(sha){
+    if(curDeserialize[sha])
+      return await curDeserialize[sha];
+    return curDeserialize[sha] = (async () => {
+      let [id, c, args] = JSON.parse(await fs.readFile(Work.dir + sha, "utf8"));
+      c = await Promise.all(c.map(s => Work.deserialize(s)));
+      let C = Work.Registry.get(id);
+      args = C.deserializeArgs(args);
+      delete curDeserialize[sha];
+      return new C(c, null, ...args);
+    })();
   }
 
   transformArgs(...args){

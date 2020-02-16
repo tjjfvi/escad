@@ -8,7 +8,7 @@ const app = express();
 require("express-ws")(app);
 
 app.use(express.static(__dirname + "/../client/"));
-app.use("/product/", express.static(__dirname + "/../../products/"));
+app.use(express.static(__dirname + "/../../artifacts/"));
 
 const uuidv4 = require("uuid/v4");
 const serverId = uuidv4();
@@ -25,13 +25,21 @@ render.ee.on("reload", ({ shas, paramDef, hierarchy }) => {
   curHierarchy = hierarchy;
 });
 
-app.get("/product/:sha.:ext", async (req, res) => {
+app.get("/exports/:sha.:ext", async (req, res) => {
   const { sha, ext } = req.params;
   const format = "." + ext;
 
   await render.export(sha, format);
 
-  fs.createReadStream(__dirname + "/../../products/" + sha + format).pipe(res);
+  fs.createReadStream(__dirname + "/../../artifacts/exports/" + sha + format).pipe(res);
+});
+
+app.get("/products/:sha", async (req, res) => {
+  const { sha } = req.params;
+
+  await render.process(sha);
+
+  fs.createReadStream(__dirname + "/../../artifacts/products/" + sha).pipe(res);
 });
 
 app.ws("/ws", ws => {

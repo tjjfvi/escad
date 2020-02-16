@@ -46,6 +46,8 @@ class CubeWork extends Work {
 
 }
 
+Work.Registry.register(CubeWork);
+
 operators.cube = (n, _center = true) => {
   let {
     sideLength = 1, s = sideLength,

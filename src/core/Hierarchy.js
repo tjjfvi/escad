@@ -50,6 +50,16 @@ class Hierarchy {
     return Object.assign(obj instanceof Array ? obj.slice() : { ...obj }, { [Hierarchy.symbol]: this });
   }
 
+  serialize(){
+    return JSON.stringify(this);
+  }
+
+  static deserialize(str){
+    let obj = typeof str === "object" ? str : JSON.parse(str);
+    if(!obj) return obj;
+    return new Hierarchy(obj.name, obj.children.map(Hierarchy.deserialize), obj.important, obj.shas);
+  }
+
 }
 
 module.exports = Hierarchy;

@@ -5,18 +5,24 @@ const escad = require("../core");
 const arrayish = require("../core/arrayish");
 const Hierarchy = require("../core/Hierarchy");
 const ProductManager = require("../core/ProductManager");
+const Work = require("../core/Work");
 
-let file, func;
+let file, func, dir;
 
 process.on("message", ([type, ...data]) => {
   if(type === "run")
     return run(...data);
   if(type === "export")
     return exp(...data);
+  if(type === "process")
+    return proc(...data);
   if(type !== "init")
     return;
 
-  [file, escad.ProductManager.dir] = data;
+  [file, dir] = data;
+  Work.dir = dir + "trees/";
+  ProductManager.dir = dir + "products/";
+  ProductManager.exportDir = dir + "exports/";
   let result;
   try {
     result = require(file);
@@ -65,4 +71,10 @@ async function run(id, params){
 async function exp(id, sha, format){
   await ProductManager.export(sha, format);
   process.send(["finish", id]);
+}
+
+async function proc(id, sha){
+  let work = await Work.deserialize(sha);
+  await work.process(true);
+  process.send(["finish", id, sha]);
 }

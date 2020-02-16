@@ -1,5 +1,5 @@
 node_modules
 src/client/bundle.*
 projects
-products
+artifacts
 test/index.js

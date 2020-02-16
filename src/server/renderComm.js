@@ -15,7 +15,7 @@ function reload(){
 
   childProcess = fork(require.resolve("./render"));
 
-  childProcess.send(["init", loadFile, __dirname + "/../../products/"]);
+  childProcess.send(["init", loadFile, __dirname + "/../../artifacts/"]);
 
   run().then(({ shas, paramDef, hierarchy }) => {
     ee.emit("reload", { shas, paramDef, hierarchy });
@@ -66,7 +66,29 @@ async function exp(sha, format){
   return await prom;
 }
 
-watch(loadDir, { recursive: true, filter: f => !/node_modules|products/.test(f) }, () => reload());
+async function proc(sha){
+  let id = uuidv4();
+
+  childProcess.send(["process", id, sha]);
+
+  let res;
+  let prom = new Promise(r => res = r);
+
+  let handler = ([type, _id]) => {
+    if(type !== "finish" || _id !== id)
+      return;
+
+    childProcess.removeListener("message", handler);
+
+    res();
+  };
+
+  childProcess.on("message", handler);
+
+  return await prom;
+}
+
+watch(loadDir, { recursive: true, filter: f => !/node_modules|artifacts/.test(f) }, () => reload());
 reload();
 
-module.exports = { run, ee, export: exp, exp };
+module.exports = { run, ee, export: exp, exp, proc, process: proc };

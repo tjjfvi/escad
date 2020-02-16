@@ -54,7 +54,7 @@ const Preview = () => {
 
   state.shas.ee.on("change", async () => {
     let meshes = await Promise.all(state.shas().map(sha =>
-      fetch("/product/" + sha).then(r => r.arrayBuffer()).then(processMesh))
+      fetch("/products/" + sha).then(r => r.arrayBuffer()).then(processMesh))
     );
     group.remove(...group.children);
     group.add(...meshes);
