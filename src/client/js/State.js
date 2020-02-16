@@ -25,10 +25,11 @@ class State {
   processHierarchy({ name, important, shas, children }){
     children = children.map(x => this.processHierarchy(x));
     shas = shas.length ? shas : children.flatMap(x => (x.pre[0] || x).shas);
-    let tree = { children, shas, name, important, pre: [], post: [] }
+    let tree = { children, shas, name, important, pre: [], post: [], meta: {} }
+    tree.leaf = children.every(c => c.leaf && !c.important);
     let child = children.length === 1 ? children[0] : null;
     Object.assign(tree,
-      child ?
+      !tree.leaf && child ?
         !child.important ?
           { children: child.children, post: [{ name: child.name, shas: child.shas }, ...child.post] } :
           important ?
