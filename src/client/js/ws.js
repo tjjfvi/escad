@@ -2,6 +2,7 @@
 
 import EE from "events";
 import { State } from "./State";
+import flatted from "flatted";
 
 class WS extends EE {
 
@@ -22,7 +23,7 @@ class WS extends EE {
     if(this.ws.readyState !== 1)
       return;
     console.log("→", ...data);
-    this.ws.send(JSON.stringify(data));
+    this.ws.send(flatted.stringify(data));
   }
 
   initWs(){
@@ -41,7 +42,7 @@ class WS extends EE {
     })
 
     this.ws.addEventListener("message", msg => {
-      let [type, ...data] = JSON.parse(msg.data);
+      let [type, ...data] = flatted.parse(msg.data);
 
       this.state.connected(true);
       clearTimeout(this.timeout);

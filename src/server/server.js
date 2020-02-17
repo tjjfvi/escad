@@ -2,6 +2,7 @@
 require("./bundler.js");
 
 const fs = require("fs");
+const flatted = require("flatted");
 
 const express = require("express");
 const app = express();
@@ -48,12 +49,12 @@ app.ws("/ws", ws => {
     ws.s = function(...data){
       if(ws.readyState !== 1)
         return;
-      this.send(JSON.stringify(data));
+      this.send(flatted.stringify(data));
     };
 
     let [requestedId, oldServerId, params] = await new Promise(res =>
       ws.once("message", msg => {
-        let [type, ...data] = JSON.parse(msg);
+        let [type, ...data] = flatted.parse(msg);
 
         if(type === "init")
           return res(data);
@@ -97,7 +98,7 @@ app.ws("/ws", ws => {
     render.ee.on("reload", handler);
 
     ws.on("message", msg => {
-      let [type, ...data] = JSON.parse(msg);
+      let [type, ...data] = flatted.parse(msg);
 
       if(type !== "params")
         return;
