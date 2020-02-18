@@ -19,4 +19,10 @@ let translate = (_x, _y, _z) => {
 };
 
 chainables.translate = (comp, ...args) => comp(operatorMap("translate", comp(), translate(...args)));
-operators.translate = (...args) => tree => operatorMap("translate", tree, translate(...args));
+operators.translate = (...args) => (...tree) => operatorMap("translate", tree, translate(...args));
+
+"XYZ".split("").map(L => {
+  let l = L.toLowerCase();
+  chainables["t" + L] = (comp, n) => chainables.translate(comp, { [l]: n });
+  operators["t" + L] = n => operators.translate({ [l]: n });
+})

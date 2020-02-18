@@ -19,4 +19,4 @@ let scale = (_x, _y, _z) => {
 };
 
 chainables.scale = (comp, ...args) => comp(operatorMap("scale", comp(), scale(...args)));
-operators.scale = (...args) => tree => operatorMap("scale", tree, scale(...args));
+operators.scale = (...args) => (...tree) => operatorMap("scale", tree, scale(...args));

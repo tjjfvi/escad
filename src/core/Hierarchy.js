@@ -21,7 +21,7 @@ class Hierarchy {
               v :
               v && (Hierarchy.symbol in v) ?
                 v[Hierarchy.symbol] :
-                v.isComponent ?
+                v && v.isComponent ?
                   f(v.tree) :
                   arrayish.isArrayish(v) ?
                     new Hierarchy(k, v, false) :

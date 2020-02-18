@@ -36,6 +36,8 @@ class CylWork extends Work {
 
 }
 
+Work.Registry.register(CylWork);
+
 operators.cyl = operators.cylinder = operators.hollowCyl = operators.hollowCylinder = ({
   r = 1, r1 = r, r2 = r,
   t, t1 = t || r1, t2 = t || r2,

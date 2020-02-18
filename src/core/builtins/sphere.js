@@ -38,6 +38,8 @@ class SphereWork extends Work {
 
 }
 
+Work.Registry.register(SphereWork);
+
 operators.hollowSphere = operators.sphere = ({
   r = 1,
   slices = 16,

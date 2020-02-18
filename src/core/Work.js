@@ -75,7 +75,7 @@ class Work {
     return null;
   }
 
-  async process(waitStore){
+  async process(waitStore = true){
     let memoized = await ProductManager.lookup(this.sha);
     if(memoized)
       return memoized;

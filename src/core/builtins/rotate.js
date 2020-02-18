@@ -40,4 +40,4 @@ let rotate = (_x, _y, _z, opts) => {
 };
 
 chainables.rotate = (comp, ...args) => comp(operatorMap("rotate", comp(), rotate(...args)));
-operators.rotate = (...args) => tree => operatorMap("rotate", tree, rotate(...args));
+operators.rotate = (...args) => (...tree) => operatorMap("rotate", tree, rotate(...args));

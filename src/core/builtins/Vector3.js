@@ -5,7 +5,14 @@ class Vector3 extends Product {
 
   static id = "Vector3";
 
-  construct(x, y, z){
+  construct(x = 0, y = 0, z = 0){
+    if(typeof x === "object") {
+      if(x instanceof Array)
+        [x = 0, y = 0, z = 0] = x
+      else
+        ({ x = 0, y = 0, z = 0 } = x)
+    }
+
     this.x = x;
     this.y = y;
     this.z = z;
