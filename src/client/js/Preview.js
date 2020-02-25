@@ -5,6 +5,7 @@ const three = require("three");
 console.log(three);
 window.THREE = three;
 require("three/examples/js/controls/OrbitControls");
+import { EdgesGeometry } from "./EdgesGeometry";
 
 const t = three;
 
@@ -90,7 +91,23 @@ function processMesh(buf){
   let geo = new t.BufferGeometry();
   geo.setAttribute("position", attr);
   geo.computeVertexNormals();
-  let mat = new t.MeshNormalMaterial({ wireframe: false });
+  let mat = new t.MeshBasicMaterial({
+    color: 0x252830,
+    polygonOffset: true,
+    polygonOffsetFactor: 1,
+    polygonOffsetUnits: 1,
+  });
+  let inMat = new t.MeshBasicMaterial({
+    color: 0xc0392b,
+    side: t.BackSide,
+    polygonOffset: true,
+    polygonOffsetFactor: 1,
+    polygonOffsetUnits: 1,
+  })
+  let lines = new t.LineSegments(new EdgesGeometry(geo), new t.LineBasicMaterial({ color: 0xffffff }))
   let mesh = new t.Mesh(geo, mat);
-  return mesh;
+  let inMesh = new t.Mesh(geo, inMat);
+  let group = new t.Group();
+  group.add(mesh, inMesh, lines);
+  return group;
 }
