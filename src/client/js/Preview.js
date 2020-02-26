@@ -1,10 +1,25 @@
 
+const colors = {
+  black:     0x151820,
+  darkgrey:  0x252830,
+  grey:      0x454850,
+  lightgrey: 0x656870,
+  white:     0xbdc3c7,
+  red:       0xc0392b,
+  orange:    0xd35400,
+  yellow:    0xf1c40f,
+  green:     0x2ecc71,
+  blue:      0x0984e3,
+  purple:    0x8e44ad,
+};
+
 import React from "react";
 import state from "./State";
 const three = require("three");
 console.log(three);
 window.THREE = three;
 require("three/examples/js/controls/OrbitControls");
+require("three/examples/js/utils/BufferGeometryUtils");
 import { EdgesGeometry } from "./EdgesGeometry";
 
 const t = three;
@@ -27,7 +42,7 @@ const Preview = () => {
   renderer.shadowMap.type = t.PCFShadowMap;
   renderer.setSize(window.innerWidth, window.innerHeight);
 
-  scene.background = new t.Color(0x151820);
+  scene.background = new t.Color(colors.black);
 
   const axes = [
     [new t.Vector3(+1, 0, 0), 0xe74c3c,  1],
@@ -61,6 +76,17 @@ const Preview = () => {
     group.add(...meshes);
   });
 
+  const orientScene = new t.Scene();
+  const orientCamera = new t.PerspectiveCamera(60, 1, .1, 1000);
+  const orientRenderer = new t.WebGLRenderer({ antialias: true, alpha: true });
+  const orientMouse = new t.Vector2();
+  orientRenderer.setSize(200, 200);
+  orientCamera.position.set(0, 0, 1);
+  orientCamera.up = new t.Vector3(0, 0, 1);
+  orientCamera.lookAt(0, 0, 0);
+  const [orientCube, orientRaycast] = createOrientCube(orientCamera, controls);
+  orientScene.add(orientCube);
+
   function render(){
     if(!el)
       return;
@@ -74,11 +100,28 @@ const Preview = () => {
 
     renderer.setSize(width, height);
     renderer.render(scene, camera);
+    orientCamera.position.copy(camera.position).sub(controls.target).normalize();
+    orientCamera.lookAt(0, 0, 0);
+    orientRenderer.render(orientScene, orientCamera);
+    orientRaycast(orientMouse);
   }
 
   return <div className="Preview" ref={e => {
     el = e;
     el.appendChild(renderer.domElement);
+    el.appendChild(orientRenderer.domElement);
+    let handle = e => {
+      let cel = orientRenderer.domElement;
+      let rect = cel.getBoundingClientRect();
+      orientMouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      orientMouse.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+    };
+    renderer.domElement.addEventListener("mousemove", handle, false)
+    orientRenderer.domElement.addEventListener("mousemove", handle, false)
+    orientRenderer.domElement.addEventListener("click", () => {
+      orientRaycast(orientMouse)(camera);
+    })
+    orientRenderer.domElement.classList.add("orient");
     render();
   }}></div>;
 }
@@ -92,22 +135,114 @@ function processMesh(buf){
   geo.setAttribute("position", attr);
   geo.computeVertexNormals();
   let mat = new t.MeshBasicMaterial({
-    color: 0x252830,
+    color: colors.darkgrey,
     polygonOffset: true,
     polygonOffsetFactor: 1,
     polygonOffsetUnits: 1,
   });
   let inMat = new t.MeshBasicMaterial({
-    color: 0xc0392b,
+    color: colors.red,
     side: t.BackSide,
     polygonOffset: true,
     polygonOffsetFactor: 1,
     polygonOffsetUnits: 1,
   })
-  let lines = new t.LineSegments(new EdgesGeometry(geo), new t.LineBasicMaterial({ color: 0xffffff }))
+  let lines = new t.LineSegments(new EdgesGeometry(geo), new t.LineBasicMaterial({ color: colors.white }))
   let mesh = new t.Mesh(geo, mat);
   let inMesh = new t.Mesh(geo, inMat);
   let group = new t.Group();
   group.add(mesh, inMesh, lines);
   return group;
+}
+
+const cubeSize = .5;
+const edgeSize = .1;
+const centerSize = cubeSize - edgeSize * 2;
+
+function createOrientCube(camera, controls){
+  let planeGeo = new t.PlaneBufferGeometry(centerSize, centerSize);
+
+  let edgeGeo = t.BufferGeometryUtils.mergeBufferGeometries([
+    new t.PlaneBufferGeometry(edgeSize, centerSize).translate(-edgeSize / 2, 0, 0),
+    new t.PlaneBufferGeometry(edgeSize, centerSize).translate(edgeSize / 2, 0, 0).rotateY(Math.PI / 2),
+  ]);
+
+  let cornerGeo = t.BufferGeometryUtils.mergeBufferGeometries([
+    new t.PlaneBufferGeometry(edgeSize, edgeSize).translate(-edgeSize / 2, -edgeSize / 2, 0),
+    new t.PlaneBufferGeometry(edgeSize, edgeSize).translate(edgeSize / 2, -edgeSize / 2, 0).rotateY(Math.PI / 2),
+    new t.PlaneBufferGeometry(edgeSize, edgeSize).translate(-edgeSize / 2, edgeSize / 2, 0).rotateX(-Math.PI / 2),
+  ]);
+
+  let mat = new t.MeshBasicMaterial({ color: colors.darkgrey });
+  let hoverMat = new t.MeshBasicMaterial({ color: colors.lightgrey });
+
+  let sides = [
+    new t.Vector3(1, 0, 0),
+    new t.Vector3(0, 1, 0),
+    new t.Vector3(0, 0, 1)
+  ].flatMap(a => [a, a.clone().negate()].map(a => {
+    let mesh = new t.Mesh(planeGeo, mat);
+    mesh.position.copy(a).multiplyScalar(.25);
+    mesh.lookAt(a);
+    return mesh;
+  }));
+
+  let edges = [
+    0,
+    Math.PI / 2,
+    Math.PI,
+  ].flatMap(x => [0, Math.PI / 2, Math.PI, -Math.PI / 2].flatMap(z => {
+    let mesh = new t.Mesh(edgeGeo, mat);
+    mesh.rotateZ(z);
+    mesh.rotateX(x);
+    mesh.position.set(cubeSize / 2, 0, cubeSize / 2).applyQuaternion(mesh.quaternion);
+    return mesh;
+  }));
+
+  let corners = [
+    0,
+    Math.PI,
+  ].flatMap(x => [0, Math.PI / 2, Math.PI, -Math.PI / 2].flatMap(z => {
+    let mesh = new t.Mesh(cornerGeo, mat);
+    mesh.rotateZ(z);
+    mesh.rotateX(x);
+    mesh.position.set(cubeSize / 2, cubeSize / 2, cubeSize / 2).applyQuaternion(mesh.quaternion);
+    return mesh;
+  }));
+
+  let parts = [sides, edges, corners].flat();
+
+  let group = new t.Group();
+
+  group.add(...parts);
+
+  group.add(new t.LineSegments(
+    new t.EdgesGeometry(new t.CubeGeometry(.5, .5, .5)),
+    new t.LineBasicMaterial({ color: colors.white })
+  ));
+
+  let raycaster = new t.Raycaster();
+  let lastCast;
+  let raycast = mouse => {
+    raycaster.setFromCamera(mouse, camera);
+    let x = raycaster.intersectObjects(parts);
+    let [{ object: mesh } = {}] = x;
+    if(lastCast)
+      lastCast.material = mat;
+    lastCast = mesh;
+    if(!mesh)
+      return () => {};
+    mesh.material = hoverMat;
+    return c => {
+      let dist = c.position.distanceTo(controls.target);
+      c.position
+        .copy(mesh.position)
+        .normalize()
+        .multiplyScalar(dist)
+        .add(controls.target)
+      controls.update();
+    }
+  };
+
+  return [group, raycast];
 }
