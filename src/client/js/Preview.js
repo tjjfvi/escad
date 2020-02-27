@@ -1,6 +1,7 @@
 
 const colors = {
   black:     0x151820,
+  blackish:  0x1d2028,
   darkgrey:  0x252830,
   grey:      0x454850,
   lightgrey: 0x656870,
@@ -28,7 +29,8 @@ const Preview = () => {
   let el;
 
   const scene = new t.Scene();
-  const camera = new t.PerspectiveCamera(60, window.innerWIdth / window.innerHeight, .1, 1000);
+  const camera = new t.PerspectiveCamera(60, 1, 1e-2, 1e5);
+  const orthocamera = new t.OrthographicCamera(-1, 1, 1, -1, 1e-2, 1e5);
   const renderer = new t.WebGLRenderer({ antialias: true });
 
   camera.position.set(-10, -20, 20);
@@ -36,7 +38,6 @@ const Preview = () => {
   camera.lookAt(0, 0, 0);
 
   const controls = new t.OrbitControls(camera, renderer.domElement);
-  controls;
 
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = t.PCFShadowMap;
@@ -78,14 +79,34 @@ const Preview = () => {
 
   const orientScene = new t.Scene();
   const orientCamera = new t.PerspectiveCamera(60, 1, .1, 1000);
+  const orientOrthocamera = new t.OrthographicCamera(-.5, .5, .5, -.5, .1, 1000);
   const orientRenderer = new t.WebGLRenderer({ antialias: true, alpha: true });
   const orientMouse = new t.Vector2();
   orientRenderer.setSize(200, 200);
   orientCamera.position.set(0, 0, 1);
   orientCamera.up = new t.Vector3(0, 0, 1);
   orientCamera.lookAt(0, 0, 0);
-  const [orientCube, orientRaycast] = createOrientCube(orientCamera, controls);
+  const [orientCube, orientRaycast] = createOrientCube(() => ortho ? orientOrthocamera : orientCamera, controls);
   orientScene.add(orientCube);
+
+  const orientAxes = [
+    [new t.Vector3(+1, 0, 0), 0xe74c3c,  1],
+    [new t.Vector3(-1, 0, 0), 0xe74c3c, .5],
+    [new t.Vector3(0, +1, 0), 0x2ecc71,  1],
+    [new t.Vector3(0, -1, 0), 0x2ecc71, .5],
+    [new t.Vector3(0, 0, +1), 0x3498db,  1],
+    [new t.Vector3(0, 0, -1), 0x3498db, .5],
+  ].map(([vector, color, opacity = 1]) => {
+    let geo = new t.CylinderBufferGeometry(.01, .01, .3, 100, 1, false).translate(0, .15, 0);
+    let mat = new t.MeshBasicMaterial({ color, transparent: true, opacity });
+    let mesh = new t.Mesh(geo, mat);
+    mesh.quaternion.setFromUnitVectors(new t.Vector3(0, 1, 0), vector);
+    return mesh;
+  })
+
+  orientScene.add(...orientAxes);
+
+  let ortho = false;
 
   function render(){
     if(!el)
@@ -98,11 +119,26 @@ const Preview = () => {
     camera.aspect = width / height;
     camera.updateProjectionMatrix();
 
+    orthocamera.position
+      .copy(camera.position)
+      .sub(controls.target)
+      .normalize()
+      .multiplyScalar(10000)
+      .add(controls.target)
+    orthocamera.quaternion.copy(camera.quaternion);
+    orthocamera.zoom = 1.73 / camera.position.clone().sub(controls.target).length();
+    orthocamera.left = orthocamera.bottom * width / height;
+    orthocamera.right = orthocamera.top * width / height;
+    orthocamera.updateProjectionMatrix();
+
+
     renderer.setSize(width, height);
-    renderer.render(scene, camera);
+    renderer.render(scene, ortho ? orthocamera : camera);
     orientCamera.position.copy(camera.position).sub(controls.target).normalize();
     orientCamera.lookAt(0, 0, 0);
-    orientRenderer.render(orientScene, orientCamera);
+    orientOrthocamera.position.copy(orientCamera.position);
+    orientOrthocamera.quaternion.copy(orientCamera.quaternion);
+    orientRenderer.render(orientScene, ortho ? orientOrthocamera : orientCamera);
     orientRaycast(orientMouse);
   }
 
@@ -120,6 +156,11 @@ const Preview = () => {
     orientRenderer.domElement.addEventListener("mousemove", handle, false)
     orientRenderer.domElement.addEventListener("click", () => {
       orientRaycast(orientMouse)(camera);
+    })
+    orientRenderer.domElement.addEventListener("contextmenu", e => {
+      ortho = !ortho;
+      e.preventDefault();
+      e.stopPropogation();
     })
     orientRenderer.domElement.classList.add("orient");
     render();
@@ -156,10 +197,10 @@ function processMesh(buf){
 }
 
 const cubeSize = .5;
-const edgeSize = .1;
+const edgeSize = .125;
 const centerSize = cubeSize - edgeSize * 2;
 
-function createOrientCube(camera, controls){
+function createOrientCube(c, controls){
   let planeGeo = new t.PlaneBufferGeometry(centerSize, centerSize);
 
   let edgeGeo = t.BufferGeometryUtils.mergeBufferGeometries([
@@ -173,8 +214,8 @@ function createOrientCube(camera, controls){
     new t.PlaneBufferGeometry(edgeSize, edgeSize).translate(-edgeSize / 2, edgeSize / 2, 0).rotateX(-Math.PI / 2),
   ]);
 
-  let mat = new t.MeshBasicMaterial({ color: colors.darkgrey });
-  let hoverMat = new t.MeshBasicMaterial({ color: colors.lightgrey });
+  let mat = new t.MeshBasicMaterial({ color: colors.blackish });
+  let hoverMat = new t.MeshBasicMaterial({ color: colors.grey });
 
   let sides = [
     new t.Vector3(1, 0, 0),
@@ -218,13 +259,13 @@ function createOrientCube(camera, controls){
 
   group.add(new t.LineSegments(
     new t.EdgesGeometry(new t.CubeGeometry(.5, .5, .5)),
-    new t.LineBasicMaterial({ color: colors.white })
+    new t.LineBasicMaterial({ color: colors.lightgrey })
   ));
 
   let raycaster = new t.Raycaster();
   let lastCast;
   let raycast = mouse => {
-    raycaster.setFromCamera(mouse, camera);
+    raycaster.setFromCamera(mouse, c());
     let x = raycaster.intersectObjects(parts);
     let [{ object: mesh } = {}] = x;
     if(lastCast)
