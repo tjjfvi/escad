@@ -2,14 +2,14 @@
 
 import React from "react";
 import state from "./State";
+import Pane from "./Pane";
 import { observer, observable } from "rhobo";
 import Icon from "@mdi/react";
 import { mdiArrowExpandVertical, mdiArrowCollapseVertical } from "@mdi/js";
 
-const Hierarchy = () => <div className="Hierarchy">
-  <h1>Hierarchy</h1>
-  <div><SuperNode hierarchy={state.hierarchy.use()()}/></div>
-</div>
+const Hierarchy = () => <Pane right name="Hierarchy">
+  <SuperNode hierarchy={state.hierarchy.use()()}/>
+</Pane>
 
 const SuperNode = x => observer(({ hierarchy, leafSub = false }) => {
   if(!hierarchy)

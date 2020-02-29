@@ -2,6 +2,7 @@
 
 import React from "react";
 import state from "./State";
+import Pane from "./Pane";
 import { observer, useObservable, useComputed } from "rhobo";
 
 const Parameters = () => {
@@ -9,8 +10,7 @@ const Parameters = () => {
   let def = state.paramDef();
   if(!def)
     return <></>;
-  return <div className="Parameters">
-    <h1>Parameters</h1>
+  return <Pane left name="Parameters">
     {def.map(d => {
       let { key, name = nameFromKey(key), type, desc = "", default: def } = d;
       return <div key={d.key} className="param">
@@ -28,7 +28,7 @@ const Parameters = () => {
         })()}
       </div>
     })}
-  </div>
+  </Pane>
 }
 
 const NumberParam = observer(({ value }) => {
