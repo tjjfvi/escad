@@ -38,6 +38,8 @@ const Preview = () => {
   camera.lookAt(0, 0, 0);
 
   const controls = new t.OrbitControls(camera, renderer.domElement);
+  controls.enableKeys = false;
+  controls.screenSpacePanning = true;
 
   const centerSphere = new t.Mesh(new t.SphereBufferGeometry(1, 100, 100), new t.MeshBasicMaterial({
     color: colors.grey,
