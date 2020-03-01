@@ -39,6 +39,14 @@ const Preview = () => {
 
   const controls = new t.OrbitControls(camera, renderer.domElement);
 
+  const centerSphere = new t.Mesh(new t.SphereBufferGeometry(1, 100, 100), new t.MeshBasicMaterial({
+    color: colors.grey,
+    transparent: true,
+    opacity: .5,
+    depthWrite: false,
+  }));
+  scene.add(centerSphere);
+
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = t.PCFShadowMap;
   renderer.setSize(window.innerWidth, window.innerHeight);
@@ -131,6 +139,8 @@ const Preview = () => {
     orthocamera.right = orthocamera.top * width / height;
     orthocamera.updateProjectionMatrix();
 
+    centerSphere.position.copy(controls.target);
+    centerSphere.scale.set(1, 1, 1).multiplyScalar(camera.position.clone().sub(controls.target).length() / 100)
 
     renderer.setSize(width, height);
     renderer.render(scene, ortho ? orthocamera : camera);
@@ -160,7 +170,28 @@ const Preview = () => {
     orientRenderer.domElement.addEventListener("contextmenu", e => {
       ortho = !ortho;
       e.preventDefault();
-      e.stopPropogation();
+    })
+    let raycaster = new t.Raycaster();
+    let mouse = new t.Vector2();
+    let sphere = new t.Mesh(new t.SphereBufferGeometry(1, 100, 100), new t.MeshNormalMaterial());
+    renderer.domElement.addEventListener("dblclick", e => {
+      let cam = ortho ? orthocamera : camera;
+      sphere.scale.set(1, 1, 1).multiplyScalar(cam.position.length() / 100)
+      let cel = renderer.domElement;
+      let rect = cel.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+      raycaster.setFromCamera(mouse, cam);
+      let hits = raycaster.intersectObjects([group, sphere], true);
+      for(let { object, point } of hits) {
+        if(object.type !== "Mesh")
+          continue;
+        if(object === sphere)
+          point.set(0, 0, 0);
+        camera.position.add(point).sub(controls.target);
+        controls.target = point;
+        break;
+      }
     })
     orientRenderer.domElement.classList.add("orient");
     render();
