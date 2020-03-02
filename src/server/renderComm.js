@@ -3,7 +3,7 @@ import { fork } from "child_process";
 import uuidv4 from "uuid/v4";
 import watch from "node-watch";
 import EE from "events";
-import { loadDir, loadFile } from "./config";
+import { loadDir, loadFile, artifactsDir } from "./config";
 
 const ee = new EE();
 
@@ -17,7 +17,7 @@ function reload(){
 
   childProcess = fork(require.resolve("./_render"));
 
-  childProcess.send(["init", loadFile, __dirname + "/../../artifacts/"]);
+  childProcess.send(["init", loadFile, artifactsDir]);
 
   run().then(({ shas, paramDef, hierarchy }) => {
     ee.emit("reload", { shas, paramDef, hierarchy });

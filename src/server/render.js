@@ -20,9 +20,9 @@ process.on("message", ([type, ...data]) => {
     return;
 
   [file, dir] = data;
-  Work.dir = dir + "trees/";
-  ProductManager.dir = dir + "products/";
-  ProductManager.exportDir = dir + "exports/";
+  Work.dir = dir + "/trees/";
+  ProductManager.dir = dir + "/products/";
+  ProductManager.exportDir = dir + "/exports/";
   let result;
   try {
     result = require(file).default;

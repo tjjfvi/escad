@@ -3,6 +3,7 @@ import "./bundler";
 
 import fs from "fs";
 import flatted from "flatted";
+import config from "./config";
 
 import express from "express";
 const app = express();
@@ -10,11 +11,10 @@ import expressWs from "express-ws";
 expressWs(app);
 
 app.use(express.static(__dirname + "/../client/"));
-app.use(express.static(__dirname + "/../../artifacts/"));
+app.use(express.static(config.artifactsDir));
 
 import uuidv4 from "uuid/v4";
 const serverId = uuidv4();
-import config from "./config";
 import * as render from "./renderComm";
 
 let curShas;
