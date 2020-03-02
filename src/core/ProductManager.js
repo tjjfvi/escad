@@ -5,40 +5,37 @@ const path = require("path");
 const Id = require("./Id");
 const b64 = require("./b64");
 const Product = require("./Product");
+const WeakCache = require("./WeakCache");
 
 class ProductManager {
 
   constructor(){
     this.dir = "";
     this.exportDir = "";
-    this.current = {};
+    this.cache = new WeakCache();
   }
 
   async lookup(sha){
     sha = b64(sha);
-    if(this.current[sha])
-      return this.current[sha];
-    return await (this.current[sha] = (async () => {
+    return this.cache.getAsync(sha, async () => {
       let buffer = await fs.readFile(path.join(this.dir, sha)).catch(() => null);
       if(!buffer) return null;
       let id = Id.get(b64(buffer.slice(0, 32)));
       let product = await Product.Registry.get(id).deserialize(buffer.slice(32));
-      delete this.current[sha];
-      product.meta.sha = sha;
       return product;
-    })())
+    })
   }
 
   async store(sha, promise){
     sha = b64(sha);
-    this.current[sha] = promise;
-    let product = await promise;
-    product.meta.sha = sha;
-    let serialized = product.serialize();
-    let initial = product.constructor.id.sha;
-    let buffer = Buffer.concat([initial, serialized], 32 + serialized.length);
-    await fs.writeFile(path.join(this.dir, sha), buffer);
-    delete this.current[sha];
+    return this.cache.setAsync(sha, async () => {
+      let product = await promise;
+      product.meta.sha = sha;
+      let serialized = product.serialize();
+      let initial = product.constructor.id.sha;
+      let buffer = Buffer.concat([initial, serialized], 32 + serialized.length);
+      await fs.writeFile(path.join(this.dir, sha), buffer);
+    });
   }
 
   async export(sha, format){

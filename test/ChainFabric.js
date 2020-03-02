@@ -52,7 +52,7 @@ module.exports = escad => {
     .translate(...[width, height].map(n => -Math.floor((n - or * 2) / translateAmount) * translateAmount / 2 - or), 0)(
       escad.meld(escad.range(0, translateAmount, width - or * 2).map(x =>
         escad.meld(escad.range(0, translateAmount, height - or * 2).map(y =>
-          escad.translate([ x + or, y + or, 0 ])((
+          escad.tY(y + or)((
             connectorStyle === 0 ?
               piece :
               connectorStyle === 2 ?
@@ -61,7 +61,7 @@ module.exports = escad => {
                   connector :
                   piece
           )())
-        ))
+        )).tX(x + or)
       ))
     )
 

@@ -20,7 +20,6 @@ class Id {
     this.shaB64 = b64(this.sha);
     if(!ids[this.shaB64])
       ids[this.shaB64] = this;
-    console.log(this);
     return ids[this.shaB64];
   }
 

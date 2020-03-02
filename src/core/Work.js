@@ -5,9 +5,10 @@ const ProductManager = require("./ProductManager");
 const Hierarchy = require("./Hierarchy");
 const Id = require("./Id");
 const b64 = require("./b64");
+const WeakCache = require("./WeakCache");
 const fs = require("fs-extra");
 
-const curDeserialize = {};
+const cache = new WeakCache();
 
 class Work {
 
@@ -27,6 +28,11 @@ class Work {
     Object.freeze(this);
     if(this === this.returnVal)
       fs.writeFile(Work.dir + this.shaB64, this.serialize());
+    if(!this.hierarchy) {
+      let cached = cache.get(this.returnVal.shaB64, () => this.returnVal);
+      if(!cached || !(cached instanceof Promise))
+        return cached;
+    }
     return this.returnVal;
   }
 
@@ -58,9 +64,7 @@ class Work {
 
   static async deserialize(sha){
     sha = b64(sha);
-    if(curDeserialize[sha])
-      return await curDeserialize[sha];
-    return curDeserialize[sha] = (async () => {
+    return await cache.getAsync(sha, async () => {
       let buf = await fs.readFile(Work.dir + sha);
       let id = buf.slice(0, 32);
       let cl = buf.readUInt16LE(32);
@@ -69,9 +73,8 @@ class Work {
       c = await Promise.all(c.map(s => Work.deserialize(b64(s))));
       let C = Work.Registry.get(Id.get(id));
       args = C.deserializeArgs(args);
-      delete curDeserialize[sha];
       return new C(c, null, ...args);
-    })();
+    });
   }
 
   transformArgs(...args){

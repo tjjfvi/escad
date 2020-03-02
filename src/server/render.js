@@ -6,6 +6,7 @@ const arrayish = require("../core/arrayish");
 const Hierarchy = require("../core/Hierarchy");
 const ProductManager = require("../core/ProductManager");
 const Work = require("../core/Work");
+const WeakCache = require("../core/WeakCache");
 
 let file, func, dir;
 
