@@ -14,13 +14,14 @@ class ProductManager {
   }
 
   async lookup(sha){
+    sha = sha.toString("hex");
     if(this.current[sha])
       return this.current[sha];
     return await (this.current[sha] = (async () => {
       let buffer = await fs.readFile(path.join(this.dir, sha)).catch(() => null);
       if(!buffer) return null;
-      let id = Id.get(buffer.toString("utf8", 0, 64));
-      let product = await Product.Registry.get(id).deserialize(buffer.slice(64));
+      let id = Id.get(buffer.toString("hex", 0, 32));
+      let product = await Product.Registry.get(id).deserialize(buffer.slice(32));
       delete this.current[sha];
       product.meta.sha = sha;
       return product;
@@ -28,12 +29,13 @@ class ProductManager {
   }
 
   async store(sha, promise){
+    sha = sha.toString("hex");
     this.current[sha] = promise;
     let product = await promise;
     product.meta.sha = sha;
     let serialized = product.serialize();
-    let initial = Buffer.from(product.constructor.id.sha);
-    let buffer = Buffer.concat([initial, serialized], initial.length + serialized.length);
+    let initial = product.constructor.id.sha;
+    let buffer = Buffer.concat([initial, serialized], 32 + serialized.length);
     await fs.writeFile(path.join(this.dir, sha), buffer);
     delete this.current[sha];
   }

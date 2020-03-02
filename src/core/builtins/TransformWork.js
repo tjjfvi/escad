@@ -8,11 +8,11 @@ class TransformWork extends PointMapWork {
   static id = new Id("TransformWork", __filename);
 
   serializeArgs(){
-    return this.args[1].serialize().toString("base64");
+    return this.args[1].serialize();
   }
 
-  static deserializeArgs(arg){
-    let m = Matrix4.deserialize(Buffer.from(arg, "base64"));
+  static deserializeArgs(buf){
+    let m = Matrix4.deserialize(buf);
     return [v => m.multiplyVector(v), m]
   }
 

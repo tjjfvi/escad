@@ -20,11 +20,12 @@ class Work {
     this.hierarchy = hierarchy;
     this.args = this.transformArgs(...args);
     this.children = this.transformChildren(children.map(c => c.isComponent ? c() : c));
-    this.sha = hash.json.hex(this.serialize());
-    this.hierarchy = this.hierarchy && this.hierarchy.clone(this.sha);
+    this.sha = hash(this.serialize());
+    this.shaHex = this.sha.toString("hex");
+    this.hierarchy = this.hierarchy && this.hierarchy.clone(this.shaHex);
     Object.freeze(this);
     if(this === this.returnVal)
-      fs.writeFile(Work.dir + this.sha, JSON.stringify(this.serialize()));
+      fs.writeFile(Work.dir + this.shaHex, this.serialize());
     return this.returnVal;
   }
 
@@ -33,29 +34,38 @@ class Work {
   }
 
   serializeArgs(){
-    return this.args;
+    return Buffer.from(JSON.stringify(this.args));
   }
 
-  static deserializeArgs(args){
-    return args;
+  static deserializeArgs(buf){
+    return JSON.parse(buf.toString("utf8"));
   }
 
   serialize(){
     if(this.constructor.id === null)
       throw new Error("Must supply ID to class " + this.constructor.name);
-    return [
+    let childCountBuf = Buffer.alloc(2);
+    childCountBuf.writeUInt16LE(this.children.length, 0);
+    let argsBuf = this.serializeArgs();
+    return Buffer.concat([
       this.constructor.id.sha,
-      this.children.map(c => c.sha),
-      this.serializeArgs(),
-    ];
+      childCountBuf,
+      ...this.children.map(c => c.sha),
+      argsBuf,
+    ], 32 + 2 + 32 * this.children.length + argsBuf.length);
   }
 
   static async deserialize(sha){
+    sha = sha.toString("hex");
     if(curDeserialize[sha])
       return await curDeserialize[sha];
     return curDeserialize[sha] = (async () => {
-      let [id, c, args] = JSON.parse(await fs.readFile(Work.dir + sha, "utf8"));
-      c = await Promise.all(c.map(s => Work.deserialize(s)));
+      let buf = await fs.readFile(Work.dir + sha);
+      let id = buf.slice(0, 32);
+      let cl = buf.readUInt16LE(32);
+      let c = Array(cl).fill().map((_, i) => buf.slice(32 + 2 + i * 32, 32 + 2 + i * 32 + 32));
+      let args = buf.slice(32 + 2 + cl * 32);
+      c = await Promise.all(c.map(s => Work.deserialize(s.toString("hex"))));
       let C = Work.Registry.get(Id.get(id));
       args = C.deserializeArgs(args);
       delete curDeserialize[sha];

@@ -15,15 +15,16 @@ class Id {
     let packageJsonPath = path.normalize(result.path);
     this.filename = path.relative(packageJsonPath, filename);
     this.name = name;
-    this.sha = hash.json.hex(this);
-    if(!ids[this.sha])
-      ids[this.sha] = this;
-    return ids[this.sha];
+    this.sha = hash.json(this);
+    this.shaHex = this.sha.toString("hex");
+    if(!ids[this.shaHex])
+      ids[this.shaHex] = this;
+    return ids[this.shaHex];
   }
 
 
   static get(sha){
-    return ids[sha];
+    return ids[sha.toString("hex")];
   }
 
 }

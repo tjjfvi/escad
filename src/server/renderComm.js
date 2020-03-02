@@ -68,6 +68,7 @@ async function exp(sha, format){
 
 async function proc(sha){
   let id = uuidv4();
+  console.log("!!!", new Error())
 
   childProcess.send(["process", id, sha]);
 

@@ -63,7 +63,7 @@ async function run(id, params){
     if(!(x instanceof escad.Work))
       throw new Error("Invalid return type from exported function")
     await x.process(true);
-    return x.sha;
+    return x.shaHex;
   })].flat()));
   console.timeEnd("Render")
   process.send(["finish", id, shas, hierarchy, paramDef])
