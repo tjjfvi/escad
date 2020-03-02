@@ -1,18 +1,30 @@
+// @flow
 /* global WeakRef, FinalizationRegistry, FinalizationGroup */
 
-class WeakCacheBasic {
+declare class WeakRef<V> {
+  constructor(V): WeakRef<V>;
+  deref(): void | V;
+}
 
-    #asyncCache = new Map();
+type F<K, V> = K=>V
+class WeakCacheBasic<K, V> {
 
-    _get(){
+    #asyncCache: Map<K, Promise<V>>;
+    
+    constructor(){
+      this.#asyncCache = new Map<K, Promise<V>>();
+    }
+
+    _get(key: K){
+      key;
       return;
     }
 
-    get(key, func){
+    get(key: K, func: F<K, V>){
       return this._get(key) || this.set(key, func);
     }
 
-    async getAsync(key, func){
+    async getAsync(key: K, func: F<K, V>){
       let val = this._get(key);
       if(val) return val;
       if(this.#asyncCache.has(key))
@@ -20,12 +32,12 @@ class WeakCacheBasic {
       return await this.setAsync(key, func);
     }
 
-    set(key, func){
+    set(key: K, func: F<K, V>){
       return func(key);
     }
 
-    async setAsync(key, func){
-      let prom = (async () => {
+    async setAsync(key: K, func: F<K, V>){
+      let prom = (async (): Promise<V> => {
         let val = await func(key);
         this.#asyncCache.delete(key);
         this.set(key, () => val);
@@ -40,17 +52,20 @@ class WeakCacheBasic {
 let WeakCache;
 
 const FinReg = (
+  // $FlowFixMe
   typeof FinalizationRegistry !== "undefined" ?
     FinalizationRegistry :
+    // $FlowFixMe
     typeof FinalizationGroup !== "undefined" ?
       FinalizationGroup :
       null
 );
 
-if(typeof WeakRef !== "undefined" && FinReg)
-  WeakCache = class extends WeakCacheBasic {
+// $FlowFixMe
+if(WeakRef in global && FinReg)
+  WeakCache = class WeakCache<K, V> extends WeakCacheBasic<K, V> {
 
-    #cache = new Map();
+    #cache: Map<K, WeakRef<V>> = new Map();
     #cleanup;
 
     constructor(){
@@ -58,7 +73,7 @@ if(typeof WeakRef !== "undefined" && FinReg)
       this.#cleanup = new FinReg(this.#finalize);
     }
 
-    _get(key){
+    _get(key: K){
       let ref = this.#cache.get(key);
       if(!ref)
         return;
@@ -71,10 +86,10 @@ if(typeof WeakRef !== "undefined" && FinReg)
         this.#cache.delete(key);
     }
 
-    set(key, func){
+    set(key: K, func: F<K, V>){
       const fresh = func(key);
       if(fresh && typeof fresh === "object") {
-        this.#cache.set(key, new WeakRef(fresh));
+        this.#cache.set(key, new WeakRef<V>(fresh));
         this.#cleanup.register(fresh, key);
       }
       return fresh;
