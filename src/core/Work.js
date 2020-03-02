@@ -4,6 +4,7 @@ const Registry = require("./Registry");
 const ProductManager = require("./ProductManager");
 const Hierarchy = require("./Hierarchy");
 const Id = require("./Id");
+const b64 = require("./b64");
 const fs = require("fs-extra");
 
 const curDeserialize = {};
@@ -21,11 +22,11 @@ class Work {
     this.args = this.transformArgs(...args);
     this.children = this.transformChildren(children.map(c => c.isComponent ? c() : c));
     this.sha = hash(this.serialize());
-    this.shaHex = this.sha.toString("hex");
-    this.hierarchy = this.hierarchy && this.hierarchy.clone(this.shaHex);
+    this.shaB64 = b64(this.sha);
+    this.hierarchy = this.hierarchy && this.hierarchy.clone(this.shaB64);
     Object.freeze(this);
     if(this === this.returnVal)
-      fs.writeFile(Work.dir + this.shaHex, this.serialize());
+      fs.writeFile(Work.dir + this.shaB64, this.serialize());
     return this.returnVal;
   }
 
@@ -56,7 +57,7 @@ class Work {
   }
 
   static async deserialize(sha){
-    sha = sha.toString("hex");
+    sha = b64(sha);
     if(curDeserialize[sha])
       return await curDeserialize[sha];
     return curDeserialize[sha] = (async () => {
@@ -65,7 +66,7 @@ class Work {
       let cl = buf.readUInt16LE(32);
       let c = Array(cl).fill().map((_, i) => buf.slice(32 + 2 + i * 32, 32 + 2 + i * 32 + 32));
       let args = buf.slice(32 + 2 + cl * 32);
-      c = await Promise.all(c.map(s => Work.deserialize(s.toString("hex"))));
+      c = await Promise.all(c.map(s => Work.deserialize(b64(s))));
       let C = Work.Registry.get(Id.get(id));
       args = C.deserializeArgs(args);
       delete curDeserialize[sha];

@@ -3,6 +3,7 @@ const fs = require("fs-extra");
 const path = require("path");
 
 const Id = require("./Id");
+const b64 = require("./b64");
 const Product = require("./Product");
 
 class ProductManager {
@@ -14,13 +15,13 @@ class ProductManager {
   }
 
   async lookup(sha){
-    sha = sha.toString("hex");
+    sha = b64(sha);
     if(this.current[sha])
       return this.current[sha];
     return await (this.current[sha] = (async () => {
       let buffer = await fs.readFile(path.join(this.dir, sha)).catch(() => null);
       if(!buffer) return null;
-      let id = Id.get(buffer.toString("hex", 0, 32));
+      let id = Id.get(b64(buffer.slice(0, 32)));
       let product = await Product.Registry.get(id).deserialize(buffer.slice(32));
       delete this.current[sha];
       product.meta.sha = sha;
@@ -29,7 +30,7 @@ class ProductManager {
   }
 
   async store(sha, promise){
-    sha = sha.toString("hex");
+    sha = b64(sha);
     this.current[sha] = promise;
     let product = await promise;
     product.meta.sha = sha;
