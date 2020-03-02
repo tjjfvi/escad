@@ -21,22 +21,21 @@ class Work {
     this.returnVal = this;
     this.hierarchy = hierarchy;
     this.args = this.transformArgs(...args);
-    this.children = this.transformChildren(children.map(c => c.isComponent ? c() : c));
+    this.children = this.transformChildren(children.map(c => c.isComponent ? c().clone(null) : c.clone(null)));
     this.sha = hash(this.serialize());
     this.shaB64 = b64(this.sha);
     this.hierarchy = this.hierarchy && this.hierarchy.clone(this.shaB64);
     Object.freeze(this);
     if(this === this.returnVal)
       fs.writeFile(Work.dir + this.shaB64, this.serialize());
-    if(!this.hierarchy) {
-      let cached = cache.get(this.returnVal.shaB64, () => this.returnVal);
-      if(!cached || !(cached instanceof Promise))
-        return cached;
-    }
+    if(!this.hierarchy)
+      return cache.get(this.returnVal.shaB64, () => this.returnVal);
     return this.returnVal;
   }
 
   clone(hierarchy = this.hierarchy){
+    if(!hierarchy && !this.hierarchy)
+      return this;
     return new this.constructor(this.children, hierarchy, ...this.args);
   }
 
