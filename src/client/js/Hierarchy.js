@@ -55,8 +55,8 @@ const Node = x => observer(({ name, important, shas, children, close, collapse }
         (close() ? "closed" : "") +
         (children.length ? "" : " leaf")
       } onClick={() => close.toggle()}></div>
-      <span onClick={() => {
-        state.shas(shas);
+      <span onClick={e => {
+        state.shas(e.ctrlKey ? state.shas().concat(shas) : shas);
       }}>{name}</span>
       {collapse && <div className="collapse" onClick={() => collapse.toggle()}>
         <Icon
