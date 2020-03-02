@@ -1,5 +1,5 @@
 
-import { operators, Component, arrayish, Hierarchy } from ".";
+import { operators, Element, arrayish, Hierarchy } from ".";
 import { _union, _diff } from "./csg";
 
 let _udArgs = (...uargs) => {
@@ -41,8 +41,8 @@ let _udMeld = (...uargs) => {
 
 
 operators.unionDifference =
-operators.unionDiff = (...args) => new Component(_unionDiff(...args));
+operators.unionDiff = (...args) => new Element(_unionDiff(...args));
 
 operators.unionDifferenceMeld =
 operators.unionDiffMeld =
-operators.udMeld = (...args) => new Component(_udMeld(...args));
+operators.udMeld = (...args) => new Element(_udMeld(...args));

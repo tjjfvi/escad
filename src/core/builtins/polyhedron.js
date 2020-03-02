@@ -1,5 +1,5 @@
 
-import { Work, Component, Hierarchy, operators, Id } from ".";
+import { Work, Element, Hierarchy, operators, Id } from ".";
 import { Mesh, Face } from "./Mesh";
 import { Vector3 } from "./Vector3";
 
@@ -20,5 +20,5 @@ class PolyhedronWork extends Work {
 Work.Registry.register(PolyhedronWork);
 
 operators.polyhedron = (points, faces) =>
-  new Component(new PolyhedronWork([], new Hierarchy("polyhedron"), points, faces))
+  new Element(new PolyhedronWork([], new Hierarchy("polyhedron"), points, faces))
 

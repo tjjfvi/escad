@@ -1,6 +1,6 @@
 // @flow
 
-import Component from "../Component";
+import Element from "../Element";
 import Product from "../Product";
 import ProductManager from "../ProductManager";
 import Work from "../Work";
@@ -9,7 +9,7 @@ import chainables from "../chainables";
 import operators from "../operators";
 import arrayish from "../arrayish";
 import Id from "../Id";
-export { Component, Product, ProductManager, Work, Hierarchy, chainables, operators, arrayish, Id };
+export { Element, Product, ProductManager, Work, Hierarchy, chainables, operators, arrayish, Id };
 
 // @create-index {"mode":"*"}
 

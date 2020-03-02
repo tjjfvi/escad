@@ -1,5 +1,5 @@
 
-import { Work, Product, operators, chainables, Component, Hierarchy, arrayish, Id } from ".";
+import { Work, Product, operators, chainables, Element, Hierarchy, arrayish, Id } from ".";
 import { Mesh, Face } from "./Mesh";
 import { Vector3 } from "./Vector3";
 import CSG from "csg";
@@ -226,13 +226,13 @@ let _intersect = (...oargs) => {
   ], 0);
 }
 
-operators.union = (...args) => new Component(_union(...args));
-chainables.add = (comp, ...args) => comp(_union(comp(), ...args));
+operators.union = (...args) => new Element(_union(...args));
+chainables.add = (el, ...args) => el(_union(el(), ...args));
 
-operators.diff = operators.difference = (...args) => new Component(_diff(...args));
-chainables.sub = chainables.subtract = (comp, ...args) => comp(_diff(comp(), ...args));
+operators.diff = operators.difference = (...args) => new Element(_diff(...args));
+chainables.sub = chainables.subtract = (el, ...args) => el(_diff(el(), ...args));
 
-operators.intersection = (...args) => new Component(_intersect(...args));
-chainables.intersect = (comp, ...args) => comp(_intersect(comp(), ...args));
+operators.intersection = (...args) => new Element(_intersect(...args));
+chainables.intersect = (el, ...args) => el(_intersect(el(), ...args));
 
 export { MeshToCsgWork, CsgToMeshWork, CSGWrapper, CsgWork, _csg, _union, _diff, _intersect };

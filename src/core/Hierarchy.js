@@ -7,7 +7,7 @@ class Hierarchy {
   static apply = Symbol("Hierarchy.apply");
 
   constructor(name, children = [], important = false, shas = []){
-    if(children.isComponent)
+    if(children.isElement)
       return new Hierarchy(name, children.tree, important, shas);
     this.name = name;
     this.important = important;
@@ -21,7 +21,7 @@ class Hierarchy {
               v :
               v && (Hierarchy.symbol in v) ?
                 v[Hierarchy.symbol] :
-                v && v.isComponent ?
+                v && v.isElement ?
                   f(v.tree) :
                   arrayish.isArrayish(v) ?
                     new Hierarchy(k, v, false) :

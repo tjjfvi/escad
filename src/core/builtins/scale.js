@@ -19,5 +19,5 @@ let scale = (_x, _y, _z) => {
   return tree => new TransformWork([tree], null, matrix);
 };
 
-chainables.scale = (comp, ...args) => comp(operatorMap("scale", comp(), scale(...args)));
+chainables.scale = (el, ...args) => el(operatorMap("scale", el(), scale(...args)));
 operators.scale = (...args) => (...tree) => operatorMap("scale", tree, scale(...args));

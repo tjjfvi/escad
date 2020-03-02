@@ -1,7 +1,7 @@
 
-const isArrayish = obj => obj && (obj instanceof Array || obj.constructor === Object || obj.isComponent);
+const isArrayish = obj => obj && (obj instanceof Array || obj.constructor === Object || obj.isElement);
 const map = (obj, func) => {
-  if(obj && obj.isComponent)
+  if(obj && obj.isElement)
     return map(obj(), func);
   if(!isArrayish(obj))
     return func(obj);
@@ -17,7 +17,7 @@ const mapDeep = (obj, func) =>
   map(obj, x => isArrayish(x) ? mapDeep(x, func) : func(x));
 
 const toArray = (obj, func, flat = false) => {
-  if(obj && obj.isComponent)
+  if(obj && obj.isElement)
     return toArray(obj(), func, flat);
   if(!isArrayish(obj))
     return [func ? func(obj) : obj];
@@ -34,7 +34,7 @@ const toArrayDeep = (obj, func, flat = true, keys = []) =>
       obj
 
 const length = obj =>
-  obj && obj.isComponent ?
+  obj && obj.isElement ?
     length(obj()) :
     !isArrayish(obj) ?
       1 :
@@ -43,7 +43,7 @@ const length = obj =>
         Object.keys(obj).length;
 
 const element = (obj, ind) =>
-  obj && obj.isComponent ?
+  obj && obj.isElement ?
     element(obj(), ind) :
     !isArrayish(obj) ?
       obj :

@@ -40,5 +40,5 @@ let rotate = (_x, _y, _z, opts) => {
   return tree => new TransformWork([tree], null, matrix);
 };
 
-chainables.rotate = (comp, ...args) => comp(operatorMap("rotate", comp(), rotate(...args)));
+chainables.rotate = (el, ...args) => el(operatorMap("rotate", el(), rotate(...args)));
 operators.rotate = (...args) => (...tree) => operatorMap("rotate", tree, rotate(...args));

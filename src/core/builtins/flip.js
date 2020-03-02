@@ -1,5 +1,5 @@
 
-import { Work, arrayish, operators, Component, chainables, Id } from ".";
+import { Work, arrayish, operators, Element, chainables, Id } from ".";
 import { operatorMap } from "./operatorMap";
 import { Mesh } from "./Mesh";
 import { Face } from "./Face";
@@ -35,7 +35,7 @@ Work.Registry.register(FlipWork);
 
 const _flip = (...args) => new FlipWork(arrayish.toArrayDeep(args), null);
 
-operators.flip = (...args) => new Component(operatorMap("flip", args, _flip));
-chainables.flip = (comp, ...args) => comp(operatorMap("flip", [comp(), ...args], _flip));
+operators.flip = (...args) => new Element(operatorMap("flip", args, _flip));
+chainables.flip = (el, ...args) => el(operatorMap("flip", [el(), ...args], _flip));
 
 export { FlipWork };

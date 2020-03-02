@@ -19,11 +19,11 @@ let translate = (_x, _y, _z) => {
   return tree => new TransformWork([tree], null, matrix);
 };
 
-chainables.translate = (comp, ...args) => comp(operatorMap("translate", comp(), translate(...args)));
+chainables.translate = (el, ...args) => el(operatorMap("translate", el(), translate(...args)));
 operators.translate = (...args) => (...tree) => operatorMap("translate", tree, translate(...args));
 
 "XYZ".split("").map(L => {
   let l = L.toLowerCase();
-  chainables["t" + L] = (comp, n) => chainables.translate(comp, { [l]: n });
+  chainables["t" + L] = (el, n) => chainables.translate(el, { [l]: n });
   operators["t" + L] = n => operators.translate({ [l]: n });
 })

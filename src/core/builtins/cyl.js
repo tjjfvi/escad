@@ -1,5 +1,5 @@
 
-import { Work, Component, Hierarchy, operators, Id } from ".";
+import { Work, Element, Hierarchy, operators, Id } from ".";
 import { Mesh, Face } from "./Mesh";
 import { Vector3 } from "./Vector3";
 import { _diff } from "./csg";
@@ -56,8 +56,8 @@ operators.cyl = operators.cylinder = operators.hollowCyl = operators.hollowCylin
 }) => {
   let oc = new CylWork([], new Hierarchy("cyl"), r1, r2, height, sides, o1, o2, c);
   if(!i1 && !i2)
-    return new Component(oc)
+    return new Element(oc)
   let ic = new CylWork([], new Hierarchy("cyl-inner"), i1, i2, height, sides, io1, io2, c);
-  return new Component(ud ? [oc, ic] : _diff(oc, ic));
+  return new Element(ud ? [oc, ic] : _diff(oc, ic));
 }
 

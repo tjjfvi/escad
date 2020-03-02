@@ -21,7 +21,7 @@ class Work {
     this.returnVal = this;
     this.hierarchy = hierarchy;
     this.args = this.transformArgs(...args);
-    this.children = this.transformChildren(children.map(c => c.isComponent ? c().clone(null) : c.clone(null)));
+    this.children = this.transformChildren(children.map(c => c.isElement ? c().clone(null) : c.clone(null)));
     this.sha = hash(this.serialize());
     this.shaB64 = b64(this.sha);
     this.hierarchy = this.hierarchy && this.hierarchy.clone(this.shaB64);

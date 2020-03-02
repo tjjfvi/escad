@@ -1,5 +1,5 @@
 
-import { Work, operators, Component, Hierarchy, arrayish, Id } from ".";
+import { Work, operators, Element, Hierarchy, arrayish, Id } from ".";
 import { Mesh } from "./Mesh";
 
 class MeldWork extends Work {
@@ -17,7 +17,7 @@ Work.Registry.register(MeldWork);
 const _meld = (...args) => new MeldWork(arrayish.toArrayDeep(args), new Hierarchy("meld", args));
 
 operators.meld = (...args) =>
-  new Component(_meld(...args));
+  new Element(_meld(...args));
 
 export { _meld, MeldWork };
 

@@ -1,7 +1,7 @@
 
 import chainables from "./chainables";
 
-class Component {
+class Element {
 
   constructor(tree){
     let that = Object.setPrototypeOf((...args) => {
@@ -12,18 +12,18 @@ class Component {
     }, proto);
 
     that.tree = tree;
-    that.isComponent = true;
+    that.isElement = true;
 
     return that;
   }
 
   clone(){
-    return new Component(this.tree);
+    return new Element(this.tree);
   }
 
 }
 
-const proto = new Proxy(Component.prototype, {
+const proto = new Proxy(Element.prototype, {
   get: (target, prop) =>
     prop in target ?
       target[prop] :
@@ -34,4 +34,4 @@ const proto = new Proxy(Component.prototype, {
         undefined
 });
 
-export default Component;
+export default Element;
