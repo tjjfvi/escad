@@ -3,6 +3,7 @@ const hash = require("./hash");
 const Registry = require("./Registry");
 const ProductManager = require("./ProductManager");
 const Hierarchy = require("./Hierarchy");
+const Id = require("./Id");
 const fs = require("fs-extra");
 
 const curDeserialize = {};
@@ -19,7 +20,7 @@ class Work {
     this.hierarchy = hierarchy;
     this.args = this.transformArgs(...args);
     this.children = this.transformChildren(children.map(c => c.isComponent ? c() : c));
-    this.sha = hash(this.serialize());
+    this.sha = hash.json.hex(this.serialize());
     this.hierarchy = this.hierarchy && this.hierarchy.clone(this.sha);
     Object.freeze(this);
     if(this === this.returnVal)
@@ -43,7 +44,7 @@ class Work {
     if(this.constructor.id === null)
       throw new Error("Must supply ID to class " + this.constructor.name);
     return [
-      this.constructor.id,
+      this.constructor.id.sha,
       this.children.map(c => c.sha),
       this.serializeArgs(),
     ];
@@ -55,7 +56,7 @@ class Work {
     return curDeserialize[sha] = (async () => {
       let [id, c, args] = JSON.parse(await fs.readFile(Work.dir + sha, "utf8"));
       c = await Promise.all(c.map(s => Work.deserialize(s)));
-      let C = Work.Registry.get(id);
+      let C = Work.Registry.get(Id.get(id));
       args = C.deserializeArgs(args);
       delete curDeserialize[sha];
       return new C(c, null, ...args);

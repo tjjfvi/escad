@@ -1,10 +1,10 @@
 
-const { Product } = require(".");
+const { Product, Id } = require(".");
 const { Face, Vector3 } = require("./Face");
 
 class Mesh extends Product {
 
-  static id = "Mesh";
+  static id = new Id("Mesh", __filename);
 
   construct(faces){
     this.faces = faces;

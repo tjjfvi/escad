@@ -1,11 +1,11 @@
 
-const { Product } = require(".");
+const { Product, Id } = require(".");
 const { Vector3 } = require("./Vector3");
 const { Plane } = require("./Plane");
 
 class Face extends Product {
 
-  static id = "Face";
+  static id = new Id("Face", __filename);
 
   construct(points){
     if(points.length !== 3)

@@ -1,11 +1,11 @@
 
-const { Work, Component, Hierarchy, operators } = require(".");
+const { Work, Component, Hierarchy, operators, Id } = require(".");
 const { Mesh, Face, Vector3 } = require("./Mesh");
 const { _diff } = require("./csg");
 
 class SphereWork extends Work {
 
-  static id="SphereWork";
+  static id = new Id("SphereWork", __filename);
 
   execute(){
     let [r, slices, stacks] = this.args;

@@ -1,10 +1,10 @@
 
-const { Work } = require(".");
+const { Work, Id } = require(".");
 const { Mesh, Face, Vector3 } = require("./Mesh");
 
 class PointMapWork extends Work {
 
-  static id="PointMapWork";
+  static id = new Id("PointMapWork", __filename);
 
   execute(inputs){
     let input = inputs[0];

@@ -1,11 +1,11 @@
 
-const { Work, Product, operators, chainables, Component, Hierarchy, arrayish } = require(".");
+const { Work, Product, operators, chainables, Component, Hierarchy, arrayish, Id } = require(".");
 const { Mesh, Face, Vector3 } = require("./Mesh");
 const CSG = require("csg");
 
 class CSGWrapper extends Product {
 
-  static id = "CSGWrapper";
+  static id = new Id("CSGWrapper", __filename);
 
   construct(node){
     this.node = node;
@@ -86,7 +86,7 @@ class CSGWrapper extends Product {
 
 class MeshToCsgWork extends Work {
 
-  static id="MeshToCsgWork";
+  static id = new Id("MeshToCsgWork", __filename);
 
   execute([input]){
     let polygons = input.faces.map(f => new CSG.Polygon(f.points.map(v => new CSG.Vertex(new CSG.Vector(v), []))));
@@ -106,7 +106,7 @@ class MeshToCsgWork extends Work {
 
 class CsgToMeshWork extends Work {
 
-  static id="CsgToMeshWork";
+  static id = new Id("CsgToMeshWork", __filename);
 
   execute([input]){
     let faces = [];
@@ -133,7 +133,7 @@ class CsgToMeshWork extends Work {
 
 class CsgWork extends Work {
 
-  static id = "CsgWork";
+  static id = new Id("CsgWork", __filename);
 
   execute(inputs){
     let nodes = inputs.map(i => new CSG.Node(i.node.allPolygons()));

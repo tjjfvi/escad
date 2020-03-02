@@ -1,10 +1,10 @@
 
-const { Work, operators, Component, Hierarchy, arrayish } = require(".");
+const { Work, operators, Component, Hierarchy, arrayish, Id } = require(".");
 const { Mesh } = require("./Mesh");
 
 class MeldWork extends Work {
 
-  static id="MeldWork";
+  static id = new Id("MeldWork", __filename);
 
   execute(inputs){
     return new Mesh(inputs.flatMap(i => i.faces));

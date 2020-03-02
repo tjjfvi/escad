@@ -2,6 +2,7 @@
 const fs = require("fs-extra");
 const path = require("path");
 
+const Id = require("./Id");
 const Product = require("./Product");
 
 class ProductManager {
@@ -18,14 +19,8 @@ class ProductManager {
     return await (this.current[sha] = (async () => {
       let buffer = await fs.readFile(path.join(this.dir, sha)).catch(() => null);
       if(!buffer) return null;
-      let split;
-      for(let i = 0; i < buffer.length && !split; i++)
-        if(buffer[i] === 0)
-          split = i;
-      if(!split)
-        return null;
-      let key = JSON.parse(buffer.toString("utf8", 0, split));
-      let product = await Product.Registry.get(key).deserialize(buffer.slice(split + 1));
+      let id = Id.get(buffer.toString("utf8", 0, 64));
+      let product = await Product.Registry.get(id).deserialize(buffer.slice(64));
       delete this.current[sha];
       product.meta.sha = sha;
       return product;
@@ -37,8 +32,8 @@ class ProductManager {
     let product = await promise;
     product.meta.sha = sha;
     let serialized = product.serialize();
-    let initial = Buffer.from(JSON.stringify(product.constructor.id));
-    let buffer = Buffer.concat([initial, Buffer.from([0]), serialized], initial.length + serialized.length + 1);
+    let initial = Buffer.from(product.constructor.id.sha);
+    let buffer = Buffer.concat([initial, serialized], initial.length + serialized.length);
     await fs.writeFile(path.join(this.dir, sha), buffer);
     delete this.current[sha];
   }

@@ -1,5 +1,5 @@
 
-const { Work, Component, Hierarchy, operators } = require(".");
+const { Work, Component, Hierarchy, operators, Id } = require(".");
 const { Mesh, Face, Vector3 } = require("./Mesh");
 const { _diff } = require("./csg");
 
@@ -7,7 +7,7 @@ const { tau } = Math;
 
 class CylWork extends Work {
 
-  static id="CylWork";
+  static id = new Id("CylWork", __filename);
 
   execute(){
     let [r1, r2, height, sides, o1, o2, c] = this.args;

@@ -1,11 +1,11 @@
 
-const { Work, arrayish, operators, Component, chainables } = require(".");
+const { Work, arrayish, operators, Component, chainables, Id } = require(".");
 const { operatorMap } = require("./operatorMap");
 const { Mesh, Face } = require("./Mesh");
 
 class FlipWork extends Work {
 
-  static id="FlipWork";
+  static id = new Id("FlipWork", __filename);
 
   execute(inputs){
     let input = inputs[0];

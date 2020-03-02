@@ -1,6 +1,6 @@
 /* eslint-disable array-element-newline */
 
-const { Product } = require(".");
+const { Product, Id } = require(".");
 const { Vector3 } = require("./Vector3");
 
 const c = Math.cos;
@@ -9,7 +9,7 @@ const S = x => -Math.sin(x);
 
 class Matrix4 extends Product {
 
-  static id = "Matrix4";
+  static id = new Id("Matrix4", __filename);
 
   construct(vs){
     if(vs.length !== 16)

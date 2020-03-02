@@ -1,4 +1,6 @@
 
+const Id = require("./Id");
+
 class Registry {
 
   constructor(name){
@@ -6,16 +8,20 @@ class Registry {
     this._map = new Map();
   }
 
-  register(entry, key = entry.id){
-    if(this._map.has(key))
-      throw new Error(`Key Conflict: ${JSON.stringify(key)}`);
-    this._map.set(key, entry);
+  register(entry, id = entry.id){
+    if(!(id instanceof Id))
+      throw new Error("Registry.register was given invalid key: " + id);
+    if(this._map.has(id))
+      throw new Error(`Key Conflict: ${id.sha}`);
+    this._map.set(id, entry);
   }
 
-  get(key){
-    if(!this._map.has(key))
-      throw new Error(`Missing Entry: ${JSON.stringify(key)}`);
-    return this._map.get(key);
+  get(id){
+    if(!(id instanceof Id))
+      throw new Error("Invalid key: " + id);
+    if(!this._map.has(id))
+      throw new Error(`Missing Entry: ${id.sha}`);
+    return this._map.get(id);
   }
 
 }

@@ -203,7 +203,7 @@ const Preview = () => {
 export default Preview;
 
 function processMesh(buf){
-  let arr = new Float32Array(buf.slice(7));
+  let arr = new Float32Array(buf.slice(64));
   let attr = new t.BufferAttribute(arr, 3);
   let geo = new t.BufferGeometry();
   geo.setAttribute("position", attr);

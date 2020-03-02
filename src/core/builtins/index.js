@@ -7,6 +7,7 @@ const Hierarchy = require("../Hierarchy");
 const chainables = require("../chainables");
 const operators = require("../operators");
 const arrayish = require("../arrayish");
+const Id = require("../Id");
 
 module.exports = {
   Component,
@@ -17,6 +18,7 @@ module.exports = {
   chainables,
   operators,
   arrayish,
+  Id,
 };
 
 Object.assign(

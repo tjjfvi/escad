@@ -1,10 +1,10 @@
 
-const { Work, Component, Hierarchy, operators } = require(".");
+const { Work, Component, Hierarchy, operators, Id } = require(".");
 const { Mesh, Face, Vector3 } = require("./Mesh");
 
 class CubeWork extends Work {
 
-  static id="CubeWork";
+  static id = new Id("CubeWork", __filename);
 
   execute(){
     let [x, y, z, cs, func = x => x] = this.args;

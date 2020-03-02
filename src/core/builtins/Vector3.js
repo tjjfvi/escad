@@ -1,9 +1,9 @@
 
-const { Product } = require(".");
+const { Product, Id } = require(".");
 
 class Vector3 extends Product {
 
-  static id = "Vector3";
+  static id = new Id("Vector3", __filename);
 
   construct(x = 0, y = 0, z = 0){
     if(typeof x === "object") {

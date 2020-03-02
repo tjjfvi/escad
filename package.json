@@ -33,6 +33,7 @@
     "fs-extra": "^8.1.0",
     "node-hook": "^1.0.0",
     "node-watch": "^0.6.3",
+    "read-pkg-up": "^7.0.1",
     "stylus": "^0.54.7",
     "uuid": "^3.4.0",
     "watchify": "^3.11.1"

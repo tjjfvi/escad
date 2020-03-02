@@ -1,11 +1,11 @@
 
-const { Work } = require(".");
+const { Work, Id } = require(".");
 const { PointMapWork } = require("./PointMapWork");
 const { Matrix4 } = require("./Matrix4");
 
 class TransformWork extends PointMapWork {
 
-  static id="TransformWork";
+  static id = new Id("TransformWork", __filename);
 
   serializeArgs(){
     return this.args[1].serialize().toString("base64");
