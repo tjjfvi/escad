@@ -16,7 +16,7 @@ const colors = {
 
 import React from "react";
 import state from "./State";
-import three from "three";
+const three = require("three");
 console.log(three);
 window.THREE = three;
 require("three/examples/js/controls/OrbitControls");

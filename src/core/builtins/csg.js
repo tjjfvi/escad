@@ -1,6 +1,7 @@
 
 import { Work, Product, operators, chainables, Element, Hierarchy, arrayish, Id } from ".";
-import { Mesh, Face } from "./Mesh";
+import { Mesh } from "./Mesh";
+import { Face } from "./Face";
 import { Vector3 } from "./Vector3";
 import CSG from "csg";
 

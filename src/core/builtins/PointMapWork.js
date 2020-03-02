@@ -1,6 +1,7 @@
 
 import { Work, Id } from ".";
-import { Mesh, Face } from "./Mesh";
+import { Mesh } from "./Mesh";
+import { Face } from "./Face";
 import { Vector3 } from "./Vector3";
 
 class PointMapWork extends Work {

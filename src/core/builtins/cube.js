@@ -1,6 +1,7 @@
 
 import { Work, Element, Hierarchy, operators, Id } from ".";
-import { Mesh, Face } from "./Mesh";
+import { Mesh } from "./Mesh";
+import { Face } from "./Face";
 import { Vector3 } from "./Vector3";
 
 class CubeWork extends Work {
