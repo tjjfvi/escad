@@ -1,13 +1,13 @@
 
 /* eslint-disable no-console */
 
-const browserify = require("browserify");
-const babelify = require("babelify");
-const watchify = require("watchify");
-const fs = require("fs-extra");
-const stylus = require("stylus");
-const watch = require("node-watch");
-const { promisify } = require("util");
+import browserify from "browserify";
+import babelify from "babelify";
+import watchify from "watchify";
+import fs from "fs-extra";
+import stylus from "stylus";
+import watch from "node-watch";
+import { promisify } from "util";
 
 const folder = __dirname + "/../client/";
 

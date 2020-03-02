@@ -54,4 +54,4 @@ const element = (obj, ind) =>
 
 const arrayish = { isArrayish, mapDeep, toArray, toArrayDeep, length, element };
 
-module.exports = arrayish;
+export default arrayish;

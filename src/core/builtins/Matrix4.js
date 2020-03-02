@@ -1,7 +1,7 @@
 /* eslint-disable array-element-newline */
 
-const { Product, Id } = require(".");
-const { Vector3 } = require("./Vector3");
+import { Product, Id } from ".";
+import { Vector3 } from "./Vector3";
 
 const c = Math.cos;
 const s = Math.sin;
@@ -94,4 +94,4 @@ class Matrix4 extends Product {
 
 Product.Registry.register(Matrix4);
 
-module.exports = { Matrix4 };
+export { Matrix4 };

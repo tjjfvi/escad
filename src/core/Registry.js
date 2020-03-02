@@ -1,5 +1,5 @@
 
-const Id = require("./Id");
+import Id from "./Id";
 
 class Registry {
 
@@ -28,4 +28,4 @@ class Registry {
 
 }
 
-module.exports = Registry;
+export default Registry;

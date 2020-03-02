@@ -1,6 +1,7 @@
 
-const { Work, Id } = require(".");
-const { Mesh, Face, Vector3 } = require("./Mesh");
+import { Work, Id } from ".";
+import { Mesh, Face } from "./Mesh";
+import { Vector3 } from "./Vector3";
 
 class PointMapWork extends Work {
 
@@ -38,4 +39,4 @@ class PointMapWork extends Work {
 
 Work.Registry.register(PointMapWork);
 
-module.exports = { PointMapWork };
+export { PointMapWork };

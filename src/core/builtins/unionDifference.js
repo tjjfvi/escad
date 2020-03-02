@@ -1,6 +1,6 @@
 
-const { operators, Component, arrayish, Hierarchy } = require(".");
-const { _union, _diff } = require("./csg");
+import { operators, Component, arrayish, Hierarchy } from ".";
+import { _union, _diff } from "./csg";
 
 let _udArgs = (...uargs) => {
   if(arrayish.length(uargs) === 0)

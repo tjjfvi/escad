@@ -1,6 +1,6 @@
 
-const { Product, Id } = require(".");
-const { Face, Vector3 } = require("./Face");
+import { Product, Id } from ".";
+import { Face } from "./Face";
 
 class Mesh extends Product {
 
@@ -27,4 +27,4 @@ class Mesh extends Product {
 
 Product.Registry.register(Mesh);
 
-module.exports = { Mesh, Face, Vector3 };
+export { Mesh };

@@ -1,6 +1,6 @@
 
-const { chainables, operators, arrayish, Component } = require(".");
-const { _diff } = require("./csg");
+import { chainables, operators, arrayish, Component } from ".";
+import { _diff } from "./csg";
 
 chainables.subEach =
 chainables.subtractEach =

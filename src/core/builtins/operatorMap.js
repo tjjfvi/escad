@@ -1,5 +1,5 @@
 
-const { Hierarchy, Component, arrayish } = require(".");
+import { Hierarchy, Component, arrayish } from ".";
 
 const operatorMap = (name, tree, f) => {
   let obj = arrayish.mapDeep(tree, c => f(c).clone(new Hierarchy(name, [c])));
@@ -7,4 +7,4 @@ const operatorMap = (name, tree, f) => {
   return new Component(obj);
 };
 
-module.exports = { _exclude: true, operatorMap };
+export { operatorMap };

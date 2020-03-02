@@ -1,9 +1,11 @@
 
-const { fork } = require("child_process");
-const uuidv4 = require("uuid/v4");
-const watch = require("node-watch");
-const ee = new (require("events"))();
-const { loadDir, loadFile } = require("./config");
+import { fork } from "child_process";
+import uuidv4 from "uuid/v4";
+import watch from "node-watch";
+import EE from "events";
+import { loadDir, loadFile } from "./config";
+
+const ee = new EE();
 
 let childProcess = null;
 
@@ -13,7 +15,7 @@ function reload(){
   if(childProcess)
     childProcess.kill();
 
-  childProcess = fork(require.resolve("./render"));
+  childProcess = fork(require.resolve("./_render"));
 
   childProcess.send(["init", loadFile, __dirname + "/../../artifacts/"]);
 
@@ -91,4 +93,5 @@ async function proc(sha){
 watch(loadDir, { recursive: true, filter: f => !/node_modules|artifacts/.test(f) }, () => reload());
 reload();
 
-module.exports = { run, ee, export: exp, exp, proc, process: proc };
+export { run, ee, exp, proc };
+

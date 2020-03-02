@@ -1,5 +1,5 @@
 
-const chainables = require("./chainables");
+import chainables from "./chainables";
 
 class Component {
 
@@ -34,4 +34,4 @@ const proto = new Proxy(Component.prototype, {
         undefined
 });
 
-module.exports = Component;
+export default Component;

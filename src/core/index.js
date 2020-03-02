@@ -1,7 +1,7 @@
 
 Math.tau = 6.283185307179586472128676655;
 
-const builtins = require("./builtins");
-const Component = require("./Component");
+export * from "./builtins";
+import * as builtins from "./builtins";
 
-module.exports = Object.assign((...a) => new Component(a.length === 1 ? a[0] : a), builtins, builtins.operators);
+export default Object.assign((...a) => new builtins.Component(a.length === 1 ? a[0] : a), builtins, builtins.operators);

@@ -1,5 +1,5 @@
 
-module.exports = escad => {
+export default escad => {
 
   const
     trackAngle = 85,

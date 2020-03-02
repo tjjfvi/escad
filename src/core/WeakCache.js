@@ -84,4 +84,4 @@ if(typeof WeakRef !== "undefined" && FinReg)
 else
   WeakCache = WeakCacheBasic;
 
-module.exports = WeakCache;
+export default WeakCache;

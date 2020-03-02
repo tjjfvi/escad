@@ -1,5 +1,5 @@
 
-const { Mesh } = require("./Mesh");
+import { Mesh } from "./Mesh";
 
 Mesh.exportTypes[".stl"] = (sha, mesh) => Buffer.concat([
   Buffer.from(sha.padEnd(80), "utf8"),

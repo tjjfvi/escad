@@ -1,5 +1,5 @@
 
-module.exports = escad => {
+export default escad => {
 
   const
     or = 7.5,

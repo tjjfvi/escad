@@ -1,7 +1,7 @@
 
-const { Work, Id } = require(".");
-const { PointMapWork } = require("./PointMapWork");
-const { Matrix4 } = require("./Matrix4");
+import { Work, Id } from ".";
+import { PointMapWork } from "./PointMapWork";
+import { Matrix4 } from "./Matrix4";
 
 class TransformWork extends PointMapWork {
 
@@ -39,4 +39,4 @@ class TransformWork extends PointMapWork {
 
 Work.Registry.register(TransformWork);
 
-module.exports = { TransformWork, Matrix4 };
+export { TransformWork };

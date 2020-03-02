@@ -1,12 +1,11 @@
 
 // Render Process
 
-const escad = require("../core");
-const arrayish = require("../core/arrayish");
-const Hierarchy = require("../core/Hierarchy");
-const ProductManager = require("../core/ProductManager");
-const Work = require("../core/Work");
-const WeakCache = require("../core/WeakCache");
+import escad from "../core";
+import arrayish from "../core/arrayish";
+import Hierarchy from "../core/Hierarchy";
+import ProductManager from "../core/ProductManager";
+import Work from "../core/Work";
 
 let file, func, dir;
 
@@ -26,7 +25,7 @@ process.on("message", ([type, ...data]) => {
   ProductManager.exportDir = dir + "exports/";
   let result;
   try {
-    result = require(file);
+    result = require(file).default;
   } catch (e) {
     console.error(e);
   }

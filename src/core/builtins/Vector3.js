@@ -1,5 +1,5 @@
 
-const { Product, Id } = require(".");
+import { Product, Id } from ".";
 
 class Vector3 extends Product {
 
@@ -82,4 +82,4 @@ class Vector3 extends Product {
 
 Product.Registry.register(Vector3);
 
-module.exports = { Vector3 };
+export { Vector3 };

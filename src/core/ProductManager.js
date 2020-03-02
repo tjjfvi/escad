@@ -1,11 +1,11 @@
 
-const fs = require("fs-extra");
-const path = require("path");
+import fs from "fs-extra";
+import path from "path";
 
-const Id = require("./Id");
-const b64 = require("./b64");
-const Product = require("./Product");
-const WeakCache = require("./WeakCache");
+import Id from "./Id";
+import b64 from "./b64";
+import Product from "./Product";
+import WeakCache from "./WeakCache";
 
 class ProductManager {
 
@@ -51,4 +51,4 @@ class ProductManager {
 
 }
 
-module.exports = new ProductManager("escad-" + Date.now() + "-", __dirname + "/products")
+export default new ProductManager("escad-" + Date.now() + "-", __dirname + "/products")

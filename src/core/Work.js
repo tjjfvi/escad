@@ -1,12 +1,12 @@
 
-const hash = require("./hash");
-const Registry = require("./Registry");
-const ProductManager = require("./ProductManager");
-const Hierarchy = require("./Hierarchy");
-const Id = require("./Id");
-const b64 = require("./b64");
-const WeakCache = require("./WeakCache");
-const fs = require("fs-extra");
+import hash from "./hash";
+import Registry from "./Registry";
+import ProductManager from "./ProductManager";
+import Hierarchy from "./Hierarchy";
+import Id from "./Id";
+import b64 from "./b64";
+import WeakCache from "./WeakCache";
+import fs from "fs-extra";
 
 const cache = new WeakCache();
 
@@ -119,4 +119,4 @@ class Work {
 
 }
 
-module.exports = Work;
+export default Work;

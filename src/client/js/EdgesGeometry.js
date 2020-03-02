@@ -1,5 +1,5 @@
 
-const { BufferGeometry, Float32BufferAttribute, Geometry } = require("three");
+import { BufferGeometry, Float32BufferAttribute, Geometry } from "three";
 
 function EdgesGeometry(geometry, thresholdAngle = 1){
 

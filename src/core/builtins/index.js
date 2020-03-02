@@ -1,31 +1,37 @@
+// @flow
 
-const Component = require("../Component");
-const Product = require("../Product");
-const ProductManager = require("../ProductManager");
-const Work = require("../Work");
-const Hierarchy = require("../Hierarchy");
-const chainables = require("../chainables");
-const operators = require("../operators");
-const arrayish = require("../arrayish");
-const Id = require("../Id");
+import Component from "../Component";
+import Product from "../Product";
+import ProductManager from "../ProductManager";
+import Work from "../Work";
+import Hierarchy from "../Hierarchy";
+import chainables from "../chainables";
+import operators from "../operators";
+import arrayish from "../arrayish";
+import Id from "../Id";
+export { Component, Product, ProductManager, Work, Hierarchy, chainables, operators, arrayish, Id };
 
-module.exports = {
-  Component,
-  Product,
-  ProductManager,
-  Work,
-  Hierarchy,
-  chainables,
-  operators,
-  arrayish,
-  Id,
-};
+// @create-index {"mode":"*"}
 
-Object.assign(
-  module.exports,
-  ...require("fs")
-    .readdirSync(__dirname)
-    .filter(f => f !== "index.js")
-    .map(f => require("./" + f))
-    .map(o => o._exclude ? {} : o)
-);
+export * from './Face.js';
+export * from './Matrix4.js';
+export * from './Mesh.js';
+export * from './Plane.js';
+export * from './PointMapWork.js';
+export * from './TransformWork.js';
+export * from './Vector3.js';
+export * from './csg.js';
+export * from './cube.js';
+export * from './cyl.js';
+export * from './diffEach.js';
+export * from './flip.js';
+export * from './meld.js';
+export * from './operatorMap.js';
+export * from './polyhedron.js';
+export * from './range.js';
+export * from './rotate.js';
+export * from './scale.js';
+export * from './sphere.js';
+export * from './translate.js';
+export * from './unionDifference.js';
+

@@ -1,7 +1,7 @@
 
-const { Product, Id } = require(".");
-const { Vector3 } = require("./Vector3");
-const { Plane } = require("./Plane");
+import { Product, Id } from ".";
+import { Vector3 } from "./Vector3";
+import { Plane } from "./Plane";
 
 class Face extends Product {
 
@@ -30,4 +30,4 @@ class Face extends Product {
 
 Product.Registry.register(Face);
 
-Object.assign(module.exports, { Face, Vector3 });
+export { Face };

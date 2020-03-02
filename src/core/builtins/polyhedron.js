@@ -1,6 +1,7 @@
 
-const { Work, Component, Hierarchy, operators, Id } = require(".");
-const { Mesh, Face, Vector3 } = require("./Mesh");
+import { Work, Component, Hierarchy, operators, Id } from ".";
+import { Mesh, Face } from "./Mesh";
+import { Vector3 } from "./Vector3";
 
 class PolyhedronWork extends Work {
 

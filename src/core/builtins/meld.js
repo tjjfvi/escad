@@ -1,6 +1,6 @@
 
-const { Work, operators, Component, Hierarchy, arrayish, Id } = require(".");
-const { Mesh } = require("./Mesh");
+import { Work, operators, Component, Hierarchy, arrayish, Id } from ".";
+import { Mesh } from "./Mesh";
 
 class MeldWork extends Work {
 
@@ -19,5 +19,5 @@ const _meld = (...args) => new MeldWork(arrayish.toArrayDeep(args), new Hierarch
 operators.meld = (...args) =>
   new Component(_meld(...args));
 
-module.exports = { _meld, MeldWork };
+export { _meld, MeldWork };
 

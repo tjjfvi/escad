@@ -1,20 +1,21 @@
 
-require("./bundler.js");
+import "./bundler";
 
-const fs = require("fs");
-const flatted = require("flatted");
+import fs from "fs";
+import flatted from "flatted";
 
-const express = require("express");
+import express from "express";
 const app = express();
-require("express-ws")(app);
+import expressWs from "express-ws";
+expressWs(app);
 
 app.use(express.static(__dirname + "/../client/"));
 app.use(express.static(__dirname + "/../../artifacts/"));
 
-const uuidv4 = require("uuid/v4");
+import uuidv4 from "uuid/v4";
 const serverId = uuidv4();
-const config = require("./config");
-const render = require("./renderComm");
+import config from "./config";
+import * as render from "./renderComm";
 
 let curShas;
 let curParamDef;
@@ -30,7 +31,7 @@ app.get("/exports/:sha.:ext", async (req, res) => {
   const { sha, ext } = req.params;
   const format = "." + ext;
 
-  await render.export(sha, format);
+  await render.exp(sha, format);
 
   fs.createReadStream(__dirname + "/../../artifacts/exports/" + sha + format).pipe(res);
 });
@@ -38,7 +39,7 @@ app.get("/exports/:sha.:ext", async (req, res) => {
 app.get("/products/:sha", async (req, res) => {
   const { sha } = req.params;
 
-  await render.process(sha);
+  await render.proc(sha);
 
   fs.createReadStream(__dirname + "/../../artifacts/products/" + sha).pipe(res);
 });

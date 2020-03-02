@@ -1,7 +1,8 @@
 
-const { Work, Product, operators, chainables, Component, Hierarchy, arrayish, Id } = require(".");
-const { Mesh, Face, Vector3 } = require("./Mesh");
-const CSG = require("csg");
+import { Work, Product, operators, chainables, Component, Hierarchy, arrayish, Id } from ".";
+import { Mesh, Face } from "./Mesh";
+import { Vector3 } from "./Vector3";
+import CSG from "csg";
 
 class CSGWrapper extends Product {
 
@@ -234,4 +235,4 @@ chainables.sub = chainables.subtract = (comp, ...args) => comp(_diff(comp(), ...
 operators.intersection = (...args) => new Component(_intersect(...args));
 chainables.intersect = (comp, ...args) => comp(_intersect(comp(), ...args));
 
-module.exports = { MeshToCsgWork, CsgToMeshWork, CSGWrapper, CsgWork, _csg, _union, _diff, _intersect };
+export { MeshToCsgWork, CsgToMeshWork, CSGWrapper, CsgWork, _csg, _union, _diff, _intersect };

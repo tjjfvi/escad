@@ -1,5 +1,5 @@
 
-const arrayish = require("./arrayish");
+import arrayish from "./arrayish";
 
 class Hierarchy {
 
@@ -62,4 +62,4 @@ class Hierarchy {
 
 }
 
-module.exports = Hierarchy;
+export default Hierarchy;

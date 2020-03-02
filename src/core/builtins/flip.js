@@ -1,7 +1,8 @@
 
-const { Work, arrayish, operators, Component, chainables, Id } = require(".");
-const { operatorMap } = require("./operatorMap");
-const { Mesh, Face } = require("./Mesh");
+import { Work, arrayish, operators, Component, chainables, Id } from ".";
+import { operatorMap } from "./operatorMap";
+import { Mesh } from "./Mesh";
+import { Face } from "./Face";
 
 class FlipWork extends Work {
 
@@ -37,4 +38,4 @@ const _flip = (...args) => new FlipWork(arrayish.toArrayDeep(args), null);
 operators.flip = (...args) => new Component(operatorMap("flip", args, _flip));
 chainables.flip = (comp, ...args) => comp(operatorMap("flip", [comp(), ...args], _flip));
 
-module.exports = { FlipWork };
+export { FlipWork };

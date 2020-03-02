@@ -20,4 +20,7 @@ const loadDir = path.dirname(path.resolve(watchDir || loadFile));
 
 Object.assign(require("../src/server/config"), { port: +port, loadFile, loadDir });
 
+require("@babel/register");
+require("@babel/polyfill");
+
 require("../src/server/server");

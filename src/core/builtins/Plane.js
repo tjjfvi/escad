@@ -1,7 +1,7 @@
 
-const { Product } = require(".");
-const { Vector3 } = require("./Vector3");
-const _Face = require("./Face");
+import { Product } from ".";
+import { Vector3 } from "./Vector3";
+import _Face from "./Face";
 
 const epsilon = 1e-5;
 
@@ -84,4 +84,4 @@ class Plane extends Product {
 
 }
 
-module.exports = { Plane };
+export { Plane };

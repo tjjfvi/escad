@@ -1,5 +1,5 @@
 
-module.exports = (escad, p) => {
+export default (escad, p) => {
 
   let parameters = p([
     {

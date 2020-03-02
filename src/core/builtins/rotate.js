@@ -1,8 +1,9 @@
 
 
-const { chainables, operators } = require(".");
-const { operatorMap } = require("./operatorMap");
-const { TransformWork, Matrix4 } = require("./TransformWork");
+import { chainables, operators } from ".";
+import { operatorMap } from "./operatorMap";
+import { TransformWork } from "./TransformWork";
+import { Matrix4 } from "./Matrix4"
 
 let rotate = (_x, _y, _z, opts) => {
 

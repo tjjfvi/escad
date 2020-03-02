@@ -1,5 +1,5 @@
 
-const Registry = require("./Registry");
+import Registry from "./Registry";
 
 class Product {
 
@@ -33,4 +33,4 @@ class Product {
 
 }
 
-module.exports = Product;
+export default Product;

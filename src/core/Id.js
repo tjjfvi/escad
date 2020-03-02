@@ -1,8 +1,8 @@
 
-const hash = require("./hash");
-const b64 = require("./b64");
+import hash from "./hash";
+import b64 from "./b64";
 const path = require("path").posix;
-const readPkgUp = require("read-pkg-up");
+import readPkgUp from "read-pkg-up";
 
 const ids = {};
 
@@ -30,4 +30,4 @@ class Id {
 
 }
 
-module.exports = Id;
+export default Id;
