@@ -1,21 +1,16 @@
-// @flow
 
 import { Product } from ".";
 import { Vector3 } from "./Vector3";
-import { Face } from "./Face";
+import _Face from "./Face";
 
 const epsilon = 1e-5;
 
 class Plane extends Product {
 
-  normal: Vector3;
-  w: number;
-
-  constructor(points: Array<Vector3> | Vector3, w?: number){
-    super();
+  construct(points, w){
     if(points instanceof Vector3) {
       this.normal = points;
-      this.w = w || 0;
+      this.w = w;
     } else {
       let [a, b, c] = points;
       this.normal = b.subtract(a).cross(c.subtract(a)).unit();
@@ -27,7 +22,7 @@ class Plane extends Product {
     return new Plane(this.normal.negate(), -this.w);
   }
 
-  splitFace(face: Face, coplanarFront: Array<Face>, coplanarBack: Array<Face>, front: Array<Face>, back: Array<Face>){
+  splitFace(face, coplanarFront, coplanarBack, front, back){
     const Coplanar = 0;
     const Front = 1;
     const Back = 2;
@@ -68,8 +63,8 @@ class Plane extends Product {
           f.push(v);
           b.push(v);
         })
-        f.slice(2).map((_, i) => front.push(new Face([f[0], f[i + 1], f[i + 2]])));
-        b.slice(2).map((_, i) => back.push(new Face([b[0], b[i + 1], b[i + 2]])));
+        f.slice(2).map((_, i) => front.push(new _Face.Face([f[0], f[i + 1], f[i + 2]])));
+        b.slice(2).map((_, i) => back.push(new _Face.Face([b[0], b[i + 1], b[i + 2]])));
         break;
       }
     }
@@ -77,11 +72,11 @@ class Plane extends Product {
 
   serialize(){
     let buf = Buffer.alloc(4);
-    buf.writeFloatLE(this.w, 0);
+    buf.writeFloatLE(this.w);
     return Buffer.concat([buf, this.normal.serialize()]);
   }
 
-  deserialize(buf: Buffer){
+  deserialize(buf){
     let w = buf.readFloatLE(0);
     let n = Vector3.deserialize(buf.subarray(4));
     return new Plane(n, w)

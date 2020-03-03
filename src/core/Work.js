@@ -1,50 +1,48 @@
+// @flow
 
 import hash from "./hash";
 import Registry from "./Registry";
 import ProductManager from "./ProductManager";
-import Hierarchy from "./Hierarchy";
+import Product from "./Product";
 import Id from "./Id";
-import b64 from "./b64";
+import b64, { type B64 } from "./b64";
 import WeakCache from "./WeakCache";
+// $FlowFixMe
 import fs from "fs-extra";
 
-const cache = new WeakCache();
+type Leaf<T: Product> = T | Work<T>;
 
-class Work {
+const cache = new WeakCache<B64, Work<any>>();
 
-  static Registry = new Registry("WorkRegistry");
-  static dir = "";
+type $C = Array<Leaf<Product>>;
+class Work<T:Product, C:$C=any> {
 
-  static id = null;
+  static Registry: Registry<Class<Work<any>>> = new Registry<typeof Work>("WorkRegistry");
+  static dir: string = "";
 
-  constructor(children, hierarchy, ...args){
-    this.returnVal = this;
-    this.hierarchy = hierarchy;
-    this.args = this.transformArgs(...args);
-    this.children = this.transformChildren(children.map(c => c.isElement ? c().clone(null) : c.clone(null)));
+  static id: Id = (null: any);
+
+  children: C;
+  sha: Buffer;
+  shaB64: B64;
+  #redirect: ?Work<T>;
+
+  constructor(children: C){
+    this.children = children;
     this.sha = hash(this.serialize());
     this.shaB64 = b64(this.sha);
-    this.hierarchy = this.hierarchy && this.hierarchy.clone(this.shaB64);
     Object.freeze(this);
-    if(this === this.returnVal)
-      fs.writeFile(Work.dir + this.shaB64, this.serialize());
-    if(!this.hierarchy)
-      return cache.get(this.returnVal.shaB64, () => this.returnVal);
-    return this.returnVal;
+    fs.writeFile(Work.dir + this.shaB64, this.serialize());
+    return cache.get(this.shaB64, () => this);
   }
 
-  clone(hierarchy = this.hierarchy){
-    if(!hierarchy && !this.hierarchy)
-      return this;
-    return new this.constructor(this.children, hierarchy, ...this.args);
+  _serialize(): Buffer{
+    return Buffer.alloc(0);
   }
 
-  serializeArgs(){
-    return Buffer.from(JSON.stringify(this.args));
-  }
-
-  static deserializeArgs(buf){
-    return JSON.parse(buf.toString("utf8"));
+  static _deserialize(children: C, buf: Buffer): Work<T>{
+    children; buf;
+    throw new Error("Work.deserialize must be overloaded");
   }
 
   serialize(){
@@ -52,7 +50,7 @@ class Work {
       throw new Error("Must supply ID to class " + this.constructor.name);
     let childCountBuf = Buffer.alloc(2);
     childCountBuf.writeUInt16LE(this.children.length, 0);
-    let argsBuf = this.serializeArgs();
+    let argsBuf = this._serialize();
     return Buffer.concat([
       this.constructor.id.sha,
       childCountBuf,
@@ -61,7 +59,7 @@ class Work {
     ], 32 + 2 + 32 * this.children.length + argsBuf.length);
   }
 
-  static async deserialize(sha){
+  static async deserialize(sha: string | B64): Promise<Work<any>>{
     sha = b64(sha);
     return await cache.getAsync(sha, async () => {
       let buf = await fs.readFile(Work.dir + sha);
@@ -71,26 +69,20 @@ class Work {
       let args = buf.slice(32 + 2 + cl * 32);
       c = await Promise.all(c.map(s => Work.deserialize(b64(s))));
       let C = Work.Registry.get(Id.get(id));
-      args = C.deserializeArgs(args);
-      return new C(c, null, ...args);
+      // $FlowFixMe
+      return C._deserialize(c, args);
     });
   }
 
-  transformArgs(...args){
-    return args;
-  }
-
-  transformChildren(children){
-    return children;
-  }
-
-  async execute(inputs){
+  async execute(inputs: $TupleMap<C, <O>(Leaf<O>) => O>): Promise<T>{
     inputs;
-    return null;
+    throw new Error("Work.execute must be overloaded");
   }
 
-  async process(waitStore = true){
-    let memoized = await ProductManager.lookup(this.sha);
+  async process(): Promise<T>{
+    if(this.#redirect)
+      return await this.#redirect.process();
+    let memoized = await ProductManager.lookup(this.shaB64);
     if(memoized)
       return memoized;
     let prom = (async () => {
@@ -98,25 +90,16 @@ class Work {
       let result = await this.execute(inputs);
       return result;
     })();
-    let store = ProductManager.store(this.sha, prom);
-    if(waitStore)
-      await store;
+    await ProductManager.store(this.sha, prom);
     return await prom;
   }
 
-  visualize(indent = 0){
+  visualize(indent: number = 0){
     console.log("  ".repeat(indent++) + "-", this.constructor.id);
     this.children.map(c => c.visualize(indent))
-  }
-
-  get [Hierarchy.symbol](){
-    return this.hierarchy;
-  }
-
-  [Hierarchy.apply](hierarchy){
-    return this.clone(hierarchy);
   }
 
 }
 
 export default Work;
+export type { Leaf };

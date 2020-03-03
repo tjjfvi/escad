@@ -1,3 +1,4 @@
+// @flow
 
 import { Product, Id } from ".";
 import { Vector3 } from "./Vector3";
@@ -7,11 +8,19 @@ class Face extends Product {
 
   static id = new Id("Face", __filename);
 
-  construct(points){
+  points: Array<Vector3>;
+  plane: Plane;
+
+  constructor(points: Array<Vector3>){
+    super();
     if(points.length !== 3)
       throw new Error("Faces can only be triangles");
     this.points = points;
     this.plane = new Plane(points);
+  }
+
+  clone(){
+    return new Face(this.points.map(p => p.clone()));
   }
 
   flip(){
@@ -22,7 +31,7 @@ class Face extends Product {
     return Buffer.concat(this.points.map(p => p.serialize()));
   }
 
-  static deserialize(buf){
+  static deserialize(buf: Buffer){
     return new Face([...Array(3)].map((_, i) => Vector3.deserialize(buf.slice(i * 12, i * 12 + 12))));
   }
 
