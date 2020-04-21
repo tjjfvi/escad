@@ -2,63 +2,57 @@
 
 import Registry from "./Registry";
 import hash from "./hash";
-import b64, { type B64 } from "./b64";
+import b64, { B64 } from "./b64";
 import ProductManager from "./ProductManager";
 import Id from "./Id";
 
-class Product {
+abstract class Product {
 
   static Registry: Registry<typeof Product> = new Registry<typeof Product>("ProductRegistry");
 
-  static id: Id = (null: any);
-  static #exportTypes: { [string]: Product => Buffer };
+  abstract id: Id;
+  static get id() {
+    return this.prototype.id;
+  }
 
-  #sha: ?Buffer;
-  #shaB64: ?B64;
-  writePromise: Promise<void>;
+  private static _exportTypes: { [ext: string]: (p: Product) => Buffer };
 
-  get sha(): Buffer{
-    let oldSha = this.#sha;
-    this.#sha = hash(this.serialize());
-    if(oldSha !== this.#sha){
-      this.#shaB64 = b64(this.#sha);
-      // $FlowFixMe
-      this.writePromise = ProductManager.store(this.#shaB64, Promise.resolve(this)).then(() => {});
+  private _sha: Buffer;
+  private _shaB64: B64;
+  writePromise: Promise<void> | undefined;
+
+  get sha(): Buffer {
+    let oldSha = this._sha;
+    this._sha = hash(this.serialize());
+    if (oldSha !== this._sha) {
+      this._shaB64 = b64(this._sha);
+      this.writePromise = ProductManager.store(this._shaB64, Promise.resolve(this)).then(() => { });
     }
-    // $FlowFixMe
-    return this.#sha;
+    return this._sha;
   }
 
-  get shaB64(): B64{
+  get shaB64(): B64 {
     this.sha;
-    // $FlowFixMe
-    return this.#shaB64;
+    return this._shaB64;
   }
 
-  clone(): Product{
-    console.warn("Product.clone should be overloaded");
-    return this.constructor.deserialize(this.serialize());
+  abstract clone(): this;
+
+  abstract serialize(): Buffer;
+
+  abstract deserialize(buffer: Buffer): Product
+
+  static get exportTypes(): { [ext: string]: (p: Product) => Buffer } {
+    if (Object.prototype.hasOwnProperty.call(this, "_exportTypes"))
+      return this._exportTypes;
+    return this._exportTypes = {};
   }
 
-  serialize(): Buffer{
-    throw new Error("Product.serialize must be overloaded");
-  }
-
-  static deserialize(buffer: Buffer): Product{
-    throw new Error("Product.deserialize must be overloaded");
-  }
-
-  static get exportTypes(): {[string]: Product => Buffer}{
-    if(Object.prototype.hasOwnProperty.call(this, "_exportTypes"))
-      return this.#exportTypes;
-    return this.#exportTypes = {};
-  }
-
-  process(): this{
+  process(): this {
     return this;
   }
 
-  visualize(indent: number = 0){
+  visualize(indent: number = 0) {
     console.log("  ".repeat(indent) + " -", this.constructor.name);
   }
 
