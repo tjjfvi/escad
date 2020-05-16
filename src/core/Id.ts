@@ -1,12 +1,12 @@
 // @flow
 
-import hash from "./hash";
+import { hash, Sha } from "./hash";
 import b64 from "./b64";
 const path = require("path").posix;
 // $FlowFixMe
 import readPkgUp from "read-pkg-up";
 
-const ids: {[string]: Id} = {};
+const ids: Record<string, Id> = {};
 
 class Id {
 
@@ -14,13 +14,11 @@ class Id {
   packageVersion: string;
   filename: string;
   name: string;
-  sha: Buffer;
-  shaB64: string;
+  sha: Sha;
 
-
-  constructor(name: string, filename: string){
+  constructor(name: string, filename: string) {
     const result = readPkgUp.sync({ cwd: path.dirname(filename) });
-    if(!result)
+    if (!result)
       throw new Error("Could not find package.json from file " + filename);
     let { packageJson: { name: packageName, version } } = result;
     this.packageName = packageName;
@@ -29,15 +27,14 @@ class Id {
     this.filename = path.relative(path.dirname(packageJsonPath), filename);
     this.name = name;
     this.sha = hash.json(this);
-    this.shaB64 = b64(this.sha);
-    if(!ids[this.shaB64])
-      ids[this.shaB64] = this;
-    return ids[this.shaB64];
+    if (!ids[this.sha.b64])
+      ids[this.sha.b64] = this;
+    return ids[this.sha.b64];
   }
 
 
-  static get(sha: string){
-    return ids[b64(sha)];
+  static get(sha: Sha) {
+    return ids[sha.b64];
   }
 
 }

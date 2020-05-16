@@ -1,6 +1,5 @@
 
 // Render Process
 
-require("@babel/register");
-require("@babel/polyfill");
-require("./render.js");
+require("ts-node").register();
+import "./render";

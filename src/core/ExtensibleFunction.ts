@@ -2,8 +2,7 @@
 
 class ExtensibleFunction {
 
-  constructor(func: any){
-    // $FlowFixMe
+  constructor(func: (...x: any[]) => any) {
     return Object.setPrototypeOf(func, new.target.prototype);
   }
 

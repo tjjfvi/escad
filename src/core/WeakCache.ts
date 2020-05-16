@@ -11,13 +11,13 @@ type FA<K, V> = (k: K) => Promise<V>;
 
 class WeakCacheBasic<K, V> {
 
-  #asyncCache: Map<K, Promise<V>>;
+  private asyncCache: Map<K, Promise<V>>;
 
   protected static readonly notFound = Symbol();
   protected readonly notFound: typeof WeakCacheBasic.notFound = WeakCacheBasic.notFound;
 
   constructor() {
-    this.#asyncCache = new Map<K, Promise<V>>();
+    this.asyncCache = new Map<K, Promise<V>>();
   }
 
   _get(key: K): V | typeof WeakCacheBasic.notFound {
@@ -36,9 +36,9 @@ class WeakCacheBasic<K, V> {
     let val = this._get(key);
     if (val !== this.notFound)
       return val;
-    if (this.#asyncCache.has(key))
-      // $FlowFixMe
-      return await this.#asyncCache.get(key);
+    if (this.asyncCache.has(key))
+      // @ts-ignore
+      return await this.asyncCache.get(key);
     return await this.setAsync(key, func);
   }
 
@@ -49,11 +49,11 @@ class WeakCacheBasic<K, V> {
   async setAsync(key: K, func: FA<K, V>): Promise<V> {
     let prom = (async (): Promise<V> => {
       let val = await func(key);
-      this.#asyncCache.delete(key);
+      this.asyncCache.delete(key);
       this.set(key, () => val);
       return val;
     })();
-    this.#asyncCache.set(key, prom);
+    this.asyncCache.set(key, prom);
     return await prom;
   }
 
@@ -77,32 +77,33 @@ const FinReg = (
 if (WeakRef in global && FinReg)
   WeakCache = class WeakCache<K, V> extends WeakCacheBasic<K, V> {
 
-    #cache: Map<K, WeakRef<V>> = new Map();
-    #cleanup: any;
+    private cache: Map<K, WeakRef<V>> = new Map();
+    private cleanup: any;
 
     constructor() {
       super();
-      this.#cleanup = new FinReg(this.#finalize);
+      this.cleanup = new FinReg(this.finalize);
     }
 
     _get(key: K) {
-      let ref = this.#cache.get(key);
+      let ref = this.cache.get(key);
       if (!ref)
         return this.notFound;
       const cached = ref.deref();
       return cached === undefined ? this.notFound : (cached as V);
     }
 
-    #finalize = (iterator: Iterable<K>) => {
+    private finalize = (iterator: Iterable<K>) => {
+      // @ts-ignore
       for (const key of iterator)
-        this.#cache.delete(key);
+        this.cache.delete(key);
     }
 
     set(key: K, func: F<K, V>): V {
       const fresh = func(key);
       if (fresh && typeof fresh === "object") {
-        this.#cache.set(key, new WeakRef<V>(fresh));
-        this.#cleanup.register(fresh, key);
+        this.cache.set(key, new WeakRef<V>(fresh));
+        this.cleanup.register(fresh, key);
       }
       return fresh;
     }

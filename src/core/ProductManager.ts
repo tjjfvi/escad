@@ -4,48 +4,48 @@ import fs from "fs-extra";
 import path from "path";
 
 import Id from "./Id";
-import b64, { type B64 } from "./b64";
 import Product from "./Product";
 import WeakCache from "./WeakCache";
+import { Sha } from "./hash";
 
 class ProductManager {
 
   dir: string;
   exportDir: string;
-  cache = new WeakCache<B64, ?Product>();
+  cache = new WeakCache<string,?Product>();
 
-  constructor(){
+  constructor() {
     this.dir = "";
     this.exportDir = "";
   }
 
-  async lookup(sha: B64){
-    return await this.cache.getAsync(sha, async () => {
-      let buffer: ?Buffer = await fs.readFile(path.join(this.dir, sha)).catch(() => null);
-      if(!buffer)
+  async lookup(sha: Sha) {
+    return await this.cache.getAsync(sha.b64, async () => {
+      let buffer: ?Buffer = await fs.readFile(path.join(this.dir, sha.b64)).catch(() => null);
+      if (!buffer)
         return null;
-      let id = Id.get(b64(buffer.slice(0, 32)));
+      let id = Id.get(new Sha(buffer.slice(0, 32)));
       let product = await Product.Registry.get(id).deserialize(buffer.slice(32));
       return product;
     })
   }
 
-  async store(sha: B64, promise: Promise<Product>){
-    return this.cache.setAsync(sha, async () => {
+  async store(sha: Sha, promise: Promise<Product>) {
+    return this.cache.setAsync(sha.b64, async () => {
       let product = await promise;
       let serialized = product.serialize();
-      let initial = product.constructor.id.sha;
-      let buffer = Buffer.concat([initial, serialized], 32 + serialized.length);
-      await fs.writeFile(path.join(this.dir, sha), buffer);
+      let buffer = Buffer.concat([product.id.sha.buffer, serialized], 32 + serialized.length);
+      await fs.writeFile(path.join(this.dir, sha.b64), buffer);
+      return product;
     });
   }
 
-  async export(sha: B64, format: string){
+  async export(sha: B64, format: string) {
     let p = await this.lookup(sha);
-    if(!p)
+    if (!p)
       throw new Error(`Product ${sha} not found`);
-    let f: ?(Product=>Buffe) = p.constructor.exportTypes[format];
-    if(!f)
+    let f: ?(Product=> Buffe) = p.constructor.exportTypes[format];
+    if (!f)
       throw new Error(`${p.constructor.name} cannot export to ${format}`);
     let b = f(p);
     await fs.writeFile(path.join(this.exportDir, sha + format), b);

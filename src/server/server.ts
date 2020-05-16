@@ -6,9 +6,8 @@ import flatted from "flatted";
 import config from "./config";
 
 import express from "express";
-const app = express();
 import expressWs from "express-ws";
-expressWs(app);
+const { app } = expressWs(express());
 
 app.use(express.static(__dirname + "/../client/"));
 app.use(express.static(config.artifactsDir));
@@ -47,8 +46,8 @@ app.get("/products/:sha", async (req, res) => {
 app.ws("/ws", ws => {
   (async () => {
 
-    ws.s = function(...data){
-      if(ws.readyState !== 1)
+    const s = function (...data: Array<any>) {
+      if (ws.readyState !== 1)
         return;
       this.send(flatted.stringify(data));
     };
@@ -57,16 +56,16 @@ app.ws("/ws", ws => {
       ws.once("message", msg => {
         let [type, ...data] = flatted.parse(msg);
 
-        if(type === "init")
+        if (type === "init")
           return res(data);
 
         ws.close();
       })
     );
 
-    let id;
+    let id: any;
 
-    if(requestedId && oldServerId === serverId) {
+    if (requestedId && oldServerId === serverId) {
       id = requestedId;
       console.log("Client reattached; id:", id);
     } else {
@@ -75,48 +74,49 @@ app.ws("/ws", ws => {
       console.log("Client attached; id:", id);
     }
 
+    // @ts-ignore
     ws.id = id;
 
-    ws.s("init", id, serverId)
+    s("init", id, serverId)
 
-    if(params)
+    if (params)
       run();
-    else if(curShas) {
-      ws.s("shas", curShas);
-      ws.s("paramDef", curParamDef);
-      ws.s("hierarchy", curHierarchy);
+    else if (curShas) {
+      s("shas", curShas);
+      s("paramDef", curParamDef);
+      s("hierarchy", curHierarchy);
     }
 
-    let interval = setInterval(() => ws.s("ping"), 1000);
+    let interval = setInterval(() => s("ping"), 1000);
 
     let handler = ({ shas, paramDef, hierarchy }) => {
-      if(params)
+      if (params)
         return run();
-      ws.s("shas", shas)
-      ws.s("paramDef", paramDef);
-      ws.s("hierarchy", hierarchy);
+      s("shas", shas)
+      s("paramDef", paramDef);
+      s("hierarchy", hierarchy);
     };
     render.ee.on("reload", handler);
 
     ws.on("message", msg => {
-      let [type, ...data] = flatted.parse(msg);
+      let [type, ...data] = flatted.parse(msg.toString());
 
-      if(type !== "params")
+      if (type !== "params")
         return;
 
       let [p] = data;
 
-      if(p === null && params === null)
+      if (p === null && params === null)
         return;
 
       params = p;
 
-      if(p !== null)
+      if (p !== null)
         return run();
 
-      ws.s("shas", curShas);
-      ws.s("paramDef", curParamDef);
-      ws.s("hierarchy", curHierarchy);
+      s("shas", curShas);
+      s("paramDef", curParamDef);
+      s("hierarchy", curHierarchy);
     })
 
     ws.on("close", () => {
@@ -125,15 +125,17 @@ app.ws("/ws", ws => {
       console.log("Client detached, id:", id);
     });
 
-    async function run(){
+    async function run() {
+      // @ts-ignore
       let { shas, paramDef, hierarchy } = await render.run(params);
-      ws.s("shas", shas);
-      ws.s("paramDef", paramDef);
-      ws.s("hierarchy", hierarchy);
+      s("shas", shas);
+      s("paramDef", paramDef);
+      s("hierarchy", hierarchy);
     }
   })().catch(e => console.error(e));
 });
 
 const httpServer = app.listen(config.port, () => {
+  // @ts-ignore
   console.log(`Listening on http://localhost:${httpServer.address().port}; serverId: ${serverId}`);
 });

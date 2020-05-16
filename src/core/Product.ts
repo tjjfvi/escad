@@ -1,8 +1,7 @@
 // @flow
 
 import Registry from "./Registry";
-import hash from "./hash";
-import b64, { B64 } from "./b64";
+import { hash, Sha } from "./hash";
 import ProductManager from "./ProductManager";
 import Id from "./Id";
 
@@ -17,23 +16,16 @@ abstract class Product {
 
   private static _exportTypes: { [ext: string]: (p: Product) => Buffer };
 
-  private _sha: Buffer;
-  private _shaB64: B64;
+  private _sha?: Sha;
   writePromise: Promise<void> | undefined;
 
-  get sha(): Buffer {
+  get sha(): Sha {
     let oldSha = this._sha;
     this._sha = hash(this.serialize());
     if (oldSha !== this._sha) {
-      this._shaB64 = b64(this._sha);
-      this.writePromise = ProductManager.store(this._shaB64, Promise.resolve(this)).then(() => { });
+      this.writePromise = ProductManager.store(this._sha, Promise.resolve(this)).then(() => { });
     }
     return this._sha;
-  }
-
-  get shaB64(): B64 {
-    this.sha;
-    return this._shaB64;
   }
 
   abstract clone(): this;
