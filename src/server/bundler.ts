@@ -11,7 +11,6 @@ const folder = __dirname + "/../client/";
 
 const b = browserify(folder + "/js/index.js", {
   entries: [
-    "node_modules/babel-polyfill",
     folder + "/js/index.js",
   ],
   cache: {},

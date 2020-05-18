@@ -5,14 +5,12 @@ import { hash, Sha } from "./hash";
 import ProductManager from "./ProductManager";
 import Id from "./Id";
 
-abstract class Product {
+type _P = Product<_P>;
+abstract class Product<P extends Product<P> = _P> {
 
-  static Registry: Registry<typeof Product> = new Registry<typeof Product>("ProductRegistry");
+  abstract type: ProductType<P>;
 
-  abstract id: Id;
-  static get id() {
-    return this.prototype.id;
-  }
+  static Registry = new Registry<ProductType>("ProductRegistry");
 
   private static _exportTypes: { [ext: string]: (p: Product) => Buffer };
 
@@ -28,11 +26,9 @@ abstract class Product {
     return this._sha;
   }
 
-  abstract clone(): this;
+  abstract clone(): P;
 
   abstract serialize(): Buffer;
-
-  abstract deserialize(buffer: Buffer): Product
 
   static get exportTypes(): { [ext: string]: (p: Product) => Buffer } {
     if (Object.prototype.hasOwnProperty.call(this, "_exportTypes"))
@@ -44,10 +40,11 @@ abstract class Product {
     return this;
   }
 
-  visualize(indent: number = 0) {
-    console.log("  ".repeat(indent) + " -", this.constructor.name);
-  }
+}
 
+export interface ProductType<P extends Product<P> = _P> {
+  id: Id;
+  deserialize(buffer: Buffer): P
 }
 
 export default Product;

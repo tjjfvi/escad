@@ -1,4 +1,3 @@
-// @flow
 
 import Element from "../Element";
 import Product from "../Product";

@@ -1,24 +1,33 @@
-// @flow
 
 import { Work, Component, Element, Hierarchy, Id } from ".";
 import { Mesh } from "./Mesh";
 import { Face } from "./Face";
 import { Vector3 } from "./Vector3";
 
-type CubeWorkArgs = [number, number, number, [boolean, boolean, boolean]];
-class CubeWork extends Work<Mesh> {
+type CubeWorkArgs = [[number, number, number], [boolean, boolean, boolean]];
+class CubeWork extends Work<CubeWork, Mesh, []> {
+
+  type = CubeWork;
 
   static id = new Id("CubeWork", __filename);
 
   args: CubeWorkArgs;
 
-  constructor(args: CubeWorkArgs){
+  constructor(args: CubeWorkArgs) {
     super([]);
     this.args = args;
   }
 
-  async execute(){
-    let [x, y, z, cs] = this.args;
+  _serialize() {
+    return Buffer.from(JSON.stringify(this.args));
+  }
+
+  static _deserialize(c: [], buf: Buffer) {
+    return new CubeWork(JSON.parse(buf.toString("utf8")));
+  }
+
+  async execute() {
+    let [[x, y, z], cs] = this.args;
 
     let nx = cs[0] ? -x / 2 : 0;
     let ny = cs[1] ? -y / 2 : 0;
@@ -59,30 +68,43 @@ class CubeWork extends Work<Mesh> {
 
 Work.Registry.register(CubeWork);
 
-type Triplet<T> = T | [T, T, T];
-type CubeArgs = [{|
-  sideLength?: number,
-  s?: number,
-  dimensions?: [number, number, number],
-  d?: [number, number, number],
-  "0"?: number, "1"?: number, "2"?: number,
-  x?: number, y?: number, z?: number,
-  center?: boolean,
-  c?: boolean,
-  cx?: boolean, cy?: boolean, cz?: boolean,
-|}]
+type Triplet<T> = T | [T, T, T] | { x?: T, y?: T, z?: T } | { 0?: T, 1?: T, 2?: T };
+type CubeArgs =
+  & (
+    | { sideLength: number }
+    | { s: number }
+    | { dimensions: Triplet<number> }
+    | { d: Triplet<number> }
+    | Triplet<number>
+  )
+  & (
+    | { center: Triplet<boolean> }
+    | { c: Triplet<boolean> }
+    | { cx?: boolean, cy?: boolean, cz?: boolean }
+  )
 
-const cube = new Component<CubeArgs, Element<Mesh>>("cube", n => {
-  let {
-    sideLength = 1, s = sideLength,
-    dimensions = [s, s, s], d = dimensions,
-    "0": X = d[0], "1": Y = d[1], "2": Z = d[2],
-    x = X, y = Y, z = Z,
-    center = true, c = center,
-    __centers = c instanceof Array ? c : [c, c, c],
-    cx = __centers[0], cy = __centers[1], cz = __centers[2],
-  } = n instanceof Array ? { d: n } : typeof n === "number" ? { s: n } : n;
-  return new Element<Mesh>(new CubeWork([x, y, z, [cx, cy, cz]]))
+const cube = new Component<[CubeArgs], Element<Mesh>>("cube", n => {
+  let xyzT: Triplet<number> =
+    "sideLength" in n ? n.sideLength :
+      "s" in n ? n.s :
+        "dimensions" in n ? n.dimensions :
+          "d" in n ? n.d :
+            n
+  let xyzA: [number, number, number] =
+    typeof xyzT === "number" ? [xyzT, xyzT, xyzT] :
+      "0" in xyzT || "1" in xyzT || "2" in xyzT ? [xyzT["0"] ?? 0, xyzT["1"] ?? 0, xyzT["2"] ?? 0] :
+        "x" in xyzT || "y" in xyzT || "z" in xyzT ? [xyzT.x ?? 0, xyzT.y ?? 0, xyzT.z ?? 0] :
+          [0, 0, 0]
+  let cT: Triplet<boolean> =
+    "center" in n ? n.center :
+      "c" in n ? n.c :
+        [n.cx, n.cy, n.cz]
+  let cA: [boolean, boolean, boolean] =
+    typeof cT === "boolean" ? [cT, cT, cT] :
+      "0" in cT || "1" in cT || "2" in cT ? [cT["0"] ?? true, cT["1"] ?? true, cT["2"] ?? true] :
+        "x" in cT || "y" in cT || "z" in cT ? [cT.x ?? true, cT.y ?? true, cT.z ?? true] :
+          [true, true, true];
+  return new Element<Mesh>(new CubeWork([xyzA, cA]))
 })
 
 cube({ s: 1 });

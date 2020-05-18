@@ -5,6 +5,7 @@
     "esModuleInterop": true,
     "target": "ES5",
     "downlevelIteration": true,
+    "jsx": "react"
   },
   "ts-node": {
     "transpileOnly": true

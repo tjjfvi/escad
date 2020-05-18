@@ -3,17 +3,24 @@
 import { Product } from ".";
 import { Vector3 } from "./Vector3";
 import { Face } from "./Face";
+import Id from "../Id";
 
 const epsilon = 1e-5;
 
-class Plane extends Product {
+class Plane extends Product<Plane> {
+
+  type = Plane;
+
+  static id = new Id("Plane", __filename);
 
   normal: Vector3;
   w: number;
 
-  constructor(points: Array<Vector3> | Vector3, w?: number){
+  constructor(normal: Vector3, w: number);
+  constructor(points: Array<Vector3>, w?: number);
+  constructor(points: Array<Vector3> | Vector3, w?: number) {
     super();
-    if(points instanceof Vector3) {
+    if (points instanceof Vector3) {
       this.normal = points;
       this.w = w || 0;
     } else {
@@ -23,11 +30,15 @@ class Plane extends Product {
     }
   }
 
-  flip(){
+  clone() {
+    return new Plane(this.normal, this.w);
+  }
+
+  flip() {
     return new Plane(this.normal.negate(), -this.w);
   }
 
-  splitFace(face: Face, coplanarFront: Array<Face>, coplanarBack: Array<Face>, front: Array<Face>, back: Array<Face>){
+  splitFace(face: Face, coplanarFront: Array<Face>, coplanarBack: Array<Face>, front: Array<Face>, back: Array<Face>) {
     const Coplanar = 0;
     const Front = 1;
     const Back = 2;
@@ -41,7 +52,7 @@ class Plane extends Product {
       return type;
     });
 
-    switch(faceType) {
+    switch (faceType) {
       case Coplanar:
         (this.normal.dot(face.plane.normal) > 0 ? coplanarFront : coplanarBack).push(face);
         break;
@@ -52,16 +63,16 @@ class Plane extends Product {
         back.push(face);
         break;
       case Spanning: {
-        let f = [];
-        let b = [];
+        let f: Vector3[] = [];
+        let b: Vector3[] = [];
         face.points.map((vi, i, a) => {
           let j = (i + 1) % a.length;
           let ti = types[i];
           let tj = types[j];
           let vj = a[j];
-          if(ti !== Back) f.push(vi);
-          if(ti !== Front) b.push(vi);
-          if((ti | tj) !== Spanning) // Bitwise or
+          if (ti !== Back) f.push(vi);
+          if (ti !== Front) b.push(vi);
+          if ((ti | tj) !== Spanning) // Bitwise or
             return
           let t = (this.w - this.normal.dot(vi)) / this.normal.dot(vj.subtract(vi));
           let v = vi.lerp(vj, t);
@@ -75,13 +86,13 @@ class Plane extends Product {
     }
   }
 
-  serialize(){
+  serialize() {
     let buf = Buffer.alloc(4);
     buf.writeFloatLE(this.w, 0);
     return Buffer.concat([buf, this.normal.serialize()]);
   }
 
-  deserialize(buf: Buffer){
+  static deserialize(buf: Buffer) {
     let w = buf.readFloatLE(0);
     let n = Vector3.deserialize(buf.subarray(4));
     return new Plane(n, w)
