@@ -73,7 +73,7 @@ const FinReg = (
 );
 
 // @ts-ignore
-if (WeakRef in global && FinReg)
+if ("WeakRef" in global && FinReg)
   WeakCache = class WeakCache<K, V> extends WeakCacheBasic<K, V> {
 
     private cache: Map<K, WeakRef<V>> = new Map();

@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 export default escad => {
   let c = escad.udMeld([

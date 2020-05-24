@@ -1,26 +1,27 @@
+// @ts-nocheck
 
 export default (escad, p) => {
 
   let parameters = p([
     {
-      key:   "sides",
-      type:    "number",
-      min:     1,
-      max:     10,
+      key: "sides",
+      type: "number",
+      min: 1,
+      max: 10,
       default: 12,
     }, {
-      key:   "key2",
-      type:    "number",
-      min:     0,
-      max:     1000,
-      step:    1,
+      key: "key2",
+      type: "number",
+      min: 0,
+      max: 1000,
+      step: 1,
       default: 2,
     }, {
-      key:   "key3",
-      type:    "number",
-      min:     0,
-      max:     100,
-      step:    .1,
+      key: "key3",
+      type: "number",
+      min: 0,
+      max: 100,
+      step: .1,
       default: .3,
     },
   ]);

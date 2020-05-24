@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 export default escad => {
 
@@ -19,7 +20,7 @@ export default escad => {
   const reverse = a => a.reverse().map(x => x.reverse());
 
   const hilbertCurvePath = (iterations = 0) => {
-    if(iterations === 0)
+    if (iterations === 0)
       return [[[1, 0], [1, 1]], [[0, 0], [1, 0]], [[0, 1], [0, 0]]];
     let size = 2 ** (iterations - 1);
     let curve = hilbertCurvePath(iterations - 1);
@@ -56,7 +57,7 @@ export default escad => {
             dir[0] === -1 ?
               180 :
               null;
-      if(rot === null)
+      if (rot === null)
         throw new Error("Weird direction");
 
       return escad(children).rotate(rot).translate([xy * p[0], xy * p[1], z * (curve.length - 1 - i)])

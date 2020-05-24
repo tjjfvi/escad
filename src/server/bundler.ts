@@ -9,9 +9,9 @@ import watch from "node-watch";
 
 const folder = __dirname + "/../client/";
 
-const b = browserify(folder + "/js/index.js", {
+const b = browserify(folder + "/ts/index.tsx", {
   entries: [
-    folder + "/js/index.js",
+    folder + "/ts/index.tsx",
   ],
   cache: {},
   packageCache: {},
@@ -23,9 +23,9 @@ b.on("update", bundle);
 bundle();
 
 function bundle() {
-  console.log("Bundling client JS...");
+  console.log("Bundling client TS...");
   b.bundle()
-    .on("end", () => console.log("Bundled client JS"))
+    .on("end", () => console.log("Bundled client TS"))
     .on("error", e => console.error(e))
     .pipe(fs.createWriteStream(folder + "bundle.js"));
 }
@@ -43,7 +43,7 @@ async function bundleStylus() {
         basePath: folder + "stylus/",
       },
     },
-    (e, css) => e ? j(e) : r(css),
+    (e: any, css: any) => e ? j(e) : r(css),
   ));
   await fs.writeFile(folder + "bundle.css", css);
   console.log("Bundled stylus");

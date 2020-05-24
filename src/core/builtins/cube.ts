@@ -16,6 +16,7 @@ class CubeWork extends Work<CubeWork, Mesh, []> {
   constructor(args: CubeWorkArgs) {
     super([]);
     this.args = args;
+    this.freeze();
   }
 
   _serialize() {

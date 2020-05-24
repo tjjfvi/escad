@@ -82,9 +82,9 @@ export class Element<T extends Product> extends ExtensibleFunction {
     return (arr instanceof Array ? arr.map(e => e.toArrayDeep()) : arr);
   }
 
-  toArrayFlat(): Array<T> | T {
+  toArrayFlat(): Array<T> {
     let arr = this.toArray();
-    return (arr instanceof Array ? arr.flatMap(e => e.toArrayFlat()) : arr);
+    return (arr instanceof Array ? arr.flatMap(e => e.toArrayFlat()) : [arr]);
   }
 
 }

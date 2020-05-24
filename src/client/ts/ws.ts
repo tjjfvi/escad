@@ -1,35 +1,34 @@
-/* @flow */
 
-import EE from "events";
+import { EventEmitter } from "tsee";
 import { State } from "./State";
 import flatted from "flatted";
 
-class WS extends EE {
+class WS extends EventEmitter<any> {
 
   state: State;
   url: string;
   ws: WebSocket;
 
-  timeout;
+  timeout: any;
 
-  constructor(url, state: State){
+  constructor(url: string, state: State) {
     super();
     this.url = url;
     this.state = state;
-    this.initWs();
+    this.ws = this.initWs();
   }
 
-  s(...data){
-    if(this.ws.readyState !== 1)
+  s(...data: any) {
+    if (this.ws.readyState !== 1)
       return;
     console.log("→", ...data);
     this.ws.send(flatted.stringify(data));
   }
 
-  initWs(){
+  initWs() {
     this.timeout = null;
 
-    if(this.ws)
+    if (this.ws)
       this.ws.close();
 
     this.ws = new WebSocket(this.url);
@@ -38,7 +37,7 @@ class WS extends EE {
     });
 
     this.ws.addEventListener("error", () => {
-      if(!this.timeout) this.timeout = setTimeout(() => this.initWs(), 5000);
+      if (!this.timeout) this.timeout = setTimeout(() => this.initWs(), 5000);
     })
 
     this.ws.addEventListener("message", msg => {
@@ -53,13 +52,13 @@ class WS extends EE {
         this.initWs();
       }, 5000);
 
-      if(type === "ping")
+      if (type === "ping")
         return;
 
-      if(type === "id")
+      if (type === "id")
         this.state.id(data[0]);
 
-      if(type === "serverId")
+      if (type === "serverId")
         this.state.serverId(data[0]);
 
       this.emit("message", type, ...data);
@@ -67,6 +66,8 @@ class WS extends EE {
 
       console.log("←", type, ...data);
     })
+
+    return this.ws;
   }
 
 }

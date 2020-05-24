@@ -12,13 +12,14 @@ const { app } = expressWs(express());
 app.use(express.static(__dirname + "/../client/"));
 app.use(express.static(config.artifactsDir));
 
-import uuidv4 from "uuid/v4";
-const serverId = uuidv4();
+import uuid from "uuid";
+const serverId = uuid.v4();
 import * as render from "./renderComm";
+import WS from "ws";
 
-let curShas;
-let curParamDef;
-let curHierarchy;
+let curShas: any;
+let curParamDef: any;
+let curHierarchy: any;
 
 render.ee.on("reload", ({ shas, paramDef, hierarchy }) => {
   curShas = shas;
@@ -49,7 +50,7 @@ app.ws("/ws", ws => {
     const s = function (...data: Array<any>) {
       if (ws.readyState !== 1)
         return;
-      this.send(flatted.stringify(data));
+      ws.send(flatted.stringify(data));
     };
 
     let [requestedId, oldServerId, params] = await new Promise(res =>
@@ -69,7 +70,7 @@ app.ws("/ws", ws => {
       id = requestedId;
       console.log("Client reattached; id:", id);
     } else {
-      id = uuidv4();
+      id = uuid.v4();
       params = null;
       console.log("Client attached; id:", id);
     }
@@ -89,7 +90,7 @@ app.ws("/ws", ws => {
 
     let interval = setInterval(() => s("ping"), 1000);
 
-    let handler = ({ shas, paramDef, hierarchy }) => {
+    let handler = ({ shas, paramDef, hierarchy }: any) => {
       if (params)
         return run();
       s("shas", shas)

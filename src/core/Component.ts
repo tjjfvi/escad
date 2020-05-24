@@ -11,13 +11,10 @@ interface Component<I extends any[], T extends $T> {
 
 class Component<I extends any[], T extends $T> extends ExtensibleFunction {
 
-  name: string;
-
   private func: (...args: I) => T;
 
   constructor(name: string, func: (...args: I) => T) {
-    super((...args) => func(...(args as I)));
-    this.name = name;
+    super((...args) => func(...(args as I)), name);
     this.func = func;
   }
 

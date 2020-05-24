@@ -1,3 +1,4 @@
+// @ts-nocheck
 
 import { fork } from "child_process";
 import uuidv4 from "uuid/v4";
@@ -11,7 +12,7 @@ const ee = new EventEmitter<{
   reload: (x: any) => void,
 }>();
 
-let childProcess = null;
+let childProcess: any = null;
 
 function reload() {
   console.log("Loaded");

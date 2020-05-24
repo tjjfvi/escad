@@ -2,12 +2,12 @@
 // Render Process
 
 import escad from "../core";
-import arrayish from "../core/arrayish";
+import Element from "../core/Element";
 import Hierarchy from "../core/Hierarchy";
 import ProductManager from "../core/ProductManager";
 import Work from "../core/Work";
 
-let file, func, dir;
+let file: string, func: any, dir: string;
 
 process.on("message", ([type, ...data]) => {
   if (type === "run")
@@ -38,16 +38,16 @@ process.on("message", ([type, ...data]) => {
 })
 
 
-async function run(id, params) {
+async function run(id: any, params: any) {
   if (!func)
     return;
   let result;
   let paramDef;
   try {
-    result = await func(escad, def => {
+    result = await func(escad, (def: any) => {
       paramDef = def;
-      let defaults = {};
-      def.map(d => {
+      let defaults: any = {};
+      def.map((d: any) => {
         if (d.default)
           defaults[d.key] = d.default;
       });
@@ -60,25 +60,25 @@ async function run(id, params) {
   if (!result)
     return console.error(new Error("Invalid return type from exported function"));
   console.time("Render")
-  let hierarchy = new Hierarchy(null, result);
-  hierarchy.log();
-  let shas = (await Promise.all([arrayish.toArrayDeep(result, async x => {
+  let el = new Element(result);
+  let hierarchy = el.hierarchy;
+  let shas = el.toArrayFlat().flat().map(async (x: any) => {
     if (!(x instanceof escad.Work))
       throw new Error("Invalid return type from exported function")
-    await x.process(true);
-    return x.shaB64;
-  })].flat()));
+    await x.process();
+    return x.sha.b64;
+  }).flat(Infinity);
   console.timeEnd("Render")
-  process.send(["finish", id, shas, hierarchy, paramDef])
+  process.send?.(["finish", id, shas, hierarchy.sha.b64, paramDef])
 }
 
-async function exp(id, sha, format) {
+async function exp(id: any, sha: any, format: any) {
   await ProductManager.export(sha, format);
-  process.send(["finish", id]);
+  process.send?.(["finish", id]);
 }
 
-async function proc(id, sha) {
+async function proc(id: any, sha: any) {
   let work = await Work.deserialize(sha);
   await work.process();
-  process.send(["finish", id, sha]);
+  process.send?.(["finish", id, sha]);
 }

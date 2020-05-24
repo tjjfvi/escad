@@ -16,7 +16,7 @@ type $T = Component<any, any> | Operation<any, any> | Element<any>;
 interface Operation<I extends Product, O extends Product> {
   (...args: Elementish<I>[]): Element<O>,
   <T extends Product>(o: Operation<O, T>): Operation<I, T>,
-  <A extends any[], T extends any>(c: Component<A, T>): Component<A, OperationRet<I, O, T>>,
+  <A extends any[], T extends OperationIn<I, O>>(c: Component<A, T>): Component<A, OperationRet<I, O, T>>,
 }
 
 

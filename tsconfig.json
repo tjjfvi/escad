@@ -9,5 +9,8 @@
   },
   "ts-node": {
     "transpileOnly": true
-  }
+  },
+  "exclude": [
+    "src/core/builtinsOld"
+  ]
 }

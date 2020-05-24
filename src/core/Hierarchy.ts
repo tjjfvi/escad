@@ -65,8 +65,8 @@ class Hierarchy {
       name,
       braceType,
       children: children.map(c => c.sha.b64),
-      output: output.sha.b64,
-      fullOutput: fullOutput.sha.b64,
+      output: output === this ? null : output.sha.b64,
+      fullOutput: fullOutput === this ? null : fullOutput.sha.b64,
       input: input?.sha.b64,
     });
     Object.freeze(this);
