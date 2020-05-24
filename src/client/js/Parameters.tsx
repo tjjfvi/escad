@@ -1,4 +1,3 @@
-// @flow
 
 import React from "react";
 import state from "./State";
@@ -8,7 +7,7 @@ import { observer, useObservable, useComputed } from "rhobo";
 const Parameters = () => {
   state.paramDef.use()
   let def = state.paramDef();
-  if(!def)
+  if (!def)
     return <></>;
   return <Pane left name="Parameters">
     {def.map(d => {
@@ -19,12 +18,12 @@ const Parameters = () => {
           <span className="desc">{desc}</span>
         </div>
         {(() => {
-          if(!(key in state.params.val))
+          if (!(key in state.params.val))
             state.params.val[key] = def
           let Comp = {
             number: NumberParam,
           }[type];
-          return <Comp value={state.params.obs[key]} {...d}/>
+          return <Comp value={state.params.obs[key]} {...d} />
         })()}
       </div>
     })}
@@ -40,13 +39,13 @@ const NumberParam = observer(({ value }) => {
   let __value = useObservable(value());
   let valid = useComputed(() => validate(__value()));
   let _value = useComputed(() => __value(), v => {
-    if(!validate(v))
+    if (!validate(v))
       return __value(v);
     __value(+v);
     value(+v);
   });
   return <div className={"NumberParam " + (valid() ? "" : "invalid")}>
-    <input type="text" value={_value() || ""} onChange={e => _value(e.target.value)}/>
+    <input type="text" value={_value() || ""} onChange={e => _value(e.target.value)} />
     <div className="incDec">
       <div className="inc" onClick={() => _value.inc()}></div>
       <div className="dec" onClick={() => _value.dec()}></div>

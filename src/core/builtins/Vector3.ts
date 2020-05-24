@@ -1,4 +1,3 @@
-// @flow
 
 import { Product, Id } from ".";
 

@@ -1,4 +1,3 @@
-// @flow
 
 import ExtensibleFunction from "./ExtensibleFunction";
 import Operation from "./Operation";

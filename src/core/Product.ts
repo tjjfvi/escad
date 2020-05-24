@@ -1,4 +1,3 @@
-// @flow
 
 import Registry from "./Registry";
 import { hash, Sha } from "./hash";

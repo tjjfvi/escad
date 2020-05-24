@@ -1,4 +1,3 @@
-// @flow
 /* eslint-disable array-element-newline */
 
 import { Product, Id } from ".";

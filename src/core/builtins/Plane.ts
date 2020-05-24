@@ -1,4 +1,3 @@
-// @flow
 
 import { Product } from ".";
 import { Vector3 } from "./Vector3";

@@ -1,4 +1,3 @@
-// @flow
 /* global WeakRef, FinalizationRegistry, FinalizationGroup */
 
 declare class WeakRef<V> {
