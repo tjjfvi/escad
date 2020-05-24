@@ -10,10 +10,10 @@ export { Element, Product, ProductManager, Work, Hierarchy, Component, Id };
 
 // @create-index {"mode":"*"}
 
-export * from './Face.js';
-export * from './Matrix4.js';
-export * from './Mesh.js';
-export * from './Plane.js';
-export * from './Vector3.js';
-export * from './cube.js';
+export * from './Face';
+export * from './Matrix4';
+export * from './Mesh';
+export * from './Plane';
+export * from './Vector3';
+export * from './cube';
 
