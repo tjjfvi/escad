@@ -7,12 +7,13 @@ import Id from "./Id";
 import Product from "./Product";
 import WeakCache from "./WeakCache";
 import { Sha } from "./hash";
+import { B64 } from "./b64";
 
 class ProductManager {
 
   dir: string;
   exportDir: string;
-  cache = new WeakCache<string, Product | null>();
+  cache = new WeakCache<B64, Product | null>();
 
   constructor() {
     this.dir = "";
@@ -25,6 +26,8 @@ class ProductManager {
       if (!buffer)
         return null;
       let id = Id.get(new Sha(buffer.slice(0, 32)));
+      if (!id)
+        return null;
       let product = await Product.Registry.get(id).deserialize(buffer.slice(32));
       return product;
     })

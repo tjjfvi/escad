@@ -1,7 +1,7 @@
 
-Math.tau = 6.283185307179586472128676655;
-
 export * from "./builtins";
 import * as builtins from "./builtins";
+import { Elementish } from "./Element";
 
-export default Object.assign((...a) => new builtins.Element(a.length === 1 ? a[0] : a), builtins, builtins.operators);
+export default Object.assign(<T extends builtins.Product>(...a: Elementish<T>[]) =>
+  new builtins.Element(a.length === 1 ? a[0] : a), builtins);

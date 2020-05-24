@@ -12,30 +12,31 @@ interface ObjMap<T> {
   [x: string]: T;
 }
 type ElementishFlat<T> = Array<T> | ObjMap<T>;
-type Elementish<T extends Product> = Array<Elementish<T>> | ObjMap<T> | Leaf<T> | Element<T>;
+type Elementish<T extends Product> = Array<Elementish<T>> | ObjMap<Elementish<T>> | Leaf<T> | Element<T>;
 type DeepArray<T> = Array<T | DeepArray<T>>;
 
-type ElementRet<T extends Product, A extends Operation<T, any> | Component<any, any>> =
+type ElementRet<T extends Product, A extends any> =
   A extends Operation<T, infer U> ? Element<U> :
+  // @ts-ignore
   A extends Component<infer I, infer U> ? Component<I, ElementRet<T, U>> :
   never
 
-interface Element<T extends Product> {
+export interface Element<T extends Product> {
   (): Element<T>,
   <U extends Product>(o: Operation<T, U>): Element<U>,
   <I extends any[], U extends $T>(c: Component<I, U>): ElementRet<T, Component<I, U>>,
 }
 
-class Element<T extends Product> extends ExtensibleFunction {
+export class Element<T extends Product> extends ExtensibleFunction {
 
   val: ElementishFlat<Element<T>> | Leaf<T>;
   hierarchy: Hierarchy;
 
-  constructor(c: Elementish<T>, h: Hierarchy = new Hierarchy(c)) {
+  constructor(c: Elementish<T>, h: Hierarchy = Hierarchy.fromElementish(c)) {
     super(arg => {
       if (!arg)
         return that;
-      if (arg instanceof Operation || arg instanceof Component)
+      if (arg instanceof Operation)
         return arg(that);
       if (arg instanceof Component)
         return new Component<any, any>(arg.name + "'", (...args) => that(arg(...args)))

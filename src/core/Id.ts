@@ -1,12 +1,10 @@
-// @flow
 
 import { hash, Sha } from "./hash";
-import b64 from "./b64";
 const path = require("path").posix;
-// $FlowFixMe
 import readPkgUp from "read-pkg-up";
+import { B64 } from "./b64";
 
-const ids: Record<string, Id> = {};
+const ids = new Map<B64, Id>();
 
 class Id {
 
@@ -27,14 +25,14 @@ class Id {
     this.filename = path.relative(path.dirname(packageJsonPath), filename);
     this.name = name;
     this.sha = hash.json(this);
-    if (!ids[this.sha.b64])
-      ids[this.sha.b64] = this;
-    return ids[this.sha.b64];
+    let old = ids.get(this.sha.b64);
+    if (old) return old;
+    ids.set(this.sha.b64, this);
   }
 
 
   static get(sha: Sha) {
-    return ids[sha.b64];
+    return ids.get(sha.b64);
   }
 
 }

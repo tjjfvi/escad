@@ -1,63 +1,111 @@
 
-import arrayish from "./arrayish";
+import { hash, Sha } from "./hash";
+import { Elementish, Element } from "./Element";
+import Product from "./Product";
+import Work from "./Work";
+
+type BraceType = "{" | "[" | "(" | ":" | "";
 
 class Hierarchy {
 
   static symbol = Symbol("Hierarchy.symbol");
   static apply = Symbol("Hierarchy.apply");
 
-  constructor(name, children = [], important = false, shas = []){
-    if(children.isElement)
-      return new Hierarchy(name, children.tree, important, shas);
+  name: string;
+  braceType: BraceType;
+  children: readonly Hierarchy[];
+  output: Hierarchy;
+  fullOutput: Hierarchy;
+  input: Hierarchy | null;
+  sha: Sha;
+
+  constructor({
+    name = "",
+    braceType = "",
+    children = [],
+    output,
+    input = null,
+    fullOutput,
+    isOutput,
+    isFullOutput,
+  }: {
+    name?: string,
+    braceType?: BraceType,
+    children?: readonly Hierarchy[],
+    output?: Hierarchy | null,
+    input?: Hierarchy | null,
+    fullOutput?: Hierarchy | null,
+    isOutput?: boolean,
+    isFullOutput?: boolean,
+  }) {
+    if (!output)
+      output = isOutput || isFullOutput ? this : new Hierarchy({
+        name,
+        braceType,
+        input,
+        children: children.map(c => c.output),
+        isOutput: true,
+      })
+    if (!fullOutput)
+      fullOutput = output !== this ? output.fullOutput : isFullOutput ? this : new Hierarchy({
+        name,
+        braceType,
+        input,
+        children: children.map(c => c.fullOutput),
+        isFullOutput: true,
+      })
+
     this.name = name;
-    this.important = important;
-    this.children = children && Hierarchy.symbol in children ?
-      [children[Hierarchy.symbol]] :
-      arrayish.toArray(children, (v, k) => {
-        let f = v =>
-          typeof k === "string" ?
-            new Hierarchy(k, [v], true) :
-            v instanceof Hierarchy ?
-              v :
-              v && (Hierarchy.symbol in v) ?
-                v[Hierarchy.symbol] :
-                v && v.isElement ?
-                  f(v.tree) :
-                  arrayish.isArrayish(v) ?
-                    new Hierarchy(k, v, false) :
-                    null
-        let val = f(v);
-        return val;
-      });
-    this.shas = shas;
+    this.braceType = braceType;
+    this.children = children;
+    this.output = output;
+    this.fullOutput = fullOutput;
+    this.input = input;
+    this.sha = hash.json({
+      name,
+      braceType,
+      children: children.map(c => c.sha.b64),
+      output: output.sha.b64,
+      fullOutput: fullOutput.sha.b64,
+      input: input?.sha.b64,
+    });
     Object.freeze(this);
   }
 
-  clone(...shas){
-    return new Hierarchy(this.name, this.children, this.important, shas.length ? shas : this.shas);
+  static fromElementish(el: Elementish<Product>): Hierarchy {
+    if (el instanceof Element)
+      return el.hierarchy;
+    if (el instanceof Product)
+      return new Hierarchy({
+        name: `<${el.type.id.name}>`,
+      })
+    if (el instanceof Work)
+      return new Hierarchy({
+        name: `<${el.type.id.name}>`,
+      })
+    if (el instanceof Array)
+      return new Hierarchy({
+        braceType: "[",
+        children: el.map(e => Hierarchy.fromElementish(e)),
+      });
+    return new Hierarchy({
+      braceType: "{",
+      children: Object.entries(el).map(([k, v]) =>
+        new Hierarchy({
+          name: k,
+          braceType: ":",
+          children: [Hierarchy.fromElementish(v)]
+        })
+      )
+    });
   }
 
-  log(indent = 0){
-    console.log("  ".repeat(indent) + (this.important ? "*" : "-"), this.name);
-    this.children.map(c => c.log(indent + 1));
+  apply<T extends Product>(el: Elementish<T>) {
+    return new Element(el, this);
   }
 
-  apply(obj){
-    if(!obj)
-      return obj;
-    if(Hierarchy.apply in obj)
-      return obj[Hierarchy.apply](this);
-    return Object.assign(obj instanceof Array ? obj.slice() : { ...obj }, { [Hierarchy.symbol]: this });
-  }
-
-  serialize(){
-    return JSON.stringify(this);
-  }
-
-  static deserialize(str){
-    let obj = typeof str === "object" ? str : JSON.parse(str);
-    if(!obj) return obj;
-    return new Hierarchy(obj.name, obj.children.map(Hierarchy.deserialize), obj.important, obj.shas);
+  clone() {
+    return new Hierarchy(this);
   }
 
 }

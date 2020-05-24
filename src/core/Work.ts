@@ -8,11 +8,11 @@ import Id from "./Id";
 import WeakCache from "./WeakCache";
 // $FlowFixMe
 import fs from "fs-extra";
-import b64 from "./b64";
+import b64, { B64 } from "./b64";
 
 type Leaf<T extends Product> = T | W<T>;
 
-const cache = new WeakCache<string, W<any>>();
+const cache = new WeakCache<B64, W<any>>();
 
 type $C = Array<Leaf<Product>>;
 type W<T extends Product = Product, C extends $C = any> = Work<W<T, C>, T, C>;
@@ -62,12 +62,15 @@ abstract class Work<_W extends Work<_W, T, C>, T extends Product = Product, C ex
   static async deserialize(sha: Sha): Promise<W> {
     return await cache.getAsync(sha.b64, async () => {
       let buf = await fs.readFile(Work.dir + sha);
-      let id = buf.slice(0, 32);
+      let idBuf = buf.slice(0, 32);
       let cl = buf.readUInt16LE(32);
       let cb = Array(cl).fill(0).map((_, i) => buf.slice(32 + 2 + i * 32, 32 + 2 + i * 32 + 32));
       let args = buf.slice(32 + 2 + cl * 32);
       let c = await Promise.all(cb.map(s => Work.deserialize(new Sha(s))));
-      let C = Work.Registry.get(Id.get(new Sha(id)));
+      let id = Id.get(new Sha(idBuf));
+      if (!id)
+        throw new Error("Unknown Work Id " + b64(idBuf));
+      let C = Work.Registry.get(id);
       return C._deserialize(c, args);
     });
   }

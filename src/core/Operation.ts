@@ -1,15 +1,22 @@
-// @flow
 
 import ExtensibleFunction from "./ExtensibleFunction";
 import Component from "./Component";
 import Element, { Elementish } from "./Element";
 import Product from "./Product";
 
+type OperationIn<I extends Product, O extends Product> = Element<I> | Operation<O, Product> | Component<any, any>;
+type OperationRet<I extends Product, O extends Product, A extends OperationIn<I, O>> =
+  A extends Element<I> ? Element<O> :
+  A extends Operation<O, infer T> ? Operation<I, T> :
+  // @ts-ignore
+  A extends Component<infer B, infer T> ? Component<B, OperationRet<I, O, T>> :
+  never
+
 type $T = Component<any, any> | Operation<any, any> | Element<any>;
 interface Operation<I extends Product, O extends Product> {
   (...args: Elementish<I>[]): Element<O>,
   <T extends Product>(o: Operation<O, T>): Operation<I, T>,
-  <A extends any[], T extends $T>(c: Component<A, T>): Component<A, this extends (x: T) => infer O ? O : never>,
+  <A extends any[], T extends any>(c: Component<A, T>): Component<A, OperationRet<I, O, T>>,
 }
 
 
