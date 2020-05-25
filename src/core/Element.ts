@@ -11,6 +11,8 @@ type $T = Component<any, any> | Operation<any, any> | Element<any>;
 interface ObjMap<T> {
   [x: string]: T;
 }
+const isObjMap = (o: unknown): o is ObjMap<unknown> => typeof o === "object" && o?.constructor === Object;
+
 type ElementishFlat<T> = Array<T> | ObjMap<T>;
 type Elementish<T extends Product> = Array<Elementish<T>> | ObjMap<Elementish<T>> | Leaf<T> | Element<T>;
 type DeepArray<T> = Array<T | DeepArray<T>>;
@@ -44,14 +46,13 @@ export class Element<T extends Product> extends ExtensibleFunction {
     let that = this;
     if (c instanceof Array)
       this.val = c.map(x => new Element(x));
-    type $T = Component<any, any> | Operation<any, any> | Element<any>;
-    if (c.constructor === Object)
+    else if (isObjMap(c))
       this.val = Object.assign(Object.create(null), ...Object.entries(c).map(([k, v]) => ({ [k]: new Element(v) })));
-    if (c instanceof Element)
+    else if (c instanceof Element)
       this.val = c.val;
     else
-      // @ts-ignore
       this.val = c;
+    console.log(c, this.val);
     this.hierarchy = h;
   }
 
@@ -67,7 +68,7 @@ export class Element<T extends Product> extends ExtensibleFunction {
       return new Element(f(this.val));
   }
 
-  toArray(): Array<Element<T>> | T {
+  toArray(): Array<Element<T>> | Leaf<T> {
     if (this.val instanceof Array)
       return this.val;
     if (this.val.constructor === Object)
@@ -76,12 +77,12 @@ export class Element<T extends Product> extends ExtensibleFunction {
     return this.val;
   }
 
-  toArrayDeep(): DeepArray<T> | T {
+  toArrayDeep(): DeepArray<Leaf<T>> | Leaf<T> {
     let arr = this.toArray();
     return (arr instanceof Array ? arr.map(e => e.toArrayDeep()) : arr);
   }
 
-  toArrayFlat(): Array<T> {
+  toArrayFlat(): Array<Leaf<T>> {
     let arr = this.toArray();
     return (arr instanceof Array ? arr.flatMap(e => e.toArrayFlat()) : [arr]);
   }

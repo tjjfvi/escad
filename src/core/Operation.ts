@@ -21,8 +21,6 @@ interface Operation<I extends Product, O extends Product> {
 
 class Operation<I, O> extends ExtensibleFunction {
 
-  name: string;
-
   constructor(name: string, func: (arg: Element<I>) => Elementish<O>) {
     super((...args) => {
       if (args[0] instanceof Operation)
@@ -30,9 +28,8 @@ class Operation<I, O> extends ExtensibleFunction {
       if (args[0] instanceof Component)
         return new Component(args[0].name + "+" + name, (...a: any) => (that as any)((args[0](...a) as any)));
       return func(new Element(args));
-    })
+    }, name)
     let that: Operation<I, O> = (this as any);
-    this.name = name;
   }
 
 }
