@@ -108,8 +108,6 @@ const cube = new Component<[CubeArgs], Element<Mesh>>("cube", n => {
   return new Element<Mesh>(new CubeWork([xyzA, cA]))
 })
 
-cube({ s: 1 });
-
 export { cube, CubeWork };
 export type { CubeArgs };
 

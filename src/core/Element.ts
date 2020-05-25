@@ -15,16 +15,15 @@ type ElementishFlat<T> = Array<T> | ObjMap<T>;
 type Elementish<T extends Product> = Array<Elementish<T>> | ObjMap<Elementish<T>> | Leaf<T> | Element<T>;
 type DeepArray<T> = Array<T | DeepArray<T>>;
 
-type ElementRet<T extends Product, A extends any> =
-  A extends Operation<T, infer U> ? Element<U> :
-  // @ts-ignore
-  A extends Component<infer I, infer U> ? Component<I, ElementRet<T, U>> :
-  never
+// type ElementRet<T extends Product, A extends any> =
+//   A extends Operation<T, infer U> ? Element<U> :
+//   // A extends Component<infer I, infer U> ? Component<I, ElementRet<T, U, Dec<N>>> :
+//   never
 
 export interface Element<T extends Product> {
   (): Element<T>,
   <U extends Product>(o: Operation<T, U>): Element<U>,
-  <I extends any[], U extends $T>(c: Component<I, U>): ElementRet<T, Component<I, U>>,
+  // <I extends any[], U extends $T>(c: Component<I, U>): ElementRet<T, Component<I, U>>,
 }
 
 export class Element<T extends Product> extends ExtensibleFunction {

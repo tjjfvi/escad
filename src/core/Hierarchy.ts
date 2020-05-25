@@ -3,13 +3,14 @@ import { hash, Sha } from "./hash";
 import { Elementish, Element } from "./Element";
 import Product from "./Product";
 import Work from "./Work";
+import fs from "fs-extra";
+import path from "path";
 
 type BraceType = "{" | "[" | "(" | ":" | "";
 
 class Hierarchy {
 
-  static symbol = Symbol("Hierarchy.symbol");
-  static apply = Symbol("Hierarchy.apply");
+  static dir: string = "";
 
   name: string;
   braceType: BraceType;
@@ -18,6 +19,8 @@ class Hierarchy {
   fullOutput: Hierarchy;
   input: Hierarchy | null;
   sha: Sha;
+
+  writePromise: Promise<void>;
 
   constructor({
     name = "",
@@ -61,14 +64,16 @@ class Hierarchy {
     this.output = output;
     this.fullOutput = fullOutput;
     this.input = input;
-    this.sha = hash.json({
+    let obj = {
       name,
       braceType,
       children: children.map(c => c.sha.b64),
       output: output === this ? null : output.sha.b64,
       fullOutput: fullOutput === this ? null : fullOutput.sha.b64,
-      input: input?.sha.b64,
-    });
+      input: input?.sha.b64 ?? null,
+    };
+    this.sha = hash.json(obj);
+    this.writePromise = fs.writeFile(path.join(Hierarchy.dir, this.sha.b64), JSON.stringify(obj));
     Object.freeze(this);
   }
 

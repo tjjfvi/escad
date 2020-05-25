@@ -1,17 +1,17 @@
 
 const colors = {
-  black:     0x151820,
-  blackish:  0x1d2028,
-  darkgrey:  0x252830,
-  grey:      0x454850,
+  black: 0x151820,
+  blackish: 0x1d2028,
+  darkgrey: 0x252830,
+  grey: 0x454850,
   lightgrey: 0x656870,
-  white:     0xbdc3c7,
-  red:       0xc0392b,
-  orange:    0xd35400,
-  yellow:    0xf1c40f,
-  green:     0x2ecc71,
-  blue:      0x0984e3,
-  purple:    0x8e44ad,
+  white: 0xbdc3c7,
+  red: 0xc0392b,
+  orange: 0xd35400,
+  yellow: 0xf1c40f,
+  green: 0x2ecc71,
+  blue: 0x0984e3,
+  purple: 0x8e44ad,
 };
 
 import React from "react";
@@ -26,7 +26,7 @@ import { EdgesGeometry } from "./EdgesGeometry";
 const t = three;
 
 const Preview = () => {
-  let el;
+  let el: any;
 
   const scene = new t.Scene();
   const camera = new t.PerspectiveCamera(60, 1, 1e-2, 1e5);
@@ -56,11 +56,11 @@ const Preview = () => {
   scene.background = new t.Color(colors.black);
 
   const axes = [
-    [new t.Vector3(+1, 0, 0), 0xe74c3c,  1],
+    [new t.Vector3(+1, 0, 0), 0xe74c3c, 1],
     [new t.Vector3(-1, 0, 0), 0xe74c3c, .5],
-    [new t.Vector3(0, +1, 0), 0x2ecc71,  1],
+    [new t.Vector3(0, +1, 0), 0x2ecc71, 1],
     [new t.Vector3(0, -1, 0), 0x2ecc71, .5],
-    [new t.Vector3(0, 0, +1), 0x3498db,  1],
+    [new t.Vector3(0, 0, +1), 0x3498db, 1],
     [new t.Vector3(0, 0, -1), 0x3498db, .5],
   ].map(([vector, color, opacity = 1]) => {
     let geo = new t.Geometry();
@@ -79,7 +79,7 @@ const Preview = () => {
   const group = new t.Group();
   scene.add(group);
 
-  state.shas.ee.on("change", async () => {
+  state.shas.on("update", async () => {
     let meshes = await Promise.all(state.shas().map(sha =>
       fetch("/products/" + sha).then(r => r.arrayBuffer()).then(processMesh))
     );
@@ -100,11 +100,11 @@ const Preview = () => {
   orientScene.add(orientCube);
 
   const orientAxes = [
-    [new t.Vector3(+1, 0, 0), 0xe74c3c,  1],
+    [new t.Vector3(+1, 0, 0), 0xe74c3c, 1],
     [new t.Vector3(-1, 0, 0), 0xe74c3c, .5],
-    [new t.Vector3(0, +1, 0), 0x2ecc71,  1],
+    [new t.Vector3(0, +1, 0), 0x2ecc71, 1],
     [new t.Vector3(0, -1, 0), 0x2ecc71, .5],
-    [new t.Vector3(0, 0, +1), 0x3498db,  1],
+    [new t.Vector3(0, 0, +1), 0x3498db, 1],
     [new t.Vector3(0, 0, -1), 0x3498db, .5],
   ].map(([vector, color, opacity = 1]) => {
     let geo = new t.CylinderBufferGeometry(.01, .01, .3, 100, 1, false).translate(0, .15, 0);
@@ -118,8 +118,8 @@ const Preview = () => {
 
   let ortho = false;
 
-  function render(){
-    if(!el)
+  function render() {
+    if (!el)
       return;
     requestAnimationFrame(render);
 
@@ -158,7 +158,7 @@ const Preview = () => {
     el = e;
     el.appendChild(renderer.domElement);
     el.appendChild(orientRenderer.domElement);
-    let handle = e => {
+    let handle = (e: any) => {
       let cel = orientRenderer.domElement;
       let rect = cel.getBoundingClientRect();
       orientMouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
@@ -169,14 +169,14 @@ const Preview = () => {
     orientRenderer.domElement.addEventListener("click", () => {
       orientRaycast(orientMouse)(camera);
     })
-    orientRenderer.domElement.addEventListener("contextmenu", e => {
+    orientRenderer.domElement.addEventListener("contextmenu", (e: any) => {
       ortho = !ortho;
       e.preventDefault();
     })
     let raycaster = new t.Raycaster();
     let mouse = new t.Vector2();
     let sphere = new t.Mesh(new t.SphereBufferGeometry(1, 100, 100), new t.MeshNormalMaterial());
-    renderer.domElement.addEventListener("dblclick", e => {
+    renderer.domElement.addEventListener("dblclick", (e: any) => {
       let cam = ortho ? orthocamera : camera;
       sphere.scale.set(1, 1, 1).multiplyScalar(cam.position.length() / 100)
       let cel = renderer.domElement;
@@ -185,10 +185,10 @@ const Preview = () => {
       mouse.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
       raycaster.setFromCamera(mouse, cam);
       let hits = raycaster.intersectObjects([group, sphere], true);
-      for(let { object, point } of hits) {
-        if(object.type !== "Mesh")
+      for (let { object, point } of hits) {
+        if (object.type !== "Mesh")
           continue;
-        if(object === sphere)
+        if (object === sphere)
           point.set(0, 0, 0);
         camera.position.add(point).sub(controls.target);
         controls.target = point;
@@ -202,7 +202,7 @@ const Preview = () => {
 
 export default Preview;
 
-function processMesh(buf){
+function processMesh(buf: ArrayBuffer) {
   let arr = new Float32Array(buf.slice(32));
   let attr = new t.BufferAttribute(arr, 3);
   let geo = new t.BufferGeometry();
@@ -221,6 +221,7 @@ function processMesh(buf){
     polygonOffsetFactor: 1,
     polygonOffsetUnits: 1,
   })
+  // @ts-ignore
   let lines = new t.LineSegments(new EdgesGeometry(geo), new t.LineBasicMaterial({ color: colors.white }))
   let mesh = new t.Mesh(geo, mat);
   let inMesh = new t.Mesh(geo, inMat);
@@ -233,7 +234,7 @@ const cubeSize = .5;
 const edgeSize = .125;
 const centerSize = cubeSize - edgeSize * 2;
 
-function createOrientCube(c, controls){
+function createOrientCube(c: any, controls: any) {
   let planeGeo = new t.PlaneBufferGeometry(centerSize, centerSize);
 
   let edgeGeo = t.BufferGeometryUtils.mergeBufferGeometries([
@@ -296,18 +297,18 @@ function createOrientCube(c, controls){
   ));
 
   let raycaster = new t.Raycaster();
-  let lastCast;
-  let raycast = mouse => {
+  let lastCast: any;
+  let raycast = (mouse: any) => {
     raycaster.setFromCamera(mouse, c());
     let x = raycaster.intersectObjects(parts);
-    let [{ object: mesh } = {}] = x;
-    if(lastCast)
+    let [{ object: mesh = null } = {}] = x;
+    if (lastCast)
       lastCast.material = mat;
     lastCast = mesh;
-    if(!mesh)
-      return () => {};
+    if (!mesh)
+      return () => { };
     mesh.material = hoverMat;
-    return c => {
+    return (c: any) => {
       let dist = c.position.distanceTo(controls.target);
       c.position
         .copy(mesh.position)

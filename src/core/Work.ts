@@ -60,7 +60,7 @@ abstract class Work<_W extends Work<_W, T, C>, T extends Product = Product, C ex
 
   static async deserialize(sha: Sha): Promise<W> {
     return await cache.getAsync(sha.b64, async () => {
-      let buf = await fs.readFile(Work.dir + sha);
+      let buf = await fs.readFile(Work.dir + sha.b64);
       let idBuf = buf.slice(0, 32);
       let cl = buf.readUInt16LE(32);
       let cb = Array(cl).fill(0).map((_, i) => buf.slice(32 + 2 + i * 32, 32 + 2 + i * 32 + 32));
