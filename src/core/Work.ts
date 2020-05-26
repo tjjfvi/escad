@@ -79,7 +79,6 @@ abstract class Work<_W extends Work<_W, T, C>, T extends Product = Product, C ex
   async process(): Promise<T> {
     if (this.redirect)
       return await this.redirect.process();
-    console.log(this, this.sha);
     let memoized = await ProductManager.lookup(this.sha);
     if (memoized)
       // @ts-ignore

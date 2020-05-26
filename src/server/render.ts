@@ -30,7 +30,6 @@ function processMessage([type, ...data]: any) {
     return;
 
   init = true;
-  console.log("INIT");
   [file, dir] = data;
   Work.dir = dir + "/trees/";
   ProductManager.dir = dir + "/products/";

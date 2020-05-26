@@ -7,6 +7,7 @@ import Component, { __Component__ } from "./Component";
 import Product from "./Product";
 import * as builtins from "./builtins";
 import { inspect } from "util";
+import { Mesh } from "./builtins";
 
 interface ObjMap<T> {
   [x: string]: T;
@@ -19,23 +20,24 @@ type DeepArray<T> = Array<T | DeepArray<T>>;
 
 export declare class __Element__<T extends Product> { private __t__: T; };
 
+type ElementIn<T extends Product> = __Element__<any> | __Operation__<T, any> | __Component__<any, ElementIn<T>>
+type ElementOut<T extends Product, Arg extends ElementIn<T>> =
+  Arg extends __Element__<infer U> ? Element<T | U> :
+  Arg extends __Operation__<T, infer U> ? Operation<T, U> :
+  Arg extends __Component__<infer I, infer U> ? Component<I, ElementOut<T, U>> :
+  never
+
 export interface Element<T extends Product> extends __Element__<T> {
   (): Element<T>,
   <U extends Product>(el: __Element__<U>): Element<T | U>,
   <U extends Product>(o: __Operation__<T, U>): Operation<T, U>,
-  <I extends any[], U extends Product>(c: __Component__<I, __Operation__<T, U>>): Component<I, Operation<T, U>>,
+  <I extends any[], U extends ElementIn<T>>(c: __Component__<I, U>): Component<I, ElementOut<T, U>>,
 }
 
 type B = typeof builtins;
 
 type _ElementBuiltins<T extends Product> = {
-  [K in keyof B]: (
-    B[K] extends __Element__<infer U> ? Element<T | U> :
-    B[K] extends __Operation__<T, infer U> ? Operation<T, U> :
-    B[K] extends __Element__<infer U> ? Element<T | U> :
-    B[K] extends __Component__<infer A, __Operation__<T, infer U>> ? Component<A, Operation<T, U>> :
-    never
-  )
+  [K in keyof B]: B[K] extends ElementIn<T> ? ElementOut<T, B[K]> : never
 }
 
 export interface Element<T extends Product> extends _ElementBuiltins<T> { }
@@ -55,17 +57,19 @@ export class Element<T extends Product> extends ExtensibleFunction {
         return new Component<any, any>(arg.name + "'", (...args) => that(arg(...args)))
       if (arg instanceof Element)
         return this.join(arg);
-      console.log(arg, arg instanceof Operation)
       throw new Error("Invalid argument to Element");
     }, {
-      get: (target, prop) => prop in target ? target[prop as keyof typeof target] : (() => {
+      get: (target, prop) => {
+        if (prop in target)
+          return target[prop as keyof typeof target];
+
         if (!(prop in builtins) || typeof prop === "symbol")
           return;
+
         const val = builtins[prop as keyof typeof builtins];
-        console.log(prop, val);
         // @ts-ignore
         return this(val);
-      })()
+      }
     })
     let that = this;
     if (c instanceof Array)
@@ -77,8 +81,6 @@ export class Element<T extends Product> extends ExtensibleFunction {
     else
       this.val = c as Leaf<T>;
     this.hierarchy = h;
-
-    console.log(this, this === undefined)
   }
 
   map<U extends Product>(f: (x: Leaf<T>) => Elementish<T>): Element<U> {

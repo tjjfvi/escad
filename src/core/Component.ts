@@ -3,7 +3,7 @@ import ExtensibleFunction from "./ExtensibleFunction";
 import { __Operation__ } from "./Operation";
 import { __Element__ } from "./Element";
 
-type $T = __Operation__<any, any> | __Element__<any>;
+type $T = __Component__<any, any> | __Operation__<any, any> | __Element__<any>;
 
 export declare class __Component__<I extends any[], T extends $T> { private __i__: I; private __t__: T; };
 
@@ -18,7 +18,6 @@ class Component<I extends any[], T extends $T> extends ExtensibleFunction {
   constructor(name: string, func: (...args: I) => T) {
     super((...args) => {
       let x = func(...(args as I));
-      console.log(x);
       return x;
     }, {}, name);
     this.func = func;

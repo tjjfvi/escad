@@ -7,25 +7,24 @@ import * as builtins from "./builtins";
 
 export declare class __Operation__<I extends Product, O extends Product> { private __i__: I; private __o__: O; };
 
+type OperationIn<I extends Product, O extends Product> = __Element__<I> | __Operation__<O, any> | __Component__<any, OperationIn<I, O>>
+type OperationOut<I extends Product, O extends Product, Arg extends OperationIn<I, O>> =
+  Arg extends __Element__<I> ? Element<O> :
+  Arg extends __Operation__<O, infer T> ? Operation<I, T> :
+  Arg extends __Component__<infer A, infer T> ? Component<A, OperationOut<I, O, T>> :
+  never
+
 type $T = Component<any, any> | Operation<any, any> | Element<any>;
 export interface Operation<I extends Product, O extends Product> extends __Operation__<I, O> {
   (...args: Elementish<I>[]): Element<O>,
   <T extends Product>(o: Operation<O, T>): Operation<I, T>,
-  <A extends any[]>(c: Component<A, Element<I>>): Component<A, Element<O>>,
-  <A extends any[], T extends Product>(c: Component<A, Operation<O, T>>): Component<A, Operation<I, T>>,
+  <A extends any[], T extends OperationIn<I, O>>(c: Component<A, T>): Component<A, OperationOut<I, O, T>>,
 }
-
 
 type B = typeof builtins;
 
 type _OperationBuiltins<I extends Product, O extends Product> = {
-  [K in keyof B]: (
-    B[K] extends __Operation__<O, infer U> ? Operation<I, U> :
-    B[K] extends __Element__<I> ? Element<O> :
-    B[K] extends __Component__<infer A, __Operation__<O, infer U>> ? Component<A, Operation<I, U>> :
-    B[K] extends __Component__<infer A, __Element__<I>> ? Component<A, Element<O>> :
-    never
-  )
+  [K in keyof B]: B[K] extends OperationIn<I, O> ? OperationOut<I, O, B[K]> : never;
 }
 
 export interface Operation<I extends Product, O extends Product> extends _OperationBuiltins<I, O> { }
@@ -39,7 +38,19 @@ export class Operation<I extends Product, O extends Product> extends ExtensibleF
       if (args[0] instanceof Component)
         return new Component(args[0].name + "+" + name, (...a: any) => (that as any)((args[0](...a) as any)));
       return new Element(func(new Element(args)));
-    }, {}, name)
+    }, {
+      get: (target, prop) => {
+        if (prop in target)
+          return target[prop as keyof typeof target];
+
+        if (!(prop in builtins) || typeof prop === "symbol")
+          return;
+
+        const val = builtins[prop as keyof typeof builtins];
+        // @ts-ignore
+        return this(val);
+      }
+    }, name)
     let that: Operation<I, O> = (this as any);
   }
 

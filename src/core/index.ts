@@ -4,11 +4,9 @@ import * as builtins from "./builtins";
 import { Elementish } from "./Element";
 
 const escadFunc = <T extends builtins.Product>(...a: Elementish<T>[]) => {
-  console.log(a);
   return new builtins.Element(a.length === 1 ? a[0] : a);
 }
 
 const escad = Object.assign(escadFunc, { ...builtins }) as typeof escadFunc & typeof builtins;
 
-console.log(escad)
 export default escad;
