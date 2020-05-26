@@ -78,6 +78,10 @@ class Hierarchy {
   }
 
   static fromElementish(el: Elementish<Product>): Hierarchy {
+    if (typeof el !== "object" && typeof el !== "function")
+      throw new Error("Invalid input to Hierarchy.fromElementish");
+    if (el instanceof Hierarchy)
+      return el;
     if (el instanceof Element)
       return el.hierarchy;
     if (el instanceof Product)
@@ -88,11 +92,12 @@ class Hierarchy {
       return new Hierarchy({
         name: `<${el.type.id.name}>`,
       })
-    if (el instanceof Array)
+    if (el instanceof Array) {
       return new Hierarchy({
         braceType: "[",
         children: el.map(e => Hierarchy.fromElementish(e)),
       });
+    }
     return new Hierarchy({
       braceType: "{",
       children: Object.entries(el).map(([k, v]) =>

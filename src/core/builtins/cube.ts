@@ -84,7 +84,7 @@ type CubeArgs =
     | { cx?: boolean, cy?: boolean, cz?: boolean }
   )
 
-const cube = new Component<[CubeArgs], Element<Mesh>>("cube", n => {
+const cube: Component<[CubeArgs], Element<Mesh>> = new Component("cube", n => {
   let xyzT: Triplet<number> =
     "sideLength" in n ? n.sideLength :
       "s" in n ? n.s :
@@ -105,7 +105,7 @@ const cube = new Component<[CubeArgs], Element<Mesh>>("cube", n => {
       "0" in cT || "1" in cT || "2" in cT ? [cT["0"] ?? true, cT["1"] ?? true, cT["2"] ?? true] :
         "x" in cT || "y" in cT || "z" in cT ? [cT.x ?? true, cT.y ?? true, cT.z ?? true] :
           [true, true, true];
-  return new Element<Mesh>(new CubeWork([xyzA, cA]))
+  return new Element(new CubeWork([xyzA, cA]));
 })
 
 export { cube, CubeWork };

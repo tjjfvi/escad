@@ -5,6 +5,8 @@ import Hierarchy from "./Hierarchy";
 import Operation from "./Operation";
 import Component from "./Component";
 import Product from "./Product";
+import * as builtins from "./builtins";
+import { inspect } from "util";
 
 type $T = Component<any, any> | Operation<any, any> | Element<any>;
 
@@ -24,24 +26,42 @@ type DeepArray<T> = Array<T | DeepArray<T>>;
 
 export interface Element<T extends Product> {
   (): Element<T>,
-  <U extends Product>(o: Operation<T, U>): Element<U>,
+  <U extends Product>(o: Operation<T, U>): Operation<T, U>,
   // <I extends any[], U extends $T>(c: Component<I, U>): ElementRet<T, Component<I, U>>,
 }
+
+type B = typeof builtins;
+
+type _ElementBuiltins<T extends Product> = {
+  [K in keyof B]: B[K] extends Operation<T, infer U> ? Operation<T, U> : never;
+}
+
+export interface Element<T extends Product> extends _ElementBuiltins<T> { }
 
 export class Element<T extends Product> extends ExtensibleFunction {
 
   val: ElementishFlat<Element<T>> | Leaf<T>;
   hierarchy: Hierarchy;
 
-  constructor(c: Elementish<T>, h: Hierarchy = Hierarchy.fromElementish(c)) {
+  constructor(c: Elementish<T>, h: Hierarchy = Hierarchy.fromElementish(c as Elementish<Product>)) {
     super(arg => {
       if (!arg)
         return that;
       if (arg instanceof Operation)
-        return arg(that);
+        return new Operation(arg.name, a => arg(this, a));
       if (arg instanceof Component)
         return new Component<any, any>(arg.name + "'", (...args) => that(arg(...args)))
+      console.log(arg, arg instanceof Operation)
       throw new Error("Invalid argument to Element");
+    }, {
+      get: (target, prop) => prop in target ? target[prop as keyof typeof target] : (() => {
+        if (!(prop in builtins) || typeof prop === "symbol")
+          return;
+        const val = builtins[prop as keyof typeof builtins];
+        console.log(prop, val);
+        // @ts-ignore
+        return this(val);
+      })()
     })
     let that = this;
     if (c instanceof Array)
@@ -52,8 +72,9 @@ export class Element<T extends Product> extends ExtensibleFunction {
       this.val = c.val;
     else
       this.val = c;
-    console.log(c, this.val);
     this.hierarchy = h;
+
+    console.log(this, this === undefined)
   }
 
   map<U extends Product>(f: (x: Leaf<T>) => Elementish<T>): Element<U> {

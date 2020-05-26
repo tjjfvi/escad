@@ -14,7 +14,11 @@ class Component<I extends any[], T extends $T> extends ExtensibleFunction {
   private func: (...args: I) => T;
 
   constructor(name: string, func: (...args: I) => T) {
-    super((...args) => func(...(args as I)), name);
+    super((...args) => {
+      let x = func(...(args as I));
+      console.log(x);
+      return x;
+    }, {}, name);
     this.func = func;
   }
 

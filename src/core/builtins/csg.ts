@@ -269,8 +269,8 @@ let _intersect = (...originalArgs: Elementish<Mesh>[]) => {
   ], 0);
 }
 
-const union = new Operation<Mesh, Mesh>("union", el => _union(el) ?? new Mesh([]));
-const diff = new Operation<Mesh, Mesh>("diff", el => _diff(el) ?? new Mesh([]));
-const intersect = new Operation<Mesh, Mesh>("intersect", el => _intersect(el) ?? new Mesh([]));
+const union: Operation<Mesh, Mesh> = new Operation("union", el => _union(el) ?? new Mesh([]));
+const diff: Operation<Mesh, Mesh> = new Operation("diff", el => _diff(el) ?? new Mesh([]));
+const intersect: Operation<Mesh, Mesh> = new Operation("intersect", el => _intersect(el) ?? new Mesh([]));
 
 export { MeshToCsgWork, CsgToMeshWork, CSGWrapper, CsgWork, union, diff, intersect };
