@@ -23,7 +23,7 @@
     "create-index-better": "^1.4.1",
     "eslint": "^6.8.0",
     "eslint-plugin-react": "^7.19.0",
-    "typescript": "file:../TypeScript"
+    "typescript": "^3.9.3"
   },
   "dependencies": {
     "@types/fs-extra": "^8.1.0",

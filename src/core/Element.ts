@@ -14,23 +14,26 @@ interface ObjMap<T> {
 const isObjMap = (o: unknown): o is ObjMap<unknown> => typeof o === "object" && o?.constructor === Object;
 
 type ElementishFlat<T> = Array<T> | ObjMap<T>;
-type Elementish<T extends Product> = Array<Elementish<T>> | ObjMap<Elementish<T>> | Leaf<T> | Element<T>;
+type Elementish<T extends Product> = Array<Elementish<T>> | ObjMap<Elementish<T>> | Leaf<T> | __Element__<T>;
 type DeepArray<T> = Array<T | DeepArray<T>>;
 
 export declare class __Element__<T extends Product> { private __t__: T; };
 
 export interface Element<T extends Product> extends __Element__<T> {
   (): Element<T>,
-  <U extends Product>(o: Operation<T, U>): Operation<T, U>,
-  <I extends any[], U extends Product>(c: Component<I, Operation<T, U>>): Component<I, Operation<T, U>>,
+  <U extends Product>(el: __Element__<U>): Element<T | U>,
+  <U extends Product>(o: __Operation__<T, U>): Operation<T, U>,
+  <I extends any[], U extends Product>(c: __Component__<I, __Operation__<T, U>>): Component<I, Operation<T, U>>,
 }
 
 type B = typeof builtins;
 
 type _ElementBuiltins<T extends Product> = {
   [K in keyof B]: (
-    B[K] extends Operation<T, infer U> ? Operation<T, U> :
-    B[K] extends Component<infer A, Operation<T, infer U>> ? Component<A, Operation<T, U>> :
+    B[K] extends __Element__<infer U> ? Element<T | U> :
+    B[K] extends __Operation__<T, infer U> ? Operation<T, U> :
+    B[K] extends __Element__<infer U> ? Element<T | U> :
+    B[K] extends __Component__<infer A, __Operation__<T, infer U>> ? Component<A, Operation<T, U>> :
     never
   )
 }
@@ -50,6 +53,8 @@ export class Element<T extends Product> extends ExtensibleFunction {
         return new Operation(arg.name, a => arg(this, a));
       if (arg instanceof Component)
         return new Component<any, any>(arg.name + "'", (...args) => that(arg(...args)))
+      if (arg instanceof Element)
+        return this.join(arg);
       console.log(arg, arg instanceof Operation)
       throw new Error("Invalid argument to Element");
     }, {
@@ -70,7 +75,7 @@ export class Element<T extends Product> extends ExtensibleFunction {
     else if (c instanceof Element)
       this.val = c.val;
     else
-      this.val = c;
+      this.val = c as Leaf<T>;
     this.hierarchy = h;
 
     console.log(this, this === undefined)
@@ -105,6 +110,12 @@ export class Element<T extends Product> extends ExtensibleFunction {
   toArrayFlat(): Array<Leaf<T>> {
     let arr = this.toArray();
     return (arr instanceof Array ? arr.flatMap(e => e.toArrayFlat()) : [arr]);
+  }
+
+  join<U extends Product>(el: __Element__<U>): Element<T | U> {
+    let toArr = <T extends Product>(el: Element<T>) =>
+      el.val instanceof Array ? el.val : [el];
+    return new Element<T | U>([...toArr(this), ...toArr(el as Element<U>)])
   }
 
 }

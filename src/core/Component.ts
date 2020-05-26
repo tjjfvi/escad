@@ -1,9 +1,9 @@
 
 import ExtensibleFunction from "./ExtensibleFunction";
-import Operation from "./Operation";
-import Element from "./Element";
+import { __Operation__ } from "./Operation";
+import { __Element__ } from "./Element";
 
-type $T = Operation<any, any> | Element<any>;
+type $T = __Operation__<any, any> | __Element__<any>;
 
 export declare class __Component__<I extends any[], T extends $T> { private __i__: I; private __t__: T; };
 

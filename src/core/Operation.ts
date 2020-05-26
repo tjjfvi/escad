@@ -20,10 +20,10 @@ type B = typeof builtins;
 
 type _OperationBuiltins<I extends Product, O extends Product> = {
   [K in keyof B]: (
-    B[K] extends Operation<O, infer U> ? Operation<I, U> :
-    B[K] extends Element<I> ? Element<O> :
-    B[K] extends Component<infer A, Operation<O, infer U>> ? Component<A, Operation<I, U>> :
-    B[K] extends Component<infer A, Element<I>> ? Component<A, Element<O>> :
+    B[K] extends __Operation__<O, infer U> ? Operation<I, U> :
+    B[K] extends __Element__<I> ? Element<O> :
+    B[K] extends __Component__<infer A, __Operation__<O, infer U>> ? Component<A, Operation<I, U>> :
+    B[K] extends __Component__<infer A, __Element__<I>> ? Component<A, Element<O>> :
     never
   )
 }
@@ -38,7 +38,7 @@ export class Operation<I extends Product, O extends Product> extends ExtensibleF
         return new Operation(name + "+" + args[0].name, (...a: any) => args[0](that(...a)));
       if (args[0] instanceof Component)
         return new Component(args[0].name + "+" + name, (...a: any) => (that as any)((args[0](...a) as any)));
-      return func(new Element(args));
+      return new Element(func(new Element(args)));
     }, {}, name)
     let that: Operation<I, O> = (this as any);
   }
