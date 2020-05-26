@@ -3,9 +3,11 @@ import ExtensibleFunction from "./ExtensibleFunction";
 import Operation from "./Operation";
 import Element from "./Element";
 
-type $T = Component<any, any> | Operation<any, any> | Element<any>;
+type $T = Operation<any, any> | Element<any>;
 
-interface Component<I extends any[], T extends $T> {
+export declare class __Component__<I extends any[], T extends $T> { private __i__: I; private __t__: T; };
+
+interface Component<I extends any[], T extends $T> extends __Component__<I, T> {
   (...args: I): T;
 }
 

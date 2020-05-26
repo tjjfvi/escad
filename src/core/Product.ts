@@ -4,8 +4,8 @@ import { hash, Sha } from "./hash";
 import ProductManager from "./ProductManager";
 import Id from "./Id";
 
-type _P = Product<_P>;
-abstract class Product<P extends Product<P> = _P> {
+interface _Product extends Product<_Product> { };
+abstract class Product<P extends Product<P> = _Product> {
 
   abstract type: ProductType<P>;
 
@@ -41,7 +41,7 @@ abstract class Product<P extends Product<P> = _P> {
 
 }
 
-export interface ProductType<P extends Product<P> = _P> {
+export interface ProductType<P extends Product<P> = _Product> {
   id: Id;
   deserialize(buffer: Buffer): P
 }

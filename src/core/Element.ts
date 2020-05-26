@@ -2,13 +2,11 @@
 import ExtensibleFunction from "./ExtensibleFunction";
 import { Leaf } from "./Work";
 import Hierarchy from "./Hierarchy";
-import Operation from "./Operation";
-import Component from "./Component";
+import Operation, { __Operation__ } from "./Operation";
+import Component, { __Component__ } from "./Component";
 import Product from "./Product";
 import * as builtins from "./builtins";
 import { inspect } from "util";
-
-type $T = Component<any, any> | Operation<any, any> | Element<any>;
 
 interface ObjMap<T> {
   [x: string]: T;
@@ -19,21 +17,22 @@ type ElementishFlat<T> = Array<T> | ObjMap<T>;
 type Elementish<T extends Product> = Array<Elementish<T>> | ObjMap<Elementish<T>> | Leaf<T> | Element<T>;
 type DeepArray<T> = Array<T | DeepArray<T>>;
 
-// type ElementRet<T extends Product, A extends any> =
-//   A extends Operation<T, infer U> ? Element<U> :
-//   // A extends Component<infer I, infer U> ? Component<I, ElementRet<T, U, Dec<N>>> :
-//   never
+export declare class __Element__<T extends Product> { private __t__: T; };
 
-export interface Element<T extends Product> {
+export interface Element<T extends Product> extends __Element__<T> {
   (): Element<T>,
   <U extends Product>(o: Operation<T, U>): Operation<T, U>,
-  // <I extends any[], U extends $T>(c: Component<I, U>): ElementRet<T, Component<I, U>>,
+  <I extends any[], U extends Product>(c: Component<I, Operation<T, U>>): Component<I, Operation<T, U>>,
 }
 
 type B = typeof builtins;
 
 type _ElementBuiltins<T extends Product> = {
-  [K in keyof B]: B[K] extends Operation<T, infer U> ? Operation<T, U> : never;
+  [K in keyof B]: (
+    B[K] extends Operation<T, infer U> ? Operation<T, U> :
+    B[K] extends Component<infer A, Operation<T, infer U>> ? Component<A, Operation<T, U>> :
+    never
+  )
 }
 
 export interface Element<T extends Product> extends _ElementBuiltins<T> { }
