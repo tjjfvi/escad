@@ -12,11 +12,18 @@ export { Element, Product, Operation, ProductManager, Work, Hierarchy, Component
 // @create-index {"mode":"*"}
 
 export * from './Face';
+export * from './MapOperation';
 export * from './Matrix4';
 export * from './Mesh';
 export * from './Plane';
+export * from './PointMapWork';
+export * from './TransformWork';
 export * from './Vector3';
 export * from './csg';
 export * from './cube';
 export * from './cyl';
+export * from './flip';
+export * from './rotate';
+export * from './scale';
+export * from './translate';
 

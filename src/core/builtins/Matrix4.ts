@@ -106,6 +106,26 @@ class Matrix4 extends Product<Matrix4> {
     ])
   }
 
+  scale(x: number, y: number, z: number) {
+    return this.multiply(Matrix4.scale(x, y, z));
+  }
+
+  translate(x: number, y: number, z: number) {
+    return this.multiply(Matrix4.translate(x, y, z));
+  }
+
+  rotateX(t: number) {
+    return this.multiply(Matrix4.rotateX(t));
+  }
+
+  rotateY(t: number) {
+    return this.multiply(Matrix4.rotateY(t));
+  }
+
+  rotateZ(t: number) {
+    return this.multiply(Matrix4.rotateZ(t));
+  }
+
 }
 
 Product.Registry.register(Matrix4);

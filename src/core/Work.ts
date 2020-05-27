@@ -26,7 +26,7 @@ abstract class Work<_W extends Work<_W, T, C>, T extends Product = Product, C ex
   sha: Sha;
   frozen = false;
 
-  protected redirect: W<T> | null = null;
+  protected redirect: Leaf<T> | null = null;
 
   constructor(children: C) {
     this.children = children;

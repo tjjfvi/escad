@@ -4,18 +4,21 @@ import Component, { __Component__ } from "./Component";
 import Element, { Elementish, __Element__ } from "./Element";
 import Product from "./Product";
 import * as builtins from "./builtins";
+import { __Thing__ } from "./__Thing__";
 
-export declare class __Operation__<I extends Product, O extends Product> { private __i__: I; private __o__: O; };
+export class __Operation__<I extends Product, O extends Product> extends __Thing__ {
+  declare private __i__: I;
+  declare private __o__: O;
+};
 
 type OperationIn<I extends Product, O extends Product> = __Element__<I> | __Operation__<O, any> | __Component__<any, OperationIn<I, O>>
 type OperationOut<I extends Product, O extends Product, Arg extends OperationIn<I, O>> =
   Arg extends __Element__<I> ? Element<O> :
   Arg extends __Operation__<O, infer T> ? Operation<I, T> :
-  Arg extends __Component__<infer A, infer T> ? Component<A, OperationOut<I, O, T>> :
+  Arg extends __Component__<infer A, infer T> ? T extends OperationIn<I, O> ? Component<A, OperationOut<I, O, T>> : never :
   never
 
-type $T = Component<any, any> | Operation<any, any> | Element<any>;
-export interface Operation<I extends Product, O extends Product> extends __Operation__<I, O> {
+export interface Operation<I extends Product, O extends Product> {
   (...args: Elementish<I>[]): Element<O>,
   <T extends Product>(o: Operation<O, T>): Operation<I, T>,
   <A extends any[], T extends OperationIn<I, O>>(c: Component<A, T>): Component<A, OperationOut<I, O, T>>,
@@ -23,13 +26,13 @@ export interface Operation<I extends Product, O extends Product> extends __Opera
 
 type B = typeof builtins;
 
-type _OperationBuiltins<I extends Product, O extends Product> = {
+export type _OperationBuiltins<I extends Product, O extends Product> = {
   [K in keyof B]: B[K] extends OperationIn<I, O> ? OperationOut<I, O, B[K]> : never;
 }
 
 export interface Operation<I extends Product, O extends Product> extends _OperationBuiltins<I, O> { }
 
-export class Operation<I extends Product, O extends Product> extends ExtensibleFunction {
+export class Operation<I extends Product, O extends Product> extends __Operation__<I, O> {
 
   constructor(name: string, func: (arg: Element<I>) => Elementish<O>) {
     super((...args) => {

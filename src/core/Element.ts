@@ -8,6 +8,7 @@ import Product from "./Product";
 import * as builtins from "./builtins";
 import { inspect } from "util";
 import { Mesh } from "./builtins";
+import { __Thing__ } from "./__Thing__";
 
 interface ObjMap<T> {
   [x: string]: T;
@@ -18,16 +19,18 @@ type ElementishFlat<T> = Array<T> | ObjMap<T>;
 type Elementish<T extends Product> = Array<Elementish<T>> | ObjMap<Elementish<T>> | Leaf<T> | __Element__<T>;
 type DeepArray<T> = Array<T | DeepArray<T>>;
 
-export declare class __Element__<T extends Product> { private __t__: T; };
+export class __Element__<T extends Product> extends __Thing__ {
+  declare private __t__: T;
+};
 
 type ElementIn<T extends Product> = __Element__<any> | __Operation__<T, any> | __Component__<any, ElementIn<T>>
 type ElementOut<T extends Product, Arg extends ElementIn<T>> =
   Arg extends __Element__<infer U> ? Element<T | U> :
   Arg extends __Operation__<T, infer U> ? Operation<T, U> :
-  Arg extends __Component__<infer I, infer U> ? Component<I, ElementOut<T, U>> :
+  Arg extends __Component__<infer I, infer U> ? U extends ElementIn<T> ? Component<I, ElementOut<T, U>> : never :
   never
 
-export interface Element<T extends Product> extends __Element__<T> {
+export interface Element<T extends Product> {
   (): Element<T>,
   <U extends Product>(el: __Element__<U>): Element<T | U>,
   <U extends Product>(o: __Operation__<T, U>): Operation<T, U>,
@@ -42,7 +45,7 @@ type _ElementBuiltins<T extends Product> = {
 
 export interface Element<T extends Product> extends _ElementBuiltins<T> { }
 
-export class Element<T extends Product> extends ExtensibleFunction {
+export class Element<T extends Product> extends __Element__<T> {
 
   val: ElementishFlat<Element<T>> | Leaf<T>;
   hierarchy: Hierarchy;
@@ -83,15 +86,14 @@ export class Element<T extends Product> extends ExtensibleFunction {
     this.hierarchy = h;
   }
 
-  map<U extends Product>(f: (x: Leaf<T>) => Elementish<T>): Element<U> {
+  map<U extends Product>(f: (x: Leaf<T>) => Elementish<U>): Element<U> {
     if (this.val instanceof Array)
       return new Element<U>(this.val.map(v => v.map<U>(f)));
-    if (this.val && this.val.constructor === Object)
+    if (isObjMap(this.val))
       return new Element<U>(Object.assign({}, ...Object.entries(this.val).map(([k, v]) => ({
         [k]: v instanceof Element ? v.map<U>(f) : v,
       }))));
     else
-      // @ts-ignore
       return new Element(f(this.val));
   }
 
