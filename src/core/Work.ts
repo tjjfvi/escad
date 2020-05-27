@@ -77,8 +77,11 @@ abstract class Work<_W extends Work<_W, T, C>, T extends Product = Product, C ex
   abstract async execute(inputs: { [k in keyof C]: C[k] extends Leaf<infer O> ? O : never }): Promise<T>;
 
   async process(): Promise<T> {
-    if (this.redirect)
-      return await this.redirect.process();
+    if (this.redirect) {
+      let prom = this.redirect.process();
+      await ProductManager.store(this.sha, this.redirect.process());
+      return await prom;
+    }
     let memoized = await ProductManager.lookup(this.sha);
     if (memoized)
       // @ts-ignore

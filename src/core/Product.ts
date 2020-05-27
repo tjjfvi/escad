@@ -35,7 +35,7 @@ abstract class Product<P extends Product<P> = _Product> {
     return this._exportTypes = {};
   }
 
-  process(): this {
+  async process(): Promise<this> {
     return this;
   }
 

@@ -5,7 +5,7 @@ export default () => {
 
   let opts = {
     scale: 1,
-    sides: 20,
+    sides: 50,
   }
 
   let cyl = (({ sides } = opts) =>
@@ -22,11 +22,11 @@ export default () => {
     return (escad
       .translate(-6, 0, -10)
       .union(
-        // cyl(o),
+        cyl(o),
 
         escad
-          .translate(12, 0, 20)()
-          .rotate(0, 180, 0)()
+          .translate(12, 0, 20)
+          .rotate(0, 180, 0)
           (cyl(o)),
       )
     );
