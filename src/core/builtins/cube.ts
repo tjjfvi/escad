@@ -88,11 +88,12 @@ type CubeArgs =
 
 const cube: Component<[CubeArgs], Element<Mesh>> = new Component("cube", n => {
   let xyzT: Triplet<number> =
-    n.sideLength ??
-    n.s ??
-    n.dimensions ??
-    n.d ??
-    n
+    ("sideLength" in n ? n.sideLength : null) ??
+    ("s" in n ? n.s : null) ??
+    ("dimensions" in n ? n.dimensions : null) ??
+    ("d" in n ? n.d : null) ??
+    ("x" in n || "0" in n ? n : null) ??
+    1
   let xyzA: [number, number, number] =
     typeof xyzT === "number" ? [xyzT, xyzT, xyzT] :
       "0" in xyzT || "1" in xyzT || "2" in xyzT ? [xyzT["0"] ?? 0, xyzT["1"] ?? 0, xyzT["2"] ?? 0] :
@@ -100,9 +101,10 @@ const cube: Component<[CubeArgs], Element<Mesh>> = new Component("cube", n => {
           [0, 0, 0]
 
   let cT: Triplet<boolean> =
-    n.center ??
-    n.c ??
-    [n.cx, n.cy, n.cz]
+    ("center" in n ? n.center : null) ??
+    ("c" in n ? n.c : null) ??
+    ("cx" in n ? [n.cx ?? true, n.cy ?? true, n.cz ?? true] : null) ??
+    [true, true, true]
   let cA: [boolean, boolean, boolean] =
     typeof cT === "boolean" ? [cT, cT, cT] :
       "0" in cT || "1" in cT || "2" in cT ? [cT["0"] ?? true, cT["1"] ?? true, cT["2"] ?? true] :
