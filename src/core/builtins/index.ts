@@ -18,4 +18,5 @@ export * from './Plane';
 export * from './Vector3';
 export * from './csg';
 export * from './cube';
+export * from './cyl';
 
