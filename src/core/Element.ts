@@ -16,8 +16,8 @@ interface ObjMap<T> {
 const isObjMap = (o: unknown): o is ObjMap<unknown> => typeof o === "object" && o?.constructor === Object;
 
 type ElementishFlat<T> = Array<T> | ObjMap<T>;
-type Elementish<T extends Product> = Array<Elementish<T>> | ObjMap<Elementish<T>> | Leaf<T> | __Element__<T>;
-type DeepArray<T> = Array<T | DeepArray<T>>;
+export type Elementish<T extends Product> = Array<Elementish<T>> | ObjMap<Elementish<T>> | Leaf<T> | __Element__<T>;
+export type DeepArray<T> = Array<T | DeepArray<T>>;
 
 export class __Element__<T extends Product> extends __Thing__ {
   declare private __t__: T;
@@ -125,4 +125,3 @@ export class Element<T extends Product> extends __Element__<T> {
 }
 
 export default Element;
-export type { Elementish };

@@ -15,13 +15,15 @@ export default () => {
       os: [[12, 0], [0, 0]],
       // ios: [[12, 0], [0, 0]],
       sides,
+      t: 1,
+      ud: true,
     })
   )
 
   let both = ((o = opts) => {
     return (escad
       .translate(-6, 0, -10)
-      .union(
+      .unionDiff(
         cyl(o),
 
         escad

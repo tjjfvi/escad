@@ -37,7 +37,7 @@ export class Operation<I extends Product, O extends Product> extends __Operation
   constructor(name: string, func: (arg: Element<I>) => Elementish<O>) {
     super((...args) => {
       if (args[0] instanceof Operation)
-        return new Operation(name + "+" + args[0].name, (...a: any) => that(args[0](...a)));
+        return new Operation(name + "+" + args[0].name, (a: any) => that(args[0](...a.val)));
       if (args[0] instanceof Component)
         return new Component(args[0].name + "+" + name, (...a: any) => (that as any)((args[0](...a) as any)));
       return new Element(func(new Element(args)));
