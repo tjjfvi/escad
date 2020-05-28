@@ -1,13 +1,10 @@
 
-import ExtensibleFunction from "./ExtensibleFunction";
 import { Leaf } from "./Work";
 import Hierarchy from "./Hierarchy";
 import Operation, { __Operation__ } from "./Operation";
 import Component, { __Component__ } from "./Component";
 import Product from "./Product";
 import * as builtins from "./builtins";
-import { inspect } from "util";
-import { Mesh } from "./builtins";
 import { __Thing__ } from "./__Thing__";
 
 interface ObjMap<T> {
@@ -26,14 +23,14 @@ export class __Element__<T extends Product> extends __Thing__ {
 type ElementIn<T extends Product> = __Element__<any> | __Operation__<T, any> | __Component__<any, ElementIn<T>>
 type ElementOut<T extends Product, Arg extends ElementIn<T>> =
   Arg extends __Element__<infer U> ? Element<T | U> :
-  Arg extends __Operation__<T, infer U> ? Operation<T, U> :
+  Arg extends __Operation__<T, infer U> ? Element<U> :
   Arg extends __Component__<infer I, infer U> ? U extends ElementIn<T> ? Component<I, ElementOut<T, U>> : never :
   never
 
 export interface Element<T extends Product> {
   (): Element<T>,
   <U extends Product>(el: __Element__<U>): Element<T | U>,
-  <U extends Product>(o: __Operation__<T, U>): Operation<T, U>,
+  <U extends Product>(o: __Operation__<T, U>): Element<U>,
   <I extends any[], U extends ElementIn<T>>(c: __Component__<I, U>): Component<I, ElementOut<T, U>>,
 }
 
@@ -55,7 +52,7 @@ export class Element<T extends Product> extends __Element__<T> {
       if (!arg)
         return that;
       if (arg instanceof Operation)
-        return new Operation(arg.name, a => arg(this, a));
+        return arg(this);
       if (arg instanceof Component)
         return new Component<any, any>(arg.name + "'", (...args) => that(arg(...args)))
       if (arg instanceof Element)

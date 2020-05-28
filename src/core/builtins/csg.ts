@@ -1,5 +1,5 @@
 
-import { Work, Product, Element, Operation, Id, } from ".";
+import { Work, Product, Element, Operation, Id, Component, } from ".";
 import { Mesh } from "./Mesh";
 import { Face } from "./Face";
 import { Vector3 } from "./Vector3";
@@ -269,8 +269,15 @@ let _intersect = (...originalArgs: Elementish<Mesh>[]) => {
   ], 0);
 }
 
-const union: Operation<Mesh, Mesh> = new Operation("union", el => _union(el) ?? new Mesh([]));
-const diff: Operation<Mesh, Mesh> = new Operation("diff", el => _diff(el) ?? new Mesh([]));
-const intersect: Operation<Mesh, Mesh> = new Operation("intersect", el => _intersect(el) ?? new Mesh([]));
+export const union: Operation<Mesh, Mesh> = new Operation("union", el => _union(el) ?? new Mesh([]));
+export const diff: Operation<Mesh, Mesh> = new Operation("diff", el => _diff(el) ?? new Mesh([]));
+export const intersection: Operation<Mesh, Mesh> = new Operation("intersect", el => _intersect(el) ?? new Mesh([]));
 
-export { MeshToCsgWork, CsgToMeshWork, CSGWrapper, CsgWork, union, diff, intersect };
+export const add: Component<Elementish<Mesh>[], Operation<Mesh, Mesh>> =
+  new Component("add", (...el) => new Operation("add", el2 => union(el2, el)))
+export const sub: Component<Elementish<Mesh>[], Operation<Mesh, Mesh>> =
+  new Component("sub", (...el) => new Operation("sub", el2 => diff(el2, el)))
+export const intersect: Component<Elementish<Mesh>[], Operation<Mesh, Mesh>> =
+  new Component("intersect", (...el) => new Operation("intersect", el2 => intersection(el2, el)))
+
+export { MeshToCsgWork, CsgToMeshWork, CSGWrapper, CsgWork, };
