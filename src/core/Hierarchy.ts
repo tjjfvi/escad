@@ -8,19 +8,44 @@ import path from "path";
 
 type BraceType = "{" | "[" | "(" | ":" | "";
 
-class Hierarchy {
+export interface HierarchyArgs {
+  readonly name?: string,
+  readonly braceType?: BraceType,
+  readonly children?: readonly Hierarchy[],
+  readonly output?: Hierarchy | null,
+  readonly input?: Hierarchy | null,
+  readonly fullOutput?: Hierarchy | null,
+  readonly isOutput?: boolean,
+  readonly isFullOutput?: boolean,
+}
+
+export interface FullHierarchyArgs extends HierarchyArgs {
+  readonly name: string,
+  readonly braceType: BraceType,
+  readonly children: readonly Hierarchy[],
+  readonly output: Hierarchy,
+  readonly input: Hierarchy | null,
+  readonly fullOutput: Hierarchy,
+  readonly isOutput: boolean,
+  readonly isFullOutput: boolean,
+}
+
+class Hierarchy implements FullHierarchyArgs {
 
   static dir: string = "";
 
-  name: string;
-  braceType: BraceType;
-  children: readonly Hierarchy[];
-  output: Hierarchy;
-  fullOutput: Hierarchy;
-  input: Hierarchy | null;
-  sha: Sha;
+  readonly name: string;
+  readonly braceType: BraceType;
+  readonly children: readonly Hierarchy[];
+  readonly output: Hierarchy;
+  readonly fullOutput: Hierarchy;
+  readonly input: Hierarchy | null;
+  readonly isOutput: boolean;
+  readonly isFullOutput: boolean;
 
-  writePromise: Promise<void>;
+  readonly sha: Sha;
+
+  readonly writePromise: Promise<void>;
 
   constructor({
     name = "",
@@ -29,20 +54,15 @@ class Hierarchy {
     output,
     input = null,
     fullOutput,
-    isOutput,
-    isFullOutput,
-  }: {
-    name?: string,
-    braceType?: BraceType,
-    children?: readonly Hierarchy[],
-    output?: Hierarchy | null,
-    input?: Hierarchy | null,
-    fullOutput?: Hierarchy | null,
-    isOutput?: boolean,
-    isFullOutput?: boolean,
-  }) {
+    isOutput = false,
+    isFullOutput = false,
+  }: HierarchyArgs) {
+    if (isOutput || isFullOutput)
+      output = this;
+    if (isFullOutput)
+      fullOutput = this;
     if (!output)
-      output = isOutput || isFullOutput ? this : new Hierarchy({
+      output = new Hierarchy({
         name,
         braceType,
         input,
@@ -50,7 +70,7 @@ class Hierarchy {
         isOutput: true,
       })
     if (!fullOutput)
-      fullOutput = output !== this ? output.fullOutput : isFullOutput ? this : new Hierarchy({
+      fullOutput = output !== this ? output.fullOutput : new Hierarchy({
         name,
         braceType,
         input,
@@ -64,6 +84,9 @@ class Hierarchy {
     this.output = output;
     this.fullOutput = fullOutput;
     this.input = input;
+    this.isOutput = isOutput;
+    this.isFullOutput = isFullOutput;
+
     let obj = {
       name,
       braceType,
@@ -72,8 +95,10 @@ class Hierarchy {
       fullOutput: fullOutput === this ? null : fullOutput.sha.b64,
       input: input?.sha.b64 ?? null,
     };
+
     this.sha = hash.json(obj);
     this.writePromise = fs.writeFile(path.join(Hierarchy.dir, this.sha.b64), JSON.stringify(obj));
+
     Object.freeze(this);
   }
 
@@ -84,20 +109,15 @@ class Hierarchy {
       return el;
     if (el instanceof Element)
       return el.hierarchy;
-    if (el instanceof Product)
+    if (el instanceof Product || el instanceof Work)
       return new Hierarchy({
         name: `<${el.type.id.name}>`,
       })
-    if (el instanceof Work)
-      return new Hierarchy({
-        name: `<${el.type.id.name}>`,
-      })
-    if (el instanceof Array) {
+    if (el instanceof Array)
       return new Hierarchy({
         braceType: "[",
         children: el.map(e => Hierarchy.fromElementish(e)),
       });
-    }
     return new Hierarchy({
       braceType: "{",
       children: Object.entries(el).map(([k, v]) =>

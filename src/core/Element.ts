@@ -47,7 +47,7 @@ export class Element<T extends Product> extends __Element__<T> {
   val: ElementishFlat<Element<T>> | Leaf<T>;
   hierarchy: Hierarchy;
 
-  constructor(c: Elementish<T>, h: Hierarchy = Hierarchy.fromElementish(c as Elementish<Product>)) {
+  constructor(c: Elementish<T>, h: Hierarchy = Hierarchy.fromElementish(c)) {
     super(arg => {
       if (!arg)
         return that;
@@ -83,15 +83,23 @@ export class Element<T extends Product> extends __Element__<T> {
     this.hierarchy = h;
   }
 
-  map<U extends Product>(f: (x: Leaf<T>) => Elementish<U>): Element<U> {
+  map<U extends Product>(
+    f: (x: Leaf<T>) => Elementish<U>,
+    hierarchyGen: (e: Elementish<U>, old: Element<T>, isLeaf: boolean, isRoot: boolean) => Hierarchy = Hierarchy.fromElementish,
+    isRoot = true,
+  ): Element<U> {
+    let createElement = (e: Elementish<U>, isLeaf: boolean) => new Element(e, hierarchyGen(e, this, isLeaf, isRoot));
+
     if (this.val instanceof Array)
-      return new Element<U>(this.val.map(v => v.map<U>(f)));
+      return createElement(this.val.map(v => v.map<U>(f, hierarchyGen, false)), false);
+
     if (isObjMap(this.val))
-      return new Element<U>(Object.assign({}, ...Object.entries(this.val).map(([k, v]) => ({
-        [k]: v instanceof Element ? v.map<U>(f) : v,
-      }))));
+      return createElement(Object.assign({}, ...Object.entries(this.val).map(([k, v]) => ({
+        [k]: v instanceof Element ? v.map<U>(f, hierarchyGen, false) : v,
+      }))), false);
+
     else
-      return new Element(f(this.val));
+      return createElement(f(this.val), true);
   }
 
   toArray(): Array<Element<T>> | Leaf<T> {
@@ -117,6 +125,16 @@ export class Element<T extends Product> extends __Element__<T> {
     let toArr = <T extends Product>(el: Element<T>) =>
       el.val instanceof Array ? el.val : [el];
     return new Element<T | U>([...toArr(this), ...toArr(el as Element<U>)])
+  }
+
+  applyHierarchy(hierarchyGen: (oldHierarchy: Hierarchy) => Hierarchy): Element<T>
+  applyHierarchy(hierarchy: Hierarchy): Element<T>
+  applyHierarchy(arg: Hierarchy | ((h: Hierarchy) => Hierarchy)): Element<T> {
+    let hierarchy =
+      typeof arg === "function" ?
+        arg(this.hierarchy) :
+        arg
+    return new Element(this, hierarchy);
   }
 
 }
