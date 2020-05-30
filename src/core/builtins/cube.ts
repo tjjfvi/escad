@@ -50,7 +50,7 @@ class CubeWork extends Work<CubeWork, Mesh, []> {
       new Vector3(nx, ny, nz),
     ];
 
-    return new Mesh([
+    return Mesh.fromVertsFaces(points, [
       [0, 1, 2],
       [3, 2, 1],
       [6, 5, 4],
@@ -63,7 +63,7 @@ class CubeWork extends Work<CubeWork, Mesh, []> {
       [5, 7, 1],
       [4, 0, 2],
       [6, 4, 2],
-    ].map(ps => new Face(ps.map(i => points[i]))));
+    ])
   }
 
 }

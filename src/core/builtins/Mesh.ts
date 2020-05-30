@@ -1,6 +1,7 @@
 
 import { Product, Id } from ".";
 import { Face } from "./Face";
+import { Vector3 } from "./Vector3";
 
 class Mesh extends Product<Mesh> {
 
@@ -13,6 +14,10 @@ class Mesh extends Product<Mesh> {
   constructor(faces: Array<Face>) {
     super();
     this.faces = faces;
+  }
+
+  static fromVertsFaces(verts: Vector3[], faces: number[][]) {
+    return new Mesh(faces.flatMap(f => f.slice(2).map((_, i) => [f[0], f[i - 1], f[i]])).map(is => new Face(is.map(i => verts[i]))));
   }
 
   clone() {
