@@ -1,6 +1,6 @@
 
 import { hash, Sha } from "./hash";
-const path = require("path").posix;
+import { posix as path } from "path";
 import readPkgUp from "read-pkg-up";
 import { B64 } from "./b64";
 
@@ -26,10 +26,10 @@ class Id {
     this.name = name;
     this.sha = hash.json(this);
     let old = ids.get(this.sha.b64);
-    if (old) return old;
+    if (old)
+      throw new Error(`Duplicative Id under sha "${this.sha.b64}"`);
     ids.set(this.sha.b64, this);
   }
-
 
   static get(sha: Sha) {
     return ids.get(sha.b64);
