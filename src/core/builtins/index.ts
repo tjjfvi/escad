@@ -25,6 +25,7 @@ export * from './flip';
 export * from './mapOperation';
 export * from './meld';
 export * from './polyhedron';
+export * from './range';
 export * from './rotate';
 export * from './scale';
 export * from './sphere';
