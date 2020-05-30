@@ -23,6 +23,7 @@ export * from './cube';
 export * from './cyl';
 export * from './flip';
 export * from './mapOperation';
+export * from './meld';
 export * from './rotate';
 export * from './scale';
 export * from './translate';
