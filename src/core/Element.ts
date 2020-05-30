@@ -10,7 +10,8 @@ import { __Thing__ } from "./__Thing__";
 interface ObjMap<T> {
   [x: string]: T;
 }
-const isObjMap = (o: unknown): o is ObjMap<unknown> => typeof o === "object" && o?.constructor === Object;
+const isObjMap = (o: unknown): o is ObjMap<unknown> =>
+  typeof o === "object" && !!o && (o.constructor === Object || Object.getPrototypeOf(o) === null);
 
 type ElementishFlat<T> = Array<T> | ObjMap<T>;
 export type Elementish<T extends Product> = Array<Elementish<T>> | ObjMap<Elementish<T>> | Leaf<T> | __Element__<T>;
@@ -46,6 +47,19 @@ export class Element<T extends Product> extends __Element__<T> {
 
   val: ElementishFlat<Element<T>> | Leaf<T>;
   hierarchy: Hierarchy;
+
+  static create<T extends Product>(c: Array<Elementish<T>>, h?: Hierarchy): ArrayElement<T>;
+  static create<T extends Product>(c: ObjMap<Elementish<T>>, h?: Hierarchy): ObjMapElement<T>;
+  static create<T extends Product>(c: ElementishFlat<Elementish<T>>, h?: Hierarchy): ArrayishElement<T>;
+  static create<T extends Product>(c: Leaf<T>, h?: Hierarchy): LeafElement<T>;
+  static create<T extends Product>(c: ArrayElement<T>, h?: Hierarchy): ArrayElement<T>;
+  static create<T extends Product>(c: ObjMapElement<T>, h?: Hierarchy): ObjMapElement<T>;
+  static create<T extends Product>(c: ArrayishElement<T>, h?: Hierarchy): ArrayishElement<T>;
+  static create<T extends Product>(c: LeafElement<T>, h?: Hierarchy): LeafElement<T>;
+  static create<T extends Product>(c: Elementish<T>, h?: Hierarchy): Element<T>;
+  static create<T extends Product>(c: Elementish<T>, h?: Hierarchy) {
+    return new Element(c, h);
+  }
 
   constructor(c: Elementish<T>, h: Hierarchy = Hierarchy.fromElementish(c)) {
     super(arg => {
@@ -83,47 +97,72 @@ export class Element<T extends Product> extends __Element__<T> {
     this.hierarchy = h;
   }
 
+  isArray(): this is ArrayElement<T> {
+    return this.val instanceof Array;
+  }
+
+  isObjMap(): this is ObjMapElement<T> {
+    return isObjMap(this.val);
+  }
+
+  isArrayish(): this is ArrayishElement<T> {
+    return this.isArray() || this.isObjMap();
+  }
+
+  isLeaf(): this is LeafElement<T> {
+    return !this.isArrayish();
+  }
+
   map<U extends Product>(
     f: (x: Leaf<T>) => Elementish<U>,
     hierarchyGen: (e: Elementish<U>, old: Element<T>, isLeaf: boolean, isRoot: boolean) => Hierarchy = Hierarchy.fromElementish,
     isRoot = true,
   ): Element<U> {
-    let createElement = (e: Elementish<U>, isLeaf: boolean) => new Element(e, hierarchyGen(e, this, isLeaf, isRoot));
+    let createElement = (e: Elementish<U>) => new Element(e, hierarchyGen(e, this, this.isLeaf(), isRoot));
 
-    if (this.val instanceof Array)
-      return createElement(this.val.map(v => v.map<U>(f, hierarchyGen, false)), false);
+    if (this.isArray())
+      return createElement(this.val.map(v => v.map<U>(f, hierarchyGen, false)));
 
-    if (isObjMap(this.val))
+    if (this.isObjMap())
       return createElement(Object.assign({}, ...Object.entries(this.val).map(([k, v]) => ({
         [k]: v instanceof Element ? v.map<U>(f, hierarchyGen, false) : v,
-      }))), false);
+      }))));
 
-    else
-      return createElement(f(this.val), true);
+    if (this.isLeaf())
+      return createElement(f(this.val));
+
+    throw new Error("Invalid Element.val type");
   }
 
   toArray(): Array<Element<T>> | Leaf<T> {
-    if (this.val instanceof Array)
+    if (this.isArray())
       return this.val;
-    if (this.val.constructor === Object)
+    if (this.isObjMap())
       return Object.values(this.val);
-    // @ts-ignore
-    return this.val;
+    if (this.isLeaf())
+      return this.val;
+    throw new Error("Invalid Element.val type");
   }
 
   toArrayDeep(): DeepArray<Leaf<T>> | Leaf<T> {
-    let arr = this.toArray();
-    return (arr instanceof Array ? arr.map(e => e.toArrayDeep()) : arr);
+    if (this.isLeaf())
+      return this.val;
+    if (this.isArrayish())
+      return this.toArray().map(e => e.toArrayDeep());
+    throw new Error("Invalid Element.val type")
   }
 
   toArrayFlat(): Array<Leaf<T>> {
-    let arr = this.toArray();
-    return (arr instanceof Array ? arr.flatMap(e => e.toArrayFlat()) : [arr]);
+    if (this.isLeaf())
+      return [this.val];
+    if (this.isArrayish())
+      return this.toArray().flatMap(e => e.toArrayFlat());
+    throw new Error("Invalid Element.val type")
   }
 
   join<U extends Product>(el: __Element__<U>): Element<T | U> {
     let toArr = <T extends Product>(el: Element<T>) =>
-      el.val instanceof Array ? el.val : [el];
+      el.isArray() ? el.val : [el];
     return new Element<T | U>([...toArr(this), ...toArr(el as Element<U>)])
   }
 
@@ -137,6 +176,34 @@ export class Element<T extends Product> extends __Element__<T> {
     return new Element(this, hierarchy);
   }
 
+}
+
+export interface ArrayElement<T extends Product> extends ArrayishElement<T> {
+  val: Array<Element<T>>;
+  applyHierarchy(hierarchyGen: (oldHierarchy: Hierarchy) => Hierarchy): ArrayElement<T>
+  applyHierarchy(hierarchy: Hierarchy): ArrayElement<T>
+}
+
+export interface ObjMapElement<T extends Product> extends ArrayishElement<T> {
+  val: ObjMap<Element<T>>;
+  applyHierarchy(hierarchyGen: (oldHierarchy: Hierarchy) => Hierarchy): ObjMapElement<T>
+  applyHierarchy(hierarchy: Hierarchy): ObjMapElement<T>
+}
+
+export interface ArrayishElement<T extends Product> extends Element<T> {
+  val: ElementishFlat<Element<T>>;
+  toArray(_?: true): Element<T>[]
+  toArrayDeep(_?: true): DeepArray<Leaf<T>>;
+  applyHierarchy(hierarchyGen: (oldHierarchy: Hierarchy) => Hierarchy): ArrayishElement<T>
+  applyHierarchy(hierarchy: Hierarchy): ArrayishElement<T>
+}
+
+export interface LeafElement<T extends Product> extends Element<T> {
+  val: Leaf<T>;
+  toArray(_?: true): Leaf<T>;
+  toArrayDeep(_?: true): Leaf<T>;
+  applyHierarchy(hierarchyGen: (oldHierarchy: Hierarchy) => Hierarchy): LeafElement<T>
+  applyHierarchy(hierarchy: Hierarchy): LeafElement<T>
 }
 
 export default Element;

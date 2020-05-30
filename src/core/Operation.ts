@@ -1,6 +1,6 @@
 
 import Component, { __Component__ } from "./Component";
-import Element, { Elementish, __Element__ } from "./Element";
+import Element, { Elementish, __Element__, ArrayElement } from "./Element";
 import Product from "./Product";
 import * as builtins from "./builtins";
 import { __Thing__ } from "./__Thing__";
@@ -33,14 +33,14 @@ export interface Operation<I extends Product, O extends Product> extends _Operat
 
 export class Operation<I extends Product, O extends Product> extends __Operation__<I, O> {
 
-  constructor(name: string, func: (arg: Element<I>) => Elementish<O>) {
+  constructor(name: string, func: (arg: ArrayElement<I>) => Elementish<O>) {
     super((...args) => {
       if (args[0] instanceof Operation)
         // @ts-ignore
         return new Operation(name + "+" + args[0].name, (a: any) => that(args[0](...a.val)));
       if (args[0] instanceof Component)
         return new Component(args[0].name + "+" + name, (...a: any) => (that as any)((args[0](...a) as any)));
-      return new Element(func(new Element(args)));
+      return new Element(func(Element.create(args)));
     }, {
       get: (target, prop) => {
         if (prop in target)
