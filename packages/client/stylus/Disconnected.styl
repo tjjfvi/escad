@@ -1,0 +1,25 @@
+
+.Disconnected
+  display inline-block
+  width 300px
+  height 150px
+  color $red
+  border 5px solid $red
+  border-radius 10px
+  background-color $black
+  position absolute
+  right -310px
+  top 10px
+  font-size 35px
+  transition right .2s
+
+  &:before
+    content "Disconnected"
+    position relative
+    left 50%
+    top 50%
+    transform translate(-50%, -50%)
+    display inline-block
+
+  &.show
+    right 10px

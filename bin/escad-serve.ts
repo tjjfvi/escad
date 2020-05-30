@@ -29,8 +29,8 @@ import fs from "fs";
   const loadFile = path.resolve(file);
   const loadDir = path.dirname(path.resolve(watchDir || loadFile));
 
-  Object.assign(require("../src/server/config").default, { port: +port, loadFile, loadDir, artifactsDir });
-  console.log(require("../src/server/config"));
+  Object.assign(require("../packages/server/config").default, { port: +port, loadFile, loadDir, artifactsDir });
+  console.log(require("../packages/server/config"));
 
   require("../src/server/server");
 })();
