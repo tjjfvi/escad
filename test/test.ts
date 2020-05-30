@@ -8,7 +8,7 @@ export default () => {
       .cube({ s: .9 })
       .cube({ s: 1, c: false })
       .diff
-      .cube({ s: .5 })
+      .sphere({ r: .3, slices: 50, stacks: 25 })
       .meld
   )
 };

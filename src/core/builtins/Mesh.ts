@@ -17,7 +17,7 @@ class Mesh extends Product<Mesh> {
   }
 
   static fromVertsFaces(verts: Vector3[], faces: number[][]) {
-    return new Mesh(faces.flatMap(f => f.slice(2).map((_, i) => [f[0], f[i - 1], f[i]])).map(is => new Face(is.map(i => verts[i]))));
+    return new Mesh(faces.flatMap(f => f.slice(2).map((_, i) => [f[0], f[i + 1], f[i + 2]])).map(is => new Face(is.map(i => verts[i]))));
   }
 
   clone() {
