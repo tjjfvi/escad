@@ -1,7 +1,8 @@
 
-import { Element, Component } from ".";
 import { Mesh } from "./Mesh";
 import { Vector3 } from "./Vector3";
+import Element from "../Element";
+import Component from "../Component";
 
 type PolyhedronVerts = Vector3[];
 type PolyhedronFaces = number[][];

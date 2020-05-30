@@ -1,9 +1,9 @@
 
-import { Work, Id } from ".";
 import { Mesh } from "./Mesh";
 import { Face } from "./Face";
 import { Vector3 } from "./Vector3";
-import { Leaf } from "../Work";
+import Work, { Leaf } from "../Work";
+import Id from "../Id";
 
 abstract class PointMapWork<W extends PointMapWork<W>> extends Work<W, Mesh, [Leaf<Mesh>]> {
 

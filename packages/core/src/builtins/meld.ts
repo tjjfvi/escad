@@ -1,7 +1,8 @@
 
-import { Work, Id, Operation } from ".";
 import { Mesh } from "./Mesh";
-import { Leaf } from "../Work";
+import Work, { Leaf } from "../Work";
+import Id from "../Id";
+import Operation from "../Operation";
 
 export class MeldWork extends Work<MeldWork, Mesh, Leaf<Mesh>[]> {
   type = MeldWork;

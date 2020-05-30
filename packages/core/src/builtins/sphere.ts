@@ -1,9 +1,11 @@
 
-import { Work, Element, Hierarchy, Id, Component } from ".";
 import { Mesh } from "./Mesh";
-import { Face } from "./Face";
-import { Vector3 } from "./Vector3";
 import { diff } from "./csg";
+import Work from "../Work";
+import Element from "../Element";
+import Id from "../Id";
+import Component from "../Component";
+import { Vector3 } from "./Vector3";
 
 const tau = Math.PI * 2;
 

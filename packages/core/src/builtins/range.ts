@@ -1,5 +1,4 @@
 
-
 export function range(max: number): number[]
 export function range(min: number, max: number): number[]
 export function range(min: number, interval: number, max: number): number[]

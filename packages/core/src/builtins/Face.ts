@@ -1,7 +1,8 @@
 
-import { Product, Id } from ".";
 import { Vector3 } from "./Vector3";
 import { Plane } from "./Plane";
+import Product from "../Product";
+import Id from "../Id";
 
 class Face extends Product<Face> {
 

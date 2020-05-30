@@ -2,8 +2,9 @@
 import { TransformWork } from "./TransformWork";
 import { Matrix4 } from "./Matrix4"
 import { Mesh } from "./Mesh";
-import { Component, Operation } from ".";
 import { mapOperation } from "./mapOperation";
+import Component from "../Component";
+import Operation from "../Operation";
 
 const tau = Math.PI * 2;
 

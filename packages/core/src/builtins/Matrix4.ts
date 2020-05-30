@@ -1,7 +1,8 @@
 /* eslint-disable array-element-newline */
 
-import { Product, Id } from ".";
 import { Vector3 } from "./Vector3";
+import Product from "../Product";
+import Id from "../Id";
 
 const c = Math.cos;
 const s = Math.sin;

@@ -1,10 +1,9 @@
 
 import { TransformWork } from "./TransformWork";
 import { Matrix4 } from "./Matrix4"
-import { Component, Operation } from ".";
 import { Mesh } from "./Mesh";
-import { __Operation__ } from "../Operation";
-import { __Component__ } from "../Component";
+import Operation from "../Operation";
+import Component from "../Component";
 import { __Element__ } from "../Element";
 import { mapOperation } from "./mapOperation";
 

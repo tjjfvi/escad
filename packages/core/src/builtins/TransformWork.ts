@@ -1,11 +1,11 @@
 
-import { Work, Id } from ".";
 import { PointMapWork } from "./PointMapWork";
 import { Matrix4 } from "./Matrix4";
 import { Mesh } from "./Mesh";
-import { Leaf } from "../Work";
+import Work, { Leaf } from "../Work";
 import { Vector3 } from "./Vector3";
 import { FlipWork } from "./flip";
+import Id from "../Id";
 
 class TransformWork extends PointMapWork<TransformWork> {
   type = TransformWork;

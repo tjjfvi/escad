@@ -1,8 +1,8 @@
 
-import { Product } from ".";
 import { Vector3 } from "./Vector3";
 import { Face } from "./Face";
 import Id from "../Id";
+import Product from "../Product";
 
 const epsilon = 1e-5;
 

@@ -1,9 +1,11 @@
 
-import { Work, Component, Element, Hierarchy, Id } from ".";
 import { Mesh } from "./Mesh";
-import { Face } from "./Face";
 import { Vector3 } from "./Vector3";
 import { OneOf } from "../utils";
+import Work from "../Work";
+import Component from "../Component";
+import Element from "../Element";
+import Id from "../Id";
 
 type CubeWorkArgs = [[number, number, number], [boolean, boolean, boolean]];
 class CubeWork extends Work<CubeWork, Mesh, []> {

@@ -1,5 +1,6 @@
 
-import { Product, Id } from ".";
+import Product from "../Product";
+import Id from "../Id";
 
 class Vector3 extends Product<Vector3> {
 

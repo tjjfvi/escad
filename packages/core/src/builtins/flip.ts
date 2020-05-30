@@ -1,9 +1,10 @@
 
-import { Work, Element, Id, Operation } from ".";
 import { Mesh } from "./Mesh";
 import { Face } from "./Face";
-import { Leaf } from "../Work";
+import Work, { Leaf } from "../Work";
 import { mapOperation } from "./mapOperation";
+import Id from "../Id";
+import Operation from "../Operation";
 
 class FlipWork extends Work<FlipWork, Mesh, [Leaf<Mesh>]> {
   type = FlipWork;

@@ -1,12 +1,15 @@
 
-import { Work, Product, Element, Operation, Id, Component, } from ".";
 import { Mesh } from "./Mesh";
 import { Face } from "./Face";
 import { Vector3 } from "./Vector3";
 // @ts-ignore
 import CSG from "csg";
-import { Leaf } from "../Work";
-import { Elementish } from "../Element";
+import Work, { Leaf } from "../Work";
+import Element, { Elementish } from "../Element";
+import Product from "../Product";
+import Operation from "../Operation";
+import Id from "../Id";
+import Component from "../Component";
 
 class CSGWrapper extends Product<CSGWrapper> {
   type = CSGWrapper;

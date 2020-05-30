@@ -1,10 +1,11 @@
 
 import { TransformWork } from "./TransformWork";
 import { Matrix4 } from "./Matrix4"
-import { Component, Operation } from ".";
 import { Mesh } from "./Mesh";
 import { FlipWork } from "./flip";
 import { mapOperation } from "./mapOperation";
+import Component from "../Component";
+import Operation from "../Operation";
 
 type ScaleArgs =
   | [number]

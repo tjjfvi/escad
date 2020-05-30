@@ -1,9 +1,9 @@
 
-import { Element, Operation } from ".";
 import { diff } from "./csg";
 import { DeepArray, ArrayElement } from "../Element";
 import { Mesh } from "./Mesh";
 import { Leaf } from "../Work";
+import Operation from "../Operation";
 
 export const udMeld: Operation<Mesh, Mesh> = new Operation("udMeld", (el: ArrayElement<Mesh>) => {
   let oargs = el.toArrayDeep();
