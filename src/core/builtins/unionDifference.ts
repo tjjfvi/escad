@@ -1,18 +1,16 @@
 
 import { Element, Operation } from ".";
 import { diff } from "./csg";
-import { DeepArray } from "../Element";
+import { DeepArray, ArrayElement } from "../Element";
 import { Mesh } from "./Mesh";
 import { Leaf } from "../Work";
 
-export const udMeld: Operation<Mesh, Mesh> = new Operation("udMeld", (el: Element<Mesh>) => {
-  let args = el.toArrayDeep();
+export const udMeld: Operation<Mesh, Mesh> = new Operation("udMeld", (el: ArrayElement<Mesh>) => {
+  let oargs = el.toArrayDeep();
+  let args = oargs.length === 1 ? oargs[0] : oargs;
   if (!(args instanceof Array))
     return [[args], []];
-  if (args.length === 1)
-    [args] = args;
   let dargs: DeepArray<Leaf<Mesh>>[] = [[], []];
-  console.log(args)
   for (let arg of args)
     if (arg instanceof Array) {
       dargs[0].push(arg[0]);
@@ -21,9 +19,8 @@ export const udMeld: Operation<Mesh, Mesh> = new Operation("udMeld", (el: Elemen
   return dargs;
 });
 
-export const unionDiff: Operation<Mesh, Mesh> = new Operation("unionDiff", (el: Element<Mesh>) => {
-  console.log(udMeld(el));
-  return diff(udMeld(el));
+export const unionDiff: Operation<Mesh, Mesh> = new Operation("unionDiff", (el: ArrayElement<Mesh>) => {
+  return diff(udMeld(...el.toArray()));
 });
 
 export const unionDiffMeld = udMeld;

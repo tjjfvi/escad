@@ -1,6 +1,6 @@
-// @ts-nocheck
+import escad from "../src/core";
 
-export default escad => {
+export default () => {
   let c = escad.udMeld([
     escad.cyl({ r: 1, i: .8, h: 20, sides: 12, ud: true }),
     escad.sphere({ r: 2, i: 1.8, ud: true, slices: 24, stacks: 12 }).translate([0, 0, 5]),
