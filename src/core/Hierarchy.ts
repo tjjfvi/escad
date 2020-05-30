@@ -78,6 +78,15 @@ class Hierarchy implements FullHierarchyArgs {
         isFullOutput: true,
       })
 
+    if (braceType === "" && children.length)
+      throw new Error("braceType \"\" must be used without children")
+
+    if ((braceType === "{" || braceType === "[") && name !== "")
+      throw new Error(`braceType "${braceType}" cannot be used with a name`);
+
+    if (braceType === ":" && children.length !== 1)
+      throw new Error("braceType \":\" must be used with exactly one child");
+
     this.name = name;
     this.braceType = braceType;
     this.children = children;
