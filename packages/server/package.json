@@ -5,7 +5,9 @@
   "main": "dist/server.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc"
+    "clean": "rm -rf dist",
+    "build": "npm run clean; tsc",
+    "prepack": "npm run build"
   },
   "author": "",
   "license": "ISC",

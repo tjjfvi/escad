@@ -56,6 +56,7 @@ export async function bundle(folder: string, watch: boolean) {
     console.log("Bundled stylus");
   }
 
+  await fs.mkdirp(dist);
   await bundleTs();
   await bundleStylus();
   await fs.copyFile(path.join(src, "index.html"), path.join(dist, "index.html"))

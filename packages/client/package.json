@@ -5,7 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "escad-client-bundler .",
+    "clean": "rm -rf dist",
+    "build": "npm run clean; escad-client-bundler .",
+    "prepack": "npm run build",
     "bundle-watch": "escad-client-bundler --watch ."
   },
   "author": "",
