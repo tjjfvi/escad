@@ -1,7 +1,7 @@
 // @ts-nocheck
 
 import { fork } from "child_process";
-import uuidv4 from "uuid/v4";
+import { v4 as uuidv4 } from "uuid";
 import watch from "node-watch";
 import { EventEmitter } from "tsee";
 import config from "./config";
