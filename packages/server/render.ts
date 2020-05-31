@@ -1,11 +1,7 @@
 
 // Render Process
 
-import escad from "../core";
-import Element from "../core/Element";
-import Hierarchy from "../core/Hierarchy";
-import ProductManager from "../core/ProductManager";
-import Work from "../core/Work";
+import escad, { Work, ProductManager, Hierarchy, Element } from "@escad/core";
 
 let file: string, func: any, dir: string, init = false;
 let queue: any[] = [];
@@ -72,8 +68,8 @@ async function run(id: any, params: any) {
   console.time("Render")
   let el = new Element(result);
   let hierarchy = el.hierarchy;
-  let shas = await Promise.all(el.toArrayFlat().flat().map(async (x: any) => {
-    if (!(x instanceof escad.Work))
+  let shas = await Promise.all(el.toArrayFlat().map(async (x: any) => {
+    if (!(x instanceof Work))
       throw new Error("Invalid return type from exported function")
     await x.process();
     return x.sha.b64;

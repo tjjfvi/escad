@@ -8,7 +8,7 @@ import fs from "fs";
 (() => {
   commander
     .usage("[options] <file>")
-    .option("-p, --port <port>", "port to host server on", 8080)
+    .option("-p, --port <port>", "port to host server on", "8080")
     .option("-d, --watch-dir <dir>", "directory to watch (default: basedir of <file>)")
     .option("--artifacts <dir>", "artifact directory", path.join(os.tmpdir(), "escad-artifacts"))
     .option("--clean", "clean artifacts directory")
@@ -29,8 +29,7 @@ import fs from "fs";
   const loadFile = path.resolve(file);
   const loadDir = path.dirname(path.resolve(watchDir || loadFile));
 
-  Object.assign(require("../packages/server/config").default, { port: +port, loadFile, loadDir, artifactsDir });
-  console.log(require("../packages/server/config"));
+  Object.assign(require("@escad/server/dist/config").default, { port: +port, loadFile, loadDir, artifactsDir });
 
-  require("../src/server/server");
+  require("@escad/server");
 })();

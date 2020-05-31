@@ -55,7 +55,7 @@ export async function bundle(folder: string, watch: boolean) {
 
   await bundleTs();
   await bundleStylus();
-  await fs.copyFile(path.join(dist, "index.html"), path.join(dist, "index.html"))
+  await fs.copyFile(path.join(src, "index.html"), path.join(dist, "index.html"))
 
   if (watch) {
     b.on("update", bundleTs);

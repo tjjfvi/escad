@@ -8,7 +8,7 @@ declare class WeakRef<V> {
 type F<K, V> = (k: K) => V;
 type FA<K, V> = (k: K) => Promise<V>;
 
-class WeakCacheBasic<K, V> {
+export class WeakCacheBasic<K, V> {
 
   private asyncCache: Map<K, Promise<V>>;
 

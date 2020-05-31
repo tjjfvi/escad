@@ -1,5 +1,5 @@
 
-import escad from "../src/core";
+import escad from "../packages/core";
 
 export default () => {
   return (

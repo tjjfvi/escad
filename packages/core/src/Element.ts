@@ -6,6 +6,7 @@ import Component, { __Component__ } from "./Component";
 import Product from "./Product";
 import * as builtins from "./builtins";
 import { __Thing__ } from "./__Thing__";
+import { Mesh } from "./builtins";
 
 interface ObjMap<T> {
   [x: string]: T;
@@ -18,7 +19,7 @@ export type Elementish<T extends Product> = Array<Elementish<T>> | ObjMap<Elemen
 export type DeepArray<T> = Array<T | DeepArray<T>>;
 
 export class __Element__<T extends Product> extends __Thing__ {
-  declare private __t__: T;
+  declare protected __t__: T;
 };
 
 type ElementIn<T extends Product> = __Element__<any> | __Operation__<T, any> | __Component__<any, ElementIn<T>>
@@ -37,8 +38,10 @@ export interface Element<T extends Product> {
 
 type B = typeof builtins;
 
+type _ElementOut<T extends Product, Arg> = Arg extends ElementIn<T> ? ElementOut<T, Arg> : never;
+
 type _ElementBuiltins<T extends Product> = {
-  [K in keyof B]: B[K] extends ElementIn<T> ? ElementOut<T, B[K]> : never
+  [K in keyof B]: _ElementOut<T, B[K]>
 }
 
 export interface Element<T extends Product> extends _ElementBuiltins<T> { }

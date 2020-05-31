@@ -4,7 +4,7 @@ import { hash, Sha } from "./hash";
 import ProductManager from "./ProductManager";
 import Id from "./Id";
 
-interface _Product extends Product<_Product> { };
+export interface _Product extends Product<_Product> { };
 abstract class Product<P extends Product<P> = _Product> {
 
   abstract type: ProductType<P>;

@@ -11,8 +11,8 @@ const { app } = expressWs(express());
 app.use(express.static(path.join(path.dirname(require.resolve("@escad/client")), "dist")));
 app.use(express.static(config.artifactsDir));
 
-import uuid from "uuid";
-const serverId = uuid.v4();
+import { v4 as uuidv4 } from "uuid";
+const serverId = uuidv4();
 import * as render from "./renderComm";
 
 let curShas: any;
@@ -68,7 +68,7 @@ app.ws("/ws", ws => {
       id = requestedId;
       console.log("Client reattached; id:", id);
     } else {
-      id = uuid.v4();
+      id = uuidv4();
       params = null;
       console.log("Client attached; id:", id);
     }

@@ -6,8 +6,8 @@ import * as builtins from "./builtins";
 import { __Thing__ } from "./__Thing__";
 
 export class __Operation__<I extends Product, O extends Product> extends __Thing__ {
-  declare private __i__: I;
-  declare private __o__: O;
+  declare protected __i__: I;
+  declare protected __o__: O;
 };
 
 type OperationIn<I extends Product, O extends Product> = __Element__<I> | __Operation__<O, any> | __Component__<any, OperationIn<I, O>>
@@ -25,8 +25,11 @@ export interface Operation<I extends Product, O extends Product> {
 
 type B = typeof builtins;
 
+type _OperationOut<I extends Product, O extends Product, Arg> =
+  Arg extends OperationIn<I, O> ? OperationOut<I, O, Arg> : never;
+
 export type _OperationBuiltins<I extends Product, O extends Product> = {
-  [K in keyof B]: B[K] extends OperationIn<I, O> ? OperationOut<I, O, B[K]> : never;
+  [K in keyof B]: _OperationOut<I, O, B[K]>;
 }
 
 export interface Operation<I extends Product, O extends Product> extends _OperationBuiltins<I, O> { }
