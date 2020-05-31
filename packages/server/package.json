@@ -34,5 +34,8 @@
     "@types/uuid": "^8.0.0",
     "@types/watchify": "^3.11.0",
     "typescript": "^3.9.3"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

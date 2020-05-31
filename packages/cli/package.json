@@ -20,5 +20,8 @@
   "bin": {
     "escad": "dist/bin/escad.js",
     "escad-serve": "dist/bin/escad-serve.js"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }

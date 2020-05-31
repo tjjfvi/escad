@@ -29,5 +29,8 @@
   },
   "bin": {
     "escad-client-bundler": "dist/bin/cli.js"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
