@@ -15,6 +15,7 @@ const [dir] = commander.args;
 bundle(dir, watch).then(() => {
   if (!watch)
     process.exit(0);
-}).catch(() => {
+}).catch(e => {
+  console.error(e);
   process.exit(1);
 })

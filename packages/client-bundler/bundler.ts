@@ -6,6 +6,9 @@ import fs from "fs-extra";
 import stylus from "stylus";
 import watchDir from "node-watch";
 import path from "path";
+import watchify from "watchify";
+// @ts-ignore
+import tsify from "tsify";
 
 export async function bundle(folder: string, watch: boolean) {
   const dist = path.join(folder, "dist");
@@ -15,7 +18,7 @@ export async function bundle(folder: string, watch: boolean) {
     cache: {},
     packageCache: {},
     debug: true,
-    plugin: ["watchify", "tsify"],
+    plugin: [watchify, tsify],
   })
 
   function bundleTs() {
