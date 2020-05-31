@@ -1,15 +1,14 @@
 
-import "./bundler";
-
 import fs from "fs";
 import flatted from "flatted";
 import config from "./config";
+import path from "path";
 
 import express from "express";
 import expressWs from "express-ws";
 const { app } = expressWs(express());
 
-app.use(express.static(__dirname + "/../client/"));
+app.use(express.static(path.join(path.dirname(require.resolve("@escad/client")), "dist")));
 app.use(express.static(config.artifactsDir));
 
 import uuid from "uuid";

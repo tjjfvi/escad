@@ -1,0 +1,79 @@
+
+.Hierarchy
+  > div
+    overflow auto
+
+    display flex
+    flex-direction column
+
+    flex-grow 1
+
+    &:after
+      content ""
+      height 100px
+      flex 0 0 auto
+
+  .Node
+    display flex
+    flex-direction column
+
+    .line
+      display flex
+      flex-direction row
+
+      height 25px
+      font-size 20px
+      color $lightgrey
+      &.important
+        color $white
+
+      &:hover
+        background-color $darkgrey
+
+      .arrow
+        display flex
+        justify-content center
+        align-items center
+        flex 0 0 auto
+
+        width 25px
+        height 25px
+
+        &:before
+          content ""
+          width 10px
+          height 10px
+          border 0px solid $lightgrey
+          border-right-width 1px
+          border-bottom-width 1px
+          transform rotate(45deg) translate(-2.5px, -2.5px)
+        &.closed:before
+          transform rotate(-45deg) translate(-2.5px, -2.5px)
+        &.leaf:before
+          border-right-width 0px
+          transform translate(0, -5px)
+
+      span
+        flex 1 0 auto
+
+      .collapse
+        display flex
+        align-items center
+        justify-content center
+        opacity 0
+        flex 0 0 25px
+        svg
+          fill $grey
+          max-height 100%
+
+      &:hover .collapse
+        opacity 1
+
+
+    .children
+      display flex
+      flex-direction column
+
+      margin-left 12px
+      padding-left 12px
+      border-left 1px solid $grey
