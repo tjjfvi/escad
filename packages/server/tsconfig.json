@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "outDir": "dist",
+    "esModuleInterop": true,
+    "target": "ES5",
+    "downlevelIteration": true,
+    "declaration": true
+  },
+  "ts-node": {
+    "transpileOnly": true
+  },
+  "exclude": [
+    "dist"
+  ]
+}

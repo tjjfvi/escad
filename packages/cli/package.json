@@ -1,0 +1,29 @@
+{
+  "name": "@escad/cli",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf dist",
+    "build": "npm run clean; tsc",
+    "prepack": "npm run build"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "commander": "^5.1.0",
+    "@escad/server": "^0.0.0"
+  },
+  "devDependencies": {
+    "@types/commander": "^2.12.2",
+    "typescript": "^3.9.3"
+  },
+  "bin": {
+    "escad": "dist/bin/escad.js",
+    "escad-serve": "dist/bin/escad-serve.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

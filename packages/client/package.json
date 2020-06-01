@@ -1,0 +1,33 @@
+{
+  "name": "@escad/client",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf dist",
+    "build": "npm run clean; escad-client-bundler .",
+    "prepack": "npm run build",
+    "bundle-watch": "escad-client-bundler --watch ."
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@mdi/js": "^4.9.95",
+    "@mdi/react": "^1.2.1",
+    "flatted": "^2.0.1",
+    "react": "^16.12.0",
+    "react-dom": "^16.12.0",
+    "rhobo": "^0.3.2",
+    "three": "^0.112.1",
+    "tsee": "^1.3.0"
+  },
+  "devDependencies": {
+    "@escad/client-bundler": "^0.0.0",
+    "@types/react": "^16.9.35",
+    "@types/react-dom": "^16.9.8"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

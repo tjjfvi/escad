@@ -1,0 +1,38 @@
+{
+  "name": "@escad/client-bundler",
+  "version": "0.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf dist",
+    "build": "npm run clean; tsc; chmod +x dist/bin/cli.js",
+    "prepack": "npm run build"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "browserify": "^16.5.1",
+    "commander": "^5.1.0",
+    "fs-extra": "^9.0.0",
+    "node-watch": "^0.6.4",
+    "stylus": "^0.54.7",
+    "tsify": "^4.0.1",
+    "watchify": "^3.11.1"
+  },
+  "devDependencies": {
+    "@types/browserify": "^12.0.36",
+    "@types/commander": "^2.12.2",
+    "@types/fs-extra": "^9.0.1",
+    "@types/node": "^14.0.6",
+    "@types/stylus": "^0.48.32",
+    "@types/watchify": "^3.11.0",
+    "typescript": "^3.9.3"
+  },
+  "bin": {
+    "escad-client-bundler": "dist/bin/cli.js"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

@@ -1,6 +1,5 @@
-node_modules
-src/client/bundle.*
+**/node_modules
 projects
 artifacts
 test/index.js
-dist
+**/dist
