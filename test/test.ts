@@ -1,5 +1,7 @@
 
 import escad from "../packages/core";
+import "../packages/solids";
+import "../packages/csg";
 
 export default () => {
   return (

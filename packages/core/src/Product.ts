@@ -3,6 +3,7 @@ import Registry from "./Registry";
 import { hash, Sha } from "./hash";
 import ProductManager from "./ProductManager";
 import Id from "./Id";
+import { ExportTypeRegistry } from "./ExportTypeRegistry";
 
 export interface _Product extends Product<_Product> { };
 abstract class Product<P extends Product<P> = _Product> {
@@ -10,8 +11,7 @@ abstract class Product<P extends Product<P> = _Product> {
   abstract type: ProductType<P>;
 
   static Registry = new Registry<ProductType>("ProductRegistry");
-
-  private static _exportTypes: { [ext: string]: (p: Product) => Buffer };
+  static ExportTypeRegistry = new ExportTypeRegistry();
 
   private _sha?: Sha;
   writePromise: Promise<void> | undefined;
@@ -28,12 +28,6 @@ abstract class Product<P extends Product<P> = _Product> {
   abstract clone(): P;
 
   abstract serialize(): Buffer;
-
-  static get exportTypes(): { [ext: string]: (p: Product) => Buffer } {
-    if (Object.prototype.hasOwnProperty.call(this, "_exportTypes"))
-      return this._exportTypes;
-    return this._exportTypes = {};
-  }
 
   async process(): Promise<this> {
     return this;
