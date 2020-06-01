@@ -3,7 +3,6 @@ import { Mesh } from "./Mesh";
 import { Face } from "./Face";
 import { Vector3 } from "./Vector3";
 import { diff } from "./csg";
-import { OneOf } from "../utils";
 import { Work, Element, Id, } from "@escad/core";
 
 const tau = Math.PI * 2;
@@ -60,99 +59,80 @@ Work.Registry.register(CylWork);
 type Pair<T> = T | [T, T];
 type XY<T> = [T, T] | { x: T, y: T };
 
-type CylArgs =
-  & OneOf<[
-    { r: Pair<number> },
-    { rs: Pair<number> },
-    { r1: number, r2: number },
-  ]>
-  & OneOf<[
-    { l: number },
-    { length: number },
-    { h: number },
-    { height: number },
-  ]>
-  & OneOf<[
-    {},
-    { offsets: Pair<XY<number>> },
-    { os: Pair<XY<number>> },
-    { offset1: XY<number>, offset2: XY<number> },
-    { o1: XY<number>, o2: XY<number> },
-  ]>
-  & OneOf<[
-    {},
-    { center: boolean },
-    { c: boolean },
-  ]>
-  & OneOf<[
-    {},
-    { unionDiff: boolean },
-    { ud: boolean },
-  ]>
-  // & OneOf<[
-  //   {},
-  //   (
-  & OneOf<[
-    { t: Pair<number> },
-    { ts: Pair<number> },
-    { t1: number, t2: number },
-    { i: number },
-    { is: Pair<number> },
-    { i1: number, i2: number },
-  ]>
-  & OneOf<[
-    {},
-    { iOffsets: Pair<XY<number>> },
-    { ios: Pair<XY<number>> },
-    { iOffset1: XY<number>, iOffset2: XY<number> },
-    { io1: XY<number>, io2: XY<number> },
-  ]>
-  //   ),
-  // ]>
-  & { sides?: number }
+interface CylArgs {
+  r?: Pair<number>,
+  rs?: Pair<number>,
+  r1?: number,
+  r2?: number,
+  l?: number,
+  length?: number,
+  h?: number,
+  height?: number,
+  offsets?: Pair<XY<number>>,
+  os?: Pair<XY<number>>,
+  offset1?: XY<number>,
+  offset2?: XY<number>,
+  o1?: XY<number>,
+  o2?: XY<number>,
+  center?: boolean,
+  c?: boolean,
+  unionDiff?: boolean,
+  ud?: boolean,
+  t?: Pair<number>,
+  ts?: Pair<number>,
+  t1?: number,
+  t2?: number,
+  i?: number,
+  is?: Pair<number>,
+  i1?: number,
+  i2?: number,
+  iOffsets?: Pair<XY<number>>,
+  ios?: Pair<XY<number>>,
+  iOffset1?: XY<number>,
+  iOffset2?: XY<number>,
+  io1?: XY<number>,
+  io2?: XY<number>,
+  sides?: number
+}
 
 export const cyl = (args: CylArgs) => {
   const rsP: Pair<number> =
-    ("r" in args ? args.r : null) ??
-    ("rs" in args ? args.rs : null) ??
-    ("r1" in args ? [args.r1 ?? 1, args.r2 ?? 1] : null) ??
-    1
+    args.r ??
+    args.rs ??
+    [args.r1 ?? 1, args.r2 ?? 1]
   const rs = typeof rsP === "number" ? [rsP, rsP] : rsP;
 
-  const tsP: Pair<number> | null =
-    ("t" in args ? args.t : null) ??
-    ("ts" in args ? args.ts : null) ??
-    ("t1" in args ? [args.t1 ?? 1, args.t2 ?? 1] : null)
+  const tsP: Pair<number> =
+    args.t ??
+    args.ts ??
+    [args.t1 ?? rs[0], args.t2 ?? rs[1]]
   const ts = typeof tsP === "number" ? [tsP, tsP] : tsP;
 
-
-  const isP: Pair<number> | null =
-    ("i" in args ? args.i : null) ??
-    ("is" in args ? args.is : null) ??
-    ("i1" in args ? [args.i1 ?? 1, args.i2 ?? 1] : null) ??
-    (ts ? [rs[0] - ts[0], rs[1] - ts[1]] : null) ??
-    null
+  const isP: Pair<number> =
+    args.i ??
+    args.is ??
+    [args.i1 ?? rs[0] - ts[0], args.i2 ?? rs[1] - ts[1]]
   const is: [number, number] | null = typeof isP === "number" ? [isP, isP] : isP;
 
   const center =
-    ("center" in args ? args.center : null) ??
-    ("c" in args ? args.c : null) ??
+    args.center ??
+    args.c ??
     true
   const unionDiff =
-    ("unionDiff" in args ? args.unionDiff : null) ??
-    ("ud" in args ? args.ud : null) ??
+    args.unionDiff ??
+    args.ud ??
     false
   const height =
-    ("height" in args ? args.height : null) ??
-    ("length" in args ? args.length : null) ??
-    ("l" in args ? args.l : null) ??
-    ("h" in args ? args.h : null) ??
+    args.height ??
+    args.length ??
+    args.l ??
+    args.h ??
     1
   const sides = args.sides ?? 20;
 
   const osPXY: Pair<XY<number>> =
-    ("offsets" in args ? args.offsets : null) ??
-    ("os" in args ? args.os : null) ??
+    args.offsets ??
+    args.os ??
     [
       (
         ("offset2" in args ? args.offset2 : null) ??
@@ -175,8 +155,8 @@ export const cyl = (args: CylArgs) => {
       [osPXY, osPXY]
 
   const iosPXY: Pair<XY<number>> =
-    ("iOffsets" in args ? args.iOffsets : null) ??
-    ("ios" in args ? args.ios : null) ??
+    args.iOffsets ??
+    args.ios ??
     [
       (
         ("iOffset1" in args ? args.iOffset1 : null) ??

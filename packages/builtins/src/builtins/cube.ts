@@ -1,7 +1,6 @@
 
 import { Mesh } from "./Mesh";
 import { Vector3 } from "./Vector3";
-import { OneOf } from "../utils";
 import { Work, Component, Element, Id } from "@escad/core";
 
 type CubeWorkArgs = [[number, number, number], [boolean, boolean, boolean]];
@@ -69,50 +68,45 @@ class CubeWork extends Work<CubeWork, Mesh, []> {
 
 Work.Registry.register(CubeWork);
 
-type TripletObj<T> = OneOf<[{ x?: T, y?: T, z?: T }, { 0?: T, 1?: T, 2?: T }]>;
+type TripletObj<T> = { x?: T, y?: T, z?: T, 0?: T, 1?: T, 2?: T };
 type Triplet<T> = T | [T, T, T] | TripletObj<T>;
-type CubeArgs =
-  & OneOf<[
-    { sideLength: number },
-    { s: number },
-    { dimensions: Triplet<number> },
-    { d: Triplet<number> },
-    TripletObj<number>,
-  ]>
-  & OneOf<[
-    { center: Triplet<boolean> },
-    { c: Triplet<boolean> },
-    { cx?: boolean, cy?: boolean, cz?: boolean },
-  ]>
+export interface CubeArgs extends TripletObj<number> {
+  sideLength?: number,
+  s?: number,
+  dimensions?: Triplet<number>,
+  d?: Triplet<number>,
+  center?: Triplet<boolean>,
+  c?: Triplet<boolean>,
+  cx?: boolean,
+  cy?: boolean,
+  cz?: boolean,
+}
 
 const cube: Component<[CubeArgs], Element<Mesh>> = new Component("cube", n => {
   let xyzT: Triplet<number> =
-    ("sideLength" in n ? n.sideLength : null) ??
-    ("s" in n ? n.s : null) ??
-    ("dimensions" in n ? n.dimensions : null) ??
-    ("d" in n ? n.d : null) ??
-    ("x" in n || "0" in n ? n : null) ??
-    1
+    n.sideLength ??
+    n.s ??
+    n.dimensions ??
+    n.d ??
+    [n.x ?? 1, n.y ?? 1, n.z ?? 1]
+
   let xyzA: [number, number, number] =
-    typeof xyzT === "number" ? [xyzT, xyzT, xyzT] :
-      "0" in xyzT || "1" in xyzT || "2" in xyzT ? [xyzT["0"] ?? 0, xyzT["1"] ?? 0, xyzT["2"] ?? 0] :
-        "x" in xyzT || "y" in xyzT || "z" in xyzT ? [xyzT.x ?? 0, xyzT.y ?? 0, xyzT.z ?? 0] :
-          [0, 0, 0]
+    typeof xyzT === "number" ?
+      [xyzT, xyzT, xyzT] :
+      [xyzT[0] ?? xyzT.x ?? 0, xyzT[1] ?? xyzT.y ?? 0, xyzT[2] ?? xyzT.z ?? 0]
 
   let cT: Triplet<boolean> =
-    ("center" in n ? n.center : null) ??
-    ("c" in n ? n.c : null) ??
-    ("cx" in n ? [n.cx ?? true, n.cy ?? true, n.cz ?? true] : null) ??
-    [true, true, true]
+    n.center ??
+    n.c ??
+    [n.cx ?? true, n.cy ?? true, n.cz ?? true]
+
   let cA: [boolean, boolean, boolean] =
-    typeof cT === "boolean" ? [cT, cT, cT] :
-      "0" in cT || "1" in cT || "2" in cT ? [cT["0"] ?? true, cT["1"] ?? true, cT["2"] ?? true] :
-        "x" in cT || "y" in cT || "z" in cT ? [cT.x ?? true, cT.y ?? true, cT.z ?? true] :
-          [true, true, true];
+    typeof cT === "boolean" ?
+      [cT, cT, cT] :
+      [cT[0] ?? cT.x ?? true, cT[1] ?? cT.y ?? true, cT[2] ?? cT.z ?? true]
 
   return new Element(new CubeWork([xyzA, cA]));
 })
 
 export { cube, CubeWork };
-export type { CubeArgs };
 
