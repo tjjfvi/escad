@@ -3,3 +3,4 @@ projects
 artifacts
 test/index.js
 **/dist
+*.log
