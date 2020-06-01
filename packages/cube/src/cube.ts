@@ -1,10 +1,9 @@
 
-import { Mesh } from "./Mesh";
-import { Vector3 } from "./Vector3";
+import { Mesh, Vector3 } from "@escad/mesh";
 import { Work, Component, Element, Id } from "@escad/core";
 
-type CubeWorkArgs = [[number, number, number], [boolean, boolean, boolean]];
-class CubeWork extends Work<CubeWork, Mesh, []> {
+export type CubeWorkArgs = [[number, number, number], [boolean, boolean, boolean]];
+export class CubeWork extends Work<CubeWork, Mesh, []> {
 
   type = CubeWork;
 
@@ -82,7 +81,7 @@ export interface CubeArgs extends TripletObj<number> {
   cz?: boolean,
 }
 
-const cube: Component<[CubeArgs], Element<Mesh>> = new Component("cube", n => {
+export const cube: Component<[CubeArgs], Element<Mesh>> = new Component("cube", n => {
   let xyzT: Triplet<number> =
     n.sideLength ??
     n.s ??
@@ -107,6 +106,4 @@ const cube: Component<[CubeArgs], Element<Mesh>> = new Component("cube", n => {
 
   return new Element(new CubeWork([xyzA, cA]));
 })
-
-export { cube, CubeWork };
 

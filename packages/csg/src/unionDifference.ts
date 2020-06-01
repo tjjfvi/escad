@@ -1,6 +1,6 @@
 
 import { diff } from "./csg";
-import { Mesh } from "./Mesh";
+import { Mesh } from "@escad/mesh";
 import { DeepArray, ArrayElement, Leaf, Operation } from "@escad/core";
 
 export const udMeld: Operation<Mesh, Mesh> = new Operation("udMeld", (el: ArrayElement<Mesh>) => {

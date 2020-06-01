@@ -33,4 +33,5 @@ export * from './Operation';
 export * from './Product';
 export * from './Work';
 export * from "./builtins";
+export * from "./mapOperation";
 

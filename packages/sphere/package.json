@@ -1,5 +1,5 @@
 {
-  "name": "@escad/builtins",
+  "name": "@escad/sphere",
   "version": "0.0.0",
   "description": "",
   "main": "dist/index.js",
@@ -16,12 +16,9 @@
     "typescript": "^3.9.3"
   },
   "dependencies": {
+    "@escad/core": "^0.0.0",
     "@escad/mesh": "^0.0.0",
-    "@escad/csg": "^0.0.0",
-    "@escad/cube": "^0.0.0",
-    "@escad/cyl": "^0.0.0",
-    "@escad/sphere": "^0.0.0",
-    "@escad/transform": "^0.0.0"
+    "@escad/csg": "^0.0.0"
   },
   "publishConfig": {
     "access": "public"

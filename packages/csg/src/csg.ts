@@ -1,7 +1,5 @@
 
-import { Mesh } from "./Mesh";
-import { Face } from "./Face";
-import { Vector3 } from "./Vector3";
+import { Mesh, Face, Vector3 } from "@escad/mesh";
 // @ts-ignore
 import CSG from "csg";
 import {

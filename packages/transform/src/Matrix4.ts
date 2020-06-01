@@ -1,6 +1,6 @@
 /* eslint-disable array-element-newline */
 
-import { Vector3 } from "./Vector3";
+import { Vector3 } from "@escad/mesh";
 import { Product, Id } from "@escad/core";
 
 const c = Math.cos;

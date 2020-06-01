@@ -1,14 +1,14 @@
 
 import { TransformWork } from "./TransformWork";
 import { Matrix4 } from "./Matrix4"
-import { Mesh } from "./Mesh";
-import { mapOperation } from "./mapOperation";
-import { Operation, Component, __Element__ } from "@escad/core";
+import { Mesh } from "@escad/mesh";
+import { mapOperation, Operation, Component, __Element__ } from "@escad/core";
 
-type TranslateArgs =
+export type TranslateArgs =
   | [number, number, number]
   | [{ x?: number, y?: number, z?: number }]
   | [[number, number, number]]
+
 export const translate: Component<TranslateArgs, Operation<Mesh, Mesh>> =
   new Component<TranslateArgs, Operation<Mesh, Mesh>>("translate", (...args: TranslateArgs) => {
     let triple = args.length === 3 ? args : args[0];

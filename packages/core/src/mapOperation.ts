@@ -1,5 +1,9 @@
+import Product from "./Product";
+import Operation, { __Operation__ } from "./Operation";
+import { Leaf } from "./Work";
+import Hierarchy from "./Hierarchy";
+import Element, { ArrayElement } from "./Element";
 
-import { Product, Leaf, Operation, __Operation__, _OperationBuiltins, Hierarchy, Element, ArrayElement } from "@escad/core";
 
 export const mapOperation = <I extends Product, O extends Product = I>(name: string, func: (i: Leaf<I>) => Leaf<O>) =>
   new Operation<I, O>(name, arg => {

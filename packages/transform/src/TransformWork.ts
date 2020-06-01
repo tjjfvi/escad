@@ -1,8 +1,7 @@
 
 import { PointMapWork } from "./PointMapWork";
 import { Matrix4 } from "./Matrix4";
-import { Mesh } from "./Mesh";
-import { Vector3 } from "./Vector3";
+import { Mesh, Vector3 } from "@escad/mesh";
 import { FlipWork } from "./flip";
 import { Work, Leaf, Id } from "@escad/core";
 

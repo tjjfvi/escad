@@ -1,5 +1,5 @@
 
-import { Mesh } from "./Mesh";
+import { Mesh } from "@escad/mesh";
 import { Work, Leaf, Id, Operation } from "@escad/core";
 
 export class MeldWork extends Work<MeldWork, Mesh, Leaf<Mesh>[]> {

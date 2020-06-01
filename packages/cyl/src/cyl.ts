@@ -1,8 +1,6 @@
 
-import { Mesh } from "./Mesh";
-import { Face } from "./Face";
-import { Vector3 } from "./Vector3";
-import { diff } from "./csg";
+import { Mesh, Face, Vector3 } from "@escad/mesh";
+import { diff } from "@escad/csg";
 import { Work, Element, Id, } from "@escad/core";
 
 const tau = Math.PI * 2;
@@ -59,7 +57,7 @@ Work.Registry.register(CylWork);
 type Pair<T> = T | [T, T];
 type XY<T> = [T, T] | { x: T, y: T };
 
-interface CylArgs {
+export interface CylArgs {
   r?: Pair<number>,
   rs?: Pair<number>,
   r1?: number,

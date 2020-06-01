@@ -1,15 +1,7 @@
 
-import * as newBuiltins from "./builtins";
-import { extendBuiltins } from "@escad/core";
-
-type NewBuiltins = typeof newBuiltins;
-
-declare global {
-  export namespace escad {
-    export interface Builtins extends NewBuiltins { }
-  }
-}
-
-extendBuiltins(newBuiltins);
-
-export * from "./builtins";
+export * from "@escad/mesh";
+export * from "@escad/csg";
+export * from "@escad/cube";
+export * from "@escad/cyl";
+export * from "@escad/sphere";
+export * from "@escad/transform";

@@ -1,10 +1,9 @@
 
 import { TransformWork } from "./TransformWork";
 import { Matrix4 } from "./Matrix4"
-import { Mesh } from "./Mesh";
+import { Mesh } from "@escad/mesh";
 import { FlipWork } from "./flip";
-import { mapOperation } from "./mapOperation";
-import { Component, Operation } from "@escad/core";
+import { Component, Operation, mapOperation } from "@escad/core";
 
 type ScaleArgs =
   | [number]
