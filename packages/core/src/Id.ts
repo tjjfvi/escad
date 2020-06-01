@@ -35,6 +35,10 @@ class Id {
     return ids.get(sha.b64);
   }
 
+  toString() {
+    return `${this.packageName}@${this.packageVersion}/${this.filename}/${this.name}`;
+  }
+
 }
 
 export default Id;

@@ -17,7 +17,7 @@ class Registry<T> {
     if (!(id instanceof Id))
       throw new Error("Registry.register was given invalid key: " + id);
     if (this.map.has(id))
-      throw new Error(`Key Conflict: ${id.sha.b64}`);
+      throw new Error(`Key Conflict: ${id}`);
     this.map.set(id, entry);
   }
 
@@ -25,7 +25,7 @@ class Registry<T> {
     if (!(id instanceof Id))
       throw new Error("Invalid key: " + id);
     if (!this.map.has(id))
-      throw new Error(`Missing Entry: ${id.sha.b64}`);
+      throw new Error(`Missing Entry: ${id}`);
     // @ts-ignore
     return this.map.get(id);
   }
