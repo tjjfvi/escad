@@ -1,13 +1,7 @@
 {
+  "extends": "../../tsconfig.json",
   "compilerOptions": {
-    "strict": true,
+    "rootDir": ".",
     "outDir": "dist",
-    "esModuleInterop": true,
-    "target": "ES5",
-    "downlevelIteration": true,
-    "rootDir": "."
   },
-  "ts-node": {
-    "transpileOnly": true
-  }
 }

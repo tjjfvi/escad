@@ -1,0 +1,14 @@
+{
+  "compilerOptions": {
+    "strict": true,
+    "esModuleInterop": true,
+    "target": "ES2019",
+    "downlevelIteration": true,
+    "declaration": true,
+    "moduleResolution": "node",
+    "module": "CommonJS",
+  },
+  "ts-node": {
+    "transpileOnly": true,
+  },
+}
