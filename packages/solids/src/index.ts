@@ -1,5 +1,7 @@
 
 import { cyl, cylinder, hollowCyl, hollowCylinder } from "./cyl";
+import { cube } from "./cube";
+import { hollowSphere, sphere } from "./sphere";
 import { extendBuiltins } from "@escad/core";
 
 const cylBuiltins = {
@@ -7,6 +9,9 @@ const cylBuiltins = {
   cylinder,
   hollowCyl,
   hollowCylinder,
+  cube,
+  hollowSphere,
+  sphere,
 }
 
 type CylBuiltins = typeof cylBuiltins;
@@ -19,4 +24,9 @@ declare global {
 
 extendBuiltins(cylBuiltins);
 
-export * from "./cyl";
+// @create-index {"mode":"*"}
+
+export * from './cube';
+export * from './cyl';
+export * from './sphere';
+
