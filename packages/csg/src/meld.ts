@@ -13,7 +13,7 @@ export class MeldWork extends Work<MeldWork, Mesh, Leaf<Mesh>[]> {
   }
 
   async execute(inputs: Mesh[]) {
-    return new Mesh(inputs.flatMap(i => i.faces));
+    return new Mesh(inputs.flatMap(i => i.faces)).finish();
   }
 
   _serialize() {

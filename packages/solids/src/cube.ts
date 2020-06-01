@@ -60,7 +60,7 @@ export class CubeWork extends Work<CubeWork, Mesh, []> {
       [5, 7, 1],
       [4, 0, 2],
       [6, 4, 2],
-    ])
+    ]).finish();
   }
 
 }

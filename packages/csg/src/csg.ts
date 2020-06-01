@@ -120,7 +120,7 @@ class MeshToCsgWork extends Work<MeshToCsgWork, CSGWrapper, [Leaf<Mesh>]> {
   async execute([input]: [Mesh]) {
     let polygons = input.faces.map(f => new CSG.Polygon(f.points.map(v => new CSG.Vertex(new CSG.Vector(v), []))));
     let node = new CSG.Node(polygons);
-    return new CSGWrapper(node);
+    return new CSGWrapper(node).finish();
   }
 
 }
@@ -153,7 +153,7 @@ class CsgToMeshWork extends Work<CsgToMeshWork, Mesh, [Leaf<CSGWrapper>]> {
       ));
     });
 
-    return new Mesh(faces);
+    return new Mesh(faces).finish();
   }
 
 }
@@ -191,7 +191,7 @@ class CsgWork extends Work<CsgWork, CSGWrapper, Leaf<CSGWrapper>[]> {
       if (op[0] === "build")
         return nodes[op[1]] = new CSG.Node(nodes[op[1]].allPolygons().concat(nodes[op[2]].allPolygons()));
     })
-    return new CSGWrapper(nodes[this.final]);
+    return new CSGWrapper(nodes[this.final]).finish();
   }
 
 }
@@ -274,9 +274,9 @@ let _intersect = (...originalArgs: Elementish<Mesh>[]) => {
   ], 0);
 }
 
-export const union: Operation<Mesh, Mesh> = new Operation("union", el => _union(el) ?? new Mesh([]));
-export const diff: Operation<Mesh, Mesh> = new Operation("diff", el => _diff(el) ?? new Mesh([]));
-export const intersection: Operation<Mesh, Mesh> = new Operation("intersect", el => _intersect(el) ?? new Mesh([]));
+export const union: Operation<Mesh, Mesh> = new Operation("union", el => _union(el) ?? new Mesh([]).finish());
+export const diff: Operation<Mesh, Mesh> = new Operation("diff", el => _diff(el) ?? new Mesh([]).finish());
+export const intersection: Operation<Mesh, Mesh> = new Operation("intersect", el => _intersect(el) ?? new Mesh([]).finish());
 
 export const add: Component<Elementish<Mesh>[], Operation<Mesh, Mesh>> =
   new Component("add", (...el) => new Operation("add", el2 => union(el2, el)))

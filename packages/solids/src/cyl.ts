@@ -47,7 +47,7 @@ class CylWork extends Work<CylWork, Mesh, []> {
         [p12, p11, p22],
         [p22, p11, p21],
       ];
-    }).map(f => new Face(f.map(v => new Vector3(...v)))));
+    }).map(f => new Face(f.map(v => new Vector3(...v))))).finish();
   }
 
 }

@@ -16,7 +16,7 @@ class FlipWork extends Work<FlipWork, Mesh, [Leaf<Mesh>]> {
   }
 
   async execute([input]: [Mesh]) {
-    return new Mesh(input.faces.map(f => new Face(f.points.slice().reverse())));
+    return new Mesh(input.faces.map(f => new Face(f.points.slice().reverse()))).finish();
   }
 
   constructor(child: Leaf<Mesh>) {

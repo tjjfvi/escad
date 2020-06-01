@@ -139,7 +139,7 @@ class Hierarchy implements FullHierarchyArgs {
     });
   }
 
-  apply<T extends Product>(el: Elementish<T>) {
+  apply<T extends Product<T>>(el: Elementish<T>) {
     return new Element(el, this);
   }
 

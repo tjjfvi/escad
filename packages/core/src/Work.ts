@@ -2,20 +2,20 @@
 import { hash, Sha } from "./hash";
 import Registry from "./Registry";
 import ProductManager from "./ProductManager";
-import Product from "./Product";
+import Product, { FinishedProduct } from "./Product";
 import Id from "./Id";
 import WeakCache from "./WeakCache";
 // $FlowFixMe
 import fs from "fs-extra";
 import b64, { B64 } from "./b64";
 
-type Leaf<T extends Product> = T | W<T>;
+type Leaf<T extends Product<T>> = FinishedProduct<T> | W<T>;
 
 const cache = new WeakCache<B64, W<any>>();
 
 type $C = Array<Leaf<Product>>;
-type W<T extends Product = Product, C extends $C = any> = Work<W<T, C>, T, C>;
-abstract class Work<_W extends Work<_W, T, C>, T extends Product = Product, C extends $C = any> {
+type W<T extends Product<T> = Product, C extends $C = any> = Work<W<T, C>, T, C>;
+abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Product, C extends $C = any> {
 
   abstract type: WorkType<_W, T, C>;
 
@@ -74,12 +74,12 @@ abstract class Work<_W extends Work<_W, T, C>, T extends Product = Product, C ex
     });
   }
 
-  abstract async execute(inputs: { [k in keyof C]: C[k] extends Leaf<infer O> ? O : never }): Promise<T>;
+  abstract async execute(inputs: { [k in keyof C]: C[k] extends Leaf<infer O> ? FinishedProduct<O> : never }): Promise<FinishedProduct<T>>;
 
-  async process(): Promise<T> {
+  async process(): Promise<FinishedProduct<T>> {
     if (this.redirect) {
       let prom = this.redirect.process();
-      await ProductManager.store(this.sha, this.redirect.process());
+      await ProductManager.store(this.sha, prom);
       return await prom;
     }
     let memoized = await ProductManager.lookup(this.sha);
@@ -98,7 +98,7 @@ abstract class Work<_W extends Work<_W, T, C>, T extends Product = Product, C ex
 
 }
 
-export interface WorkType<W extends Work<W, T, C>, T extends Product = Product, C extends $C = any> {
+export interface WorkType<W extends Work<W, T, C>, T extends Product<T> = Product, C extends $C = any> {
   id: Id;
   _deserialize(children: C, buf: Buffer): W;
 }

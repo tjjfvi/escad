@@ -20,7 +20,7 @@ abstract class PointMapWork<W extends PointMapWork<W>> extends Work<W, Mesh, [Le
   }
 
   async execute([input]: [Mesh]) {
-    return this._execute(input)
+    return this._execute(input).finish();
   }
 
 }

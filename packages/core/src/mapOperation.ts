@@ -5,7 +5,7 @@ import Hierarchy from "./Hierarchy";
 import Element, { ArrayElement } from "./Element";
 
 
-export const mapOperation = <I extends Product, O extends Product = I>(name: string, func: (i: Leaf<I>) => Leaf<O>) =>
+export const mapOperation = <I extends Product<I>, O extends Product<O> = I>(name: string, func: (i: Leaf<I>) => Leaf<O>) =>
   new Operation<I, O>(name, arg => {
     const argArr = arg.toArray();
     const shouldFlatten = argArr.length === 1;

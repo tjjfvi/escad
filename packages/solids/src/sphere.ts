@@ -44,7 +44,7 @@ class SphereWork extends Work<SphereWork, Mesh, []> {
 
         return Mesh.fromVertsFaces(vs, [[...Array(vs.length)].map((_, i) => i)]).faces;
       })
-    ));
+    )).finish();
   }
 
   _serialize() {
