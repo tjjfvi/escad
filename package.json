@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "rm -rf dist; mkdir dist; cp -r src dist/src; npx tsc; chmod +x dist/bin/*",
+    "build": "lerna bootstrap; npm run index; lerna run build",
     "index": "create-index -X ts -x ts -x tsx -Sui packages/"
   },
   "author": "",
