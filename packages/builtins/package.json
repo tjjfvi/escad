@@ -1,0 +1,25 @@
+{
+  "name": "@escad/builtins",
+  "version": "0.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf dist",
+    "build": "npm run clean; tsc",
+    "prepack": "npm run build"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^3.9.3"
+  },
+  "dependencies": {
+    "csg": "^1.0.1",
+    "@escad/core": "^0.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

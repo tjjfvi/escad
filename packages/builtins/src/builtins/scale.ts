@@ -4,8 +4,7 @@ import { Matrix4 } from "./Matrix4"
 import { Mesh } from "./Mesh";
 import { FlipWork } from "./flip";
 import { mapOperation } from "./mapOperation";
-import Component from "../Component";
-import Operation from "../Operation";
+import { Component, Operation } from "@escad/core";
 
 type ScaleArgs =
   | [number]

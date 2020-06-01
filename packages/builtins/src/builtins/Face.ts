@@ -1,8 +1,7 @@
 
 import { Vector3 } from "./Vector3";
 import { Plane } from "./Plane";
-import Product from "../Product";
-import Id from "../Id";
+import { Product, Id } from "@escad/core";
 
 class Face extends Product<Face> {
 

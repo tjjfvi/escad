@@ -1,8 +1,7 @@
 /* eslint-disable array-element-newline */
 
 import { Vector3 } from "./Vector3";
-import Product from "../Product";
-import Id from "../Id";
+import { Product, Id } from "@escad/core";
 
 const c = Math.cos;
 const s = Math.sin;

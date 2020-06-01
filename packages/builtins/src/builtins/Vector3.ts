@@ -1,6 +1,5 @@
 
-import Product from "../Product";
-import Id from "../Id";
+import { Product, Id } from "@escad/core";
 
 class Vector3 extends Product<Vector3> {
 

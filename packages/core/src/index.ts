@@ -1,6 +1,6 @@
 
 export * from "./builtins";
-import * as builtins from "./builtins";
+import builtins from "./builtins";
 import Element, { Elementish } from "./Element";
 import Product from "./Product";
 
@@ -8,7 +8,12 @@ const escadFunc = <T extends Product>(...a: Elementish<T>[]) => {
   return new Element(a.length === 1 ? a[0] : a);
 }
 
-const escad = Object.assign(escadFunc, { ...builtins }) as typeof escadFunc & typeof builtins;
+const escad = new Proxy(escadFunc, {
+  get: (target, key) =>
+    key in target ?
+      target[key as keyof typeof target] :
+      builtins[key as keyof typeof builtins]
+}) as typeof escadFunc & typeof builtins;
 
 export default escad;
 
@@ -27,4 +32,5 @@ export * from './Id';
 export * from './Operation';
 export * from './Product';
 export * from './Work';
+export * from "./builtins";
 

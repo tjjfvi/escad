@@ -4,9 +4,8 @@ import Hierarchy from "./Hierarchy";
 import Operation, { __Operation__ } from "./Operation";
 import Component, { __Component__ } from "./Component";
 import Product from "./Product";
-import * as builtins from "./builtins";
 import { __Thing__ } from "./__Thing__";
-import { Mesh } from "./builtins";
+import builtins, { Builtins } from "./builtins";
 
 interface ObjMap<T> {
   [x: string]: T;
@@ -36,12 +35,10 @@ export interface Element<T extends Product> {
   <I extends any[], U extends ElementIn<T>>(c: __Component__<I, U>): Component<I, ElementOut<T, U>>,
 }
 
-type B = typeof builtins;
-
 type _ElementOut<T extends Product, Arg> = Arg extends ElementIn<T> ? ElementOut<T, Arg> : never;
 
 type _ElementBuiltins<T extends Product> = {
-  [K in keyof B]: _ElementOut<T, B[K]>
+  [K in keyof Builtins]: _ElementOut<T, Builtins[K]>
 }
 
 export interface Element<T extends Product> extends _ElementBuiltins<T> { }

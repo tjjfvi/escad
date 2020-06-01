@@ -3,8 +3,7 @@ import { TransformWork } from "./TransformWork";
 import { Matrix4 } from "./Matrix4"
 import { Mesh } from "./Mesh";
 import { mapOperation } from "./mapOperation";
-import Component from "../Component";
-import Operation from "../Operation";
+import { Component, Operation } from "@escad/core";
 
 const tau = Math.PI * 2;
 

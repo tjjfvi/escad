@@ -1,8 +1,7 @@
 
 import { Vector3 } from "./Vector3";
 import { Face } from "./Face";
-import Id from "../Id";
-import Product from "../Product";
+import { Id, Product } from "@escad/core";
 
 const epsilon = 1e-5;
 

@@ -2,8 +2,8 @@
 import Component, { __Component__ } from "./Component";
 import Element, { Elementish, __Element__, ArrayElement } from "./Element";
 import Product from "./Product";
-import * as builtins from "./builtins";
 import { __Thing__ } from "./__Thing__";
+import builtins, { Builtins } from "./builtins";
 
 export class __Operation__<I extends Product, O extends Product> extends __Thing__ {
   declare protected __i__: I;
@@ -23,13 +23,11 @@ export interface Operation<I extends Product, O extends Product> {
   <A extends any[], T extends OperationIn<I, O>>(c: Component<A, T>): Component<A, OperationOut<I, O, T>>,
 }
 
-type B = typeof builtins;
-
 type _OperationOut<I extends Product, O extends Product, Arg> =
   Arg extends OperationIn<I, O> ? OperationOut<I, O, Arg> : never;
 
 export type _OperationBuiltins<I extends Product, O extends Product> = {
-  [K in keyof B]: _OperationOut<I, O, B[K]>;
+  [K in keyof Builtins]: _OperationOut<I, O, Builtins[K]>;
 }
 
 export interface Operation<I extends Product, O extends Product> extends _OperationBuiltins<I, O> { }

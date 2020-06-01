@@ -1,10 +1,8 @@
 
 import { Mesh } from "./Mesh";
 import { Face } from "./Face";
-import Work, { Leaf } from "../Work";
 import { mapOperation } from "./mapOperation";
-import Id from "../Id";
-import Operation from "../Operation";
+import { Work, Leaf, Id, Operation } from "@escad/core";
 
 class FlipWork extends Work<FlipWork, Mesh, [Leaf<Mesh>]> {
   type = FlipWork;

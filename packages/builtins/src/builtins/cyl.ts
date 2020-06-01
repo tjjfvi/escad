@@ -4,9 +4,7 @@ import { Face } from "./Face";
 import { Vector3 } from "./Vector3";
 import { diff } from "./csg";
 import { OneOf } from "../utils";
-import Work from "../Work";
-import Element from "../Element";
-import Id from "../Id";
+import { Work, Element, Id, } from "@escad/core";
 
 const tau = Math.PI * 2;
 

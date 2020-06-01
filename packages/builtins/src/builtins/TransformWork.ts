@@ -2,10 +2,9 @@
 import { PointMapWork } from "./PointMapWork";
 import { Matrix4 } from "./Matrix4";
 import { Mesh } from "./Mesh";
-import Work, { Leaf } from "../Work";
 import { Vector3 } from "./Vector3";
 import { FlipWork } from "./flip";
-import Id from "../Id";
+import { Work, Leaf, Id } from "@escad/core";
 
 class TransformWork extends PointMapWork<TransformWork> {
   type = TransformWork;

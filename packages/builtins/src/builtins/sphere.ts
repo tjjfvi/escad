@@ -1,11 +1,8 @@
 
 import { Mesh } from "./Mesh";
 import { diff } from "./csg";
-import Work from "../Work";
-import Element from "../Element";
-import Id from "../Id";
-import Component from "../Component";
 import { Vector3 } from "./Vector3";
+import { Work, Element, Id, Component } from "@escad/core";
 
 const tau = Math.PI * 2;
 

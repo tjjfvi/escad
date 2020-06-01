@@ -1,8 +1,7 @@
 
 import { Mesh } from "./Mesh";
 import { Vector3 } from "./Vector3";
-import Element from "../Element";
-import Component from "../Component";
+import { Element, Component } from "@escad/core";
 
 type PolyhedronVerts = Vector3[];
 type PolyhedronFaces = number[][];

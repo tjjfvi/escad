@@ -1,8 +1,6 @@
 
 import { Mesh } from "./Mesh";
-import Work, { Leaf } from "../Work";
-import Id from "../Id";
-import Operation from "../Operation";
+import { Work, Leaf, Id, Operation } from "@escad/core";
 
 export class MeldWork extends Work<MeldWork, Mesh, Leaf<Mesh>[]> {
   type = MeldWork;

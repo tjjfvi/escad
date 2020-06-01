@@ -4,12 +4,16 @@ import { Face } from "./Face";
 import { Vector3 } from "./Vector3";
 // @ts-ignore
 import CSG from "csg";
-import Work, { Leaf } from "../Work";
-import Element, { Elementish } from "../Element";
-import Product from "../Product";
-import Operation from "../Operation";
-import Id from "../Id";
-import Component from "../Component";
+import {
+  Work,
+  Leaf,
+  Element,
+  Elementish,
+  Product,
+  Operation,
+  Id,
+  Component,
+} from "@escad/core";
 
 class CSGWrapper extends Product<CSGWrapper> {
   type = CSGWrapper;

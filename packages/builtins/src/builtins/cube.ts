@@ -2,10 +2,7 @@
 import { Mesh } from "./Mesh";
 import { Vector3 } from "./Vector3";
 import { OneOf } from "../utils";
-import Work from "../Work";
-import Component from "../Component";
-import Element from "../Element";
-import Id from "../Id";
+import { Work, Component, Element, Id } from "@escad/core";
 
 type CubeWorkArgs = [[number, number, number], [boolean, boolean, boolean]];
 class CubeWork extends Work<CubeWork, Mesh, []> {
