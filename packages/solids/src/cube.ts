@@ -17,11 +17,11 @@ export class CubeWork extends Work<CubeWork, Mesh, []> {
     this.freeze();
   }
 
-  _serialize() {
+  serialize() {
     return Buffer.from(JSON.stringify(this.args));
   }
 
-  static _deserialize(c: [], buf: Buffer) {
+  static deserialize(c: [], buf: Buffer) {
     return new CubeWork(JSON.parse(buf.toString("utf8")));
   }
 

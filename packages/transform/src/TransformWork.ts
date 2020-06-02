@@ -19,11 +19,11 @@ class TransformWork extends PointMapWork<TransformWork> {
     this.freeze()
   }
 
-  _serialize() {
+  serialize() {
     return this.matrix.serialize();
   }
 
-  static _deserialize([child]: [Leaf<Mesh>], buf: Buffer) {
+  static deserialize([child]: [Leaf<Mesh>], buf: Buffer) {
     let m = Matrix4.deserialize(buf);
     return new TransformWork(child, m);
   }

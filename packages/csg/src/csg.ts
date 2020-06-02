@@ -109,11 +109,11 @@ class MeshToCsgWork extends Work<MeshToCsgWork, CSGWrapper, [Leaf<Mesh>]> {
     this.freeze();
   }
 
-  _serialize() {
+  serialize() {
     return Buffer.alloc(0);
   }
 
-  static _deserialize([child]: [Leaf<Mesh>]) {
+  static deserialize([child]: [Leaf<Mesh>]) {
     return new MeshToCsgWork(child);
   }
 
@@ -135,11 +135,11 @@ class CsgToMeshWork extends Work<CsgToMeshWork, Mesh, [Leaf<CSGWrapper>]> {
     this.freeze();
   }
 
-  _serialize() {
+  serialize() {
     return Buffer.alloc(0);
   }
 
-  static _deserialize([child]: [Leaf<CSGWrapper>]) {
+  static deserialize([child]: [Leaf<CSGWrapper>]) {
     return new CsgToMeshWork(child);
   }
 
@@ -173,11 +173,11 @@ class CsgWork extends Work<CsgWork, CSGWrapper, Leaf<CSGWrapper>[]> {
     this.freeze();
   }
 
-  _serialize() {
+  serialize() {
     return Buffer.from(JSON.stringify([this.operations, this.final]), "utf8");
   }
 
-  static _deserialize(children: Leaf<CSGWrapper>[], buffer: Buffer) {
+  static deserialize(children: Leaf<CSGWrapper>[], buffer: Buffer) {
     return new CsgWork(children, ...(JSON.parse(buffer.toString("utf8")) as [CsgOperation[], number]));
   }
 

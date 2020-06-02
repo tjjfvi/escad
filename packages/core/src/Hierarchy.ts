@@ -5,8 +5,11 @@ import { Product } from "./Product";
 import { Work } from "./Work";
 import fs from "fs-extra";
 import path from "path";
+import { HierarchyManager } from "./HierarchyManager";
+import { ProductManager } from "./ProductManager";
 
 type BraceType = "{" | "[" | "(" | ":" | "";
+const isBraceType = (x: string): x is BraceType => ["{", "[", "(", ":", ""].includes(x);
 
 export interface HierarchyArgs {
   readonly name?: string,
@@ -32,7 +35,7 @@ export interface FullHierarchyArgs extends HierarchyArgs {
 
 export class Hierarchy implements FullHierarchyArgs {
 
-  static dir: string = "";
+  static Manager = new HierarchyManager();
 
   readonly name: string;
   readonly braceType: BraceType;
@@ -96,19 +99,76 @@ export class Hierarchy implements FullHierarchyArgs {
     this.isOutput = isOutput;
     this.isFullOutput = isFullOutput;
 
-    let obj = {
+
+    const serialized = this.serialize();
+
+    this.sha = hash(serialized);
+    if (this.sha.b64.startsWith("BAS"))
+      console.log(this.sha, "!!!");
+    this.writePromise = Hierarchy.Manager.store(this.sha, Promise.resolve(this)).then(() => { });
+  }
+
+  serialize() {
+    const buffer = Buffer.alloc(4 + this.name.length + 1 + 1 + 4 + (this.children.length + 3) * 32);
+    buffer.writeUInt32LE(this.name.length);
+    buffer.fill(this.name, 4);
+    buffer.fill(this.braceType || 0, 4 + this.name.length);
+    buffer.fill((
+      (+(this.output === this) << 0) +
+      (+(this.fullOutput === this) << 1) +
+      (+(!this.input) << 2)
+    ), this.name.length + 4 + 1);
+    buffer.writeUInt32LE(this.children.length, this.name.length + 4 + 1 + 1);
+    [...this.children, this.output, this.fullOutput, this.input].forEach((h, i) => {
+      buffer.fill((h !== this && h) ? h.sha.buffer : 0, 4 + this.name.length + 1 + 1 + 4 + 32 * i);
+    })
+    return buffer;
+  }
+
+  static async deserialize(buffer: Buffer) {
+    const nameLength = buffer.readUInt32LE(0);
+    const name = buffer.slice(4, 4 + nameLength).toString("utf8");
+    buffer = buffer.slice(4 + nameLength);
+
+    const braceTypeStr = buffer.slice(0, 1).toString("utf8");
+    const braceType = isBraceType(braceTypeStr) ? braceTypeStr : "";
+    buffer = buffer.slice(1);
+
+    const flags = buffer[0];
+    const isOutput = !!(flags & (1 << 0));
+    const isFullOutput = !!(flags & (1 << 1));
+    const noInput = !!(flags & (1 << 2));
+    buffer = buffer.slice(1);
+
+    const childrenLength = buffer.readUInt32LE(0);
+    buffer = buffer.slice(4);
+
+    const children: Hierarchy[] = [];
+    for (let i = 0; i < childrenLength; i++) {
+      let sha = new Sha(buffer.slice(i * 32, (i + 1) * 32));
+      let child = await Hierarchy.Manager.lookup(sha);
+      if (!child)
+        throw new Error(`Could not find Hierarchy ${sha.b64} referenced in serialized Hierarchy`);
+      children.push(child);
+    }
+    buffer = buffer.slice(childrenLength * 32);
+
+    const [output, fullOutput, input] = await Promise.all(
+      [isOutput, isFullOutput, noInput].map(async (flag, i) =>
+        flag ? null : await Hierarchy.Manager.lookup(new Sha(buffer.slice(i * 32, (i + 1) * 32)))
+      )
+    );
+
+    return new Hierarchy({
       name,
       braceType,
-      children: children.map(c => c.sha.b64),
-      output: output === this ? null : output.sha.b64,
-      fullOutput: fullOutput === this ? null : fullOutput.sha.b64,
-      input: input?.sha.b64 ?? null,
-    };
-
-    this.sha = hash.json(obj);
-    this.writePromise = fs.writeFile(path.join(Hierarchy.dir, this.sha.b64), JSON.stringify(obj));
-
-    Object.freeze(this);
+      children,
+      isOutput,
+      isFullOutput,
+      output,
+      fullOutput,
+      input,
+    });
   }
 
   static fromElementish(el: Elementish<Product>): Hierarchy {

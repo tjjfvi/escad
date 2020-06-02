@@ -17,16 +17,16 @@ const escad = new Proxy(escadFunc, {
 
 export default escad;
 
-export { default as ProductManager } from "./ProductManager";
-
 // @create-index {"mode":"*"}
 
+export * from './ArtifactManager';
 export * from './Component';
 export * from './Element';
 export * from './ExportType';
 export * from './ExportTypeRegistry';
 export * from './ExtensibleFunction';
 export * from './Hierarchy';
+export * from './HierarchyManager';
 export * from './Id';
 export * from './Operation';
 export * from './Product';
@@ -34,6 +34,7 @@ export * from './ProductManager';
 export * from './Registry';
 export * from './WeakCache';
 export * from './Work';
+export * from './WorkManager';
 export * from './b64';
 export * from './builtins';
 export * from './hash';

@@ -17,11 +17,11 @@ class CylWork extends Work<CylWork, Mesh, []> {
     this.freeze();
   }
 
-  _serialize() {
+  serialize() {
     return Buffer.from(JSON.stringify(this.args));
   }
 
-  static _deserialize(children: [], buf: Buffer) {
+  static deserialize(children: [], buf: Buffer) {
     return new CylWork(JSON.parse(buf.toString("utf8")));
   }
 

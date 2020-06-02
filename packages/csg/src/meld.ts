@@ -16,11 +16,11 @@ export class MeldWork extends Work<MeldWork, Mesh, Leaf<Mesh>[]> {
     return new Mesh(inputs.flatMap(i => i.faces)).finish();
   }
 
-  _serialize() {
+  serialize() {
     return Buffer.alloc(0);
   }
 
-  static _deserialize(children: Leaf<Mesh>[]) {
+  static deserialize(children: Leaf<Mesh>[]) {
     return new MeldWork(children);
   }
 

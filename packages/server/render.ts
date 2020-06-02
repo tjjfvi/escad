@@ -1,7 +1,7 @@
 
 // Render Process
 
-import escad, { Work, ProductManager, Hierarchy, Element } from "@escad/core";
+import escad, { Work, Product, ArtifactManager, Element } from "@escad/core";
 
 let file: string, func: any, dir: string, init = false;
 let queue: any[] = [];
@@ -16,9 +16,6 @@ function processMessage([type, ...data]: any) {
   if (type === "run")
     // @ts-ignore
     return run(...data);
-  if (type === "export")
-    // @ts-ignore
-    return exp(...data);
   if (type === "process")
     // @ts-ignore
     return proc(...data);
@@ -27,10 +24,7 @@ function processMessage([type, ...data]: any) {
 
   init = true;
   [file, dir] = data;
-  Work.dir = dir + "/trees/";
-  ProductManager.dir = dir + "/products/";
-  ProductManager.exportDir = dir + "/exports/";
-  Hierarchy.dir = dir + "/hierarchy/";
+  ArtifactManager.artifactsDir = dir;
   let result;
   try {
     result = require(file).default;
@@ -78,14 +72,10 @@ async function run(id: any, params: any) {
   process.send?.(["finish", id, shas, hierarchy.sha.b64, paramDef])
 }
 
-async function exp(id: any, sha: any, format: any) {
-  await ProductManager.export(sha, format);
-  process.send?.(["finish", id]);
-}
-
 async function proc(id: any, sha: any) {
-  // @ts-ignore
-  let work = await Work.deserialize({ b64: sha });
+  let work = await Work.Manager.lookup({ b64: sha } as any);
+  if (!work)
+    throw new Error();
   await work.process();
   process.send?.(["finish", id, sha]);
 }

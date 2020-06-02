@@ -25,15 +25,6 @@ render.ee.on("reload", ({ shas, paramDef, hierarchy }) => {
   curHierarchy = hierarchy;
 });
 
-app.get("/exports/:sha.:ext", async (req, res) => {
-  const { sha, ext } = req.params;
-  const format = "." + ext;
-
-  await render.exp(sha, format);
-
-  fs.createReadStream(__dirname + "/../../artifacts/exports/" + sha + format).pipe(res);
-});
-
 app.get("/products/:sha", async (req, res) => {
   const { sha } = req.params;
 

@@ -1,7 +1,7 @@
 
 import { Registry } from "./Registry";
 import { hash, Sha } from "./hash";
-import ProductManager from "./ProductManager";
+import { ProductManager } from "./ProductManager";
 import { Id } from "./Id";
 import { ExportTypeRegistry } from "./ExportTypeRegistry";
 
@@ -15,6 +15,7 @@ export abstract class Product<P extends Product<P> = _Product> {
 
   static Registry = new Registry<ProductType>("ProductRegistry");
   static ExportTypeRegistry = new ExportTypeRegistry();
+  static Manager = new ProductManager();
 
   private _sha?: Sha;
   writePromise: Promise<void> | undefined;
@@ -31,7 +32,7 @@ export abstract class Product<P extends Product<P> = _Product> {
     let oldSha = this._sha;
     this._sha = hash(this.serialize());
     if (oldSha !== this._sha) {
-      this.writePromise = ProductManager.store(this._sha, Promise.resolve(this)).then(() => { });
+      this.writePromise = Product.Manager.store(this._sha, Promise.resolve(this as any)).then(() => { });
     }
     return this._sha;
   }

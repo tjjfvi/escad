@@ -7,11 +7,11 @@ class FlipWork extends Work<FlipWork, Mesh, [Leaf<Mesh>]> {
 
   static id = new Id("FlipWork", __filename);
 
-  _serialize() {
+  serialize() {
     return Buffer.alloc(0);
   }
 
-  static _deserialize([child]: [Leaf<Mesh>]) {
+  static deserialize([child]: [Leaf<Mesh>]) {
     return new FlipWork(child);
   }
 

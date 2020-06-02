@@ -47,11 +47,11 @@ class SphereWork extends Work<SphereWork, Mesh, []> {
     )).finish();
   }
 
-  _serialize() {
+  serialize() {
     return Buffer.from(JSON.stringify(this.args));
   }
 
-  static _deserialize(_c: [], buf: Buffer) {
+  static deserialize(_c: [], buf: Buffer) {
     return new SphereWork(JSON.parse(buf.toString("utf8")));
   }
 
