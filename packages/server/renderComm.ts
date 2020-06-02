@@ -20,7 +20,9 @@ function reload() {
   if (childProcess)
     childProcess.kill();
 
-  childProcess = fork(require.resolve("./_render"));
+  childProcess = fork(require.resolve("./_render"), undefined, {
+    execArgv: [...process.execArgv, "--debug-port=2992"],
+  });
 
   childProcess.send(["init", loadFile, artifactsDir]);
 
