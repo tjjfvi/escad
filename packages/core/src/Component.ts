@@ -22,6 +22,3 @@ export class Component<I extends any[], T extends __Thing__> extends __Component
   }
 
 }
-
-export default Component;
-

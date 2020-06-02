@@ -1,8 +1,8 @@
-import Product from "./Product";
-import Operation, { __Operation__ } from "./Operation";
+import { Product } from "./Product";
+import { Operation, __Operation__ } from "./Operation";
 import { Leaf } from "./Work";
-import Hierarchy from "./Hierarchy";
-import Element, { ArrayElement } from "./Element";
+import { Hierarchy } from "./Hierarchy";
+import { Element, ArrayElement } from "./Element";
 
 
 export const mapOperation = <I extends Product<I>, O extends Product<O> = I>(name: string, func: (i: Leaf<I>) => Leaf<O>) =>

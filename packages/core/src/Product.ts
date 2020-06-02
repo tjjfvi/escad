@@ -1,14 +1,15 @@
 
-import Registry from "./Registry";
+import { Registry } from "./Registry";
 import { hash, Sha } from "./hash";
 import ProductManager from "./ProductManager";
-import Id from "./Id";
+import { Id } from "./Id";
 import { ExportTypeRegistry } from "./ExportTypeRegistry";
 
 declare class __FinishedProduct__ { declare private __finished: true; }
 
 export interface _Product extends Product<_Product> { };
-abstract class Product<P extends Product<P> = _Product> {
+
+export abstract class Product<P extends Product<P> = _Product> {
 
   abstract type: ProductType<P>;
 
@@ -67,5 +68,3 @@ export interface ProductType<P extends Product<P> = _Product> {
   id: Id;
   deserialize(buffer: Buffer): P
 }
-
-export default Product;

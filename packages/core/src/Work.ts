@@ -1,21 +1,21 @@
 
 import { hash, Sha } from "./hash";
-import Registry from "./Registry";
+import { Registry } from "./Registry";
 import ProductManager from "./ProductManager";
-import Product, { FinishedProduct } from "./Product";
-import Id from "./Id";
-import WeakCache from "./WeakCache";
+import { Product, FinishedProduct } from "./Product";
+import { Id } from "./Id";
+import { WeakCache } from "./WeakCache";
 // $FlowFixMe
 import fs from "fs-extra";
-import b64, { B64 } from "./b64";
+import { b64, B64 } from "./b64";
 
-type Leaf<T extends Product<T>> = FinishedProduct<T> | W<T>;
+export type Leaf<T extends Product<T>> = FinishedProduct<T> | W<T>;
 
 const cache = new WeakCache<B64, W<any>>();
 
 type $C = Array<Leaf<Product>>;
 type W<T extends Product<T> = Product, C extends $C = any> = Work<W<T, C>, T, C>;
-abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Product, C extends $C = any> {
+export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Product, C extends $C = any> {
 
   abstract type: WorkType<_W, T, C>;
 
@@ -102,6 +102,3 @@ export interface WorkType<W extends Work<W, T, C>, T extends Product<T> = Produc
   id: Id;
   _deserialize(children: C, buf: Buffer): W;
 }
-
-export default Work;
-export type { Leaf };

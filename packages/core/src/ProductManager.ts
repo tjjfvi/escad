@@ -2,9 +2,9 @@
 import fs from "fs-extra";
 import path from "path";
 
-import Id from "./Id";
-import Product from "./Product";
-import WeakCache from "./WeakCache";
+import { Id } from "./Id";
+import { Product } from "./Product";
+import { WeakCache } from "./WeakCache";
 import { Sha } from "./hash";
 import { B64 } from "./b64";
 
@@ -56,4 +56,4 @@ class ProductManager {
 
 }
 
-export default new ProductManager()
+export default new ProductManager();

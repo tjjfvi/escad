@@ -1,7 +1,7 @@
 
-import Id from "./Id";
+import { Id } from "./Id";
 
-class Registry<T> {
+export class Registry<T> {
 
   name: string;
   private map = new Map<Id, T>();
@@ -31,5 +31,3 @@ class Registry<T> {
   }
 
 }
-
-export default Registry;

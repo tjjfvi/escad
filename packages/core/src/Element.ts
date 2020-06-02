@@ -1,11 +1,11 @@
 
 import { Leaf } from "./Work";
-import Hierarchy from "./Hierarchy";
-import Operation, { __Operation__ } from "./Operation";
-import Component, { __Component__ } from "./Component";
-import Product from "./Product";
+import { Hierarchy } from "./Hierarchy";
+import { Operation, __Operation__ } from "./Operation";
+import { Component, __Component__ } from "./Component";
+import { Product } from "./Product";
 import { __Thing__ } from "./__Thing__";
-import builtins, { Builtins } from "./builtins";
+import { builtins, Builtins } from "./builtins";
 
 interface ObjMap<T> {
   [x: string]: T;
@@ -205,5 +205,3 @@ export interface LeafElement<T extends Product<T>> extends Element<T> {
   applyHierarchy(hierarchyGen: (oldHierarchy: Hierarchy) => Hierarchy): LeafElement<T>
   applyHierarchy(hierarchy: Hierarchy): LeafElement<T>
 }
-
-export default Element;

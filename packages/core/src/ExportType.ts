@@ -1,5 +1,5 @@
-import Product from "./Product";
-import Id from "./Id";
+import { Product } from "./Product";
+import { Id } from "./Id";
 
 export interface ExportTypeArgs<P extends Product<P>> {
   id: Id,

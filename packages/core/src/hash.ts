@@ -1,6 +1,6 @@
 
 import crypto from "crypto";
-import b64, { B64 } from "./b64";
+import { b64, B64 } from "./b64";
 
 export class Sha {
   b64: B64;

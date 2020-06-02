@@ -1,8 +1,8 @@
 
 import { hash, Sha } from "./hash";
 import { Elementish, Element } from "./Element";
-import Product from "./Product";
-import Work from "./Work";
+import { Product } from "./Product";
+import { Work } from "./Work";
 import fs from "fs-extra";
 import path from "path";
 
@@ -30,7 +30,7 @@ export interface FullHierarchyArgs extends HierarchyArgs {
   readonly isFullOutput: boolean,
 }
 
-class Hierarchy implements FullHierarchyArgs {
+export class Hierarchy implements FullHierarchyArgs {
 
   static dir: string = "";
 
@@ -148,5 +148,3 @@ class Hierarchy implements FullHierarchyArgs {
   }
 
 }
-
-export default Hierarchy;

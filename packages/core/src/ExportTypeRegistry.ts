@@ -1,6 +1,6 @@
 
-import Id from "./Id";
-import Product, { ProductType } from "./Product";
+import { Id } from "./Id";
+import { Product, ProductType } from "./Product";
 import { ExportType } from "./ExportType"
 
 export class ExportTypeRegistry {

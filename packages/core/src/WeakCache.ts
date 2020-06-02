@@ -58,7 +58,7 @@ export class WeakCacheBasic<K, V> {
 
 }
 
-let WeakCache = WeakCacheBasic;
+export let WeakCache = WeakCacheBasic;
 
 const FinReg = (
   // @ts-ignore
@@ -108,5 +108,3 @@ if ("WeakRef" in global && FinReg)
     }
 
   }
-
-export default WeakCache;

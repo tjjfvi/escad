@@ -1,8 +1,8 @@
 
 export * from "./builtins";
-import builtins from "./builtins";
-import Element, { Elementish } from "./Element";
-import Product from "./Product";
+import { builtins } from "./builtins";
+import { Element, Elementish } from "./Element";
+import { Product } from "./Product";
 
 const escadFunc = <T extends Product<T>>(...a: Elementish<T>[]) => {
   return new Element(a.length === 1 ? a[0] : a);
@@ -17,22 +17,25 @@ const escad = new Proxy(escadFunc, {
 
 export default escad;
 
-export { default as Component } from './Component';
-export { default as Element } from './Element';
-export { default as Hierarchy } from './Hierarchy';
-export { default as Id } from './Id';
-export { default as Operation } from './Operation';
-export { default as Product } from './Product';
-export { default as Work } from './Work';
-export { default as ProductManager } from './ProductManager';
+export { default as ProductManager } from "./ProductManager";
+
+// @create-index {"mode":"*"}
+
 export * from './Component';
 export * from './Element';
+export * from './ExportType';
+export * from './ExportTypeRegistry';
+export * from './ExtensibleFunction';
 export * from './Hierarchy';
 export * from './Id';
 export * from './Operation';
 export * from './Product';
+export * from './ProductManager';
+export * from './Registry';
+export * from './WeakCache';
 export * from './Work';
-export * from "./builtins";
-export * from "./mapOperation";
-export * from "./ExportType";
+export * from './b64';
+export * from './builtins';
+export * from './hash';
+export * from './mapOperation';
 

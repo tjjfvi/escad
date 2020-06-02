@@ -6,7 +6,7 @@ import { B64 } from "./b64";
 
 const ids = new Map<B64, Id>();
 
-class Id {
+export class Id {
 
   packageName: string;
   packageVersion: string;
@@ -40,5 +40,3 @@ class Id {
   }
 
 }
-
-export default Id;

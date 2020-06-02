@@ -1,7 +1,7 @@
 
 const map = new WeakMap<ExtensibleFunction, typeof ExtensibleFunction>();
 
-class ExtensibleFunction extends Function {
+export class ExtensibleFunction extends Function {
 
   // @ts-ignore
   constructor(func: (...x: any[]) => any, handler: ProxyHandler<any> = {}, name = "") {
@@ -23,6 +23,3 @@ Object.defineProperty(ExtensibleFunction, Symbol.hasInstance, {
     return Class.prototype === this.prototype;
   }
 });
-
-
-export default ExtensibleFunction;
