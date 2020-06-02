@@ -24,8 +24,6 @@ import fs from "fs";
   if (clean)
     fs.rmdirSync(artifactsDir, { recursive: true });
 
-  ["products", "exports", "trees", "hierarchy"].map(d => fs.mkdirSync(path.join(artifactsDir, d), { recursive: true }))
-
   const loadFile = path.resolve(file);
   const loadDir = path.dirname(path.resolve(watchDir || loadFile));
 
