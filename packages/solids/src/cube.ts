@@ -17,6 +17,10 @@ export class CubeWork extends Work<CubeWork, Mesh, []> {
     this.freeze();
   }
 
+  clone(c: []) {
+    return new CubeWork(this.args);
+  }
+
   serialize() {
     return Buffer.from(JSON.stringify(this.args));
   }

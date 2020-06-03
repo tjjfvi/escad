@@ -17,6 +17,10 @@ class CylWork extends Work<CylWork, Mesh, []> {
     this.freeze();
   }
 
+  clone(c: []) {
+    return new CylWork(this.args);
+  }
+
   serialize() {
     return Buffer.from(JSON.stringify(this.args));
   }

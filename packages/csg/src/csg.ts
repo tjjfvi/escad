@@ -99,7 +99,7 @@ class CSGWrapper extends Product<CSGWrapper> {
 
 }
 
-class MeshToCsgWork extends Work<MeshToCsgWork, CSGWrapper, [Leaf<Mesh>]> {
+class MeshToCsgWork extends Work<MeshToCsgWork, CSGWrapper, [Mesh]> {
   type = MeshToCsgWork;
 
   static id = new Id("MeshToCsgWork", __filename);
@@ -107,6 +107,10 @@ class MeshToCsgWork extends Work<MeshToCsgWork, CSGWrapper, [Leaf<Mesh>]> {
   constructor(child: Leaf<Mesh>) {
     super([child]);
     this.freeze();
+  }
+
+  clone([child]: [Leaf<Mesh>]) {
+    return new MeshToCsgWork(child);
   }
 
   serialize() {
@@ -125,7 +129,7 @@ class MeshToCsgWork extends Work<MeshToCsgWork, CSGWrapper, [Leaf<Mesh>]> {
 
 }
 
-class CsgToMeshWork extends Work<CsgToMeshWork, Mesh, [Leaf<CSGWrapper>]> {
+class CsgToMeshWork extends Work<CsgToMeshWork, Mesh, [CSGWrapper]> {
   type = CsgToMeshWork;
 
   static id = new Id("CsgToMeshWork", __filename);
@@ -133,6 +137,10 @@ class CsgToMeshWork extends Work<CsgToMeshWork, Mesh, [Leaf<CSGWrapper>]> {
   constructor(child: Leaf<CSGWrapper>) {
     super([child]);
     this.freeze();
+  }
+
+  clone([child]: [Leaf<CSGWrapper>]) {
+    return new CsgToMeshWork(child);
   }
 
   serialize() {
@@ -163,7 +171,7 @@ type CsgOperation =
   | readonly ["clipTo", number, number]
   | readonly ["build", number, number]
 
-class CsgWork extends Work<CsgWork, CSGWrapper, Leaf<CSGWrapper>[]> {
+class CsgWork extends Work<CsgWork, CSGWrapper, CSGWrapper[]> {
   type = CsgWork;
 
   static id = new Id("CsgWork", __filename);
@@ -171,6 +179,10 @@ class CsgWork extends Work<CsgWork, CSGWrapper, Leaf<CSGWrapper>[]> {
   constructor(children: Leaf<CSGWrapper>[], public operations: CsgOperation[], public final: number) {
     super(children);
     this.freeze();
+  }
+
+  clone(children: Leaf<CSGWrapper>[]) {
+    return new CsgWork(this.children, this.operations, this.final);
   }
 
   serialize() {

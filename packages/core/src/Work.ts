@@ -5,18 +5,25 @@ import { Product, FinishedProduct } from "./Product";
 import { Id } from "./Id";
 import { WorkManager } from "./WorkManager";
 
-export type Leaf<T extends Product<T>> = FinishedProduct<T> | W<T>;
+export type Leaf<T extends Product<T>> = FinishedProduct<T> | _Work<T>;
 
-type $C = Array<Leaf<Product>>;
-type W<T extends Product<T> = Product, C extends $C = any> = Work<W<T, C>, T, C>;
-export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Product, C extends $C = $C> {
+export type ProcessedChildren<C extends Product[]> = {
+  [K in keyof C]: C[K] extends Product<any> ? FinishedProduct<C[K]> : C[K]
+}
+
+export type Children<C extends Product[]> = {
+  [K in keyof C]: C[K] extends Product<any> ? Leaf<C[K]> : C[K]
+}
+
+export type _Work<T extends Product<T> = Product, C extends Product[] = any> = Work<_Work<T, C>, T, C>;
+export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Product, C extends Product[] = any> {
 
   abstract type: WorkType<_W, T, C>;
 
-  static readonly Registry = new Registry<WorkType<W>>("WorkRegistry");
+  static readonly Registry = new Registry<WorkType<_Work>>("WorkRegistry");
   static readonly Manager = new WorkManager();
 
-  children: C;
+  children: Children<C>;
   sha: Sha;
   frozen = false;
 
@@ -24,7 +31,7 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
 
   writePromise: Promise<void> | null = null;
 
-  constructor(children: C) {
+  constructor(children: Children<C>) {
     this.children = children;
     this.sha = null as any;
   }
@@ -38,9 +45,11 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
     Object.freeze(this);
   }
 
+  abstract clone(children: Children<C>): _W
+
   abstract serialize(): Buffer;
 
-  abstract async execute(inputs: { [k in keyof C]: C[k] extends Leaf<infer O> ? FinishedProduct<O> : never }): Promise<FinishedProduct<T>>;
+  abstract async execute(inputs: ProcessedChildren<C>): Promise<FinishedProduct<T>>;
 
   async process(): Promise<FinishedProduct<T>> {
     if (!this.frozen)
@@ -51,12 +60,15 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
       return await this.redirect.process();
     }
 
-    let memoized = await Product.Manager.lookup(this.sha);
+    const memoized = await Product.Manager.lookup(this.sha);
     if (memoized)
       return memoized as any;
 
-    let inputs = await Promise.all(this.children.map(c => c.process()));
-    let result = await this.execute(inputs as any);
+    const inputs: ProcessedChildren<C> = await Promise.all(this.children.map(c => c.process())) as any;
+    const alias = this.clone(inputs);
+
+    const resultPromise = alias.sha === this.sha ? this.execute(inputs) : alias.process();
+    const result = await resultPromise;
 
     await Product.Manager.storePointer(this.sha, result.sha);
     await result.writePromise;
@@ -66,7 +78,7 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
 
 }
 
-export interface WorkType<W extends Work<W, T, C>, T extends Product<T> = Product, C extends $C = any> {
+export interface WorkType<W extends Work<W, T, C>, T extends Product<T> = Product, C extends Product[] = any> {
   id: Id;
-  deserialize(children: C, buf: Buffer): W;
+  deserialize(children: Children<C>, buf: Buffer): W;
 }

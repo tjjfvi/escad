@@ -19,6 +19,10 @@ class TransformWork extends PointMapWork<TransformWork> {
     this.freeze()
   }
 
+  clone([child]: [Leaf<Mesh>]) {
+    return new TransformWork(child, this.matrix);
+  }
+
   serialize() {
     return this.matrix.serialize();
   }

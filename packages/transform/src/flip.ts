@@ -2,13 +2,17 @@
 import { Mesh, Face } from "@escad/mesh";
 import { Work, Leaf, Id, Operation, mapOperation } from "@escad/core";
 
-class FlipWork extends Work<FlipWork, Mesh, [Leaf<Mesh>]> {
+class FlipWork extends Work<FlipWork, Mesh, [Mesh]> {
   type = FlipWork;
 
   static id = new Id("FlipWork", __filename);
 
   serialize() {
     return Buffer.alloc(0);
+  }
+
+  clone([child]: [Leaf<Mesh>]) {
+    return new FlipWork(child);
   }
 
   static deserialize([child]: [Leaf<Mesh>]) {

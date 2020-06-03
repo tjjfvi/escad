@@ -17,6 +17,10 @@ class SphereWork extends Work<SphereWork, Mesh, []> {
     this.freeze();
   }
 
+  clone(c: []) {
+    return new SphereWork(this.args);
+  }
+
   async execute() {
     let [r, slices, stacks] = this.args;
 

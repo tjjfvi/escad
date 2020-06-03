@@ -2,7 +2,7 @@
 import { Mesh, Face, Vector3 } from "@escad/mesh";
 import { Work, Leaf } from "@escad/core";
 
-abstract class PointMapWork<W extends PointMapWork<W>> extends Work<W, Mesh, [Leaf<Mesh>]> {
+abstract class PointMapWork<W extends PointMapWork<W>> extends Work<W, Mesh, [Mesh]> {
 
   abstract map(input: Vector3): Vector3;
 

@@ -2,7 +2,7 @@
 import { Mesh } from "@escad/mesh";
 import { Work, Leaf, Id, Operation } from "@escad/core";
 
-export class MeldWork extends Work<MeldWork, Mesh, Leaf<Mesh>[]> {
+export class MeldWork extends Work<MeldWork, Mesh, Mesh[]> {
   type = MeldWork;
 
   static id = new Id("MeldWork", __filename);
@@ -10,6 +10,10 @@ export class MeldWork extends Work<MeldWork, Mesh, Leaf<Mesh>[]> {
   constructor(children: Leaf<Mesh>[]) {
     super(children);
     this.freeze();
+  }
+
+  clone(children: Leaf<Mesh>[]) {
+    return new MeldWork(children);
   }
 
   async execute(inputs: Mesh[]) {
