@@ -3,7 +3,6 @@ import { Registry } from "./Registry";
 import { hash, Sha } from "./hash";
 import { ProductManager } from "./ProductManager";
 import { Id } from "./Id";
-import { ExportTypeRegistry } from "./ExportTypeRegistry";
 
 declare class __FinishedProduct__ { declare private __finished: true; }
 
@@ -14,7 +13,6 @@ export abstract class Product<P extends Product<P> = _Product> {
   abstract type: ProductType<P>;
 
   static Registry = new Registry<ProductType>("ProductRegistry");
-  static ExportTypeRegistry = new ExportTypeRegistry();
   static Manager = new ProductManager();
 
   private _sha?: Sha;

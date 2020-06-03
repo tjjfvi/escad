@@ -1,5 +1,6 @@
 import { Product } from "./Product";
 import { Id } from "./Id";
+import { ExportTypeRegistry } from "./ExportTypeRegistry";
 
 export interface ExportTypeArgs<P extends Product<P>> {
   id: Id,
@@ -9,6 +10,8 @@ export interface ExportTypeArgs<P extends Product<P>> {
 }
 
 export class ExportType<P extends Product<P>> implements ExportTypeArgs<P> {
+
+  static Registry = new ExportTypeRegistry();
 
   id: Id;
   extension: string;

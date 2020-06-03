@@ -19,4 +19,4 @@ const stl = new ExportType<Mesh>({
   }
 })
 
-Product.ExportTypeRegistry.register(Mesh, stl);
+ExportType.Registry.register(Mesh, stl);
