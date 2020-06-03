@@ -20,8 +20,8 @@ export class ExportType<P extends Product<P>> implements ExportTypeArgs<P> {
   export: (product: P) => Buffer;
   manager: ExportManager<P>;
 
-  constructor({ id, extension, name, export: exportFunc, }: ExportTypeArgs<P>) {
-    if (!extension.startsWith("."))
+  constructor({ id, extension, name, export: exportFunc }: ExportTypeArgs<P>){
+    if(!extension.startsWith("."))
       extension = "." + extension;
 
     this.id = id;

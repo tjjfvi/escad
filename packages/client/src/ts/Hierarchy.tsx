@@ -12,7 +12,7 @@ const Hierarchy = () => <Pane right name="Hierarchy">
 </Pane>
 
 const SuperNode = x => observer(({ hierarchy, leafSub = false }) => {
-  if (!hierarchy)
+  if(!hierarchy)
     return null;
   const {
     collapse = observable<boolean>(true),
@@ -44,7 +44,7 @@ const SuperNode = x => observer(({ hierarchy, leafSub = false }) => {
             close={close.obs[i]}
             collapse={canCollapse && !lleaf && pre && collapse}
           >{child}</Node>]
-          , children)
+        , children)
 })(x);
 
 const Node = x => observer(({ name, important, shas, children, close, collapse }) =>

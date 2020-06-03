@@ -3,10 +3,7 @@ import { hash, Sha } from "./hash";
 import { Elementish, Element } from "./Element";
 import { Product } from "./Product";
 import { Work } from "./Work";
-import fs from "fs-extra";
-import path from "path";
 import { HierarchyManager } from "./HierarchyManager";
-import { ProductManager } from "./ProductManager";
 
 type BraceType = "{" | "[" | "(" | ":" | "";
 const isBraceType = (x: string): x is BraceType => ["{", "[", "(", ":", ""].includes(x);
@@ -59,12 +56,12 @@ export class Hierarchy implements FullHierarchyArgs {
     fullOutput,
     isOutput = false,
     isFullOutput = false,
-  }: HierarchyArgs) {
-    if (isOutput || isFullOutput)
+  }: HierarchyArgs){
+    if(isOutput || isFullOutput)
       output = this;
-    if (isFullOutput)
+    if(isFullOutput)
       fullOutput = this;
-    if (!output)
+    if(!output)
       output = new Hierarchy({
         name,
         braceType,
@@ -72,7 +69,7 @@ export class Hierarchy implements FullHierarchyArgs {
         children: children.map(c => c.output),
         isOutput: true,
       })
-    if (!fullOutput)
+    if(!fullOutput)
       fullOutput = output !== this ? output.fullOutput : new Hierarchy({
         name,
         braceType,
@@ -81,13 +78,13 @@ export class Hierarchy implements FullHierarchyArgs {
         isFullOutput: true,
       })
 
-    if (braceType === "" && children.length)
+    if(braceType === "" && children.length)
       throw new Error("braceType \"\" must be used without children")
 
-    if ((braceType === "{" || braceType === "[") && name !== "")
+    if((braceType === "{" || braceType === "[") && name !== "")
       throw new Error(`braceType "${braceType}" cannot be used with a name`);
 
-    if (braceType === ":" && children.length !== 1)
+    if(braceType === ":" && children.length !== 1)
       throw new Error("braceType \":\" must be used with exactly one child");
 
     this.name = name;
@@ -103,12 +100,12 @@ export class Hierarchy implements FullHierarchyArgs {
     const serialized = this.serialize();
 
     this.sha = hash(serialized);
-    if (this.sha.b64.startsWith("BAS"))
+    if(this.sha.b64.startsWith("BAS"))
       console.log(this.sha, "!!!");
     this.writePromise = Hierarchy.Manager.store(this.sha, Promise.resolve(this)).then(() => { });
   }
 
-  serialize() {
+  serialize(){
     const buffer = Buffer.alloc(4 + this.name.length + 1 + 1 + 4 + (this.children.length + 3) * 32);
     buffer.writeUInt32LE(this.name.length);
     buffer.fill(this.name, 4);
@@ -125,7 +122,7 @@ export class Hierarchy implements FullHierarchyArgs {
     return buffer;
   }
 
-  static async deserialize(buffer: Buffer) {
+  static async deserialize(buffer: Buffer){
     const nameLength = buffer.readUInt32LE(0);
     const name = buffer.slice(4, 4 + nameLength).toString("utf8");
     buffer = buffer.slice(4 + nameLength);
@@ -144,10 +141,10 @@ export class Hierarchy implements FullHierarchyArgs {
     buffer = buffer.slice(4);
 
     const children: Hierarchy[] = [];
-    for (let i = 0; i < childrenLength; i++) {
+    for(let i = 0; i < childrenLength; i++) {
       let sha = new Sha(buffer.slice(i * 32, (i + 1) * 32));
       let child = await Hierarchy.Manager.lookup(sha);
-      if (!child)
+      if(!child)
         throw new Error(`Could not find Hierarchy ${sha.b64} referenced in serialized Hierarchy`);
       children.push(child);
     }
@@ -171,18 +168,18 @@ export class Hierarchy implements FullHierarchyArgs {
     });
   }
 
-  static fromElementish(el: Elementish<Product>): Hierarchy {
-    if (typeof el !== "object" && typeof el !== "function")
+  static fromElementish(el: Elementish<Product>): Hierarchy{
+    if(typeof el !== "object" && typeof el !== "function")
       throw new Error("Invalid input to Hierarchy.fromElementish");
-    if (el instanceof Hierarchy)
+    if(el instanceof Hierarchy)
       return el;
-    if (el instanceof Element)
+    if(el instanceof Element)
       return el.hierarchy;
-    if (el instanceof Product || el instanceof Work)
+    if(el instanceof Product || el instanceof Work)
       return new Hierarchy({
         name: `<${el.type.id.name}>`,
       })
-    if (el instanceof Array)
+    if(el instanceof Array)
       return new Hierarchy({
         braceType: "[",
         children: el.map(e => Hierarchy.fromElementish(e)),
@@ -199,11 +196,11 @@ export class Hierarchy implements FullHierarchyArgs {
     });
   }
 
-  apply<T extends Product<T>>(el: Elementish<T>) {
+  apply<T extends Product<T>>(el: Elementish<T>){
     return new Element(el, this);
   }
 
-  clone() {
+  clone(){
     return new Hierarchy(this);
   }
 

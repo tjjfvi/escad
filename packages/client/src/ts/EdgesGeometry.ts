@@ -2,7 +2,7 @@
 
 import { BufferGeometry, Float32BufferAttribute, Geometry } from "three";
 
-function EdgesGeometry(geometry, thresholdAngle = 1) {
+function EdgesGeometry(geometry, thresholdAngle = 1){
 
   BufferGeometry.call(this);
 
@@ -24,29 +24,29 @@ function EdgesGeometry(geometry, thresholdAngle = 1) {
 
   let keepEdges = [];
 
-  for (let face of faces) {
-    for (let j = 0; j < 3; j++) {
+  for(let face of faces) {
+    for(let j = 0; j < 3; j++) {
       let edge1 = face[keys[j]];
       let edge2 = face[keys[(j + 1) % 3]];
       runEdge(edge1, edge2, face.normal);
     }
   }
 
-  function runEdge(edge1, edge2, normal) {
+  function runEdge(edge1, edge2, normal){
 
-    for (let obj of map[edge1] || []) {
-      if (obj.done)
+    for(let obj of map[edge1] || []) {
+      if(obj.done)
         continue;
       let od = verts[obj.o].clone().sub(verts[edge1]);
       let oD = od.lengthSq();
       let td = verts[edge2].clone().sub(verts[edge1]);
       let tD = td.lengthSq();
       let d = od.normalize().dot(td.normalize());
-      if (d > thresholdDot) {
+      if(d > thresholdDot) {
         let [a, b, n] = oD < tD ? [obj.o, edge2, normal] : [obj.o, edge2, obj.n];
-        if (od.o !== edge2)
+        if(od.o !== edge2)
           runEdge(a, b, n);
-        if (obj.n.dot(normal) <= thresholdDot)
+        if(obj.n.dot(normal) <= thresholdDot)
           keepEdges.push([edge1, a]);
         obj.done = true;
         return;

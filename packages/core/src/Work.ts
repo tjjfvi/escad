@@ -31,13 +31,13 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
 
   writePromise: Promise<void> | null = null;
 
-  constructor(children: Children<C>) {
+  constructor(children: Children<C>){
     this.children = children;
     this.sha = null as any;
   }
 
-  freeze() {
-    if (this.frozen)
+  freeze(){
+    if(this.frozen)
       throw new Error("Work.freeze() should only be called once");
     this.sha = hash(Work.Manager.serialize(this));
     this.frozen = true;
@@ -51,17 +51,17 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
 
   abstract async execute(inputs: ProcessedChildren<C>): Promise<FinishedProduct<T>>;
 
-  async process(): Promise<FinishedProduct<T>> {
-    if (!this.frozen)
+  async process(): Promise<FinishedProduct<T>>{
+    if(!this.frozen)
       throw new Error("Work must be frozen in the constructor");
 
-    if (this.redirect) {
+    if(this.redirect) {
       await Product.Manager.storePointer(this.sha, this.redirect.sha);
       return await this.redirect.process();
     }
 
     const memoized = await Product.Manager.lookup(this.sha);
-    if (memoized)
+    if(memoized)
       return memoized as any;
 
     const inputs: ProcessedChildren<C> = await Promise.all(this.children.map(c => c.process())) as any;
@@ -79,6 +79,6 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
 }
 
 export interface WorkType<W extends Work<W, T, C>, T extends Product<T> = Product, C extends Product[] = any> {
-  id: Id;
-  deserialize(children: Children<C>, buf: Buffer): W;
+  id: Id,
+  deserialize(children: Children<C>, buf: Buffer): W,
 }

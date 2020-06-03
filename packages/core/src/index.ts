@@ -4,9 +4,7 @@ import { builtins } from "./builtins";
 import { Element, Elementish } from "./Element";
 import { Product } from "./Product";
 
-const escadFunc = <T extends Product<T>>(...a: Elementish<T>[]) => {
-  return new Element(a.length === 1 ? a[0] : a);
-}
+const escadFunc = <T extends Product<T>>(...a: Elementish<T>[]) => new Element(a.length === 1 ? a[0] : a)
 
 const escad = new Proxy(escadFunc, {
   get: (target, key) =>

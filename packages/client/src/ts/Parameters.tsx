@@ -8,7 +8,7 @@ import { observer, useObservable, useComputed } from "rhobo";
 const Parameters = () => {
   state.paramDef.use()
   let def = state.paramDef();
-  if (!def)
+  if(!def)
     return <></>;
   return <Pane left name="Parameters">
     {def.map(d => {
@@ -19,7 +19,7 @@ const Parameters = () => {
           <span className="desc">{desc}</span>
         </div>
         {(() => {
-          if (!(key in state.params.val))
+          if(!(key in state.params.val))
             state.params.val[key] = def
           let Comp = {
             number: NumberParam,
@@ -40,7 +40,7 @@ const NumberParam = observer(({ value }) => {
   let __value = useObservable(value());
   let valid = useComputed(() => validate(__value()));
   let _value = useComputed(() => __value(), v => {
-    if (!validate(v))
+    if(!validate(v))
       return __value(v);
     __value(+v);
     value(+v);

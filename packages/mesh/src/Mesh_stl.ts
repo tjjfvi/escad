@@ -1,12 +1,12 @@
 
-import { ExportType, Id, Product } from "@escad/core";
+import { ExportType, Id } from "@escad/core";
 import { Mesh } from "./Mesh";
 
 const stl = new ExportType<Mesh>({
   id: new Id("Mesh-STL", __filename),
   name: "Binary STL",
   extension: ".stl",
-  export: (mesh) => {
+  export: mesh => {
     const length = mesh.faces.length * 50 + 84;
     const buf = Buffer.alloc(length);
     buf.fill(mesh.sha.b64.padEnd(80));

@@ -14,9 +14,9 @@ export class Id {
   name: string;
   sha: Sha;
 
-  constructor(name: string, filename: string) {
+  constructor(name: string, filename: string){
     const result = readPkgUp.sync({ cwd: path.dirname(filename) });
-    if (!result)
+    if(!result)
       throw new Error("Could not find package.json from file " + filename);
     let { packageJson: { name: packageName, version } } = result;
     this.packageName = packageName;
@@ -26,16 +26,16 @@ export class Id {
     this.name = name;
     this.sha = hash.json(this);
     let old = ids.get(this.sha.b64);
-    if (old)
+    if(old)
       throw new Error(`Duplicative Id under sha "${this.sha.b64}"`);
     ids.set(this.sha.b64, this);
   }
 
-  static get(sha: Sha) {
+  static get(sha: Sha){
     return ids.get(sha.b64);
   }
 
-  toString() {
+  toString(){
     return `${this.packageName}@${this.packageVersion}/${this.filename}/${this.name}`;
   }
 

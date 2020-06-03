@@ -17,7 +17,7 @@ const colors = {
 
 import React from "react";
 import state from "./State";
-const three = require("three");
+const three = import("three");
 console.log(three);
 window.THREE = three;
 require("three/examples/js/controls/OrbitControls");
@@ -119,8 +119,8 @@ const Preview = () => {
 
   let ortho = false;
 
-  function render() {
-    if (!el)
+  function render(){
+    if(!el)
       return;
     requestAnimationFrame(render);
 
@@ -186,10 +186,10 @@ const Preview = () => {
       mouse.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
       raycaster.setFromCamera(mouse, cam);
       let hits = raycaster.intersectObjects([group, sphere], true);
-      for (let { object, point } of hits) {
-        if (object.type !== "Mesh")
+      for(let { object, point } of hits) {
+        if(object.type !== "Mesh")
           continue;
-        if (object === sphere)
+        if(object === sphere)
           point.set(0, 0, 0);
         camera.position.add(point).sub(controls.target);
         controls.target = point;
@@ -203,7 +203,7 @@ const Preview = () => {
 
 export default Preview;
 
-function processMesh(buf: ArrayBuffer) {
+function processMesh(buf: ArrayBuffer){
   let arr = new Float32Array(buf.slice(32));
   let attr = new t.BufferAttribute(arr, 3);
   let geo = new t.BufferGeometry();
@@ -235,7 +235,7 @@ const cubeSize = .5;
 const edgeSize = .125;
 const centerSize = cubeSize - edgeSize * 2;
 
-function createOrientCube(c: any, controls: any) {
+function createOrientCube(c: any, controls: any){
   let planeGeo = new t.PlaneBufferGeometry(centerSize, centerSize);
 
   let edgeGeo = t.BufferGeometryUtils.mergeBufferGeometries([
@@ -303,10 +303,10 @@ function createOrientCube(c: any, controls: any) {
     raycaster.setFromCamera(mouse, c());
     let x = raycaster.intersectObjects(parts);
     let [{ object: mesh = null } = {}] = x;
-    if (lastCast)
+    if(lastCast)
       lastCast.material = mat;
     lastCast = mesh;
-    if (!mesh)
+    if(!mesh)
       return () => { };
     mesh.material = hoverMat;
     return (c: any) => {

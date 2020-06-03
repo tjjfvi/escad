@@ -22,28 +22,28 @@ class Matrix4 extends Product<Matrix4> {
 
   vs: Sixteen<number>;
 
-  constructor(vs: Sixteen<number>) {
+  constructor(vs: Sixteen<number>){
     super();
-    if (vs.length !== 16)
+    if(vs.length !== 16)
       throw new Error("Must give 16 numbers to Matrix4");
     this.vs = vs;
   }
 
-  clone() {
+  clone(){
     return new Matrix4([...this.vs] as Sixteen<number>);
   }
 
-  serialize() {
+  serialize(){
     let buf = Buffer.alloc(4 * 16);
     this.vs.map((v, i) => buf.writeFloatLE(v, i * 4));
     return buf;
   }
 
-  static deserialize(buf: Buffer) {
+  static deserialize(buf: Buffer){
     return new Matrix4([...Array(16)].map((_, i) => buf.readFloatLE(4 * i)) as Sixteen<number>);
   }
 
-  multiplyVector(V: Vector3) {
+  multiplyVector(V: Vector3){
     let v = [V.x, V.y, V.z];
     let m = this.vs;
     return new Vector3(
@@ -53,7 +53,7 @@ class Matrix4 extends Product<Matrix4> {
     );
   }
 
-  multiply(that: Matrix4) {
+  multiply(that: Matrix4){
     let _g = (t: Matrix4, i: number, j: number) => t.vs[i * 4 + j];
     let g = (i: number, j: number) => _g(this, i, j);
     let G = (i: number, j: number) => _g(that, i, j);
@@ -61,7 +61,7 @@ class Matrix4 extends Product<Matrix4> {
     return new Matrix4(this.vs.map((_, x) => c(Math.floor(x / 4), x % 4)) as Sixteen<number>);
   }
 
-  static scale(x: number, y: number, z: number) {
+  static scale(x: number, y: number, z: number){
     return new Matrix4([
       x, 0, 0, 0,
       0, y, 0, 0,
@@ -70,7 +70,7 @@ class Matrix4 extends Product<Matrix4> {
     ]);
   }
 
-  static rotateX(t: number) {
+  static rotateX(t: number){
     return new Matrix4([
       1, 0, 0, 0,
       0, c(t), S(t), 0,
@@ -79,7 +79,7 @@ class Matrix4 extends Product<Matrix4> {
     ]);
   }
 
-  static rotateY(t: number) {
+  static rotateY(t: number){
     return new Matrix4([
       c(t), 0, s(t), 0,
       0, 1, 0, 0,
@@ -88,7 +88,7 @@ class Matrix4 extends Product<Matrix4> {
     ]);
   }
 
-  static rotateZ(t: number) {
+  static rotateZ(t: number){
     return new Matrix4([
       c(t), s(t), 0, 0,
       S(t), c(t), 0, 0,
@@ -97,7 +97,7 @@ class Matrix4 extends Product<Matrix4> {
     ]);
   }
 
-  static translate(x: number, y: number, z: number) {
+  static translate(x: number, y: number, z: number){
     return new Matrix4([
       1, 0, 0, x,
       0, 1, 0, y,
@@ -106,23 +106,23 @@ class Matrix4 extends Product<Matrix4> {
     ])
   }
 
-  scale(x: number, y: number, z: number) {
+  scale(x: number, y: number, z: number){
     return this.multiply(Matrix4.scale(x, y, z));
   }
 
-  translate(x: number, y: number, z: number) {
+  translate(x: number, y: number, z: number){
     return this.multiply(Matrix4.translate(x, y, z));
   }
 
-  rotateX(t: number) {
+  rotateX(t: number){
     return this.multiply(Matrix4.rotateX(t));
   }
 
-  rotateY(t: number) {
+  rotateY(t: number){
     return this.multiply(Matrix4.rotateY(t));
   }
 
-  rotateZ(t: number) {
+  rotateZ(t: number){
     return this.multiply(Matrix4.rotateZ(t));
   }
 

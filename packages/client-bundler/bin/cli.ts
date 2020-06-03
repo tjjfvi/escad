@@ -13,7 +13,7 @@ const { watch } = commander;
 const [dir] = commander.args;
 
 bundle(dir, watch).then(() => {
-  if (!watch)
+  if(!watch)
     process.exit(0);
 }).catch(e => {
   console.error(e);

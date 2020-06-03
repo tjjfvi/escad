@@ -6,9 +6,27 @@ import { flip } from "./flip";
 import { extendBuiltins } from "@escad/core";
 
 const transformBuiltins = {
-  tX, tY, tZ, translate, translateX, translateY, translateZ,
-  rX, rY, rZ, rotate, rotateX, rotateY, rotateZ,
-  sX, sY, sZ, scale, scaleX, scaleY, scaleZ,
+  tX,
+  tY,
+  tZ,
+  translate,
+  translateX,
+  translateY,
+  translateZ,
+  rX,
+  rY,
+  rZ,
+  rotate,
+  rotateX,
+  rotateY,
+  rotateZ,
+  sX,
+  sY,
+  sZ,
+  scale,
+  scaleX,
+  scaleY,
+  scaleZ,
   flip,
 }
 

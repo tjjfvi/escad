@@ -1,35 +1,36 @@
 
 import { Mesh, Face, Vector3 } from "@escad/mesh";
 import { diff } from "@escad/csg";
-import { Work, Element, Id, } from "@escad/core";
+import { Work, Element, Id } from "@escad/core";
 
 const tau = Math.PI * 2;
 
 type CylWorkArgs = [number, number, number, number, [number, number], [number, number], boolean];
 
 class CylWork extends Work<CylWork, Mesh, []> {
+
   type = CylWork;
 
   static id = new Id("CylWork", __filename);
 
-  constructor(public args: CylWorkArgs) {
+  constructor(public args: CylWorkArgs){
     super([]);
     this.freeze();
   }
 
-  clone(c: []) {
+  clone(){
     return new CylWork(this.args);
   }
 
-  serialize() {
+  serialize(){
     return Buffer.from(JSON.stringify(this.args));
   }
 
-  static deserialize(children: [], buf: Buffer) {
+  static deserialize(children: [], buf: Buffer){
     return new CylWork(JSON.parse(buf.toString("utf8")));
   }
 
-  async execute() {
+  async execute(){
     let [r1, r2, height, sides, o1, o2, c] = this.args;
 
     let bh = c ? -height / 2 : 0;
@@ -94,7 +95,7 @@ export interface CylArgs {
   iOffset2?: XY<number>,
   io1?: XY<number>,
   io2?: XY<number>,
-  sides?: number
+  sides?: number,
 }
 
 export const cyl = (args: CylArgs) => {
@@ -184,7 +185,7 @@ export const cyl = (args: CylArgs) => {
   const [io1, io2] = iosXYs.map((xy): [number, number] => xy instanceof Array ? xy : [xy.x, xy.y]);
 
   let oc = new CylWork([rs[0], rs[1], height, sides, o1, o2, center]);
-  if (!is)
+  if(!is)
     return new Element(oc)
   let ic = new CylWork([is[0], is[1], height, sides, io1, io2, center]);
   return new Element(unionDiff ? [oc, ic] : diff(oc, ic));

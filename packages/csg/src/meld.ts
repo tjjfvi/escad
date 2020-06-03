@@ -3,28 +3,29 @@ import { Mesh } from "@escad/mesh";
 import { Work, Leaf, Id, Operation } from "@escad/core";
 
 export class MeldWork extends Work<MeldWork, Mesh, Mesh[]> {
+
   type = MeldWork;
 
   static id = new Id("MeldWork", __filename);
 
-  constructor(children: Leaf<Mesh>[]) {
+  constructor(children: Leaf<Mesh>[]){
     super(children);
     this.freeze();
   }
 
-  clone(children: Leaf<Mesh>[]) {
+  clone(children: Leaf<Mesh>[]){
     return new MeldWork(children);
   }
 
-  async execute(inputs: Mesh[]) {
+  async execute(inputs: Mesh[]){
     return new Mesh(inputs.flatMap(i => i.faces)).finish();
   }
 
-  serialize() {
+  serialize(){
     return Buffer.alloc(0);
   }
 
-  static deserialize(children: Leaf<Mesh>[]) {
+  static deserialize(children: Leaf<Mesh>[]){
     return new MeldWork(children);
   }
 

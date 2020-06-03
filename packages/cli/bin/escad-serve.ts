@@ -14,14 +14,14 @@ import fs from "fs";
     .option("--clean", "clean artifacts directory")
     .parse(process.argv);
 
-  if (commander.args.length !== 1)
+  if(commander.args.length !== 1)
     return commander.outputHelp();
 
   let { port, watchDir, artifacts: artifactsDir, clean } = commander;
   artifactsDir = path.resolve(artifactsDir);
   let [file] = commander.args;
 
-  if (clean)
+  if(clean)
     fs.rmdirSync(artifactsDir, { recursive: true });
 
   const loadFile = path.resolve(file);

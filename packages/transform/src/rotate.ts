@@ -16,7 +16,14 @@ type RotateArgs =
 export const rotate: Component<RotateArgs, Operation<Mesh, Mesh>> =
   new Component<RotateArgs, Operation<Mesh, Mesh>>("rotate", (...args: RotateArgs) => {
     let [first] = args;
-    let triple = args.length === 3 ? args : args.length === 4 ? args : typeof first === "object" ? first : [0, 0, 0] as [0, 0, 0];
+    let triple =
+    args.length === 3 ?
+      args :
+      args.length === 4 ?
+        args :
+        typeof first === "object" ?
+          first :
+          [0, 0, 0] as [0, 0, 0]
     let opts =
       args.length === 4 ?
         args[3] :

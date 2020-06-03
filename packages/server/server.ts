@@ -36,8 +36,8 @@ app.get("/products/:sha", async (req, res) => {
 app.ws("/ws", ws => {
   (async () => {
 
-    const s = function (...data: Array<any>) {
-      if (ws.readyState !== 1)
+    const s = function(...data: Array<any>){
+      if(ws.readyState !== 1)
         return;
       ws.send(flatted.stringify(data));
     };
@@ -46,7 +46,7 @@ app.ws("/ws", ws => {
       ws.once("message", msg => {
         let [type, ...data] = flatted.parse(msg);
 
-        if (type === "init")
+        if(type === "init")
           return res(data);
 
         ws.close();
@@ -55,7 +55,7 @@ app.ws("/ws", ws => {
 
     let id: any;
 
-    if (requestedId && oldServerId === serverId) {
+    if(requestedId && oldServerId === serverId) {
       id = requestedId;
       console.log("Client reattached; id:", id);
     } else {
@@ -69,9 +69,9 @@ app.ws("/ws", ws => {
 
     s("init", id, serverId)
 
-    if (params)
+    if(params)
       run();
-    else if (curShas) {
+    else if(curShas) {
       s("shas", curShas);
       s("paramDef", curParamDef);
       s("hierarchy", curHierarchy);
@@ -80,7 +80,7 @@ app.ws("/ws", ws => {
     let interval = setInterval(() => s("ping"), 1000);
 
     let handler = ({ shas, paramDef, hierarchy }: any) => {
-      if (params)
+      if(params)
         return run();
       s("shas", shas)
       s("paramDef", paramDef);
@@ -91,17 +91,17 @@ app.ws("/ws", ws => {
     ws.on("message", msg => {
       let [type, ...data] = flatted.parse(msg.toString());
 
-      if (type !== "params")
+      if(type !== "params")
         return;
 
       let [p] = data;
 
-      if (p === null && params === null)
+      if(p === null && params === null)
         return;
 
       params = p;
 
-      if (p !== null)
+      if(p !== null)
         return run();
 
       s("shas", curShas);
@@ -115,7 +115,7 @@ app.ws("/ws", ws => {
       console.log("Client detached, id:", id);
     });
 
-    async function run() {
+    async function run(){
       // @ts-ignore
       let { shas, paramDef, hierarchy } = await render.run(params);
       s("shas", shas);

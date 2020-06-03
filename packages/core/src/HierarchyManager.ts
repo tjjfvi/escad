@@ -5,11 +5,11 @@ export class HierarchyManager extends ArtifactManager<Hierarchy> {
 
   subdir = "hierarchy";
 
-  async deserialize(buffer: Buffer) {
+  async deserialize(buffer: Buffer){
     return await Hierarchy.deserialize(buffer);
   }
 
-  async serialize(hierarchy: Hierarchy) {
+  async serialize(hierarchy: Hierarchy){
     const serialized = hierarchy.serialize();
     await Promise.all([
       ...hierarchy.children,

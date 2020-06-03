@@ -11,25 +11,25 @@ export class CubeWork extends Work<CubeWork, Mesh, []> {
 
   args: CubeWorkArgs;
 
-  constructor(args: CubeWorkArgs) {
+  constructor(args: CubeWorkArgs){
     super([]);
     this.args = args;
     this.freeze();
   }
 
-  clone(c: []) {
+  clone(){
     return new CubeWork(this.args);
   }
 
-  serialize() {
+  serialize(){
     return Buffer.from(JSON.stringify(this.args));
   }
 
-  static deserialize(c: [], buf: Buffer) {
+  static deserialize(c: [], buf: Buffer){
     return new CubeWork(JSON.parse(buf.toString("utf8")));
   }
 
-  async execute() {
+  async execute(){
     let [[x, y, z], cs] = this.args;
 
     let nx = cs[0] ? -x / 2 : 0;

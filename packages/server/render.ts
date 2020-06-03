@@ -1,25 +1,26 @@
 
 // Render Process
 
-import escad, { Work, Product, ArtifactManager, Element } from "@escad/core";
+import escad, { Work, ArtifactManager, Element } from "@escad/core";
 
-let file: string, func: any, dir: string, init = false;
+let file: string, func: any, dir: string,
+  init = false;
 let queue: any[] = [];
 
 process.on("message", processMessage);
 
-function processMessage([type, ...data]: any) {
-  if (!init && type !== "init") {
+function processMessage([type, ...data]: any){
+  if(!init && type !== "init") {
     queue.push([type, ...data]);
     return;
   }
-  if (type === "run")
+  if(type === "run")
     // @ts-ignore
     return run(...data);
-  if (type === "process")
+  if(type === "process")
     // @ts-ignore
     return proc(...data);
-  if (type !== "init")
+  if(type !== "init")
     return;
 
   init = true;
@@ -31,15 +32,15 @@ function processMessage([type, ...data]: any) {
   } catch (e) {
     console.error(e);
   }
-  if (typeof result !== "function")
+  if(typeof result !== "function")
     throw new Error("Expected export type of function, got " + typeof result);
   func = result;
   queue.map(processMessage);
 }
 
 
-async function run(id: any, params: any) {
-  if (!func)
+async function run(id: any, params: any){
+  if(!func)
     return;
   let result;
   let paramDef;
@@ -48,7 +49,7 @@ async function run(id: any, params: any) {
       paramDef = def;
       let defaults: any = {};
       def.map((d: any) => {
-        if (d.default)
+        if(d.default)
           defaults[d.key] = d.default;
       });
       return Object.assign(defaults, params);
@@ -57,13 +58,13 @@ async function run(id: any, params: any) {
     console.error(e);
     return;
   }
-  if (!result)
+  if(!result)
     return console.error(new Error("Invalid return type from exported function"));
   console.time("Render")
   let el = new Element(result);
   let hierarchy = el.hierarchy;
   let shas = await Promise.all(el.toArrayFlat().map(async (x: any) => {
-    if (!(x instanceof Work))
+    if(!(x instanceof Work))
       throw new Error("Invalid return type from exported function")
     await x.process();
     return x.sha.b64;
@@ -72,9 +73,9 @@ async function run(id: any, params: any) {
   process.send?.(["finish", id, shas, hierarchy.sha.b64, paramDef])
 }
 
-async function proc(id: any, sha: any) {
+async function proc(id: any, sha: any){
   let work = await Work.Manager.lookup({ b64: sha } as any);
-  if (!work)
+  if(!work)
     throw new Error();
   await work.process();
   process.send?.(["finish", id, sha]);

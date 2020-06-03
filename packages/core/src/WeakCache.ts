@@ -1,8 +1,10 @@
-/* global WeakRef, FinalizationRegistry, FinalizationGroup */
+/* global FinalizationRegistry, FinalizationGroup */
 
 declare class WeakRef<V> {
+
   constructor(v: V);
   deref(): void | V;
+
 }
 
 type F<K, V> = (k: K) => V;
@@ -15,37 +17,37 @@ export class WeakCacheBasic<K, V> {
   protected static readonly notFound = Symbol();
   protected readonly notFound: typeof WeakCacheBasic.notFound = WeakCacheBasic.notFound;
 
-  constructor() {
+  constructor(){
     this.asyncCache = new Map<K, Promise<V>>();
   }
 
-  _get(key: K): V | typeof WeakCacheBasic.notFound {
+  _get(key: K): V | typeof WeakCacheBasic.notFound{
     key;
     return this.notFound;
   }
 
-  get(key: K, func: F<K, V>): V {
+  get(key: K, func: F<K, V>): V{
     let v = this._get(key);
-    if (v === this.notFound)
+    if(v === this.notFound)
       return this.set(key, func);
     return v;
   }
 
-  async getAsync(key: K, func: FA<K, V>): Promise<V> {
+  async getAsync(key: K, func: FA<K, V>): Promise<V>{
     let val = this._get(key);
-    if (val !== this.notFound)
+    if(val !== this.notFound)
       return val;
-    if (this.asyncCache.has(key))
+    if(this.asyncCache.has(key))
       // @ts-ignore
       return await this.asyncCache.get(key);
     return await this.setAsync(key, func);
   }
 
-  set(key: K, func: F<K, V>): V {
+  set(key: K, func: F<K, V>): V{
     return func(key);
   }
 
-  async setAsync(key: K, func: FA<K, V>): Promise<V> {
+  async setAsync(key: K, func: FA<K, V>): Promise<V>{
     let prom = (async (): Promise<V> => {
       let val = await func(key);
       this.asyncCache.delete(key);
@@ -73,20 +75,20 @@ const FinReg = (
 );
 
 // @ts-ignore
-if ("WeakRef" in global && FinReg)
+if("WeakRef" in global && FinReg)
   WeakCache = class WeakCache<K, V> extends WeakCacheBasic<K, V> {
 
     private cache: Map<K, WeakRef<V>> = new Map();
     private cleanup: any;
 
-    constructor() {
+    constructor(){
       super();
       this.cleanup = new FinReg(this.finalize);
     }
 
-    _get(key: K) {
+    _get(key: K){
       let ref = this.cache.get(key);
-      if (!ref)
+      if(!ref)
         return this.notFound;
       const cached = ref.deref();
       return cached === undefined ? this.notFound : (cached as V);
@@ -94,13 +96,13 @@ if ("WeakRef" in global && FinReg)
 
     private finalize = (iterator: Iterable<K>) => {
       // @ts-ignore
-      for (const key of iterator)
+      for(const key of iterator)
         this.cache.delete(key);
     }
 
-    set(key: K, func: F<K, V>): V {
+    set(key: K, func: F<K, V>): V{
       const fresh = func(key);
-      if (fresh && typeof fresh === "object") {
+      if(fresh && typeof fresh === "object") {
         this.cache.set(key, new WeakRef<V>(fresh));
         this.cleanup.register(fresh, key);
       }

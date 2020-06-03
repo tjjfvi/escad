@@ -2,7 +2,7 @@
 import { TransformWork } from "./TransformWork";
 import { Matrix4 } from "./Matrix4"
 import { Mesh } from "@escad/mesh";
-import { mapOperation, Operation, Component, __Element__ } from "@escad/core";
+import { mapOperation, Operation, Component } from "@escad/core";
 
 export type TranslateArgs =
   | [number, number, number]

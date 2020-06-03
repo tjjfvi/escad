@@ -3,6 +3,7 @@
 import React from "react";
 import { useObservable } from "rhobo";
 
+// eslint-disable-next-line react/prop-types
 const Pane = ({ name, className = name, children, right = false, left = !right }) => {
   let open = useObservable.use(false);
   return <div className={(open() ? "open " : "") + (left ? "left" : "right") + " Pane " + className}>

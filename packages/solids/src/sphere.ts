@@ -8,20 +8,21 @@ const tau = Math.PI * 2;
 type SphereWorkArgs = [number, number, number];
 
 class SphereWork extends Work<SphereWork, Mesh, []> {
+
   type = SphereWork;
 
   static id = new Id("SphereWork", __filename);
 
-  constructor(public args: SphereWorkArgs) {
+  constructor(public args: SphereWorkArgs){
     super([])
     this.freeze();
   }
 
-  clone(c: []) {
+  clone(){
     return new SphereWork(this.args);
   }
 
-  async execute() {
+  async execute(){
     let [r, slices, stacks] = this.args;
 
     let v = (theta: number, phi: number) => {
@@ -40,9 +41,9 @@ class SphereWork extends Work<SphereWork, Mesh, []> {
         let vs = [];
 
         vs.push(v(i, j));
-        if (j > 0)
+        if(j > 0)
           vs.push(v(i + 1, j));
-        if (j < stacks - 1)
+        if(j < stacks - 1)
           vs.push(v(i + 1, j + 1));
         vs.push(v(i, j + 1));
 
@@ -51,11 +52,11 @@ class SphereWork extends Work<SphereWork, Mesh, []> {
     )).finish();
   }
 
-  serialize() {
+  serialize(){
     return Buffer.from(JSON.stringify(this.args));
   }
 
-  static deserialize(_c: [], buf: Buffer) {
+  static deserialize(_c: [], buf: Buffer){
     return new SphereWork(JSON.parse(buf.toString("utf8")));
   }
 
@@ -83,7 +84,7 @@ export const sphere: Component<[SphereArgs], Element<Mesh>> = new Component("sph
   unionDiff = false, ud = unionDiff,
 }) => {
   let os = new SphereWork([r, slices, stacks]);
-  if (!ir)
+  if(!ir)
     return new Element(os);
   let is = new SphereWork([ir, slices, stacks]);
   return ud ? new Element([os, is]) : diff(os, is);

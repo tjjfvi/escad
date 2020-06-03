@@ -16,18 +16,18 @@ export abstract class ArtifactManager<T> {
 
   abstract subdir: Id | string;
 
-  get subdirString() {
+  get subdirString(){
     return this.subdir instanceof Id ? this.subdir.sha.b64 : this.subdir;
   }
 
-  private _dir: string = "";
+  private _dir = "";
   private _dirProm: Promise<string> = Promise.resolve("");
 
-  get dir() {
-    if (!ArtifactManager.artifactsDir)
+  get dir(){
+    if(!ArtifactManager.artifactsDir)
       throw new Error("ArtifactManager.artifactsDir has not been set");
     let newDir = path.join(ArtifactManager.artifactsDir, this.subdirString);
-    if (this._dir && this._dir === newDir)
+    if(this._dir && this._dir === newDir)
       return this._dirProm;
     this._dir = newDir;
     return this._dirProm = fs.mkdirp(newDir).then(() => this._dir);
@@ -36,20 +36,20 @@ export abstract class ArtifactManager<T> {
   abstract serialize(artifact: T): Buffer | Promise<Buffer>;
   abstract deserialize(buffer: Buffer): T | null | Promise<T | null>;
 
-  async getPath(sha: Sha) {
+  async getPath(sha: Sha){
     return path.join(await this.dir, sha.b64);
   }
 
-  async lookup(sha: Sha) {
+  async lookup(sha: Sha){
     return await this.cache.getAsync(sha.b64, async () => {
       let buffer = await fs.readFile(await this.getPath(sha)).catch(() => null);
-      if (!buffer)
+      if(!buffer)
         return null;
       return await this.deserialize(buffer);
     })
   }
 
-  async store(sha: Sha, promise: Promise<T>) {
+  async store(sha: Sha, promise: Promise<T>){
     return this.cache.setAsync(sha.b64, async () => {
       let artifact = await promise;
       let buffer = await this.serialize(artifact);
@@ -58,11 +58,11 @@ export abstract class ArtifactManager<T> {
     });
   }
 
-  async storePointer(fromSha: Sha, toSha: Sha) {
+  async storePointer(fromSha: Sha, toSha: Sha){
     this.symlinkSafe(await this.getPath(toSha), await this.getPath(fromSha));
   }
 
-  protected async symlinkSafe(from: string, to: string) {
+  protected async symlinkSafe(from: string, to: string){
     const id = uuidv4();
     await fs.symlink(from, id);
     await fs.rename(id, to);

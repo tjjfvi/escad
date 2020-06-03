@@ -3,29 +3,30 @@ import { Mesh, Face } from "@escad/mesh";
 import { Work, Leaf, Id, Operation, mapOperation } from "@escad/core";
 
 class FlipWork extends Work<FlipWork, Mesh, [Mesh]> {
+
   type = FlipWork;
 
   static id = new Id("FlipWork", __filename);
 
-  serialize() {
+  serialize(){
     return Buffer.alloc(0);
   }
 
-  clone([child]: [Leaf<Mesh>]) {
+  clone([child]: [Leaf<Mesh>]){
     return new FlipWork(child);
   }
 
-  static deserialize([child]: [Leaf<Mesh>]) {
+  static deserialize([child]: [Leaf<Mesh>]){
     return new FlipWork(child);
   }
 
-  async execute([input]: [Mesh]) {
+  async execute([input]: [Mesh]){
     return new Mesh(input.faces.map(f => new Face(f.points.slice().reverse()))).finish();
   }
 
-  constructor(child: Leaf<Mesh>) {
+  constructor(child: Leaf<Mesh>){
     super([child]);
-    if (child instanceof FlipWork)
+    if(child instanceof FlipWork)
       this.redirect = child.children[0];
     this.freeze()
   }

@@ -9,15 +9,16 @@ import config from "./config";
 const { loadDir, loadFile, artifactsDir } = config;
 
 const ee = new EventEmitter<{
+  // eslint-disable-next-line func-call-spacing
   reload: (x: any) => void,
 }>();
 
 let childProcess: any = null;
 
-function reload() {
+function reload(){
   console.log("Loaded");
 
-  if (childProcess)
+  if(childProcess)
     childProcess.kill();
 
   childProcess = fork(require.resolve("./_render"), undefined, {
@@ -31,7 +32,7 @@ function reload() {
   });
 }
 
-async function run(params = null) {
+async function run(params = null){
   let id = uuidv4();
 
   childProcess.send(["run", id, params]);
@@ -40,7 +41,7 @@ async function run(params = null) {
   let prom = new Promise(r => res = r);
 
   let handler = ([type, _id, shas, hierarchy, paramDef]) => {
-    if (type !== "finish" || _id !== id)
+    if(type !== "finish" || _id !== id)
       return;
 
     childProcess.removeListener("message", handler);
@@ -53,7 +54,7 @@ async function run(params = null) {
   return await prom;
 }
 
-async function exp(sha, format) {
+async function exp(sha, format){
   let id = uuidv4();
 
   childProcess.send(["export", id, sha, format]);
@@ -62,7 +63,7 @@ async function exp(sha, format) {
   let prom = new Promise(r => res = r);
 
   let handler = ([type, _id]) => {
-    if (type !== "finish" || _id !== id)
+    if(type !== "finish" || _id !== id)
       return;
 
     childProcess.removeListener("message", handler);
@@ -75,7 +76,7 @@ async function exp(sha, format) {
   return await prom;
 }
 
-async function proc(sha) {
+async function proc(sha){
   let id = uuidv4();
 
   childProcess.send(["process", id, sha]);
@@ -84,7 +85,7 @@ async function proc(sha) {
   let prom = new Promise(r => res = r);
 
   let handler = ([type, _id]) => {
-    if (type !== "finish" || _id !== id)
+    if(type !== "finish" || _id !== id)
       return;
 
     childProcess.removeListener("message", handler);

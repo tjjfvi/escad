@@ -15,7 +15,7 @@ class State {
   hierarchy = observable<any>();
   shas = observable<Array<string>>([]);
 
-  constructor() {
+  constructor(){
     // this.ws.on("hierarchy", d => this.hierarchy(this.processHierarchy(d)));
     this.ws.on("shas", d => this.shas(d));
     this.ws.on("paramDef", d => this.paramDef(d));

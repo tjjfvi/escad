@@ -14,20 +14,21 @@ import {
 } from "@escad/core";
 
 class CSGWrapper extends Product<CSGWrapper> {
+
   type = CSGWrapper;
 
   static id = new Id("CSGWrapper", __filename);
 
-  constructor(public node: any) {
+  constructor(public node: any){
     super();
   }
 
-  clone() {
+  clone(){
     return new CSGWrapper(this.node);
   }
 
-  serialize() {
-    function serializePoly(poly: any) {
+  serialize(){
+    function serializePoly(poly: any){
       let buf = Buffer.alloc(poly.vertices.length * 3 * 4 + 1);
       buf.writeUInt8(poly.vertices.length);
       poly.vertices.map((v: any, i: number) => {
@@ -38,8 +39,8 @@ class CSGWrapper extends Product<CSGWrapper> {
       return buf;
     }
 
-    function serializeNode(node: any) {
-      if (node === null)
+    function serializeNode(node: any){
+      if(node === null)
         return Buffer.alloc(0);
       let ps = node.polygons.map(serializePoly)
       let l = ps.map((x: any) => x.length).reduce((a: number, b: number) => a + b, 0);
@@ -62,22 +63,22 @@ class CSGWrapper extends Product<CSGWrapper> {
     return serializeNode(this.node);
   }
 
-  static deserialize(buf: Buffer) {
-    function deserializeNode(buf: Buffer) {
-      if (buf.length === 0)
+  static deserialize(buf: Buffer){
+    function deserializeNode(buf: Buffer){
+      if(buf.length === 0)
         return null;
       let l = buf.readUIntLE(0, 6);
       let fl = buf.readUIntLE(6 + l, 6);
       let bl = buf.readUIntLE(12 + l + fl, 6);
-      if (!(l + fl + bl))
+      if(!(l + fl + bl))
         return null;
       let polys = [];
-      for (let i = 6; i < 6 + l;) {
+      for(let i = 6; i < 6 + l;) {
         let pl = buf.readUInt8(i);
         i++;
         let I = i;
         let verts = [];
-        for (; i < I + pl * 3 * 4; i += 3 * 4) {
+        for(; i < I + pl * 3 * 4; i += 3 * 4) {
           let ns = [0, 1, 2].map(x => buf.readFloatLE(i + 4 * x));
           let vert = new CSG.Vertex(ns.slice(0, 3), [0, 0, 0]);
           verts.push(vert);
@@ -89,7 +90,7 @@ class CSGWrapper extends Product<CSGWrapper> {
       node.front = deserializeNode(buf.subarray(12 + l, 12 + l + fl))
       node.back = deserializeNode(buf.subarray(18 + l + fl, 18 + l + fl + bl))
       node.polygons = polys;
-      if (polys.length)
+      if(polys.length)
         node.plane = polys[0].plane.clone();
       return node;
     }
@@ -100,28 +101,29 @@ class CSGWrapper extends Product<CSGWrapper> {
 }
 
 class MeshToCsgWork extends Work<MeshToCsgWork, CSGWrapper, [Mesh]> {
+
   type = MeshToCsgWork;
 
   static id = new Id("MeshToCsgWork", __filename);
 
-  constructor(child: Leaf<Mesh>) {
+  constructor(child: Leaf<Mesh>){
     super([child]);
     this.freeze();
   }
 
-  clone([child]: [Leaf<Mesh>]) {
+  clone([child]: [Leaf<Mesh>]){
     return new MeshToCsgWork(child);
   }
 
-  serialize() {
+  serialize(){
     return Buffer.alloc(0);
   }
 
-  static deserialize([child]: [Leaf<Mesh>]) {
+  static deserialize([child]: [Leaf<Mesh>]){
     return new MeshToCsgWork(child);
   }
 
-  async execute([input]: [Mesh]) {
+  async execute([input]: [Mesh]){
     let polygons = input.faces.map(f => new CSG.Polygon(f.points.map(v => new CSG.Vertex(new CSG.Vector(v), []))));
     let node = new CSG.Node(polygons);
     return new CSGWrapper(node).finish();
@@ -130,28 +132,29 @@ class MeshToCsgWork extends Work<MeshToCsgWork, CSGWrapper, [Mesh]> {
 }
 
 class CsgToMeshWork extends Work<CsgToMeshWork, Mesh, [CSGWrapper]> {
+
   type = CsgToMeshWork;
 
   static id = new Id("CsgToMeshWork", __filename);
 
-  constructor(child: Leaf<CSGWrapper>) {
+  constructor(child: Leaf<CSGWrapper>){
     super([child]);
     this.freeze();
   }
 
-  clone([child]: [Leaf<CSGWrapper>]) {
+  clone([child]: [Leaf<CSGWrapper>]){
     return new CsgToMeshWork(child);
   }
 
-  serialize() {
+  serialize(){
     return Buffer.alloc(0);
   }
 
-  static deserialize([child]: [Leaf<CSGWrapper>]) {
+  static deserialize([child]: [Leaf<CSGWrapper>]){
     return new CsgToMeshWork(child);
   }
 
-  async execute([input]: [CSGWrapper]) {
+  async execute([input]: [CSGWrapper]){
     let faces: any[] = [];
 
     let tv = (v: any) => new Vector3(v.pos.x, v.pos.y, v.pos.z);
@@ -172,35 +175,36 @@ type CsgOperation =
   | readonly ["build", number, number]
 
 class CsgWork extends Work<CsgWork, CSGWrapper, CSGWrapper[]> {
+
   type = CsgWork;
 
   static id = new Id("CsgWork", __filename);
 
-  constructor(children: Leaf<CSGWrapper>[], public operations: CsgOperation[], public final: number) {
+  constructor(children: Leaf<CSGWrapper>[], public operations: CsgOperation[], public final: number){
     super(children);
     this.freeze();
   }
 
-  clone(children: Leaf<CSGWrapper>[]) {
-    return new CsgWork(this.children, this.operations, this.final);
+  clone(children: Leaf<CSGWrapper>[]){
+    return new CsgWork(children, this.operations, this.final);
   }
 
-  serialize() {
+  serialize(){
     return Buffer.from(JSON.stringify([this.operations, this.final]), "utf8");
   }
 
-  static deserialize(children: Leaf<CSGWrapper>[], buffer: Buffer) {
+  static deserialize(children: Leaf<CSGWrapper>[], buffer: Buffer){
     return new CsgWork(children, ...(JSON.parse(buffer.toString("utf8")) as [CsgOperation[], number]));
   }
 
-  async execute(inputs: CSGWrapper[]) {
+  async execute(inputs: CSGWrapper[]){
     let nodes = inputs.map(i => new CSG.Node(i.node.allPolygons()));
     this.operations.map(op => {
-      if (op[0] === "invert")
+      if(op[0] === "invert")
         return nodes[op[1]].invert();
-      if (op[0] === "clipTo")
+      if(op[0] === "clipTo")
         return nodes[op[1]].clipTo(nodes[op[2]]);
-      if (op[0] === "build")
+      if(op[0] === "build")
         return nodes[op[1]] = new CSG.Node(nodes[op[1]].allPolygons().concat(nodes[op[2]].allPolygons()));
     })
     return new CSGWrapper(nodes[this.final]).finish();
@@ -217,9 +221,9 @@ let _csg = (args: Leaf<Mesh>[], ops: CsgOperation[], fin: number) =>
   new CsgToMeshWork(new CsgWork(args.map(a => new MeshToCsgWork(a)), ops, fin));
 let _union = (...originalArgs: Elementish<Mesh>[]) => {
   let flatArgs = new Element(originalArgs).toArrayFlat();
-  if (flatArgs.length === 0)
+  if(flatArgs.length === 0)
     return;
-  if (flatArgs.length === 1)
+  if(flatArgs.length === 1)
     return flatArgs[0];
   return _csg(flatArgs, flatArgs.slice(1).flatMap((_, i) => {
     let a = 0;
@@ -237,20 +241,21 @@ let _union = (...originalArgs: Elementish<Mesh>[]) => {
 
 let _diff = (el: Element<Mesh>) => {
   let originalArgs: Elementish<Mesh> = el.toArrayDeep();
-  if (!(originalArgs instanceof Array))
+  if(!(originalArgs instanceof Array))
     return originalArgs;
-  if (originalArgs.length === 0)
+  if(originalArgs.length === 0)
     return;
-  if (originalArgs.length === 1)
+  if(originalArgs.length === 1)
     [originalArgs] = originalArgs;
   const args = new Element(originalArgs).toArrayDeep();
-  if (args instanceof Mesh || args instanceof Work)
+  if(args instanceof Mesh || args instanceof Work)
     return args;
   const positive = _union(args[0]);
   const negative = _union(...args.slice(1));
-  if (!positive || !negative)
+  if(!positive || !negative)
     return positive;
-  const a = 0, b = 1;
+  const a = 0,
+    b = 1;
   return _csg([positive, negative], [
     ["invert", a],
     ["clipTo", a, b],
@@ -265,9 +270,9 @@ let _diff = (el: Element<Mesh>) => {
 
 let _intersect = (...originalArgs: Elementish<Mesh>[]) => {
   let args = new Element(originalArgs).toArrayFlat();
-  if (args.length === 0)
+  if(args.length === 0)
     return;
-  if (args.length === 1)
+  if(args.length === 1)
     return args[0];
   return _csg(args, [
     ["invert", 0],
@@ -288,7 +293,9 @@ let _intersect = (...originalArgs: Elementish<Mesh>[]) => {
 
 export const union: Operation<Mesh, Mesh> = new Operation("union", el => _union(el) ?? new Mesh([]).finish());
 export const diff: Operation<Mesh, Mesh> = new Operation("diff", el => _diff(el) ?? new Mesh([]).finish());
-export const intersection: Operation<Mesh, Mesh> = new Operation("intersect", el => _intersect(el) ?? new Mesh([]).finish());
+export const intersection: Operation<Mesh, Mesh> = (
+  new Operation("intersect", el => _intersect(el) ?? new Mesh([]).finish())
+)
 
 export const add: Component<Elementish<Mesh>[], Operation<Mesh, Mesh>> =
   new Component("add", (...el) => new Operation("add", el2 => union(el2, el)))
@@ -297,4 +304,4 @@ export const sub: Component<Elementish<Mesh>[], Operation<Mesh, Mesh>> =
 export const intersect: Component<Elementish<Mesh>[], Operation<Mesh, Mesh>> =
   new Component("intersect", (...el) => new Operation("intersect", el2 => intersection(el2, el)))
 
-export { MeshToCsgWork, CsgToMeshWork, CSGWrapper, CsgWork, };
+export { MeshToCsgWork, CsgToMeshWork, CSGWrapper, CsgWork };

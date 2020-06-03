@@ -10,7 +10,7 @@ import watchify from "watchify";
 // @ts-ignore
 import tsify from "tsify";
 
-export async function bundle(folder: string, watch: boolean) {
+export async function bundle(folder: string, watch: boolean){
   const dist = path.join(folder, "dist");
   const src = path.join(folder, "src");
 
@@ -21,7 +21,7 @@ export async function bundle(folder: string, watch: boolean) {
     plugin: [watchify, tsify],
   })
 
-  function bundleTs() {
+  function bundleTs(){
     return new Promise<void>((res, rej) => {
       console.log("Bundling client TS...");
       b.bundle()
@@ -37,7 +37,7 @@ export async function bundle(folder: string, watch: boolean) {
     });
   }
 
-  async function bundleStylus() {
+  async function bundleStylus(){
     console.log("Bundling stylus...");
     let css = await new Promise((r, j) => stylus.render(
       `@import '${path.join(src, "stylus/*")}'`,
@@ -61,7 +61,7 @@ export async function bundle(folder: string, watch: boolean) {
   await bundleStylus();
   await fs.copyFile(path.join(src, "index.html"), path.join(dist, "index.html"))
 
-  if (watch) {
+  if(watch) {
     b.on("update", bundleTs);
     watchDir(path.join(src, "stylus/"), {
       persistent: false,
