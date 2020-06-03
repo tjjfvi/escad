@@ -6,6 +6,7 @@ import { Id } from "./Id";
 import { WeakCache } from "./WeakCache";
 import { Sha } from "./hash";
 import { B64 } from "./b64";
+import { v4 as uuidv4 } from "uuid";
 
 export abstract class ArtifactManager<T> {
 
@@ -58,7 +59,13 @@ export abstract class ArtifactManager<T> {
   }
 
   async storePointer(fromSha: Sha, toSha: Sha) {
-    await fs.symlink(await this.getPath(toSha), await this.getPath(fromSha));
+    this.symlinkSafe(await this.getPath(toSha), await this.getPath(fromSha));
+  }
+
+  protected async symlinkSafe(from: string, to: string) {
+    const id = uuidv4();
+    await fs.symlink(from, id);
+    await fs.rename(id, to);
   }
 
 }
