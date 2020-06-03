@@ -1,22 +1,50 @@
+ignorePatterns:
+  - '**/node_modules/*'
+  - '**/dist/*'
 env:
   browser: true
   commonjs: true
   es6: true
   node: true
-globals:
-  mobxtract: true
+plugins:
+  - '@typescript-eslint'
+  - 'react'
 extends:
   - 'eslint:recommended'
-  - 'plugin:flowtype/recommended'
-parser: babel-eslint
+  - 'plugin:@typescript-eslint/eslint-recommended'
+  - 'plugin:@typescript-eslint/recommended'
+  - 'plugin:react/recommended'
+parser: '@typescript-eslint/parser'
 parserOptions:
   ecmaVersion: 2018
-  ecmaFeatures:
-    jsx: true
   sourceType: module
-plugins:
-  - flowtype
 rules:
+  '@typescript-eslint/member-delimiter-style':
+    - warn
+    - multiline:
+        delimiter: "comma"
+        requireLast: true
+      singleline:
+        delimiter: "comma"
+        requireLast: false
+  '@typescript-eslint/no-empty-interface':
+    - off
+  '@typescript-eslint/ban-ts-ignore':
+    - off
+  '@typescript-eslint/no-use-before-define':
+    - off
+  '@typescript-eslint/no-empty-function':
+    - off
+  '@typescript-eslint/no-this-alias':
+    - off
+  '@typescript-eslint/no-namespace':
+    - off
+  '@typescript-eslint/class-name-casing':
+    - off
+  '@typescript-eslint/explicit-function-return-type':
+    - off
+  prefer-const:
+    - off
   indent:
     - warn
     - 2
