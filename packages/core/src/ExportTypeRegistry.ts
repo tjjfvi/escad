@@ -13,7 +13,7 @@ export class ExportTypeRegistry {
     map.set(exportType.id, exportType);
   }
 
-  getAll<P extends Product<P>>(productType: ProductType<P>) {
+  getAll<P extends Product<P>>(productType: ProductType<P>): ExportType<P>[] {
     let map = this.mapMap.get(productType.id);
     return map ? [...map.values()] : [];
   }
