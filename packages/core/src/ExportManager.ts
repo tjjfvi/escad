@@ -3,12 +3,10 @@ import { ArtifactManager } from "./ArtifactManager";
 import { ExportType } from "./ExportType";
 import { Product } from "./Product";
 import { Sha } from "./hash";
-import { Id } from "./Id";
-import fs from "fs-extra";
 
 export class ExportManager<P extends Product<P>> extends ArtifactManager<P> {
 
-  subdir: Id;
+  subdir: string;
 
   async getPath(sha: Sha) {
     let path = await super.getPath(sha)
@@ -19,7 +17,7 @@ export class ExportManager<P extends Product<P>> extends ArtifactManager<P> {
 
   constructor(public exportType: ExportType<P>) {
     super();
-    this.subdir = exportType.id;
+    this.subdir = "exports/" + exportType.id.sha.b64;
   }
 
   serialize(product: P) {

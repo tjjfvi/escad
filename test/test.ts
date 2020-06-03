@@ -15,6 +15,6 @@ export default () => {
       .meld
   );
   const mesh = el.toArrayFlat()[0];
-  Product.ExportTypeRegistry.getAll(Mesh)[0].manager.store(mesh.sha, mesh.process());
+  ExportType.Registry.getAll(Mesh)[0].manager.store(mesh.sha, mesh.process());
   return el;
 };
