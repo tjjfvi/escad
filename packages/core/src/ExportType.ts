@@ -1,6 +1,7 @@
 import { Product } from "./Product";
 import { Id } from "./Id";
 import { ExportTypeRegistry } from "./ExportTypeRegistry";
+import { ExportManager } from "./ExportManager";
 
 export interface ExportTypeArgs<P extends Product<P>> {
   id: Id,
@@ -17,6 +18,7 @@ export class ExportType<P extends Product<P>> implements ExportTypeArgs<P> {
   extension: string;
   name: string;
   export: (product: P) => Buffer;
+  manager: ExportManager<P>;
 
   constructor({ id, extension, name, export: exportFunc, }: ExportTypeArgs<P>) {
     if (!extension.startsWith("."))
@@ -26,6 +28,7 @@ export class ExportType<P extends Product<P>> implements ExportTypeArgs<P> {
     this.name = name;
     this.export = exportFunc;
     this.extension = extension;
+    this.manager = new ExportManager(this);
   }
 
 }

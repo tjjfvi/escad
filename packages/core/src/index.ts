@@ -22,6 +22,7 @@ export default escad;
 export * from './ArtifactManager';
 export * from './Component';
 export * from './Element';
+export * from './ExportManager';
 export * from './ExportType';
 export * from './ExportTypeRegistry';
 export * from './ExtensibleFunction';
