@@ -1,8 +1,8 @@
 
 import { Mesh, Face } from "@escad/mesh";
-import { Work, Leaf, Id, Operation, mapOperation } from "@escad/core";
+import { Work, Leaf, Id, Operation, mapOperation, ConvertibleTo, FinishedProduct } from "@escad/core";
 
-class FlipWork extends Work<FlipWork, Mesh, [Mesh]> {
+class FlipWork extends Work<FlipWork, Mesh, [ConvertibleTo<Mesh>]> {
 
   type = FlipWork;
 
@@ -20,7 +20,7 @@ class FlipWork extends Work<FlipWork, Mesh, [Mesh]> {
     return new FlipWork(child);
   }
 
-  async execute([input]: [Mesh]){
+  async execute([input]: [FinishedProduct<ConvertibleTo<Mesh>>]){
     return new Mesh(input.faces.map(f => new Face(f.points.slice().reverse()))).finish();
   }
 

@@ -1,8 +1,8 @@
 
 import { Mesh, Face, Vector3 } from "@escad/mesh";
-import { Work } from "@escad/core";
+import { Work, ConvertibleTo, StrictLeaf } from "@escad/core";
 
-abstract class PointMapWork<W extends PointMapWork<W>> extends Work<W, Mesh, [Mesh]> {
+abstract class PointMapWork<W extends PointMapWork<W>> extends Work<W, Mesh, [ConvertibleTo<Mesh>]> {
 
   abstract map(input: Vector3): Vector3;
 
@@ -19,8 +19,8 @@ abstract class PointMapWork<W extends PointMapWork<W>> extends Work<W, Mesh, [Me
     throw new Error("Invalid input to PointMapWork");
   }
 
-  async execute([input]: [Mesh]){
-    return this._execute(input).finish();
+  async execute([input]: [StrictLeaf<ConvertibleTo<Mesh>>]){
+    return this._execute(await Mesh.convert(input).process()).finish();
   }
 
 }
