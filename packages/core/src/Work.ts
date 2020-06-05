@@ -4,15 +4,14 @@ import { Registry } from "./Registry";
 import { Product, FinishedProduct } from "./Product";
 import { Id } from "./Id";
 import { WorkManager } from "./WorkManager";
-
-export type Leaf<T extends Product<T>> = FinishedProduct<T> | _Work<T>;
+import { StrictLeaf } from "./Leaf";
 
 export type ProcessedChildren<C extends Product[]> = {
-  [K in keyof C]: C[K] extends Product<any> ? FinishedProduct<C[K]> : C[K]
+  [K in keyof C]: FinishedProduct<Extract<C[K], Product<any>>>
 }
 
 export type Children<C extends Product[]> = {
-  [K in keyof C]: C[K] extends Product<any> ? Leaf<C[K]> : C[K]
+  [K in keyof C]: StrictLeaf<Extract<C[K], Product<any>>>
 }
 
 export type _Work<T extends Product<T> = Product, C extends Product[] = any> = Work<_Work<T, C>, T, C>;
@@ -27,7 +26,7 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
   sha: Sha;
   frozen = false;
 
-  protected redirect: Leaf<T> | null = null;
+  protected redirect: StrictLeaf<T> | null = null;
 
   writePromise: Promise<void> | null = null;
 
@@ -67,7 +66,7 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
     const inputs: ProcessedChildren<C> = await Promise.all(this.children.map(c => c.process())) as any;
     const alias = this.clone(inputs);
 
-    const resultPromise = alias.sha === this.sha ? this.execute(inputs) : alias.process();
+    const resultPromise = alias.sha.b64 === this.sha.b64 ? this.execute(inputs) : alias.process();
     const result = await resultPromise;
 
     await Product.Manager.storePointer(this.sha, result.sha);
@@ -80,5 +79,5 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
 
 export interface WorkType<W extends Work<W, T, C>, T extends Product<T> = Product, C extends Product[] = any> {
   id: Id,
-  deserialize(children: Children<C>, buf: Buffer): W,
+  deserialize<U extends T>(children: Children<C>, buf: Buffer): W,
 }

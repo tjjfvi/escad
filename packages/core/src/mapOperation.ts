@@ -1,8 +1,8 @@
 import { Product } from "./Product";
 import { Operation } from "./Operation";
-import { Leaf } from "./Work";
 import { Hierarchy } from "./Hierarchy";
 import { Element, ArrayElement } from "./Element";
+import { Leaf } from "./Leaf";
 
 
 export const mapOperation = (

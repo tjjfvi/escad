@@ -4,10 +4,11 @@ import { Element, Elementish, __Element__, ArrayElement } from "./Element";
 import { Product } from "./Product";
 import { __Thing__ } from "./__Thing__";
 import { builtins, Builtins } from "./builtins";
+import { ConvertibleTo } from "./Conversions";
 
 export class __Operation__<I extends Product<I>, O extends Product<O>> extends __Thing__ {
 
-  declare protected __i__: I;
+  declare protected __i__: ConvertibleTo<I>;
   declare protected __o__: O;
 
 }

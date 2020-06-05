@@ -19,6 +19,7 @@ export default escad;
 
 export * from './ArtifactManager';
 export * from './Component';
+export * from './Conversions';
 export * from './Element';
 export * from './ExportManager';
 export * from './ExportType';
@@ -27,6 +28,7 @@ export * from './ExtensibleFunction';
 export * from './Hierarchy';
 export * from './HierarchyManager';
 export * from './Id';
+export * from './Leaf';
 export * from './Operation';
 export * from './Product';
 export * from './ProductManager';

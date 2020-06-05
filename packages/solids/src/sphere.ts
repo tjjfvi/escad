@@ -75,7 +75,7 @@ type SphereArgs = {
   ud?: boolean,
 };
 
-export const sphere: Component<[SphereArgs], Element<Mesh>> = new Component("sphere", ({
+export const sphere: Component<[SphereArgs], Element<Mesh>> = new Component<[SphereArgs], Element<Mesh>>("sphere", ({
   r = 1,
   slices = 16,
   stacks = 8,
@@ -87,7 +87,7 @@ export const sphere: Component<[SphereArgs], Element<Mesh>> = new Component("sph
   if(!ir)
     return new Element(os);
   let is = new SphereWork([ir, slices, stacks]);
-  return ud ? new Element([os, is]) : diff(os, is);
+  return new Element(ud ? [os, is] : Mesh.convertElementish(diff(os, is)));
 })
 
 export const hollowSphere = sphere;

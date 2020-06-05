@@ -1,11 +1,12 @@
 
-import { Leaf } from "./Work";
 import { Hierarchy } from "./Hierarchy";
 import { Operation, __Operation__ } from "./Operation";
 import { Component, __Component__ } from "./Component";
 import { Product } from "./Product";
 import { __Thing__ } from "./__Thing__";
 import { builtins, Builtins } from "./builtins";
+import { Leaf } from "./Leaf";
+import { ConvertibleTo } from "./Conversions";
 
 interface ObjMap<T> {
   [x: string]: T,
@@ -14,12 +15,16 @@ const isObjMap = (o: unknown): o is ObjMap<unknown> =>
   typeof o === "object" && !!o && (o.constructor === Object || Object.getPrototypeOf(o) === null);
 
 type ElementishFlat<T> = Array<T> | ObjMap<T>;
-export type Elementish<T extends Product<T>> = Array<Elementish<T>> | ObjMap<Elementish<T>> | Leaf<T> | __Element__<T>;
+export type Elementish<T extends Product<T>> =
+  | Array<Elementish<T>>
+  | ObjMap<Elementish<T>>
+  | Leaf<T>
+  | __Element__<ConvertibleTo<T>>
 export type DeepArray<T> = Array<T | DeepArray<T>>;
 
 export class __Element__<T extends Product<T>> extends __Thing__ {
 
-  declare protected __t__: T;
+  declare protected __t__: ConvertibleTo<T>;
 
 }
 
@@ -128,7 +133,7 @@ export class Element<T extends Product<T>> extends __Element__<T> {
     let createElement = (e: Elementish<U>) => new Element(e, hierarchyGen(e, this, this.isLeaf(), isRoot));
 
     if(this.isArray())
-      return createElement(this.val.map(v => v.map<U>(f, hierarchyGen, false)));
+      return createElement((this as ArrayElement<T>).val.map(v => v.map<U>(f, hierarchyGen, false)));
 
     if(this.isObjMap())
       return createElement(Object.assign({}, ...Object.entries(this.val).map(([k, v]) => ({

@@ -2,7 +2,9 @@
 import { Mesh, Face, Vector3 } from "@escad/mesh";
 // @ts-ignore
 import CSG from "csg";
-import {
+import escad, {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
+  Conversion,
   Work,
   Leaf,
   Element,
@@ -11,9 +13,12 @@ import {
   Operation,
   Id,
   Component,
+  ConvertibleTo,
+  FinishedProduct,
+  StrictLeaf,
 } from "@escad/core";
 
-class CSGWrapper extends Product<CSGWrapper> {
+export class CSGWrapper extends Product<CSGWrapper> {
 
   type = CSGWrapper;
 
@@ -106,12 +111,12 @@ class MeshToCsgWork extends Work<MeshToCsgWork, CSGWrapper, [Mesh]> {
 
   static id = new Id("MeshToCsgWork", __filename);
 
-  constructor(child: Leaf<Mesh>){
+  constructor(child: StrictLeaf<Mesh>){
     super([child]);
     this.freeze();
   }
 
-  clone([child]: [Leaf<Mesh>]){
+  clone([child]: [StrictLeaf<Mesh>]){
     return new MeshToCsgWork(child);
   }
 
@@ -119,7 +124,7 @@ class MeshToCsgWork extends Work<MeshToCsgWork, CSGWrapper, [Mesh]> {
     return Buffer.alloc(0);
   }
 
-  static deserialize([child]: [Leaf<Mesh>]){
+  static deserialize([child]: [StrictLeaf<Mesh>]){
     return new MeshToCsgWork(child);
   }
 
@@ -137,12 +142,12 @@ class CsgToMeshWork extends Work<CsgToMeshWork, Mesh, [CSGWrapper]> {
 
   static id = new Id("CsgToMeshWork", __filename);
 
-  constructor(child: Leaf<CSGWrapper>){
+  constructor(child: StrictLeaf<CSGWrapper>){
     super([child]);
     this.freeze();
   }
 
-  clone([child]: [Leaf<CSGWrapper>]){
+  clone([child]: [StrictLeaf<CSGWrapper>]){
     return new CsgToMeshWork(child);
   }
 
@@ -150,7 +155,7 @@ class CsgToMeshWork extends Work<CsgToMeshWork, Mesh, [CSGWrapper]> {
     return Buffer.alloc(0);
   }
 
-  static deserialize([child]: [Leaf<CSGWrapper>]){
+  static deserialize([child]: [StrictLeaf<CSGWrapper>]){
     return new CsgToMeshWork(child);
   }
 
@@ -174,7 +179,7 @@ type CsgOperation =
   | readonly ["clipTo", number, number]
   | readonly ["build", number, number]
 
-class CsgWork extends Work<CsgWork, CSGWrapper, CSGWrapper[]> {
+class CsgWork extends Work<CsgWork, CSGWrapper, ConvertibleTo<CSGWrapper>[]> {
 
   type = CsgWork;
 
@@ -197,8 +202,11 @@ class CsgWork extends Work<CsgWork, CSGWrapper, CSGWrapper[]> {
     return new CsgWork(children, ...(JSON.parse(buffer.toString("utf8")) as [CsgOperation[], number]));
   }
 
-  async execute(inputs: CSGWrapper[]){
-    let nodes = inputs.map(i => new CSG.Node(i.node.allPolygons()));
+  async execute(rawInputs: FinishedProduct<ConvertibleTo<CSGWrapper>>[]){
+    let inputs = await Promise.all(rawInputs.map(i => CSGWrapper.convert(i).process()));
+    let nodes = await Promise.all(inputs.map(async i =>
+      new CSG.Node(i.node.allPolygons())
+    ));
     this.operations.map(op => {
       if(op[0] === "invert")
         return nodes[op[1]].invert();
@@ -213,13 +221,11 @@ class CsgWork extends Work<CsgWork, CSGWrapper, CSGWrapper[]> {
 }
 
 Product.Registry.register(CSGWrapper);
-Work.Registry.register(MeshToCsgWork);
-Work.Registry.register(CsgToMeshWork);
 Work.Registry.register(CsgWork);
 
-let _csg = (args: Leaf<Mesh>[], ops: CsgOperation[], fin: number) =>
-  new CsgToMeshWork(new CsgWork(args.map(a => new MeshToCsgWork(a)), ops, fin));
-let _union = (...originalArgs: Elementish<Mesh>[]) => {
+let _csg = (args: Leaf<CSGWrapper>[], ops: CsgOperation[], fin: number): StrictLeaf<CSGWrapper> =>
+  new CsgWork(args, ops, fin);
+let _union = (...originalArgs: Elementish<CSGWrapper>[]) => {
   let flatArgs = new Element(originalArgs).toArrayFlat();
   if(flatArgs.length === 0)
     return;
@@ -239,8 +245,8 @@ let _union = (...originalArgs: Elementish<Mesh>[]) => {
   }), 0);
 }
 
-let _diff = (el: Element<Mesh>) => {
-  let originalArgs: Elementish<Mesh> = el.toArrayDeep();
+let _diff = (el: Element<CSGWrapper>) => {
+  let originalArgs: Elementish<CSGWrapper> = el.toArrayDeep();
   if(!(originalArgs instanceof Array))
     return originalArgs;
   if(originalArgs.length === 0)
@@ -248,7 +254,7 @@ let _diff = (el: Element<Mesh>) => {
   if(originalArgs.length === 1)
     [originalArgs] = originalArgs;
   const args = new Element(originalArgs).toArrayDeep();
-  if(args instanceof Mesh || args instanceof Work)
+  if(args instanceof Product || args instanceof Work)
     return args;
   const positive = _union(args[0]);
   const negative = _union(...args.slice(1));
@@ -268,7 +274,7 @@ let _diff = (el: Element<Mesh>) => {
   ], 0);
 }
 
-let _intersect = (...originalArgs: Elementish<Mesh>[]) => {
+let _intersect = (...originalArgs: Elementish<CSGWrapper>[]) => {
   let args = new Element(originalArgs).toArrayFlat();
   if(args.length === 0)
     return;
@@ -291,17 +297,34 @@ let _intersect = (...originalArgs: Elementish<Mesh>[]) => {
   ], 0);
 }
 
-export const union: Operation<Mesh, Mesh> = new Operation("union", el => _union(el) ?? new Mesh([]).finish());
-export const diff: Operation<Mesh, Mesh> = new Operation("diff", el => _diff(el) ?? new Mesh([]).finish());
-export const intersection: Operation<Mesh, Mesh> = (
-  new Operation("intersect", el => _intersect(el) ?? new Mesh([]).finish())
+export const union: Operation<CSGWrapper, CSGWrapper> = (
+  new Operation<CSGWrapper, CSGWrapper>("union", el => _union(el) ?? new Element<CSGWrapper>([]))
+);
+export const diff: Operation<CSGWrapper, CSGWrapper>  = (
+  new Operation<CSGWrapper, CSGWrapper>("diff", el => _diff(el) ?? new Element<CSGWrapper>([]))
+);
+export const intersection: Operation<CSGWrapper, CSGWrapper> = (
+  new Operation<CSGWrapper, CSGWrapper>("intersect", el => _intersect(el) ?? new Element<CSGWrapper>([]))
 )
 
-export const add: Component<Elementish<Mesh>[], Operation<Mesh, Mesh>> =
-  new Component("add", (...el) => new Operation("add", el2 => union(el2, el)))
-export const sub: Component<Elementish<Mesh>[], Operation<Mesh, Mesh>> =
-  new Component("sub", (...el) => new Operation("sub", el2 => diff(el2, el)))
-export const intersect: Component<Elementish<Mesh>[], Operation<Mesh, Mesh>> =
-  new Component("intersect", (...el) => new Operation("intersect", el2 => intersection(el2, el)))
+export const add: Component<Elementish<CSGWrapper>[], Operation<CSGWrapper, CSGWrapper>> =
+  new Component("add", (...el) => new Operation<CSGWrapper, CSGWrapper>("add", el2 => union(el2, el)))
+export const sub: Component<Elementish<CSGWrapper>[], Operation<CSGWrapper, CSGWrapper>> =
+  new Component("sub", (...el) => new Operation<CSGWrapper, CSGWrapper>("sub", el2 => diff(el2, el)))
+export const intersect: Component<Elementish<CSGWrapper>[], Operation<CSGWrapper, CSGWrapper>> =
+  new Component("intersect", (...el) =>
+    new Operation<CSGWrapper, CSGWrapper>("intersect", el2 => intersection(el2, el))
+  )
 
-export { MeshToCsgWork, CsgToMeshWork, CSGWrapper, CsgWork };
+
+declare global {
+  export namespace escad {
+    interface ConversionsObj {
+      meshToCsg: Conversion<Mesh, CSGWrapper>,
+      csgToMesh: Conversion<CSGWrapper, Mesh>,
+    }
+  }
+}
+
+Product.ConversionRegistry.register(Mesh, CSGWrapper, mesh => new MeshToCsgWork(mesh));
+Product.ConversionRegistry.register(CSGWrapper, Mesh, csg => new CsgToMeshWork(csg));

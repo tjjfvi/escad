@@ -1,8 +1,8 @@
 
 import { Mesh } from "@escad/mesh";
-import { Work, Leaf, Id, Operation } from "@escad/core";
+import { Work, Leaf, Id, Operation, ConvertibleTo, FinishedProduct } from "@escad/core";
 
-export class MeldWork extends Work<MeldWork, Mesh, Mesh[]> {
+export class MeldWork extends Work<MeldWork, Mesh, ConvertibleTo<Mesh>[]> {
 
   type = MeldWork;
 
@@ -17,7 +17,8 @@ export class MeldWork extends Work<MeldWork, Mesh, Mesh[]> {
     return new MeldWork(children);
   }
 
-  async execute(inputs: Mesh[]){
+  async execute(rawInputs: FinishedProduct<ConvertibleTo<Mesh>>[]){
+    const inputs = await Promise.all(rawInputs.map(i => Mesh.convert(i).process()));
     return new Mesh(inputs.flatMap(i => i.faces)).finish();
   }
 

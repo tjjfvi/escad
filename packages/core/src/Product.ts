@@ -3,12 +3,9 @@ import { Registry } from "./Registry";
 import { hash, Sha } from "./hash";
 import { ProductManager } from "./ProductManager";
 import { Id } from "./Id";
-
-declare class __FinishedProduct__ {
-
- declare private __finished: true;
-
-}
+import { ConversionRegistry, ConvertibleTo } from "./Conversions";
+import { StrictLeaf } from "./Leaf";
+import { Elementish } from "./Element";
 
 export interface _Product extends Product<_Product> { }
 
@@ -16,6 +13,7 @@ export abstract class Product<P extends Product<P> = _Product> {
 
   abstract type: ProductType<P>;
 
+  static ConversionRegistry = new ConversionRegistry();
   static Registry = new Registry<ProductType>("ProductRegistry");
   static Manager = new ProductManager();
 
@@ -52,22 +50,35 @@ export abstract class Product<P extends Product<P> = _Product> {
 
   abstract serialize(): Buffer;
 
+  protected process(): Promise<FinishedProduct<P>>{
+    if(!this.finished)
+      throw new Error("Only finished Products can be .process()-ed");
+    return this as any;
+  }
 
-}
+  static convert<P extends Product<P>, Q extends ConvertibleTo<P> & Product<Q>>(
+    this: ProductType<P>,
+    q: StrictLeaf<Q>,
+  ): StrictLeaf<P>{
+    return Product.ConversionRegistry.convertLeaf(this, q);
+  }
 
-// @ts-ignore
-Product.prototype.process = function <P>(this: FinishedProduct<P>): Promise<FinishedProduct<P>>{
-  if(!this.finished)
-    throw new Error("Only finished Products can be .process()-ed");
-  return this as any;
+  static convertElementish<P extends Product<P>, Q extends ConvertibleTo<P> & Product<Q>>(
+    this: ProductType<P>,
+    q: Elementish<Q>,
+  ): Elementish<P>{
+    return q;
+  }
+
 }
 
 export type FinishedProduct<P extends Product<P>> = P & {
   finished: true,
   process(): Promise<FinishedProduct<P>>,
-} & __FinishedProduct__;
+};
 
 export interface ProductType<P extends Product<P> = _Product> {
   id: Id,
   deserialize(buffer: Buffer): P,
+  // convert<Q extends ConvertibleTo<P> & Product<Q>>(q: Q | _Work<Q>): P | _Work<P>,
 }

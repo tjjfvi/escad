@@ -188,7 +188,7 @@ export const cyl = (args: CylArgs) => {
   if(!is)
     return new Element(oc)
   let ic = new CylWork([is[0], is[1], height, sides, io1, io2, center]);
-  return new Element(unionDiff ? [oc, ic] : diff(oc, ic));
+  return new Element(unionDiff ? [oc, ic] : Mesh.convertElementish(diff(oc, ic)));
 }
 
 export const cylinder = cyl;
