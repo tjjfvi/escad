@@ -3,9 +3,10 @@ import { Registry } from "./Registry";
 import { hash, Sha } from "./hash";
 import { ProductManager } from "./ProductManager";
 import { Id } from "./Id";
-import { ConversionRegistry, ConvertibleTo } from "./Conversions";
+import { ConvertibleTo } from "./Conversions";
 import { StrictLeaf } from "./Leaf";
 import { Elementish } from "./Element";
+import { ConversionRegistry } from "./ConversionRegistry";
 
 export interface _Product extends Product<_Product> { }
 

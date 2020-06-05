@@ -19,6 +19,8 @@ export default escad;
 
 export * from './ArtifactManager';
 export * from './Component';
+export * from './ConversionRegistry';
+export * from './ConversionWork';
 export * from './Conversions';
 export * from './Element';
 export * from './ExportManager';
