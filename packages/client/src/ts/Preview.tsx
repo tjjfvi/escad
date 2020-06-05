@@ -17,7 +17,8 @@ const colors = {
 
 import React from "react";
 import state from "./State";
-const three = import("three");
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const three = require("three");
 console.log(three);
 window.THREE = three;
 require("three/examples/js/controls/OrbitControls");
