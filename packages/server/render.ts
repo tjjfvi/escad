@@ -25,7 +25,7 @@ function processMessage([type, ...data]: any){
 
   init = true;
   [file, dir] = data;
-  ReadonlyArtifactManager.artifactsDir = dir;
+  ReadonlyArtifactManager.setArtifactsDir(dir);
   let result;
   try {
     result = require(file).default;

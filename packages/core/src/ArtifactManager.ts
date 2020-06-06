@@ -6,8 +6,6 @@ import { ReadonlyArtifactManager } from "./ReadonlyArtifactManager";
 
 export abstract class ArtifactManager<T> extends ReadonlyArtifactManager<T> {
 
-  static artifactsDir: string | null = null;
-
   abstract deserialize(buffer: Buffer): T | null | Promise<T | null>;
 
   async lookup(sha: Sha){
