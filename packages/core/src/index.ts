@@ -34,6 +34,7 @@ export * from './Leaf';
 export * from './Operation';
 export * from './Product';
 export * from './ProductManager';
+export * from './ReadonlyArtifactManager';
 export * from './Registry';
 export * from './WeakCache';
 export * from './Work';

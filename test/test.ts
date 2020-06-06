@@ -1,9 +1,8 @@
 
-import escad, { ExportTypeRegistry, ExportType, Product } from "../packages/core";
+import escad, { ExportType } from "../packages/core";
 import "../packages/solids";
 import "../packages/csg";
 import { Mesh } from "../packages/mesh/dist";
-import { diff } from "../packages/csg";
 
 export default () => {
   const el = (

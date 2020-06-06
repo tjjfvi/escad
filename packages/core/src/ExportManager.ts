@@ -1,10 +1,10 @@
 
-import { ArtifactManager } from "./ArtifactManager";
 import { ExportType } from "./ExportType";
 import { Product } from "./Product";
 import { Sha } from "./hash";
+import { ReadonlyArtifactManager } from "./ReadonlyArtifactManager";
 
-export class ExportManager<P extends Product<P>> extends ArtifactManager<P> {
+export class ExportManager<P extends Product<P>> extends ReadonlyArtifactManager<P> {
 
   subdir: string;
 
@@ -22,14 +22,6 @@ export class ExportManager<P extends Product<P>> extends ArtifactManager<P> {
 
   serialize(product: P){
     return this.exportType.export(product);
-  }
-
-  deserialize(): never{
-    throw new Error("ExportManager does not deserialize");
-  }
-
-  lookup(): never{
-    throw new Error("ExportManager does not lookup");
   }
 
   async store(sha: Sha, productPromise: Promise<P>){

@@ -1,7 +1,7 @@
 
 // Render Process
 
-import escad, { Work, ArtifactManager, Element } from "@escad/core";
+import escad, { Work, ReadonlyArtifactManager, Element } from "@escad/core";
 
 let file: string, func: any, dir: string,
   init = false;
@@ -25,7 +25,7 @@ function processMessage([type, ...data]: any){
 
   init = true;
   [file, dir] = data;
-  ArtifactManager.artifactsDir = dir;
+  ReadonlyArtifactManager.artifactsDir = dir;
   let result;
   try {
     result = require(file).default;
