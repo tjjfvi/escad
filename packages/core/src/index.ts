@@ -30,6 +30,7 @@ export * from './ExtensibleFunction';
 export * from './Hierarchy';
 export * from './HierarchyManager';
 export * from './Id';
+export * from './IdManager';
 export * from './Leaf';
 export * from './Operation';
 export * from './Product';

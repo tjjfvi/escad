@@ -3,16 +3,21 @@ import { hash, Sha } from "./hash";
 import { posix as path } from "path";
 import readPkgUp from "read-pkg-up";
 import { B64 } from "./b64";
+import { IdManager } from "./IdManager";
 
 const ids = new Map<B64, Id>();
 
 export class Id {
+
+  static Manager = new IdManager();
 
   packageName: string;
   packageVersion: string;
   filename: string;
   name: string;
   sha: Sha;
+
+  writePromise: Promise<void>;
 
   constructor(name: string, filename: string){
     const result = readPkgUp.sync({ cwd: path.dirname(filename) });
@@ -29,6 +34,7 @@ export class Id {
     if(old)
       throw new Error(`Duplicative Id under sha "${this.sha.b64}"`);
     ids.set(this.sha.b64, this);
+    this.writePromise = Id.Manager.store(this.sha, Promise.resolve(this)).then(() => {});
   }
 
   static get(sha: Sha){
