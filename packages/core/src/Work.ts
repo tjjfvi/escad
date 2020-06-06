@@ -59,20 +59,26 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
       return await this.redirect.process();
     }
 
-    const memoized = await Product.Manager.lookup(this.sha);
-    if(memoized)
-      return memoized as any;
+    const resultPromise = (async (): Promise<FinishedProduct<T>> => {
+      const memoized = await Product.Manager.lookup(this.sha);
+      if(memoized)
+        return memoized as any;
 
-    const inputs: ProcessedChildren<C> = await Promise.all(this.children.map(c => c.process())) as any;
-    const alias = this.clone(inputs);
+      const inputs: ProcessedChildren<C> = await Promise.all(this.children.map(c => c.process())) as any;
+      const alias = this.clone(inputs);
 
-    const resultPromise = alias.sha.b64 === this.sha.b64 ? this.execute(inputs) : alias.process();
-    const result = await resultPromise;
+      const resultPromise = alias.sha.b64 === this.sha.b64 ? this.execute(inputs) : alias.process();
+      const result = await resultPromise;
 
-    await Product.Manager.storePointer(this.sha, result.sha);
-    await result.writePromise;
+      await Product.Manager.storePointer(this.sha, result.sha);
+      await result.writePromise;
 
-    return result;
+      return result;
+    })()
+
+    Product.Manager.cache.setAsync(this.sha.b64, () => resultPromise);
+
+    return await resultPromise;
   }
 
 }

@@ -21,7 +21,7 @@ export abstract class ReadonlyArtifactManager<T> {
     return dir;
   }
 
-  protected cache = new WeakCache<B64, T | null>();
+  cache = new WeakCache<B64, T | null>();
 
   abstract subdir: Id | string;
 
