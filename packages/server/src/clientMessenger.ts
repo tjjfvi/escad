@@ -36,7 +36,7 @@ export class ClientMessenger extends EventEmitter<{
   }
 
   private startPing(){
-    const interval = setInterval(() => this.ws.ping(), 1000);
+    const interval = setInterval(() => this.send("ping"), 1000);
     this.on("close", () => clearInterval(interval));
   }
 
@@ -58,7 +58,7 @@ export class ClientMessenger extends EventEmitter<{
     });
   }
 
-  private initialize(requestedId: string, oldServerId: string){
+  private initialize(requestedId: string | null, oldServerId: string | null){
     let id: string;
 
     if(requestedId && oldServerId === serverId) {

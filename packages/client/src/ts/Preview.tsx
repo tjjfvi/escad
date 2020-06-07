@@ -1,4 +1,3 @@
-// @ts-nocheck
 
 const colors = {
   black: 0x151820,
@@ -16,7 +15,7 @@ const colors = {
 };
 
 import React from "react";
-import state from "./State";
+import { messenger } from "./Messenger";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const three = require("three");
 console.log(three);
@@ -81,8 +80,8 @@ const Preview = () => {
   const group = new t.Group();
   scene.add(group);
 
-  state.shas.on("update", async () => {
-    let meshes = await Promise.all(state.shas().map(sha =>
+  messenger.shas.on("update", async () => {
+    let meshes = await Promise.all(messenger.shas().map(sha =>
       fetch("/products/" + sha).then(r => r.arrayBuffer()).then(processMesh))
     );
     group.remove(...group.children);
