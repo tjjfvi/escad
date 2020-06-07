@@ -1,11 +1,16 @@
 
 import crypto from "crypto";
-import { b64, B64 } from "./b64";
+import { b64, B64, unB64 } from "./b64";
 
 export class Sha {
 
+  buffer: Buffer;
   b64: B64;
-  constructor(public buffer: Buffer){
+
+  constructor(b64: B64)
+  constructor(buffer: Buffer)
+  constructor(arg: B64 | Buffer){
+    this.buffer = arg instanceof Buffer ? arg : unB64(arg);
     this.b64 = b64(this.buffer);
   }
 

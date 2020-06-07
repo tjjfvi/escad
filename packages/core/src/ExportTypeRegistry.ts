@@ -2,6 +2,7 @@
 import { Id } from "./Id";
 import { Product, ProductType } from "./Product";
 import { ExportType } from "./ExportType"
+import { ExportTypeManager } from "./ExportTypeManager";
 
 export class ExportTypeRegistry {
 
@@ -11,6 +12,7 @@ export class ExportTypeRegistry {
     let map = this.mapMap.get(productType.id) ?? new Map<Id, ExportType<any>>();
     this.mapMap.set(productType.id, map);
     map.set(exportType.id, exportType);
+    ExportTypeManager.get(productType).store(exportType.id.sha, Promise.resolve(exportType));
   }
 
   getAll<P extends Product<P>>(productType: ProductType<P>): ExportType<P>[]{

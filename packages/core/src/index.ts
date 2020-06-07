@@ -25,6 +25,7 @@ export * from './Conversions';
 export * from './Element';
 export * from './ExportManager';
 export * from './ExportType';
+export * from './ExportTypeManager';
 export * from './ExportTypeRegistry';
 export * from './ExtensibleFunction';
 export * from './Hierarchy';

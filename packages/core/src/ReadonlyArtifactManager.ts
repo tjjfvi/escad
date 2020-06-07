@@ -60,7 +60,7 @@ export abstract class ReadonlyArtifactManager<T> {
   }
 
   protected async symlinkSafe(from: string, to: string){
-    const id = uuidv4();
+    const id = path.join(await this.getDir(), uuidv4());
     await fs.symlink(from, id);
     await fs.rename(id, to);
   }
