@@ -4,6 +4,7 @@ import { Elementish, Element } from "./Element";
 import { Product } from "./Product";
 import { Work } from "./Work";
 import { HierarchyManager } from "./HierarchyManager";
+import { concat, string, constLengthString, optionalBank, array, Serializer } from "tszer";
 
 type BraceType = "{" | "[" | "(" | ":" | "";
 const isBraceType = (x: string): x is BraceType => ["{", "[", "(", ":", ""].includes(x);
@@ -23,9 +24,9 @@ export interface FullHierarchyArgs extends HierarchyArgs {
   readonly name: string,
   readonly braceType: BraceType,
   readonly children: readonly Hierarchy[],
-  readonly output: Hierarchy,
+  readonly output: Hierarchy | null,
   readonly input: Hierarchy | null,
-  readonly fullOutput: Hierarchy,
+  readonly fullOutput: Hierarchy | null,
   readonly isOutput: boolean,
   readonly isFullOutput: boolean,
 }
@@ -37,8 +38,8 @@ export class Hierarchy implements FullHierarchyArgs {
   readonly name: string;
   readonly braceType: BraceType;
   readonly children: readonly Hierarchy[];
-  readonly output: Hierarchy;
-  readonly fullOutput: Hierarchy;
+  readonly output: Hierarchy | null;
+  readonly fullOutput: Hierarchy | null;
   readonly input: Hierarchy | null;
   readonly isOutput: boolean;
   readonly isFullOutput: boolean;
@@ -51,30 +52,30 @@ export class Hierarchy implements FullHierarchyArgs {
     name = "",
     braceType = "",
     children = [],
-    output,
+    output = null,
     input = null,
-    fullOutput,
+    fullOutput = null,
     isOutput = false,
     isFullOutput = false,
   }: HierarchyArgs){
     if(isOutput || isFullOutput)
-      output = this;
+      output = null;
     if(isFullOutput)
-      fullOutput = this;
-    if(!output)
+      fullOutput = null;
+    if(!output && !isOutput && !isFullOutput)
       output = new Hierarchy({
         name,
         braceType,
         input,
-        children: children.map(c => c.output),
+        children: children.map(c => c.output ?? c),
         isOutput: true,
       })
-    if(!fullOutput)
-      fullOutput = output !== this ? output.fullOutput : new Hierarchy({
+    if(!fullOutput && !isFullOutput)
+      fullOutput = output?.fullOutput ?? new Hierarchy({
         name,
         braceType,
         input,
-        children: children.map(c => c.fullOutput),
+        children: children.map(c => c.fullOutput ?? c),
         isFullOutput: true,
       })
 
@@ -96,77 +97,46 @@ export class Hierarchy implements FullHierarchyArgs {
     this.isOutput = isOutput;
     this.isFullOutput = isFullOutput;
 
-
-    const serialized = this.serialize();
+    const serialized = Serializer.serialize(Hierarchy.serializer(), this);
 
     this.sha = hash(serialized);
-    if(this.sha.b64.startsWith("BAS"))
-      console.log(this.sha, "!!!");
     this.writePromise = Hierarchy.Manager.store(this.sha, Promise.resolve(this)).then(() => { });
   }
 
-  serialize(){
-    const buffer = Buffer.alloc(4 + this.name.length + 1 + 1 + 4 + (this.children.length + 3) * 32);
-    buffer.writeUInt32LE(this.name.length);
-    buffer.fill(this.name, 4);
-    buffer.fill(this.braceType || 0, 4 + this.name.length);
-    buffer.fill((
-      (+(this.output === this) << 0) +
-      (+(this.fullOutput === this) << 1) +
-      (+(!this.input) << 2)
-    ), this.name.length + 4 + 1);
-    buffer.writeUInt32LE(this.children.length, this.name.length + 4 + 1 + 1);
-    [...this.children, this.output, this.fullOutput, this.input].forEach((h, i) => {
-      buffer.fill((h !== this && h) ? h.sha.buffer : 0, 4 + this.name.length + 1 + 1 + 4 + 32 * i);
-    })
-    return buffer;
-  }
+  static hierarchySha = () => Sha.reference().map<Hierarchy>({
+    serialize: h => h.sha,
+    deserialize: async sha => await Hierarchy.Manager.lookup(sha) ?? (() => {
+      throw new Error(`Could not find Hierarchy ${sha.b64} referenced in serialized Hierarchy`)
+    })(),
+  })
 
-  static async deserialize(buffer: Buffer){
-    const nameLength = buffer.readUInt32LE(0);
-    const name = buffer.slice(4, 4 + nameLength).toString("utf8");
-    buffer = buffer.slice(4 + nameLength);
-
-    const braceTypeStr = buffer.slice(0, 1).toString("utf8");
-    const braceType = isBraceType(braceTypeStr) ? braceTypeStr : "";
-    buffer = buffer.slice(1);
-
-    const flags = buffer[0];
-    const isOutput = !!(flags & (1 << 0));
-    const isFullOutput = !!(flags & (1 << 1));
-    const noInput = !!(flags & (1 << 2));
-    buffer = buffer.slice(1);
-
-    const childrenLength = buffer.readUInt32LE(0);
-    buffer = buffer.slice(4);
-
-    const children: Hierarchy[] = [];
-    for(let i = 0; i < childrenLength; i++) {
-      let sha = new Sha(buffer.slice(i * 32, (i + 1) * 32));
-      let child = await Hierarchy.Manager.lookup(sha);
-      if(!child)
-        throw new Error(`Could not find Hierarchy ${sha.b64} referenced in serialized Hierarchy`);
-      children.push(child);
-    }
-    buffer = buffer.slice(childrenLength * 32);
-
-    const [output, fullOutput, input] = await Promise.all(
-      [isOutput, isFullOutput, noInput].map(async (flag, i) =>
-        flag ? null : await Hierarchy.Manager.lookup(new Sha(buffer.slice(i * 32, (i + 1) * 32)))
-      )
-    );
-
-    return new Hierarchy({
+  static serializer = () => concat(
+    string(),
+    constLengthString(1),
+    optionalBank(
+      Hierarchy.hierarchySha(),
+      Hierarchy.hierarchySha(),
+      Hierarchy.hierarchySha(),
+    ),
+    array(Hierarchy.hierarchySha()),
+  ).map<Hierarchy>({
+    serialize: h => [
+      h.name,
+      h.braceType || " ",
+      [h.output ?? void 0, h.fullOutput ?? void 0, h.input ?? void 0],
+      h.children.slice()
+    ],
+    deserialize: ([name, bt, [o, fo, i], cs]) => new Hierarchy({
       name,
-      braceType,
-      children,
-      isOutput,
-      isFullOutput,
-      output,
-      fullOutput,
-      input,
-    });
-  }
+      braceType: isBraceType(bt) ? bt : "",
+      output: o,
+      fullOutput: fo,
+      input: i,
+      isOutput: !fo,
+      isFullOutput: !fo,
+      children: cs,
+    })
+  })
 
   static fromElementish(el: Elementish<Product>): Hierarchy{
     if(typeof el !== "object" && typeof el !== "function")

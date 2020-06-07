@@ -17,4 +17,16 @@ export abstract class ArtifactManager<T> extends ReadonlyArtifactManager<T> {
     })
   }
 
+  abstract getSha(t: T): Sha
+
+  reference = () => Sha.reference().map<T>({
+    serialize: t => this.getSha(t),
+    deserialize: async sha => {
+      const artifact = await this.lookup(sha);
+      if(!artifact)
+        throw new Error(`Could not find artifact of sha ${sha}`);
+      return artifact;
+    }
+  })
+
 }

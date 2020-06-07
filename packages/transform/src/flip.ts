@@ -1,6 +1,7 @@
 
 import { Mesh, Face } from "@escad/mesh";
 import { Work, Leaf, Id, Operation, mapOperation, ConvertibleTo, FinishedProduct } from "@escad/core";
+import { Serializer, SerializeFunc, DeserializeFunc } from "tszer";
 
 class FlipWork extends Work<FlipWork, Mesh, [ConvertibleTo<Mesh>]> {
 
@@ -8,20 +9,22 @@ class FlipWork extends Work<FlipWork, Mesh, [ConvertibleTo<Mesh>]> {
 
   static id = new Id("FlipWork", __filename);
 
-  serialize(){
-    return Buffer.alloc(0);
-  }
+  static serializer: () => Serializer<FlipWork> = () =>
+    Work.childrenReference<[ConvertibleTo<Mesh>]>().map<FlipWork>({
+      serialize: flipWork => flipWork.children,
+      deserialize: ([child]) => new FlipWork(child),
+    })
+
+  serialize: SerializeFunc<FlipWork> = FlipWork.serializer().serialize;
+
+  static deserialize: DeserializeFunc<FlipWork> = FlipWork.serializer().deserialize;
 
   clone([child]: [Leaf<Mesh>]){
     return new FlipWork(child);
   }
 
-  static deserialize([child]: [Leaf<Mesh>]){
-    return new FlipWork(child);
-  }
-
   async execute([input]: [FinishedProduct<ConvertibleTo<Mesh>>]){
-    return new Mesh(input.faces.map(f => new Face(f.points.slice().reverse()))).finish();
+    return new Mesh(input.faces.map(f => new Face(f.points.slice().reverse()).finish())).finish();
   }
 
   constructor(child: Leaf<Mesh>){

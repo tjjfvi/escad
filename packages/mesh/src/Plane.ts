@@ -1,7 +1,8 @@
 
 import { Vector3 } from "./Vector3";
 import { Face } from "./Face";
-import { Id, Product } from "@escad/core";
+import { Id, Product, FinishedProduct } from "@escad/core";
+import { Serializer, SerializeFunc, DeserializeFunc, floatLE, concat } from "tszer";
 
 const epsilon = 1e-5;
 
@@ -84,17 +85,18 @@ class Plane extends Product<Plane> {
     }
   }
 
-  serialize(){
-    let buf = Buffer.alloc(4);
-    buf.writeFloatLE(this.w, 0);
-    return Buffer.concat([buf, this.normal.serialize()]);
-  }
+  static serializer: () => Serializer<FinishedProduct<Plane>> = () =>
+    concat(
+      Vector3.serializer(),
+      floatLE(),
+    ).map<FinishedProduct<Plane>>({
+      serialize: plane => [plane.normal.finish(), plane.w],
+      deserialize: args => new Plane(...args).finish(),
+    });
 
-  static deserialize(buf: Buffer){
-    let w = buf.readFloatLE(0);
-    let n = Vector3.deserialize(buf.subarray(4));
-    return new Plane(n, w)
-  }
+  serialize: SerializeFunc<FinishedProduct<Plane>> = Plane.serializer().serialize;
+
+  static deserialize: DeserializeFunc<FinishedProduct<Plane>> = Plane.serializer().deserialize;
 
 }
 

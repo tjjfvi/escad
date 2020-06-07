@@ -1,6 +1,7 @@
 
 import crypto from "crypto";
 import { b64, B64, unB64 } from "./b64";
+import { constLengthBuffer } from "tszer";
 
 export class Sha {
 
@@ -13,6 +14,11 @@ export class Sha {
     this.buffer = arg instanceof Buffer ? arg : unB64(arg);
     this.b64 = b64(this.buffer);
   }
+
+  static reference = () => constLengthBuffer(32).map<Sha>({
+    serialize: sha => sha.buffer,
+    deserialize: buffer => new Sha(buffer),
+  });
 
 }
 

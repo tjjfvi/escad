@@ -21,7 +21,7 @@ export class ExportManager<P extends Product<P>> extends ReadonlyArtifactManager
   }
 
   serialize(product: P){
-    return this.exportType.export(product);
+    return this.exportType.exportBuffer(product);
   }
 
   async store(sha: Sha, productPromise: Promise<P>){

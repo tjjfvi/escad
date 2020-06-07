@@ -2,6 +2,7 @@
 import { Mesh, Vector3 } from "@escad/mesh";
 import { diff } from "@escad/csg";
 import { Work, Element, Id, Component } from "@escad/core";
+import { Serializer, string, SerializeFunc, DeserializeFunc } from "tszer";
 
 const tau = Math.PI * 2;
 
@@ -52,13 +53,15 @@ class SphereWork extends Work<SphereWork, Mesh, []> {
     )).finish();
   }
 
-  serialize(){
-    return Buffer.from(JSON.stringify(this.args));
-  }
+  static serializer: () => Serializer<SphereWork> = () =>
+    string().map<SphereWork>({
+      serialize: work => JSON.stringify(work.args),
+      deserialize: args => new SphereWork(JSON.parse(args)),
+    })
 
-  static deserialize(_c: [], buf: Buffer){
-    return new SphereWork(JSON.parse(buf.toString("utf8")));
-  }
+  serialize: SerializeFunc<SphereWork> = SphereWork.serializer().serialize;
+
+  static deserialize: DeserializeFunc<SphereWork> = SphereWork.serializer().deserialize;
 
 }
 
@@ -87,7 +90,7 @@ export const sphere: Component<[SphereArgs], Element<Mesh>> = new Component<[Sph
   if(!ir)
     return new Element(os);
   let is = new SphereWork([ir, slices, stacks]);
-  return new Element(ud ? [os, is] : Mesh.convertElementish(diff(os, is)));
+  return new Element<Mesh>(ud ? [os, is] : Mesh.convertElementish(diff(os, is)));
 })
 
 export const hollowSphere = sphere;

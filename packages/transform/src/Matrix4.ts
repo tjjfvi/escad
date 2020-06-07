@@ -1,7 +1,8 @@
 /* eslint-disable array-element-newline */
 
 import { Vector3 } from "@escad/mesh";
-import { Product, Id } from "@escad/core";
+import { Product, Id, FinishedProduct } from "@escad/core";
+import { floatLE, Serializer, concat, SerializeFunc, DeserializeFunc } from "tszer";
 
 const c = Math.cos;
 const s = Math.sin;
@@ -33,15 +34,25 @@ class Matrix4 extends Product<Matrix4> {
     return new Matrix4([...this.vs] as Sixteen<number>);
   }
 
-  serialize(){
-    let buf = Buffer.alloc(4 * 16);
-    this.vs.map((v, i) => buf.writeFloatLE(v, i * 4));
-    return buf;
-  }
+  static serializer: () => Serializer<FinishedProduct<Matrix4>> = () =>
+    concat(
+      concat(floatLE(), floatLE(), floatLE(), floatLE()),
+      concat(floatLE(), floatLE(), floatLE(), floatLE()),
+      concat(floatLE(), floatLE(), floatLE(), floatLE()),
+      concat(floatLE(), floatLE(), floatLE(), floatLE()),
+    ).map<Sixteen<number>>({
+      serialize: ([a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p]) =>
+        [[a, b, c, d], [e, f, g, h], [i, j, k, l], [m, n, o, p]],
+      deserialize: ([[a, b, c, d], [e, f, g, h], [i, j, k, l], [m, n, o, p]]) =>
+        [a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p]
+    }).map<FinishedProduct<Matrix4>>({
+      serialize: matrix => matrix.vs,
+      deserialize: vs => new Matrix4(vs).finish(),
+    });
 
-  static deserialize(buf: Buffer){
-    return new Matrix4([...Array(16)].map((_, i) => buf.readFloatLE(4 * i)) as Sixteen<number>);
-  }
+  serialize: SerializeFunc<FinishedProduct<Matrix4>> = Matrix4.serializer().serialize;
+
+  static deserialize: DeserializeFunc<FinishedProduct<Matrix4>> = Matrix4.serializer().deserialize;
 
   multiplyVector(V: Vector3){
     let v = [V.x, V.y, V.z];

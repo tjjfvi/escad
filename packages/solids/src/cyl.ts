@@ -2,6 +2,7 @@
 import { Mesh, Face, Vector3 } from "@escad/mesh";
 import { diff } from "@escad/csg";
 import { Work, Element, Id } from "@escad/core";
+import { Serializer, string, SerializeFunc, DeserializeFunc } from "tszer";
 
 const tau = Math.PI * 2;
 
@@ -22,13 +23,15 @@ class CylWork extends Work<CylWork, Mesh, []> {
     return new CylWork(this.args);
   }
 
-  serialize(){
-    return Buffer.from(JSON.stringify(this.args));
-  }
+  static serializer: () => Serializer<CylWork> = () =>
+    string().map<CylWork>({
+      serialize: work => JSON.stringify(work.args),
+      deserialize: args => new CylWork(JSON.parse(args)),
+    })
 
-  static deserialize(children: [], buf: Buffer){
-    return new CylWork(JSON.parse(buf.toString("utf8")));
-  }
+  serialize: SerializeFunc<CylWork> = CylWork.serializer().serialize;
+
+  static deserialize: DeserializeFunc<CylWork> = CylWork.serializer().deserialize;
 
   async execute(){
     let [r1, r2, height, sides, o1, o2, c] = this.args;

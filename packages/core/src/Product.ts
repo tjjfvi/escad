@@ -7,10 +7,9 @@ import { ConvertibleTo } from "./Conversions";
 import { StrictLeaf } from "./Leaf";
 import { Elementish } from "./Element";
 import { ConversionRegistry } from "./ConversionRegistry";
+import { DeserializeFunc, Serializer, SerializeResult } from "tszer";
 
-export interface _Product extends Product<_Product> { }
-
-export abstract class Product<P extends Product<P> = _Product> {
+export abstract class Product<P extends Product<P> = any> {
 
   abstract type: ProductType<P>;
 
@@ -31,7 +30,7 @@ export abstract class Product<P extends Product<P> = _Product> {
     if(this.finished)
       return this._sha as any;
     let oldSha = this._sha;
-    this._sha = hash(this.serialize());
+    this._sha = hash(Serializer.serialize(Product.getSerializer<P>(this.type), this as any));
     if(oldSha !== this._sha) {
       this.writePromise = Product.Manager.store(this._sha, Promise.resolve(this as any)).then(() => { });
     }
@@ -49,7 +48,7 @@ export abstract class Product<P extends Product<P> = _Product> {
 
   abstract clone(): P;
 
-  abstract serialize(): Buffer;
+  abstract serialize(value: FinishedProduct<P>): SerializeResult;
 
   protected process(): Promise<FinishedProduct<P>>{
     if(!this.finished)
@@ -68,7 +67,14 @@ export abstract class Product<P extends Product<P> = _Product> {
     this: ProductType<P>,
     q: Elementish<Q>,
   ): Elementish<P>{
-    return q;
+    return q as any;
+  }
+
+  static getSerializer<P extends Product<P>>(p: ProductType<P>){
+    return new Serializer({
+      deserialize: p.deserialize,
+      serialize: value => value.serialize(value),
+    });
   }
 
 }
@@ -78,8 +84,7 @@ export type FinishedProduct<P extends Product<P>> = P & {
   process(): Promise<FinishedProduct<P>>,
 };
 
-export interface ProductType<P extends Product<P> = _Product> {
+export interface ProductType<P extends Product<P> = any> {
   id: Id,
-  deserialize(buffer: Buffer): P,
-  // convert<Q extends ConvertibleTo<P> & Product<Q>>(q: Q | _Work<Q>): P | _Work<P>,
+  deserialize: DeserializeFunc<FinishedProduct<P>>,
 }

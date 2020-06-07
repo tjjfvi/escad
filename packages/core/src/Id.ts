@@ -45,4 +45,14 @@ export class Id {
     return `${this.packageName}@${this.packageVersion}/${this.filename}/${this.name}`;
   }
 
+  static reference = () => Sha.reference().map<Id>({
+    serialize: id => id.sha,
+    deserialize: sha => {
+      const id = Id.get(sha);
+      if(!id)
+        throw new Error(`Could not find id of sha ${sha}`);
+      return id;
+    }
+  })
+
 }

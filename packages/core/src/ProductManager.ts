@@ -1,24 +1,30 @@
 
-import { Id } from "./Id";
 import { Product, FinishedProduct } from "./Product";
-import { Sha } from "./hash";
 import { ArtifactManager } from "./ArtifactManager";
+import { concat, Serializer } from "tszer";
 
 export class ProductManager extends ArtifactManager<FinishedProduct<Product>> {
 
   subdir = "products"
 
-  deserialize(buffer: Buffer){
-    let id = Id.get(new Sha(buffer.slice(0, 32)));
-    if(!id)
-      return null;
-    let product = Product.Registry.get(id).deserialize(buffer.slice(32));
-    return product.finish();
+  serializer = () => concat(
+    Product.Registry.reference(),
+    ([productType]) => Product.getSerializer(productType),
+  ).map<FinishedProduct<Product>>({
+    serialize: product => [product.type, product],
+    deserialize: ([, product]) => product,
+  })
+
+  serialize(product: FinishedProduct<Product>){
+    return Serializer.serialize(this.serializer(), product);
   }
 
-  serialize(product: FinishedProduct<any>){
-    let serialized = product.serialize();
-    return Buffer.concat([product.type.id.sha.buffer, serialized], 32 + serialized.length);
+  async deserialize(buffer: Buffer): Promise<FinishedProduct<Product>>{
+    return await Serializer.deserialize(this.serializer(), buffer);
+  }
+
+  getSha(product: Product){
+    return product.sha;
   }
 
 }

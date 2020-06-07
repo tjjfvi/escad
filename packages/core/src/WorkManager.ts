@@ -1,39 +1,29 @@
-import { Work } from "./Work";
+import { Work, _Work } from "./Work";
 import { ArtifactManager } from "./ArtifactManager";
-import { Sha } from "./hash";
-import { Id } from "./Id";
-import { b64 } from "./b64";
+import { concat, Serializer } from "tszer";
 
 export class WorkManager extends ArtifactManager<Work<any>> {
 
   subdir = "trees";
 
-  serialize(work: Work<any>){
-    let childrenLengthBuffer = Buffer.alloc(2);
-    childrenLengthBuffer.writeUInt16LE(work.children.length, 0);
-    let argsBuf = work.serialize();
-    return Buffer.concat([
-      work.type.id.sha.buffer,
-      childrenLengthBuffer,
-      ...work.children.map((c: Work<any>) => c.sha.buffer),
-      argsBuf,
-    ], 32 + 2 + 32 * work.children.length + argsBuf.length);
+  serializer = () => concat(
+    Work.Registry.reference(),
+    ([workType]) => Work.getSerializer(workType),
+  ).map<_Work>({
+    serialize: work => [work.type, work],
+    deserialize: ([, work]) => work,
+  })
+
+  serialize(work: Work<any, any>){
+    return Serializer.serialize(this.serializer(), work);
   }
 
+  async deserialize(buffer: Buffer): Promise<_Work<any, any>>{
+    return await Serializer.deserialize(this.serializer(), buffer);
+  }
 
-  async deserialize(buffer: Buffer): Promise<Work<any>>{
-    let idBuffer = buffer.slice(0, 32);
-    let childrenLength = buffer.readUInt16LE(32);
-    let childShaBuffers = Array(childrenLength).fill(0).map((_, i) =>
-      buffer.slice(32 + 2 + i * 32, 32 + 2 + i * 32 + 32)
-    );
-    let argsBuffer = buffer.slice(32 + 2 + childrenLength * 32);
-    let children = await Promise.all(childShaBuffers.map(s => this.lookup(new Sha(s))));
-    let id = Id.get(new Sha(idBuffer));
-    if(!id)
-      throw new Error("Unknown Work Id " + b64(idBuffer));
-    let workType = Work.Registry.get(id);
-    return workType.deserialize(children, argsBuffer);
+  getSha(work: _Work){
+    return work.sha;
   }
 
 }

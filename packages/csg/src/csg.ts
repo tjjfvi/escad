@@ -2,7 +2,7 @@
 import { Mesh, Face, Vector3 } from "@escad/mesh";
 // @ts-ignore
 import CSG from "csg";
-import escad, {
+import {
   // eslint-disable-next-line @typescript-eslint/no-unused-vars, no-unused-vars
   Conversion,
   Work,
@@ -17,6 +17,18 @@ import escad, {
   FinishedProduct,
   StrictLeaf,
 } from "@escad/core";
+import {
+  constLengthBuffer,
+  SerializeResult,
+  DeserializeResult,
+  buffer,
+  Serializer,
+  SerializeFunc,
+  DeserializeFunc,
+  concat,
+  string,
+  uint16LE,
+} from "tszer";
 
 export class CSGWrapper extends Product<CSGWrapper> {
 
@@ -32,7 +44,7 @@ export class CSGWrapper extends Product<CSGWrapper> {
     return new CSGWrapper(this.node);
   }
 
-  serialize(){
+  serialize(): SerializeResult{
     function serializePoly(poly: any){
       let buf = Buffer.alloc(poly.vertices.length * 3 * 4 + 1);
       buf.writeUInt8(poly.vertices.length);
@@ -65,10 +77,12 @@ export class CSGWrapper extends Product<CSGWrapper> {
       return buf;
     }
 
-    return serializeNode(this.node);
+    let buffer = serializeNode(this.node);
+
+    return constLengthBuffer(buffer.length).serialize(buffer);
   }
 
-  static deserialize(buf: Buffer){
+  static deserialize(buf: Buffer): DeserializeResult<FinishedProduct<CSGWrapper>>{
     function deserializeNode(buf: Buffer){
       if(buf.length === 0)
         return null;
@@ -100,7 +114,9 @@ export class CSGWrapper extends Product<CSGWrapper> {
       return node;
     }
 
-    return new CSGWrapper(deserializeNode(buf));
+    let value = new CSGWrapper(deserializeNode(buf)).finish();
+
+    return { length: buffer.length, value };
   }
 
 }
@@ -120,13 +136,15 @@ class MeshToCsgWork extends Work<MeshToCsgWork, CSGWrapper, [Mesh]> {
     return new MeshToCsgWork(child);
   }
 
-  serialize(){
-    return Buffer.alloc(0);
-  }
+  static serializer: () => Serializer<MeshToCsgWork> = () =>
+    Work.childrenReference<[Mesh]>().map<MeshToCsgWork>({
+      serialize: flipWork => flipWork.children,
+      deserialize: ([child]) => new MeshToCsgWork(child),
+    })
 
-  static deserialize([child]: [StrictLeaf<Mesh>]){
-    return new MeshToCsgWork(child);
-  }
+  serialize: SerializeFunc<MeshToCsgWork> = MeshToCsgWork.serializer().serialize;
+
+  static deserialize: DeserializeFunc<MeshToCsgWork> = MeshToCsgWork.serializer().deserialize;
 
   async execute([input]: [Mesh]){
     let polygons = input.faces.map(f => new CSG.Polygon(f.points.map(v => new CSG.Vertex(new CSG.Vector(v), []))));
@@ -151,13 +169,15 @@ class CsgToMeshWork extends Work<CsgToMeshWork, Mesh, [CSGWrapper]> {
     return new CsgToMeshWork(child);
   }
 
-  serialize(){
-    return Buffer.alloc(0);
-  }
+  static serializer: () => Serializer<CsgToMeshWork> = () =>
+    Work.childrenReference<[CSGWrapper]>().map<CsgToMeshWork>({
+      serialize: flipWork => flipWork.children,
+      deserialize: ([child]) => new CsgToMeshWork(child),
+    })
 
-  static deserialize([child]: [StrictLeaf<CSGWrapper>]){
-    return new CsgToMeshWork(child);
-  }
+  serialize: SerializeFunc<CsgToMeshWork> = CsgToMeshWork.serializer().serialize;
+
+  static deserialize: DeserializeFunc<CsgToMeshWork> = CsgToMeshWork.serializer().deserialize;
 
   async execute([input]: [CSGWrapper]){
     let faces: any[] = [];
@@ -194,13 +214,19 @@ class CsgWork extends Work<CsgWork, CSGWrapper, ConvertibleTo<CSGWrapper>[]> {
     return new CsgWork(children, this.operations, this.final);
   }
 
-  serialize(){
-    return Buffer.from(JSON.stringify([this.operations, this.final]), "utf8");
-  }
+  static serializer: () => Serializer<CsgWork> = () =>
+    concat(
+      Work.childrenReference<ConvertibleTo<CSGWrapper>[]>(),
+      string(),
+      uint16LE(),
+    ).map<CsgWork>({
+      serialize: work => [work.children, JSON.stringify(work.operations), work.final],
+      deserialize: ([children, ops, final]) => new CsgWork(children, JSON.parse(ops), final),
+    })
 
-  static deserialize(children: Leaf<CSGWrapper>[], buffer: Buffer){
-    return new CsgWork(children, ...(JSON.parse(buffer.toString("utf8")) as [CsgOperation[], number]));
-  }
+  serialize: SerializeFunc<CsgWork> = CsgWork.serializer().serialize;
+
+  static deserialize: DeserializeFunc<CsgWork> = CsgWork.serializer().deserialize;
 
   async execute(rawInputs: FinishedProduct<ConvertibleTo<CSGWrapper>>[]){
     let inputs = await Promise.all(rawInputs.map(i => CSGWrapper.convert(i).process()));

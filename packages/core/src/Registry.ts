@@ -1,7 +1,7 @@
 
 import { Id } from "./Id";
 
-export class Registry<T> {
+export class Registry<T extends { id: Id }> {
 
   name: string;
   private map = new Map<Id, T>();
@@ -10,10 +10,8 @@ export class Registry<T> {
     this.name = name;
   }
 
-  register(entry: T & { id: Id }): void
-  register(entry: T, id: Id): void
-  // @ts-ignore
-  register(entry: T, id: Id = entry.id){
+  register(entry: T){
+    const { id } = entry;
     if(!(id instanceof Id))
       throw new Error("Registry.register was given invalid key: " + id);
     if(this.map.has(id))
@@ -29,5 +27,10 @@ export class Registry<T> {
     // @ts-ignore
     return this.map.get(id);
   }
+
+  reference = () => Id.reference().map<T>({
+    serialize: entry => entry.id,
+    deserialize: id => this.get(id),
+  })
 
 }

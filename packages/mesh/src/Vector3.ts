@@ -1,5 +1,6 @@
 
-import { Product, Id } from "@escad/core";
+import { Product, Id, FinishedProduct } from "@escad/core";
+import { floatLE, concat, Serializer, DeserializeFunc, SerializeFunc } from "tszer";
 
 class Vector3 extends Product<Vector3> {
 
@@ -28,18 +29,6 @@ class Vector3 extends Product<Vector3> {
 
   clone(){
     return new Vector3(this.x, this.y, this.z);
-  }
-
-  serialize(){
-    let buf = Buffer.alloc(12);
-    buf.writeFloatLE(this.x, 0)
-    buf.writeFloatLE(this.y, 4)
-    buf.writeFloatLE(this.z, 8)
-    return buf;
-  }
-
-  static deserialize(buf: Buffer){
-    return new Vector3(buf.readFloatLE(0), buf.readFloatLE(4), buf.readFloatLE(8));
   }
 
   add(that: Vector3){
@@ -89,6 +78,20 @@ class Vector3 extends Product<Vector3> {
       this.x * that.y - this.y * that.x,
     );
   }
+
+  static serializer: () => Serializer<FinishedProduct<Vector3>> = () =>
+    concat(
+      floatLE(),
+      floatLE(),
+      floatLE(),
+    ).map<FinishedProduct<Vector3>>({
+      serialize: v => [v.x, v.y, v.z],
+      deserialize: ps => new Vector3(...ps).finish(),
+    });
+
+  serialize: SerializeFunc<FinishedProduct<Vector3>> = Vector3.serializer().serialize;
+
+  static deserialize: DeserializeFunc<FinishedProduct<Vector3>> = Vector3.serializer().deserialize;
 
 }
 

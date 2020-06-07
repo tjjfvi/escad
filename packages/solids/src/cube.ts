@@ -1,6 +1,7 @@
 
 import { Mesh, Vector3 } from "@escad/mesh";
 import { Work, Component, Element, Id } from "@escad/core";
+import { Serializer, SerializeFunc, DeserializeFunc, string } from "tszer";
 
 export type CubeWorkArgs = [[number, number, number], [boolean, boolean, boolean]];
 export class CubeWork extends Work<CubeWork, Mesh, []> {
@@ -21,13 +22,15 @@ export class CubeWork extends Work<CubeWork, Mesh, []> {
     return new CubeWork(this.args);
   }
 
-  serialize(){
-    return Buffer.from(JSON.stringify(this.args));
-  }
+  static serializer: () => Serializer<CubeWork> = () =>
+    string().map<CubeWork>({
+      serialize: work => JSON.stringify(work.args),
+      deserialize: args => new CubeWork(JSON.parse(args)),
+    })
 
-  static deserialize(c: [], buf: Buffer){
-    return new CubeWork(JSON.parse(buf.toString("utf8")));
-  }
+  serialize: SerializeFunc<CubeWork> = CubeWork.serializer().serialize;
+
+  static deserialize: DeserializeFunc<CubeWork> = CubeWork.serializer().deserialize;
 
   async execute(){
     let [[x, y, z], cs] = this.args;

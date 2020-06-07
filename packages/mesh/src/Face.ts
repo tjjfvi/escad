@@ -1,7 +1,8 @@
 
 import { Vector3 } from "./Vector3";
 import { Plane } from "./Plane";
-import { Product, Id } from "@escad/core";
+import { Product, Id, FinishedProduct } from "@escad/core";
+import { DeserializeFunc, SerializeFunc, concat, Serializer } from "tszer";
 
 class Face extends Product<Face> {
 
@@ -28,13 +29,19 @@ class Face extends Product<Face> {
     return new Face([...this.points].reverse());
   }
 
-  serialize(){
-    return Buffer.concat(this.points.map(p => p.serialize()));
-  }
+  static serializer: () => Serializer<FinishedProduct<Face>> = () =>
+    concat(
+      Vector3.serializer(),
+      Vector3.serializer(),
+      Vector3.serializer(),
+    ).map<FinishedProduct<Face>>({
+      serialize: face => face.points as any,
+      deserialize: points => new Face(points).finish(),
+    });
 
-  static deserialize(buf: Buffer){
-    return new Face([...Array(3)].map((_, i) => Vector3.deserialize(buf.slice(i * 12, i * 12 + 12))));
-  }
+  serialize: SerializeFunc<FinishedProduct<Face>> = Face.serializer().serialize;
+
+  static deserialize: DeserializeFunc<FinishedProduct<Face>> = Face.serializer().deserialize;
 
 }
 

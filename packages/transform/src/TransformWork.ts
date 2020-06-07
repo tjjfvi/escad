@@ -3,7 +3,8 @@ import { PointMapWork } from "./PointMapWork";
 import { Matrix4 } from "./Matrix4";
 import { Mesh, Vector3 } from "@escad/mesh";
 import { FlipWork } from "./flip";
-import { Work, Leaf, Id } from "@escad/core";
+import { Work, Leaf, Id, ConvertibleTo } from "@escad/core";
+import { Serializer, SerializeFunc, DeserializeFunc, concat } from "tszer";
 
 class TransformWork extends PointMapWork<TransformWork> {
 
@@ -24,14 +25,18 @@ class TransformWork extends PointMapWork<TransformWork> {
     return new TransformWork(child, this.matrix);
   }
 
-  serialize(){
-    return this.matrix.serialize();
-  }
+  static serializer: () => Serializer<TransformWork> = () =>
+    concat(
+      Work.childrenReference<[ConvertibleTo<Mesh>]>(),
+      Matrix4.serializer(),
+    ).map<TransformWork>({
+      serialize: work => [work.children, work.matrix.finish()],
+      deserialize: ([[child], matrix]) => new TransformWork(child, matrix),
+    })
 
-  static deserialize([child]: [Leaf<Mesh>], buf: Buffer){
-    let m = Matrix4.deserialize(buf);
-    return new TransformWork(child, m);
-  }
+  serialize: SerializeFunc<TransformWork> = TransformWork.serializer().serialize;
+
+  static deserialize: DeserializeFunc<TransformWork> = TransformWork.serializer().deserialize;
 
   map(v: Vector3){
     return this.matrix.multiplyVector(v);

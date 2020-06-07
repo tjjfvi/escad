@@ -17,8 +17,9 @@
   },
   "dependencies": {
     "@escad/core": "^0.0.0",
+    "@escad/csg": "^0.0.0",
     "@escad/mesh": "^0.0.0",
-    "@escad/csg": "^0.0.0"
+    "tszer": "0.0.7"
   },
   "publishConfig": {
     "access": "public"
