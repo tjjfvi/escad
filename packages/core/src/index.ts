@@ -41,8 +41,8 @@ export * from './Registry';
 export * from './WeakCache';
 export * from './Work';
 export * from './WorkManager';
-export * from './b64';
 export * from './builtins';
 export * from './hash';
+export * from './hex';
 export * from './mapOperation';
 

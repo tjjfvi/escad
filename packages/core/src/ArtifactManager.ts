@@ -9,7 +9,7 @@ export abstract class ArtifactManager<T> extends ReadonlyArtifactManager<T> {
   abstract deserialize(buffer: Buffer): T | null | Promise<T | null>;
 
   async lookup(sha: Sha){
-    return await this.cache.getAsync(sha.b64, async () => {
+    return await this.cache.getAsync(sha.hex, async () => {
       let buffer = await fs.readFile(await this.getPath(sha)).catch(() => null);
       if(!buffer)
         return null;

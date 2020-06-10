@@ -2,10 +2,10 @@
 import { hash, Sha } from "./hash";
 import { posix as path } from "path";
 import readPkgUp from "read-pkg-up";
-import { B64 } from "./b64";
+import { Hex } from "./hex";
 import { IdManager } from "./IdManager";
 
-const ids = new Map<B64, Id>();
+const ids = new Map<Hex, Id>();
 
 export class Id {
 
@@ -30,15 +30,15 @@ export class Id {
     this.filename = path.relative(path.dirname(packageJsonPath), filename);
     this.name = name;
     this.sha = hash.json(this);
-    let old = ids.get(this.sha.b64);
+    let old = ids.get(this.sha.hex);
     if(old)
-      throw new Error(`Duplicative Id under sha "${this.sha.b64}"`);
-    ids.set(this.sha.b64, this);
-    this.writePromise = Id.Manager.store(this.sha, Promise.resolve(this)).then(() => {});
+      throw new Error(`Duplicative Id under sha "${this.sha.hex}"`);
+    ids.set(this.sha.hex, this);
+    this.writePromise = Id.Manager.store(this.sha, Promise.resolve(this)).then(() => { });
   }
 
   static get(sha: Sha){
-    return ids.get(sha.b64);
+    return ids.get(sha.hex);
   }
 
   toString(){

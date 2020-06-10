@@ -15,14 +15,14 @@ messenger.on("message", message => {
 async function exp(...message: ServerRendererMessage){
   if(message[0] !== "export")
     throw new Error("418");
-  const [, requestId, exportTypeB64, productB64] = message;
+  const [, requestId, exportTypeHex, productHex] = message;
 
-  const productSha = new Sha(productB64);
-  const product = await Product.Manager.lookup(new Sha(productB64));
+  const productSha = new Sha(productHex);
+  const product = await Product.Manager.lookup(new Sha(productHex));
   if(!product)
     throw new Error("Invalid product sha given to renderer export");
 
-  const exportTypeId = Id.get(new Sha(exportTypeB64));
+  const exportTypeId = Id.get(new Sha(exportTypeHex));
   if(!exportTypeId)
     throw new Error("Invalid id given to renderer export");
 
@@ -50,7 +50,7 @@ async function load(path: string){
   let el = new Element<Product>(result);
   let shas = await Promise.all(el.toArrayFlat().map(async x => {
     await x.process();
-    return x.sha.b64;
+    return x.sha.hex;
   }));
   messenger.send("shas", shas);
   console.timeEnd("Render")

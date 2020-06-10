@@ -5,7 +5,7 @@ import path from "path";
 import { Id } from "./Id";
 import { WeakCache } from "./WeakCache";
 import { Sha } from "./hash";
-import { B64 } from "./b64";
+import { Hex } from "./hex";
 import { v4 as uuidv4 } from "uuid";
 
 export abstract class ReadonlyArtifactManager<T> {
@@ -21,12 +21,12 @@ export abstract class ReadonlyArtifactManager<T> {
     return dir;
   }
 
-  cache = new WeakCache<B64, T | null>();
+  cache = new WeakCache<Hex, T | null>();
 
   abstract subdir: Id | string;
 
   get subdirString(){
-    return this.subdir instanceof Id ? this.subdir.sha.b64 : this.subdir;
+    return this.subdir instanceof Id ? this.subdir.sha.hex : this.subdir;
   }
 
   private _dir = "";
@@ -43,11 +43,11 @@ export abstract class ReadonlyArtifactManager<T> {
   abstract serialize(artifact: T): Buffer | Promise<Buffer>;
 
   async getPath(sha: Sha){
-    return path.join(await this.getDir(), sha.b64);
+    return path.join(await this.getDir(), sha.hex);
   }
 
   async store(sha: Sha, promise: Promise<T>){
-    return this.cache.setAsync(sha.b64, async () => {
+    return this.cache.setAsync(sha.hex, async () => {
       let artifact = await promise;
       let buffer = await this.serialize(artifact);
       await fs.writeFile(await this.getPath(sha), buffer);

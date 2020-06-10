@@ -1,14 +1,14 @@
 
 import { EventEmitter } from "tsee"
-import { ClientServerMessage, ServerClientMessage  } from "@escad/server-client-messages"
+import { ClientServerMessage, ServerClientMessage } from "@escad/server-client-messages"
 import * as WebSocket from "ws";
 import flatted from "flatted";
-import { B64 } from "@escad/core";
+import { Hex } from "@escad/core";
 import { rendererMessenger } from "./rendererMessenger";
 import { serverId } from "./serverId";
 import { v4 as uuidv4 } from "uuid";
 
-let curShas: B64[] | null = null;
+let curShas: Hex[] | null = null;
 
 rendererMessenger.on("shas", shas => {
   curShas = shas;
@@ -72,7 +72,7 @@ export class ClientMessenger extends EventEmitter<{
     this.send("init", id, serverId)
     this.send("shas", curShas ?? []);
 
-    const handler = (shas: B64[]) => this.send("shas", shas);
+    const handler = (shas: Hex[]) => this.send("shas", shas);
     rendererMessenger.on("shas", handler);
 
     this.on("close", () => {

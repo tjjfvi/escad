@@ -51,7 +51,7 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
       deserialize: async sha => {
         const result = await Work.Manager.lookup(sha) ?? await Product.Manager.lookup(sha);
         if(!result)
-          throw new Error(`Could not find leaf with sha ${sha.b64}`);
+          throw new Error(`Could not find leaf with sha ${sha.hex}`);
         return result;
       }
     })) as any
@@ -79,7 +79,7 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
       const inputs: ProcessedChildren<C> = await Promise.all(this.children.map(c => c.process())) as any;
       const alias = this.clone(inputs);
 
-      const resultPromise = alias.sha.b64 === this.sha.b64 ? this.execute(inputs) : alias.process();
+      const resultPromise = alias.sha.hex === this.sha.hex ? this.execute(inputs) : alias.process();
       const result = await resultPromise;
 
       await Product.Manager.storePointer(this.sha, result.sha);
@@ -88,7 +88,7 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
       return result;
     })()
 
-    Product.Manager.cache.setAsync(this.sha.b64, () => resultPromise);
+    Product.Manager.cache.setAsync(this.sha.hex, () => resultPromise);
 
     return await resultPromise;
   }

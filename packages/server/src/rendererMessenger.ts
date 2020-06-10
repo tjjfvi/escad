@@ -4,11 +4,11 @@ import { EventEmitter } from "tsee"
 import { fork, ChildProcess } from "child_process";
 import watch from "node-watch";
 import config from "./config";
-import { B64 } from "@escad/core";
+import { Hex } from "@escad/core";
 
 export class RendererMessenger extends EventEmitter<{
   message: (message: RendererServerMessage) => void,
-  shas: (shas: B64[]) => void,
+  shas: (shas: Hex[]) => void,
 }> {
 
   childProcess: ChildProcess;

@@ -1,12 +1,12 @@
-import { B64 } from "@escad/core";
+import { Hex } from "@escad/core";
 
 export type RequestId = string;
 
 export type ServerRendererMessage =
   | ["artifactsDir", string]
   | ["load", string]
-  | ["export", RequestId, B64, B64]
+  | ["export", RequestId, Hex, Hex]
 
 export type RendererServerMessage =
-  | ["shas", B64[]]
+  | ["shas", Hex[]]
   | ["exportFinish", RequestId]

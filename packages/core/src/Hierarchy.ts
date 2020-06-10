@@ -106,7 +106,7 @@ export class Hierarchy implements FullHierarchyArgs {
   static hierarchySha = () => Sha.reference().map<Hierarchy>({
     serialize: h => h.sha,
     deserialize: async sha => await Hierarchy.Manager.lookup(sha) ?? (() => {
-      throw new Error(`Could not find Hierarchy ${sha.b64} referenced in serialized Hierarchy`)
+      throw new Error(`Could not find Hierarchy ${sha.hex} referenced in serialized Hierarchy`)
     })(),
   })
 

@@ -9,7 +9,7 @@ import "./rendererMessenger";
 import fs from "fs-extra";
 import { v4 as uuidv4 } from "uuid";
 import { rendererMessenger } from "./rendererMessenger";
-import { B64 } from "@escad/core";
+import { Hex } from "@escad/core";
 
 const { app } = expressWs(express());
 
@@ -26,7 +26,7 @@ app.get("/exports/:exportTypeId/:productSha", (req, res) => {
   const requestId = uuidv4();
   const { exportTypeId, productShaExt } = req.params;
   const productSha = productShaExt.split(".")[0];
-  rendererMessenger.send("export", requestId, exportTypeId as B64, productSha as B64);
+  rendererMessenger.send("export", requestId, exportTypeId as Hex, productSha as Hex);
   rendererMessenger.on("message", message => {
     if(message[0] === "exportFinish" && message[1] === requestId)
       fs.createReadStream(path.join(config.artifactsDir, "exports", exportTypeId, productSha)).pipe(res);
@@ -38,11 +38,11 @@ app.ws("/ws", ws => new ClientMessenger(ws));
 const httpServer = app.listen(config.port, () => {
   const address = httpServer.address();
   const addressString =
-  typeof address === "object" && address ?
-    address.family === "IPv6" ?
-      `[${address.address}]` :
-      address.address :
-    "<?>"
+    typeof address === "object" && address ?
+      address.family === "IPv6" ?
+        `[${address.address}]` :
+        address.address :
+      "<?>"
   const addressPortString = (
     typeof address === "object" ?
       address ?

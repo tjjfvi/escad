@@ -17,7 +17,7 @@ export class ExportManager<P extends Product<P>> extends ReadonlyArtifactManager
 
   constructor(public exportType: ExportType<P>){
     super();
-    this.subdir = "exports/" + exportType.id.sha.b64;
+    this.subdir = "exports/" + exportType.id.sha.hex;
   }
 
   serialize(product: P){

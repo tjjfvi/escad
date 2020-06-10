@@ -20,7 +20,7 @@ const stl = new ExportType<Mesh>({
       deserialize: ([, face]) => face,
     }), uint32LE())
   ).map<Mesh>({
-    serialize: mesh => [mesh.sha.b64.padEnd(80), mesh.faces.map(f => f.finish())],
+    serialize: mesh => [mesh.sha.hex.padEnd(80), mesh.faces.map(f => f.finish())],
     deserialize: ([, faces]) => new Mesh(faces).finish(),
   }).serialize
 })
