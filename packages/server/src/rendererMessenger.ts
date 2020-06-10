@@ -1,5 +1,5 @@
 
-import { ServerRendererMessage, RendererServerMessage } from "@escad/server-renderer-messages"
+import { ServerRendererMessage, RendererServerMessage, ClientPluginRegistration } from "@escad/server-renderer-messages"
 import { EventEmitter } from "tsee"
 import { fork, ChildProcess } from "child_process";
 import watch from "node-watch";
@@ -9,6 +9,7 @@ import { Hex } from "@escad/core";
 export class RendererMessenger extends EventEmitter<{
   message: (message: RendererServerMessage) => void,
   shas: (shas: Hex[]) => void,
+  clientPlugins: (clientPlugins: ClientPluginRegistration[]) => void,
 }> {
 
   childProcess: ChildProcess;
@@ -21,6 +22,8 @@ export class RendererMessenger extends EventEmitter<{
 
     this.on("message", msg => {
       if(msg[0] === "shas")
+        this.emit(...msg);
+      if(msg[0] === "clientPlugins")
         this.emit(...msg);
     })
   }

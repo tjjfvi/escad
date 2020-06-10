@@ -1,7 +1,8 @@
 
 import { ReadonlyArtifactManager, Element, Product, ExportType, Id, Sha } from "@escad/core";
 import { messenger } from "./messenger";
-import { ServerRendererMessage } from "@escad/server-renderer-messages";
+import { ServerRendererMessage, ClientPluginRegistration } from "@escad/server-renderer-messages";
+import { registeredPlugins } from "@escad/register-client-plugin"
 
 messenger.on("message", message => {
   if(message[0] === "artifactsDir")
@@ -35,9 +36,12 @@ async function exp(...message: ServerRendererMessage){
 
 async function load(path: string){
   const func = require(path).default;
+
   if(typeof func !== "function")
     throw new Error("Expected export type of function, got " + typeof func);
+
   console.time("Render")
+
   let result;
   try {
     result = await func();
@@ -45,6 +49,12 @@ async function load(path: string){
     console.error(e);
     return;
   }
+
+  messenger.send("clientPlugins", registeredPlugins.map<ClientPluginRegistration>(registration => ({
+    ...registration,
+    productIdMap: Object.entries(registration.productIdMap).map(([k, id]) => [k, id.sha.hex]),
+  })))
+
   if(!result)
     return console.error(new Error("Invalid return type from exported function"));
   let el = new Element<Product>(result);
@@ -52,6 +62,8 @@ async function load(path: string){
     await x.process();
     return x.sha.hex;
   }));
+
   messenger.send("shas", shas);
+
   console.timeEnd("Render")
 }

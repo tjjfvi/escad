@@ -10,3 +10,9 @@ export type ServerRendererMessage =
 export type RendererServerMessage =
   | ["shas", Hex[]]
   | ["exportFinish", RequestId]
+  | ["clientPlugins", ClientPluginRegistration[]]
+
+export interface ClientPluginRegistration {
+  path: string,
+  productIdMap: [string, Hex][],
+}
