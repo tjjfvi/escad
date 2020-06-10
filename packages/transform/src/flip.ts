@@ -24,7 +24,7 @@ class FlipWork extends Work<FlipWork, Mesh, [ConvertibleTo<Mesh>]> {
   }
 
   async execute([input]: [FinishedProduct<ConvertibleTo<Mesh>>]){
-    return new Mesh(input.faces.map(f => new Face(f.points.slice().reverse()).finish())).finish();
+    return new Mesh(input.faces.map(f => new Face(f.points.slice().reverse()))).finish();
   }
 
   constructor(child: Leaf<Mesh>){

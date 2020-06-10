@@ -1,5 +1,5 @@
 
-import { ExportType, Id, FinishedProduct } from "@escad/core";
+import { ExportType, Id } from "@escad/core";
 import { Mesh } from "./Mesh";
 import { concat, constLengthString, array, uint32LE, uint16LE } from "tszer";
 import { Vector3 } from "./Vector3";
@@ -15,12 +15,12 @@ const stl = new ExportType<Mesh>({
       Vector3.serializer(),
       Face.serializer(),
       uint16LE()
-    ).map<FinishedProduct<Face>>({
-      serialize: face => [face.plane.normal.finish(), face, 0],
+    ).map<Face>({
+      serialize: face => [face.plane.normal, face, 0],
       deserialize: ([, face]) => face,
     }), uint32LE())
   ).map<Mesh>({
-    serialize: mesh => [mesh.sha.hex.padEnd(80), mesh.faces.map(f => f.finish())],
+    serialize: mesh => [mesh.sha.hex.padEnd(80), mesh.faces],
     deserialize: ([, faces]) => new Mesh(faces).finish(),
   }).serialize
 })

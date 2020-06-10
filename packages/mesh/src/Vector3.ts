@@ -1,12 +1,7 @@
 
-import { Product, Id, FinishedProduct } from "@escad/core";
-import { floatLE, concat, Serializer, DeserializeFunc, SerializeFunc } from "tszer";
+import { floatLE, concat, Serializer } from "tszer";
 
-class Vector3 extends Product<Vector3> {
-
-  type = Vector3;
-
-  static id = new Id("Vector3", __filename);
+class Vector3 {
 
   x: number; y: number; z: number;
 
@@ -14,7 +9,6 @@ class Vector3 extends Product<Vector3> {
   constructor(xyz: [number, number, number]);
   constructor(xyz: { x: number, y: number, z: number });
   constructor(x: number | { x: number, y: number, z: number } | [number, number, number] = 0, y = 0, z = 0){
-    super();
     if(typeof x === "object") {
       if(x instanceof Array)
         [x, y, z] = x
@@ -79,22 +73,16 @@ class Vector3 extends Product<Vector3> {
     );
   }
 
-  static serializer: () => Serializer<FinishedProduct<Vector3>> = () =>
+  static serializer: () => Serializer<Vector3> = () =>
     concat(
       floatLE(),
       floatLE(),
       floatLE(),
-    ).map<FinishedProduct<Vector3>>({
+    ).map<Vector3>({
       serialize: v => [v.x, v.y, v.z],
-      deserialize: ps => new Vector3(...ps).finish(),
+      deserialize: ps => new Vector3(...ps),
     });
 
-  serialize: SerializeFunc<FinishedProduct<Vector3>> = Vector3.serializer().serialize;
-
-  static deserialize: DeserializeFunc<FinishedProduct<Vector3>> = Vector3.serializer().deserialize;
-
 }
-
-Product.Registry.register(Vector3);
 
 export { Vector3 };

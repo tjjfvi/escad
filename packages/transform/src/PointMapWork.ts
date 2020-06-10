@@ -11,7 +11,7 @@ abstract class PointMapWork<W extends PointMapWork<W>> extends Work<W, Mesh, [Co
   _execute(input: Mesh): Mesh
   _execute(input: Mesh | Face | Vector3): Mesh | Face | Vector3{
     if(input instanceof Mesh)
-      return new Mesh(input.faces.map(f => this._execute(f).finish()));
+      return new Mesh(input.faces.map(f => this._execute(f)));
     if(input instanceof Face)
       return new Face(input.points.map(p => this._execute(p)));
     if(input instanceof Vector3)

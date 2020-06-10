@@ -1,16 +1,11 @@
 
 import { Vector3 } from "./Vector3";
 import { Face } from "./Face";
-import { Id, Product, FinishedProduct } from "@escad/core";
-import { Serializer, SerializeFunc, DeserializeFunc, floatLE, concat } from "tszer";
+import { Serializer, floatLE, concat } from "tszer";
 
 const epsilon = 1e-5;
 
-class Plane extends Product<Plane> {
-
-  type = Plane;
-
-  static id = new Id("Plane", __filename);
+class Plane {
 
   normal: Vector3;
   w: number;
@@ -18,7 +13,6 @@ class Plane extends Product<Plane> {
   constructor(normal: Vector3, w: number);
   constructor(points: Array<Vector3>, w?: number);
   constructor(points: Array<Vector3> | Vector3, w?: number){
-    super();
     if(points instanceof Vector3) {
       this.normal = points;
       this.w = w || 0;
@@ -85,18 +79,14 @@ class Plane extends Product<Plane> {
     }
   }
 
-  static serializer: () => Serializer<FinishedProduct<Plane>> = () =>
+  static serializer: () => Serializer<Plane> = () =>
     concat(
       Vector3.serializer(),
       floatLE(),
-    ).map<FinishedProduct<Plane>>({
-      serialize: plane => [plane.normal.finish(), plane.w],
-      deserialize: args => new Plane(...args).finish(),
+    ).map<Plane>({
+      serialize: plane => [plane.normal, plane.w],
+      deserialize: args => new Plane(...args),
     });
-
-  serialize: SerializeFunc<FinishedProduct<Plane>> = Plane.serializer().serialize;
-
-  static deserialize: DeserializeFunc<FinishedProduct<Plane>> = Plane.serializer().deserialize;
 
 }
 

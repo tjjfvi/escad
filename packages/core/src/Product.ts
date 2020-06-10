@@ -48,7 +48,7 @@ export abstract class Product<P extends Product<P> = any> {
 
   abstract clone(): P;
 
-  abstract serialize(value: FinishedProduct<P>): SerializeResult;
+  abstract serialize(value: P): SerializeResult;
 
   protected process(): Promise<FinishedProduct<P>>{
     if(!this.finished)
@@ -86,5 +86,5 @@ export type FinishedProduct<P extends Product<P>> = P & {
 
 export interface ProductType<P extends Product<P> = any> {
   id: Id,
-  deserialize: DeserializeFunc<FinishedProduct<P>>,
+  deserialize: DeserializeFunc<P>,
 }

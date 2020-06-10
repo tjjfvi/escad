@@ -82,7 +82,7 @@ export class CSGWrapper extends Product<CSGWrapper> {
     return constLengthBuffer(buffer.length).serialize(buffer);
   }
 
-  static deserialize(buf: Buffer): DeserializeResult<FinishedProduct<CSGWrapper>>{
+  static deserialize(buf: Buffer): DeserializeResult<CSGWrapper>{
     function deserializeNode(buf: Buffer){
       if(buf.length === 0)
         return null;
@@ -114,7 +114,7 @@ export class CSGWrapper extends Product<CSGWrapper> {
       return node;
     }
 
-    let value = new CSGWrapper(deserializeNode(buf)).finish();
+    let value = new CSGWrapper(deserializeNode(buf));
 
     return { length: buffer.length, value };
   }

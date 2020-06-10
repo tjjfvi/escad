@@ -30,7 +30,7 @@ class TransformWork extends PointMapWork<TransformWork> {
       Work.childrenReference<[ConvertibleTo<Mesh>]>(),
       Matrix4.serializer(),
     ).map<TransformWork>({
-      serialize: work => [work.children, work.matrix.finish()],
+      serialize: work => [work.children, work.matrix],
       deserialize: ([[child], matrix]) => new TransformWork(child, matrix),
     })
 
