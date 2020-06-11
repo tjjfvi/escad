@@ -48,7 +48,6 @@ export const viewer3d: Viewer<Viewer3dInput> = {
 
     const inputGroup = new t.Group();
     inputGroup.add(...inputs.map(i => i.group));
-    console.log(inputGroup, inputs);
 
     scene.add(inputGroup);
 
@@ -68,8 +67,6 @@ export const viewer3d: Viewer<Viewer3dInput> = {
     orientScene.add(...createCylAxes());
 
     let ortho = false;
-
-    console.log(scene);
 
     function render(){
       if(!el)

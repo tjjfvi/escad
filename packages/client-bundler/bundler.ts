@@ -58,7 +58,6 @@ export class Bundler extends EventEmitter<{
         throw new Error("Could not find package.json from file " + file);
       if("stylus" in result.packageJson && typeof result.packageJson.stylus === "string")
         return path.resolve(path.dirname(result.path), result.packageJson.stylus);
-      console.log("!!!")
       return null;
     }).filter((x): x is string => x !== null);
   }
@@ -94,7 +93,6 @@ export class Bundler extends EventEmitter<{
   private createStylusWatchers(){
     this.closeStylusWatch();
 
-    console.log(this.getStylusPaths())
     const watchers = this.getStylusPaths().map(p => watchDir(p, {
       persistent: false,
       recursive: true,
