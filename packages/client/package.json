@@ -2,13 +2,14 @@
   "name": "@escad/client",
   "version": "0.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "stylus": "stylus",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -rf dist",
-    "build": "npm run clean; escad-client-bundler .",
-    "prepack": "npm run build",
-    "bundle-watch": "escad-client-bundler --watch ."
+    "build": "npm run clean; tsc",
+    "prepack": "npm run build"
   },
   "author": "",
   "license": "ISC",
@@ -24,7 +25,6 @@
     "@escad/server-client-messages": "^0.0.0"
   },
   "devDependencies": {
-    "@escad/client-bundler": "^0.0.0",
     "@types/react": "^16.9.35",
     "@types/react-dom": "^16.9.8"
   },

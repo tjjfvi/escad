@@ -10,11 +10,23 @@ import fs from "fs-extra";
 import { v4 as uuidv4 } from "uuid";
 import { rendererMessenger } from "./rendererMessenger";
 import { Hex } from "@escad/core";
+import { Bundler } from "@escad/client-bundler";
 
 const { app } = expressWs(express());
 
-app.use(express.static(path.join(path.dirname(require.resolve("@escad/client")), "dist")));
+const staticDir = path.join(__dirname, "../static/")
+
+app.use(express.static(staticDir));
 app.use(express.static(config.artifactsDir));
+
+const bundler = new Bundler({
+  coreClientPath: require.resolve("@escad/client"),
+  outDir: staticDir,
+  log: true,
+  watch: false,
+});
+
+rendererMessenger.on("clientPlugins", clientPlugins => bundler.updateClientPlugins(clientPlugins));
 
 app.get("/exportTypes/:productTypeId/", async (req, res) => {
   const { productTypeId } = req.params;

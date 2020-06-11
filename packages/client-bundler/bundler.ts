@@ -1,72 +1,135 @@
 
 /* eslint-disable no-console */
 
-import browserify from "browserify";
 import fs from "fs-extra";
 import stylus from "stylus";
 import watchDir from "node-watch";
 import path from "path";
-import watchify from "watchify";
-// @ts-ignore
-import tsify from "tsify";
+import webpack, { Compiler } from "webpack"
+import { ClientPluginRegistration } from "@escad/server-renderer-messages"
+import { EventEmitter } from "tsee";
+import readPkgUp from "read-pkg-up";
 
-export async function bundle(folder: string, watch: boolean){
-  const dist = path.join(folder, "dist");
-  const src = path.join(folder, "src");
+export interface BundlerOptions {
+  outDir: string,
+  coreClientPath: string,
+  watch?: boolean,
+  log?: boolean,
+}
 
-  const b = browserify(path.join(src, "ts/index.tsx"), {
-    cache: {},
-    packageCache: {},
-    debug: true,
-    plugin: [watchify, tsify],
-  })
+export class Bundler extends EventEmitter<{
+  tsBundle: () => void,
+  stylusBundle: (css: string) => void,
+}> {
 
-  function bundleTs(){
-    return new Promise<void>((res, rej) => {
-      console.log("Bundling client TS...");
-      b.bundle()
-        .on("end", () => {
-          console.log("Bundled client TS");
-          res();
-        })
-        .on("error", e => {
-          console.error(e);
-          rej();
-        })
-        .pipe(fs.createWriteStream(path.join(dist, "bundle.js")));
-    });
+  private watcher?: Compiler.Watching;
+  private compiler?: Compiler;
+  private closeStylusWatch = () => {};
+
+  clientPlugins: ClientPluginRegistration[] = []
+
+  constructor(private options: BundlerOptions){
+    super();
+    this.forceRefresh();
   }
 
-  async function bundleStylus(){
-    console.log("Bundling stylus...");
-    let css = await new Promise((r, j) => stylus.render(
-      `@import '${path.join(src, "stylus/*")}'`,
+  updateClientPlugins(clientPlugins: ClientPluginRegistration[]){
+    const oldClientPlugins = this.clientPlugins;
+    this.clientPlugins = clientPlugins;
+    if(JSON.stringify(this.clientPlugins) !== JSON.stringify(oldClientPlugins))
+      this.forceRefresh();
+  }
+
+  forceRefresh(){
+    this.createCompiler();
+    this.bundleStylus();
+    if(this.options.watch)
+      this.createStylusWatchers();
+  }
+
+  private getTsPaths(){
+    return [this.options.coreClientPath, ...this.clientPlugins.map(reg => reg.path)];
+  }
+
+  private getStylusPaths(){
+    return this.getTsPaths().map(file => {
+      let result = readPkgUp.sync({ cwd: file });
+      if(!result)
+        throw new Error("Could not find package.json from file " + file);
+      if("stylus" in result.packageJson && typeof result.packageJson.stylus === "string")
+        return path.resolve(path.dirname(result.path), result.packageJson.stylus);
+      console.log("!!!")
+      return null;
+    }).filter((x): x is string => x !== null);
+  }
+
+  private createCompiler(){
+    this.watcher?.close(() => {});
+    this.watcher = undefined;
+
+    this.compiler = webpack({
+      entry: this.getTsPaths(),
+      output: {
+        path: this.options.outDir,
+        filename: "bundle.js",
+      }
+    })
+
+    const handler = (err: Error | null) => {
+      if(err)
+        return console.error(err);
+      if(this.options.log)
+        console.log("Bundled TS");
+      this.emit("tsBundle");
+    }
+
+    if(this.options.watch ?? false)
+      this.watcher = this.compiler.watch({}, handler);
+    else
+      this.compiler.run(handler);
+
+    return this.compiler;
+  }
+
+  private createStylusWatchers(){
+    this.closeStylusWatch();
+
+    console.log(this.getStylusPaths())
+    const watchers = this.getStylusPaths().map(p => watchDir(p, {
+      persistent: false,
+      recursive: true,
+    }, () => this.bundleStylus()));
+
+    this.closeStylusWatch = () => watchers.map(w => w.close());
+  }
+
+  private async bundleStylus(){
+    if(this.options.log)
+      console.log("Bundling stylus...");
+    const css = await new Promise<string | undefined>(r => stylus.render(
+      this.getStylusPaths().map(dir =>
+        `@import '${path.join(dir, "*")}'`
+      ).join("\n"),
       {
         filename: "_.styl",
         // @ts-ignore
         sourcemap: {
           comment: false,
           inline: true,
-          basePath: path.join(src, "stylus/"),
         },
       },
-      (e: any, css: any) => e ? j(e) : r(css),
+      (error: Error, css: string) => {
+        if(error)
+          return r(void console.error(error));
+        return r(css);
+      }
     ));
-    await fs.writeFile(path.join(dist, "bundle.css"), css);
-    console.log("Bundled stylus");
+    if(!css)
+      return;
+    await fs.writeFile(path.join(this.options.outDir, "bundle.css"), css);
+    if(this.options.log)
+      console.log("Bundled stylus");
+    this.emit("stylusBundle", css);
   }
 
-  await fs.mkdirp(dist);
-  await bundleTs();
-  await bundleStylus();
-  await fs.copyFile(path.join(src, "index.html"), path.join(dist, "index.html"))
-
-  if(watch) {
-    b.on("update", bundleTs);
-    watchDir(path.join(src, "stylus/"), {
-      persistent: false,
-      recursive: true,
-    }, bundleStylus);
-  }
 }
-

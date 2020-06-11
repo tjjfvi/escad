@@ -4,3 +4,4 @@ artifacts
 test/index.js
 **/dist
 *.log
+**/bundle.*

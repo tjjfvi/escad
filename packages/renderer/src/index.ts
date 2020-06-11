@@ -62,7 +62,6 @@ async function load(path: string){
     await x.process();
     return x.sha.hex;
   }));
-
   messenger.send("shas", shas);
 
   console.timeEnd("Render")
