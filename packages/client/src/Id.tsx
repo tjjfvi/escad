@@ -13,6 +13,7 @@ export class Id {
     const existing = ids.get(sha);
     if(existing)
       return existing;
+    ids.set(this.sha, this);
   }
 
   static get(sha: string){

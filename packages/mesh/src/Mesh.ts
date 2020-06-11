@@ -3,6 +3,7 @@ import { Face } from "./Face";
 import { Vector3 } from "./Vector3";
 import { Product, Id } from "@escad/core";
 import { array, Serializer, SerializeFunc, DeserializeFunc } from "tszer";
+import { registerPlugin } from "@escad/register-client-plugin"
 
 class Mesh extends Product<Mesh> {
 
@@ -42,5 +43,10 @@ class Mesh extends Product<Mesh> {
 }
 
 Product.Registry.register(Mesh);
+
+registerPlugin({
+  path: require.resolve("@escad/client-mesh"),
+  productIdMap: { "@escad/client-mesh/Mesh": Mesh.id },
+})
 
 export { Mesh };
