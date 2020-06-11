@@ -4,7 +4,7 @@ import { viewer3d, colors, EdgesGeometry } from "@escad/client-3d-viewer";
 import * as t from "three";
 
 registerViewerRegistration({
-  id: Id.get("8d44037fdc8ff4cc6e2479e6aa485d9868fc8a16efb89ee9d52f2b211d223c60"),
+  id: Id.get("@escad/client-mesh/Mesh"),
   context: viewer3d,
   map: product => {
     const buf = product.buffer.slice(2);

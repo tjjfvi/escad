@@ -18,7 +18,7 @@ export class Messenger extends EventEmitter<{
   products = computed<Promise<Product>[]>(() => this.shas().map(async (sha): Promise<Product> => {
     const buf = Buffer.from(await fetch(`/products/${sha}`).then(r => r.arrayBuffer()));
     const idBuf = buf.slice(0, 32);
-    const id = Id.get(idBuf.toString("hex"));
+    const id = new Id(idBuf.toString("hex"));
     const data = buf.slice(32);
     return {
       sha,

@@ -43,8 +43,18 @@ export class Bundler extends EventEmitter<{
   forceRefresh(){
     this.createCompiler();
     this.bundleStylus();
+    this.bundleJson();
     if(this.options.watch)
       this.createStylusWatchers();
+  }
+
+  private async bundleJson(){
+    const idMap: Record<string, string> = {};
+    this.clientPlugins.flatMap(cp => cp.productIdMap).forEach(([key, hex]) => {
+      idMap[key] = hex;
+    })
+    const json = { idMap };
+    await fs.writeFile(path.join(this.options.outDir, "bundle.json"), JSON.stringify(json));
   }
 
   private getTsPaths(){

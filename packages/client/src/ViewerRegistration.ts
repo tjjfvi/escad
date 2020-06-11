@@ -9,13 +9,20 @@ export interface ViewerRegistration<T extends ViewerInput> {
   map: (product: Product) => T,
 }
 
+export interface ViewerRegistrationInput<T extends ViewerInput> {
+  id: Id | Promise<Id>,
+  context: Viewer<T>,
+  map: (product: Product) => T,
+}
+
 export const productTypeViewers = new Map<Id, ViewerRegistration<any>[]>();
 
-export const registerViewerRegistration = <T extends ViewerInput>(registration: ViewerRegistration<T>) => {
-  const { id } = registration;
+export const registerViewerRegistration = async <T extends ViewerInput>(registration: ViewerRegistrationInput<T>) => {
+  const { id: idProm } = registration;
+  const id = await idProm;
   const registrations = productTypeViewers.get(id) ?? [];
   productTypeViewers.set(id, registrations);
-  registrations.push(registration);
+  registrations.push({ ...registration, id });
 }
 
 export const mapProduct = <T extends ViewerInput>(context: Viewer<T>, product: Product) => {
