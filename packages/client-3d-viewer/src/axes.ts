@@ -15,7 +15,7 @@ export const createLineAxes = () =>
     let geo = new t.Geometry();
     geo.vertices.push(
       new t.Vector3(),
-      vector.multiplyScalar(1e10),
+      vector.clone().multiplyScalar(1e10),
     );
 
     let mat = new t.LineBasicMaterial({ color, transparent: true, opacity });
