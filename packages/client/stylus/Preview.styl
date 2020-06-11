@@ -5,9 +5,19 @@
   flex 1
   position relative
 
-  & *
-    position absolute
+  display flex
+  align-items center
+  justify-content center
+  flex-direction: column
 
-  .orient
-    right 0
-    top 0
+  &.none
+    color $lightgrey
+    & .header
+      font-size 20px
+
+  // & *
+  //   position absolute
+
+  // .orient
+  //   right 0
+  //   top 0

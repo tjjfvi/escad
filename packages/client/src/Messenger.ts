@@ -2,7 +2,9 @@
 import { EventEmitter } from "tsee";
 import flatted from "flatted";
 import { ServerClientMessage, ClientServerMessage } from "@escad/server-client-messages"
-import { observable } from "rhobo";
+import { observable, computed } from "rhobo";
+import { Product } from "./Product";
+import { Id } from "./Id";
 
 export class Messenger extends EventEmitter<{
   message: (message: ServerClientMessage) => void,
@@ -13,6 +15,17 @@ export class Messenger extends EventEmitter<{
   id = observable<string>();
   serverId = observable<string>();
   shas = observable<Array<string>>([]);
+  products = computed<Promise<Product>[]>(() => this.shas().map(async (sha): Promise<Product> => {
+    const buf = Buffer.from(await fetch(`/products/${sha}`).then(r => r.arrayBuffer()));
+    const idBuf = buf.slice(0, 32);
+    const id = Id.get(idBuf.toString("hex"));
+    const data = buf.slice(32);
+    return {
+      sha,
+      type: id,
+      buffer: data,
+    };
+  }));
 
   disconnectTimeout: any;
 
