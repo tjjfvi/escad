@@ -34,6 +34,8 @@ export * from './Id';
 export * from './IdManager';
 export * from './Leaf';
 export * from './Operation';
+export * from './Parameter';
+export * from './ParameterManager';
 export * from './Product';
 export * from './ProductManager';
 export * from './ReadonlyArtifactManager';
