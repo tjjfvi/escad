@@ -14,5 +14,5 @@ export type RendererServerMessage =
 
 export interface ClientPluginRegistration {
   path: string,
-  productIdMap: [string, Hex][],
+  idMap: [string, Hex][],
 }

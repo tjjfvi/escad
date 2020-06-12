@@ -52,7 +52,7 @@ async function load(path: string){
 
   messenger.send("clientPlugins", registeredPlugins.map<ClientPluginRegistration>(registration => ({
     ...registration,
-    productIdMap: Object.entries(registration.productIdMap).map(([k, id]) => [k, id.sha.hex]),
+    idMap: Object.entries(registration.idMap).map(([k, id]) => [k, id.sha.hex]),
   })))
 
   if(!result)

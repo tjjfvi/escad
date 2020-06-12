@@ -6,7 +6,7 @@ export const registeredPlugins: PluginRegistration[] = [];
 
 export interface PluginRegistration {
   path: string,
-  productIdMap: Record<string, Id>,
+  idMap: Record<string, Id>,
 }
 
 export const registerPlugin = (registration: PluginRegistration) => {

@@ -46,7 +46,7 @@ Product.Registry.register(Mesh);
 
 registerPlugin({
   path: require.resolve("@escad/client-mesh"),
-  productIdMap: { "@escad/client-mesh/Mesh": Mesh.id },
+  idMap: { "@escad/client-mesh/Mesh": Mesh.id },
 })
 
 export { Mesh };

@@ -50,7 +50,7 @@ export class Bundler extends EventEmitter<{
 
   private async bundleJson(){
     const idMap: Record<string, string> = {};
-    this.clientPlugins.flatMap(cp => cp.productIdMap).forEach(([key, hex]) => {
+    this.clientPlugins.flatMap(cp => cp.idMap).forEach(([key, hex]) => {
       idMap[key] = hex;
     })
     const json = { idMap };
