@@ -10,6 +10,7 @@ export class RendererMessenger extends EventEmitter<{
   message: (message: RendererServerMessage) => void,
   shas: (shas: Hex[]) => void,
   clientPlugins: (clientPlugins: ClientPluginRegistration[]) => void,
+  paramDef: (paramDef: Hex | null) => void,
 }> {
 
   childProcess: ChildProcess;
@@ -24,6 +25,8 @@ export class RendererMessenger extends EventEmitter<{
       if(msg[0] === "shas")
         this.emit(...msg);
       if(msg[0] === "clientPlugins")
+        this.emit(...msg);
+      if(msg[0] === "paramDef")
         this.emit(...msg);
     })
   }

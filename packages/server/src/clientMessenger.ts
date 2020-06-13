@@ -7,11 +7,17 @@ import { Hex } from "@escad/core";
 import { rendererMessenger } from "./rendererMessenger";
 import { serverId } from "./serverId";
 import { v4 as uuidv4 } from "uuid";
+import { RendererServerMessage } from "@escad/server-renderer-messages";
 
 let curShas: Hex[] | null = null;
+let paramDef: Hex | null = null;
 
 rendererMessenger.on("shas", shas => {
   curShas = shas;
+})
+
+rendererMessenger.on("paramDef", pd => {
+  paramDef = pd;
 })
 
 export class ClientMessenger extends EventEmitter<{
@@ -20,6 +26,8 @@ export class ClientMessenger extends EventEmitter<{
 }> {
 
   initialized: Promise<void>;
+  params: Buffer | null = null;
+  cancelRun = () => {};
 
   constructor(public ws: WebSocket){
     super();
@@ -71,16 +79,57 @@ export class ClientMessenger extends EventEmitter<{
 
     this.send("init", id, serverId)
     this.send("shas", curShas ?? []);
+    this.send("paramDef", paramDef);
 
-    const handler = (shas: Hex[]) => this.send("shas", shas);
-    rendererMessenger.on("shas", handler);
+    const shasHandler = (shas: Hex[]) => this.send("shas", shas);
+    rendererMessenger.on("shas", shasHandler);
+
+    const paramDefHandler = (paramDef: Hex | null) => this.send("paramDef", paramDef);
+    rendererMessenger.on("paramDef", paramDefHandler);
+
+    this.on("message", msg => {
+      if(msg[0] === "params") {
+
+        const [, newParams] = msg;
+        const oldParams = this.params;
+        this.params = newParams;
+
+        if(!newParams && !oldParams)
+          return;
+
+        if(!newParams && oldParams) {
+          this.send("shas", curShas ?? []);
+          rendererMessenger.on("shas", shasHandler);
+        }
+
+        if(newParams && !oldParams)
+          rendererMessenger.removeListener("shas", shasHandler);
+
+        if(newParams)
+          this.run();
+      }
+    })
 
     this.on("close", () => {
-      rendererMessenger.removeListener("shas", handler);
+      rendererMessenger.removeListener("shas", shasHandler);
       console.log("Client detached, id:", id);
     })
 
     this.startPing();
+
+  }
+
+  private run(){
+    this.cancelRun();
+    const id = uuidv4();
+    const handler = (msg: RendererServerMessage) => {
+      if(msg[0] !== "runFinish" || msg[1] !== id)
+        return;
+      this.send("shas", msg[2]);
+      rendererMessenger.removeListener("message", handler);
+    }
+    rendererMessenger.addListener("message", handler);
+    this.cancelRun = () => rendererMessenger.removeListener("message", handler);
   }
 
   send(...message: ServerClientMessage){
