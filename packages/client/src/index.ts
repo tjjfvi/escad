@@ -16,6 +16,7 @@ export * from './Disconnected';
 export * from './Id';
 export * from './Messenger';
 export * from './Pane';
+export * from './Parameters';
 export * from './Preview';
 export * from './Product';
 export * from './Viewer';

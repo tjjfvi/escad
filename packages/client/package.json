@@ -24,7 +24,8 @@
     "react": "^16.12.0",
     "react-dom": "^16.12.0",
     "rhobo": "^0.3.2",
-    "tsee": "^1.3.0"
+    "tsee": "^1.3.0",
+    "tszer": "0.0.7"
   },
   "devDependencies": {
     "@types/react": "^16.9.35",

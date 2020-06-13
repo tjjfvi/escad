@@ -45,9 +45,10 @@ export class ObjectParam<O extends ObjectParamGeneric>
       array(concat(
         (string() as Serializer<keyof O & string>),
         Parameter.Manager.reference(),
+        ([, pm]) => pm.valueSerializer(),
       ))
     ).map<ObjectParam<O>>({
-      serialize: op => [op.name, op.desc, Object.entries(op.children)],
+      serialize: op => [op.name, op.desc, Object.entries(op.children).map(([k, v]) => [k, v, v.defaultValue])],
       deserialize: ([name, desc, childrenEntries]) =>
         new ObjectParam({
           name,
