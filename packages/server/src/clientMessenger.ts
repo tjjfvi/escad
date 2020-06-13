@@ -112,6 +112,7 @@ export class ClientMessenger extends EventEmitter<{
 
     this.on("close", () => {
       rendererMessenger.removeListener("shas", shasHandler);
+      rendererMessenger.removeListener("paramDef", paramDefHandler);
       console.log("Client detached, id:", id);
     })
 

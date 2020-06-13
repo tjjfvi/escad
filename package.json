@@ -4,8 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "bootstrap": "lerna bootstrap --hoist",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "lerna bootstrap; npm run index; lerna run build",
+    "build": "npm run bootstrap; npm run index; lerna run build",
     "index": "create-index -X ts -x ts -x tsx -Sui packages/",
     "lint": "eslint '**/*.{ts,tsx}' --quiet --fix"
   },

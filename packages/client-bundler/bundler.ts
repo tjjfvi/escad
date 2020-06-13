@@ -25,11 +25,18 @@ export class Bundler extends EventEmitter<{
   private watcher?: Compiler.Watching;
   private compiler?: Compiler;
   private closeStylusWatch = () => {};
+  private coreClientRootDir: string;
 
   clientPlugins: ClientPluginRegistration[] = []
 
   constructor(private options: BundlerOptions){
     super();
+
+    let result = readPkgUp.sync({ cwd: this.options.coreClientPath });
+    if(!result)
+      throw new Error(`Could not find package.json from ${this.options.coreClientPath}`);
+    this.coreClientRootDir = path.dirname(result.path);
+
     this.forceRefresh();
   }
 
@@ -81,7 +88,13 @@ export class Bundler extends EventEmitter<{
       output: {
         path: this.options.outDir,
         filename: "bundle.js",
-      }
+        sourceMapFilename: "bundle.js.map",
+      },
+      optimization: {
+        minimize: false,
+      },
+      devtool: "source-map",
+      mode: "development",
     })
 
     const handler = (err: Error | null) => {

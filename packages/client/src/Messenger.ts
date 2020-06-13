@@ -2,7 +2,7 @@
 import { EventEmitter } from "tsee";
 import flatted from "flatted";
 import { ServerClientMessage, ClientServerMessage } from "@escad/server-client-messages"
-import { observable, computed } from "rhobo";
+import { observable } from "rhobo";
 import { Product } from "./Product";
 import { Id } from "./Id";
 
@@ -15,32 +15,35 @@ export class Messenger extends EventEmitter<{
   id = observable<string>();
   serverId = observable<string>();
   shas = observable<Array<string>>([]);
-  products = computed<Promise<Product>[]>(() => this.shas().map(async (sha): Promise<Product> => {
-    const buf = Buffer.from(await fetch(`/products/${sha}`).then(r => r.arrayBuffer()));
-    const idBuf = buf.slice(0, 32);
-    const id = new Id(idBuf.toString("hex"));
-    const data = buf.slice(32);
-    return {
-      sha,
-      type: id,
-      buffer: data,
-    };
-  }));
+  products = observable<Product[]>([]);
 
   disconnectTimeout: any;
 
   constructor(public url: string){
     super();
     this.ws = this.initWs();
-    this.on("message", msg => {
+    this.on("message", async msg => {
       if(msg[0] === "init") {
         this.id(msg[1]);
         this.serverId(msg[2]);
         return;
       }
 
-      if(msg[0] === "shas")
-        return this.shas(msg[1]);
+      if(msg[0] === "shas") {
+        this.shas(msg[1]);
+        this.products(await Promise.all(msg[1].map(async (sha): Promise<Product> => {
+          const buf = Buffer.from(await fetch(`/products/${sha}`).then(r => r.arrayBuffer()));
+          const idBuf = buf.slice(0, 32);
+          const id = new Id(idBuf.toString("hex"));
+          const data = buf.slice(32);
+          return {
+            sha,
+            type: id,
+            buffer: data,
+          };
+        })));
+        return;
+      }
     })
   }
 
