@@ -5,3 +5,5 @@ test/index.js
 **/dist
 *.log
 **/bundle.*
+**/.hash
+**/old.hash
