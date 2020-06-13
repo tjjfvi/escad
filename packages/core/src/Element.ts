@@ -52,6 +52,8 @@ export interface Element<T extends Product<T>> extends _ElementBuiltins<T> { }
 
 export class Element<T extends Product<T>> extends __Element__<T> {
 
+  declare protected __t__: T;
+
   val: ElementishFlat<Element<T>> | Leaf<T>;
   hierarchy: Hierarchy;
 
