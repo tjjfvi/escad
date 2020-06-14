@@ -77,11 +77,11 @@ const Viewer3d = ({ inputs }: { inputs: Viewer3dInput[] }) => {
     el.appendChild(renderer.domElement);
     el.appendChild(orientRenderer.domElement);
 
-    let handle = (e: MouseEvent) => {
+    let handle = (event: MouseEvent) => {
       let cel = orientRenderer.domElement;
       let rect = cel.getBoundingClientRect();
-      orientMouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      orientMouse.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+      orientMouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      orientMouse.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
     };
     renderer.domElement.addEventListener("mousemove", handle, false)
     orientRenderer.domElement.addEventListener("mousemove", handle, false)
@@ -90,21 +90,24 @@ const Viewer3d = ({ inputs }: { inputs: Viewer3dInput[] }) => {
       orientRaycast(orientMouse)(camera);
     })
 
-    orientRenderer.domElement.addEventListener("contextmenu", (e: any) => {
+    orientRenderer.domElement.addEventListener("contextmenu", (event: MouseEvent) => {
       s.ortho = !s.ortho;
-      e.preventDefault();
+      event.preventDefault();
     })
 
     let raycaster = new t.Raycaster();
     let mouse = new t.Vector2();
     let sphere = new t.Mesh(new t.SphereBufferGeometry(1, 100, 100), new t.MeshNormalMaterial());
-    renderer.domElement.addEventListener("dblclick", (e: any) => {
+    sphere.visible = false;
+    scene.add(sphere);
+    renderer.domElement.addEventListener("dblclick", (event: MouseEvent) => {
       let cam = s.ortho ? orthocamera : camera;
       sphere.scale.set(1, 1, 1).multiplyScalar(cam.position.length() / 100)
+      sphere.updateMatrixWorld();
       let cel = renderer.domElement;
       let rect = cel.getBoundingClientRect();
-      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.y = -(((e.clientY - rect.top) / rect.height) * 2 - 1);
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
       raycaster.setFromCamera(mouse, cam);
       let hits = raycaster.intersectObjects([inputGroup, sphere], true);
       for(let { object, point } of hits) {
