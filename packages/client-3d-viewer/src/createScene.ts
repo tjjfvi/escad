@@ -41,7 +41,7 @@ export const createScene = () => {
   const orientCamera = new t.PerspectiveCamera(60, 1, .1, 1000);
   const orientOrthocamera = new t.OrthographicCamera(-.5, .5, .5, -.5, .1, 1000);
   const orientRenderer = new t.WebGLRenderer({ antialias: true, alpha: true });
-  const orientMouse = new t.Vector2();
+  const orientMouse = new t.Vector2(-1000, -1000);
   orientRenderer.setSize(200, 200);
   orientCamera.position.set(0, 0, 1);
   orientCamera.up = new t.Vector3(0, 0, 1);
