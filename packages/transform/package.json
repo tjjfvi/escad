@@ -21,7 +21,7 @@
   "dependencies": {
     "@escad/core": "^0.0.0",
     "@escad/mesh": "^0.0.0",
-    "tszer": "0.0.7"
+    "tszer": "0.0.8"
   },
   "publishConfig": {
     "access": "public"
