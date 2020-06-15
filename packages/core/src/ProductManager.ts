@@ -12,7 +12,7 @@ export class ProductManager extends ArtifactManager<FinishedProduct<Product>> {
     ([productType]) => Product.getSerializer(productType),
   ).map<FinishedProduct<Product>>({
     serialize: product => [product.type, product],
-    deserialize: ([, product]) => product,
+    deserialize: ([, product]) => product.finish(),
   })
 
   serialize(product: FinishedProduct<Product>){

@@ -1,5 +1,5 @@
 
-import escad, { ExportType } from "../packages/core";
+import escad, { ExportType, ConvertibleTo } from "../packages/core";
 import "../packages/solids";
 import "../packages/csg";
 import { Mesh } from "../packages/mesh";
@@ -11,7 +11,8 @@ export default () => {
       .cube({ s: .9 })
       .cube({ s: 1, c: false })
       .diff
-      .sphere({ r: .3, slices: 50, stacks: 25 })
+      .sphere({ r: .5, slices: 50, stacks: 25 })
+      .union
       .meld
   );
   const mesh = el.toArrayFlat()[0];

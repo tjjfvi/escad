@@ -3,6 +3,7 @@ import { Serializer, DeserializeFunc, SerializeResult } from "tszer";
 import { Registry } from "./Registry";
 import { Sha, hash } from "./hash";
 import { ParameterManager } from "./ParameterManager";
+import { Enga } from "enga";
 
 export abstract class Parameter<P extends Parameter<P, V>, V> {
 
@@ -37,7 +38,7 @@ export abstract class Parameter<P extends Parameter<P, V>, V> {
 
   abstract valueSerializer: () => Serializer<V>
 
-  abstract serialize(value: P): SerializeResult;
+  abstract serialize(value: P): Enga<SerializeResult>;
 
   static getSerializer<P extends Parameter<P, V>, V>(parameterType: ParameterType<P, V>){
     return new Serializer({

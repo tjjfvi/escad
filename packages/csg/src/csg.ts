@@ -18,16 +18,15 @@ import {
   StrictLeaf,
 } from "@escad/core";
 import {
-  constLengthBuffer,
-  SerializeResult,
-  DeserializeResult,
-  buffer,
   Serializer,
   SerializeFunc,
   DeserializeFunc,
   concat,
   string,
   uint16LE,
+  array,
+  floatLE,
+  optionalBank,
 } from "tszer";
 
 export class CSGWrapper extends Product<CSGWrapper> {
@@ -44,80 +43,41 @@ export class CSGWrapper extends Product<CSGWrapper> {
     return new CSGWrapper(this.node);
   }
 
-  serialize(): SerializeResult{
-    function serializePoly(poly: any){
-      let buf = Buffer.alloc(poly.vertices.length * 3 * 4 + 1);
-      buf.writeUInt8(poly.vertices.length);
-      poly.vertices.map((v: any, i: number) => {
-        [v.pos.x, v.pos.y, v.pos.z].map((x, j) =>
-          buf.writeFloatLE(x, (i * 3 + j) * 4 + 1)
-        )
-      })
-      return buf;
-    }
+  static polySerializer = () =>
+    array(concat(floatLE(), floatLE(), floatLE()).map<any>({
+      serialize: v => [v.pos.x, v.pos.y, v.pos.z],
+      deserialize: vs => new CSG.Vertex(vs, [0, 0, 0]),
+    })).map<any>({
+      serialize: p => p.vertices,
+      deserialize: vs => new CSG.Polygon(vs),
+    })
 
-    function serializeNode(node: any){
-      if(node === null)
-        return Buffer.alloc(0);
-      let ps = node.polygons.map(serializePoly)
-      let l = ps.map((x: any) => x.length).reduce((a: number, b: number) => a + b, 0);
-      let front = serializeNode(node.front);
-      let back = serializeNode(node.back);
-      let buf = Buffer.concat([
-        Buffer.alloc(6),
-        ...ps,
-        Buffer.alloc(6),
-        front,
-        Buffer.alloc(6),
-        back
-      ], 18 + l + front.length + back.length);
-      buf.writeUIntLE(l, 0, 6);
-      buf.writeUIntLE(front.length, 6 + l, 6);
-      buf.writeUIntLE(back.length, 12 + l + front.length, 6);
-      return buf;
-    }
-
-    let buffer = serializeNode(this.node);
-
-    return constLengthBuffer(buffer.length).serialize(buffer);
-  }
-
-  static deserialize(buf: Buffer): DeserializeResult<CSGWrapper>{
-    function deserializeNode(buf: Buffer){
-      if(buf.length === 0)
-        return null;
-      let l = buf.readUIntLE(0, 6);
-      let fl = buf.readUIntLE(6 + l, 6);
-      let bl = buf.readUIntLE(12 + l + fl, 6);
-      if(!(l + fl + bl))
-        return null;
-      let polys = [];
-      for(let i = 6; i < 6 + l;) {
-        let pl = buf.readUInt8(i);
-        i++;
-        let I = i;
-        let verts = [];
-        for(; i < I + pl * 3 * 4; i += 3 * 4) {
-          let ns = [0, 1, 2].map(x => buf.readFloatLE(i + 4 * x));
-          let vert = new CSG.Vertex(ns.slice(0, 3), [0, 0, 0]);
-          verts.push(vert);
-        }
-        let poly = new CSG.Polygon(verts);
-        polys.push(poly);
+  static nodeSerializer = (): Serializer<any> =>
+    optionalBank(concat(
+      array(CSGWrapper.polySerializer()),
+      CSGWrapper.nodeSerializer,
+      CSGWrapper.nodeSerializer,
+    )).map<any>({
+      serialize: n => [n ? [n.polygons, n.front, n.back] : undefined],
+      deserialize: ([v]) => {
+        if(!v) return null
+        let node = new CSG.Node();
+        [node.polygons, node.front, node.back] = v;
+        if(node.polygons.length)
+          node.plane = node.polygons[0].plane.clone();
+        return node;
       }
-      let node = new CSG.Node();
-      node.front = deserializeNode(buf.subarray(12 + l, 12 + l + fl))
-      node.back = deserializeNode(buf.subarray(18 + l + fl, 18 + l + fl + bl))
-      node.polygons = polys;
-      if(polys.length)
-        node.plane = polys[0].plane.clone();
-      return node;
-    }
+    })
 
-    let value = new CSGWrapper(deserializeNode(buf));
+  static serializer = () =>
+    CSGWrapper.nodeSerializer().map<CSGWrapper>({
+      serialize: cw => cw.node,
+      deserialize: node => new CSGWrapper(node),
+    })
 
-    return { length: buffer.length, value };
-  }
+  serialize = CSGWrapper.serializer().serialize;
+
+  static deserialize = CSGWrapper.serializer().deserialize;
 
 }
 

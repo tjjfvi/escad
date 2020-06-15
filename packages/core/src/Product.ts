@@ -8,6 +8,7 @@ import { StrictLeaf } from "./Leaf";
 import { Elementish } from "./Element";
 import { ConversionRegistry } from "./ConversionRegistry";
 import { DeserializeFunc, Serializer, SerializeResult } from "tszer";
+import { Enga } from "enga";
 
 export abstract class Product<P extends Product<P> = any> {
 
@@ -48,7 +49,7 @@ export abstract class Product<P extends Product<P> = any> {
 
   abstract clone(): P;
 
-  abstract serialize(value: P): SerializeResult;
+  abstract serialize(value: P): Enga<SerializeResult>;
 
   protected process(): Promise<FinishedProduct<P>>{
     if(!this.finished)
