@@ -22,7 +22,7 @@
     "@escad/client-mesh": "^0.0.0",
     "@escad/core": "^0.0.0",
     "@escad/register-client-plugin": "^0.0.0",
-    "tszer": "0.0.8"
+    "tszer": "0.0.9"
   },
   "publishConfig": {
     "access": "public"
