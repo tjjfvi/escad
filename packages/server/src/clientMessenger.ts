@@ -1,7 +1,7 @@
 
 import { EventEmitter } from "tsee"
 import { ClientServerMessage, ServerClientMessage } from "@escad/server-client-messages"
-import * as WebSocket from "ws";
+import WebSocket = require("ws");
 import flatted from "flatted";
 import { Hex } from "@escad/core";
 import { rendererMessenger } from "./rendererMessenger";
