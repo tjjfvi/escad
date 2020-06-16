@@ -1,8 +1,7 @@
 
-import escad, { ExportType, ConvertibleTo } from "../packages/core";
-import "../packages/solids";
-import "../packages/csg";
-import { Mesh } from "../packages/mesh";
+import escad, { ExportType } from "../packages/core";
+import "../packages/builtins/register"
+import { Mesh } from "../packages/builtins/";
 
 export default () => {
   const el = (
