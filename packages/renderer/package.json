@@ -23,7 +23,7 @@
     "tszer": "0.0.12"
   },
   "devDependencies": {
-    "typescript": "^3.9.3"
+    "typescript": "^3.9.5"
   },
   "publishConfig": {
     "access": "public"

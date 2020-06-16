@@ -16,7 +16,7 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "typescript": "^3.9.3"
+    "typescript": "^3.9.5"
   },
   "dependencies": {
     "@escad/core": "^0.0.0",

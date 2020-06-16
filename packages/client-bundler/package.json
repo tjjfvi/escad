@@ -28,10 +28,10 @@
   "devDependencies": {
     "@types/commander": "^2.12.2",
     "@types/fs-extra": "^9.0.1",
-    "@types/node": "^14.0.6",
+    "@types/node": "^14.0.13",
     "@types/stylus": "^0.48.32",
     "@types/webpack": "^4.41.17",
-    "typescript": "^3.9.3"
+    "typescript": "^3.9.5"
   },
   "publishConfig": {
     "access": "public"
