@@ -8,7 +8,7 @@ export interface ExportTypeArgs<P extends Product<P>> {
   id: Id,
   extension: string,
   name: string,
-  export: SerializeFunc<Product>,
+  export: SerializeFunc<P>,
 }
 
 export class ExportType<P extends Product<P>> implements ExportTypeArgs<P> {
@@ -18,7 +18,7 @@ export class ExportType<P extends Product<P>> implements ExportTypeArgs<P> {
   id: Id;
   extension: string;
   name: string;
-  export: SerializeFunc<Product>
+  export: SerializeFunc<P>
   manager: ExportManager<P>;
 
   exportBuffer(product: P){
