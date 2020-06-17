@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "@escad/core": "^0.0.0",
-    "tszer": "0.0.12"
+    "tszer": "0.0.17"
   },
   "publishConfig": {
     "access": "public"
