@@ -24,7 +24,7 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
   static readonly Manager = new WorkManager();
 
   children: Children<C>;
-  sha: Sha;
+  sha: Promise<Sha>;
   frozen = false;
 
   protected redirect: StrictLeaf<T> | null = null;
@@ -41,7 +41,7 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
       throw new Error("Work.freeze() should only be called once");
     this.sha = hash(Work.Manager.serialize(this));
     this.frozen = true;
-    this.writePromise = Work.Manager.store(this.sha, Promise.resolve(this)).then(() => { })
+    this.writePromise = this.sha.then(sha => Work.Manager.store(sha, this).then(() => { }));
     Object.freeze(this);
   }
 
@@ -66,29 +66,32 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
     if(!this.frozen)
       throw new Error("Work must be frozen in the constructor");
 
+    const sha = await this.sha;
+
     if(this.redirect) {
-      await Product.Manager.storePointer(this.sha, this.redirect.sha);
+      await Product.Manager.storePointer(sha, await this.redirect.sha);
       return await this.redirect.process();
     }
 
     const resultPromise = (async (): Promise<FinishedProduct<T>> => {
-      const memoized = await Product.Manager.lookup(this.sha);
+      const memoized = await Product.Manager.lookup(sha);
       if(memoized)
         return memoized as any;
 
       const inputs: ProcessedChildren<C> = await Promise.all(this.children.map(c => c.process())) as any;
       const alias = this.clone(inputs);
+      const aliasSha = await alias.sha;
 
-      const resultPromise = alias.sha.hex === this.sha.hex ? this.execute(inputs) : alias.process();
+      const resultPromise = aliasSha.hex === sha.hex ? this.execute(inputs) : alias.process();
       const result = await resultPromise;
 
-      await Product.Manager.storePointer(this.sha, result.sha);
+      await Product.Manager.storePointer(sha, await result.sha);
       await result.writePromise;
 
       return result;
     })()
 
-    Product.Manager.cache.setAsync(this.sha.hex, () => resultPromise);
+    Product.Manager.cache.setAsync(sha.hex, () => resultPromise);
 
     return await resultPromise;
   }

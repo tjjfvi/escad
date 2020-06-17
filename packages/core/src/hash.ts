@@ -2,6 +2,7 @@
 import crypto from "crypto";
 import { hex, Hex, unHex } from "./hex";
 import { constLengthBuffer } from "tszer";
+import { Readable } from "stream";
 
 export class Sha {
 
@@ -22,6 +23,15 @@ export class Sha {
 
 }
 
-export const hash = (buf: Buffer | string) => new Sha(crypto.createHash("sha256").update(buf).digest());
-const _json = (obj: any) => hash(JSON.stringify(obj));
-hash.json = _json;
+export const hash = (stream: Readable) => new Promise<Sha>(resolve => {
+  const hash = crypto.createHash("sha256");
+  stream
+    .pipe(hash)
+    .once("finish", () => {
+      resolve(new Sha(hash.digest()));
+      hash.destroy();
+    })
+});
+
+const _buffer = (buf: Buffer | string) => new Sha(crypto.createHash("sha256").update(buf).digest());
+hash.buffer = _buffer;

@@ -6,6 +6,7 @@ import { registeredPlugins } from "@escad/register-client-plugin"
 import { RenderFunction } from "./renderFunction";
 import { ObjectParam } from "@escad/parameters";
 import { Serializer } from "tszer"
+import { Readable } from "stream";
 
 messenger.on("message", message => {
   if(message[0] === "artifactsDir")
@@ -52,7 +53,7 @@ async function load(path: string){
   const { defaultValue } = param;
 
   if(paramDef)
-    param.writePromise?.then(() => messenger.send("paramDef", paramDef ? param.sha.hex : null));
+    param.writePromise?.then(() => param.sha.then(sha => messenger.send("paramDef", paramDef ? sha.hex : null)));
   else
     messenger.send("paramDef", null);
 
@@ -64,7 +65,7 @@ async function load(path: string){
   run = async (id, buf) => {
     let result;
     try {
-      await func(await Serializer.deserialize(param.valueSerializer(), buf));
+      await func(await Serializer.deserialize(param.valueSerializer(), Readable.from([buf])));
       result = await func(defaultValue);
     } catch (e) {
       console.error(e);
@@ -75,7 +76,7 @@ async function load(path: string){
     let el = new Element<Product>(result);
     let shas = await Promise.all(el.toArrayFlat().map(async x => {
       await x.process();
-      return x.sha.hex;
+      return (await x.sha).hex;
     }));
     messenger.send("runFinish", id, shas);
   }
@@ -95,7 +96,7 @@ async function load(path: string){
   let el = new Element<Product>(result);
   let shas = await Promise.all(el.toArrayFlat().map(async x => {
     await x.process();
-    return x.sha.hex;
+    return (await x.sha).hex;
   }));
   messenger.send("shas", shas);
 

@@ -3,7 +3,6 @@ import { Serializer, DeserializeFunc, SerializeResult } from "tszer";
 import { Registry } from "./Registry";
 import { Sha, hash } from "./hash";
 import { ParameterManager } from "./ParameterManager";
-import { Enga } from "enga";
 
 export abstract class Parameter<P extends Parameter<P, V>, V> {
 
@@ -11,7 +10,7 @@ export abstract class Parameter<P extends Parameter<P, V>, V> {
   static Manager = new ParameterManager();
 
   frozen = false;
-  sha: Sha;
+  sha: Promise<Sha>;
 
   writePromise?: Promise<void>;
 
@@ -30,7 +29,7 @@ export abstract class Parameter<P extends Parameter<P, V>, V> {
       throw new Error("Parameter.freeze should only be called once");
     this.sha = hash(Parameter.Manager.serialize(this));
     this.frozen = true;
-    this.writePromise = Parameter.Manager.store(this.sha, Promise.resolve(this)).then(() => {});
+    this.writePromise = this.sha.then(sha => Parameter.Manager.store(sha, Promise.resolve(this)).then(() => {}));
     Object.freeze(this);
   }
 
@@ -38,7 +37,7 @@ export abstract class Parameter<P extends Parameter<P, V>, V> {
 
   abstract valueSerializer: () => Serializer<V>
 
-  abstract serialize(value: P): Enga<SerializeResult>;
+  abstract serialize(value: P): SerializeResult;
 
   static getSerializer<P extends Parameter<P, V>, V>(parameterType: ParameterType<P, V>){
     return new Serializer({

@@ -1,6 +1,7 @@
 import { ArtifactManager } from "./ArtifactManager";
 import { concat, Serializer } from "tszer";
 import { Parameter } from "./Parameter";
+import { Readable } from "stream";
 
 export class ParameterManager extends ArtifactManager<Parameter<any, any>> {
 
@@ -18,8 +19,8 @@ export class ParameterManager extends ArtifactManager<Parameter<any, any>> {
     return Serializer.serialize(this.serializer(), param);
   }
 
-  async deserialize(buffer: Buffer): Promise<Parameter<any, any>>{
-    return await Serializer.deserialize(this.serializer(), buffer);
+  deserialize(stream: Readable): Promise<Parameter<any, any>>{
+    return Serializer.deserialize(this.serializer(), stream);
   }
 
   getSha(param: Parameter<any, any>){

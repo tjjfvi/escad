@@ -21,15 +21,16 @@ export class ExportManager<P extends Product<P>> extends ReadonlyArtifactManager
   }
 
   serialize(product: P){
-    return this.exportType.exportBuffer(product);
+    return this.exportType.exportStream(product);
   }
 
   async store(sha: Sha, productPromise: Promise<P>){
     const product = await productPromise;
-    if(sha === product.sha)
+    const productSha = await product.sha;
+    if(sha === productSha)
       return await super.store(sha, productPromise);
-    await super.storePointer(sha, product.sha);
-    return await super.store(product.sha, productPromise);
+    await super.storePointer(sha, productSha);
+    return await super.store(productSha, productPromise);
   }
 
 }

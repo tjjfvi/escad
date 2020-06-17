@@ -1,6 +1,7 @@
 import { Work, _Work } from "./Work";
 import { ArtifactManager } from "./ArtifactManager";
 import { concat, Serializer } from "tszer";
+import { Readable } from "stream";
 
 export class WorkManager extends ArtifactManager<Work<any>> {
 
@@ -18,8 +19,8 @@ export class WorkManager extends ArtifactManager<Work<any>> {
     return Serializer.serialize(this.serializer(), work);
   }
 
-  async deserialize(buffer: Buffer): Promise<_Work<any, any>>{
-    return await Serializer.deserialize(this.serializer(), buffer);
+  deserialize(stream: Readable): Promise<_Work<any, any>>{
+    return Serializer.deserialize(this.serializer(), stream);
   }
 
   getSha(work: _Work){

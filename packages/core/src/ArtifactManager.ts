@@ -1,23 +1,29 @@
 
 import fs from "fs-extra";
+import { Readable } from "stream";
 
 import { Sha } from "./hash";
 import { ReadonlyArtifactManager } from "./ReadonlyArtifactManager";
 
 export abstract class ArtifactManager<T> extends ReadonlyArtifactManager<T> {
 
-  abstract deserialize(buffer: Buffer): T | null | Promise<T | null>;
+  abstract deserialize(stream: Readable): Promise<T | null>;
 
   async lookup(sha: Sha){
     return await this.cache.getAsync(sha.hex, async () => {
-      let buffer = await fs.readFile(await this.getPath(sha)).catch(() => null);
-      if(!buffer)
-        return null;
-      return await this.deserialize(buffer);
+      const path = await this.getPath(sha);
+      let stream = fs.createReadStream(path);
+      return await new Promise(resolve => {
+        stream
+          .once("open", () => {
+            resolve(this.deserialize(stream));
+          })
+          .once("error", () => resolve(null));
+      })
     })
   }
 
-  abstract getSha(t: T): Sha
+  abstract getSha(t: T): Promise<Sha>
 
   reference = () => Sha.reference().map<T>({
     serialize: t => this.getSha(t),

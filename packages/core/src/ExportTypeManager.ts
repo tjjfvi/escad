@@ -2,6 +2,7 @@
 import { ExportType } from "./ExportType";
 import { ReadonlyArtifactManager } from "./ReadonlyArtifactManager";
 import { Product, ProductType } from "./Product";
+import { Readable } from "stream";
 
 export class ExportTypeManager<P extends Product<P>> extends ReadonlyArtifactManager<ExportType<P>> {
 
@@ -15,10 +16,10 @@ export class ExportTypeManager<P extends Product<P>> extends ReadonlyArtifactMan
   }
 
   serialize(exportType: ExportType<any>){
-    return Buffer.from(JSON.stringify({
+    return Readable.from([Buffer.from(JSON.stringify({
       name: exportType.name,
       extension: exportType.extension,
-    }));
+    }))]);
   }
 
   static get<P extends Product<P>>(productType: ProductType<P>): ExportTypeManager<P>{

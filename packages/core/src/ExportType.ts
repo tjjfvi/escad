@@ -21,7 +21,7 @@ export class ExportType<P extends Product<P>> implements ExportTypeArgs<P> {
   export: SerializeFunc<P>
   manager: ExportManager<P>;
 
-  exportBuffer(product: P){
+  exportStream(product: P){
     return Serializer.serialize(new Serializer({
       serialize: this.export,
       deserialize: null as any,

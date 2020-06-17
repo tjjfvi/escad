@@ -1,9 +1,8 @@
 
-import escad, { ExportType } from "../packages/core";
+import escad from "../packages/core";
 import "../packages/builtins/register"
-import { Mesh } from "../packages/builtins/";
 
-export default () => {
+export default async () => {
   const el = (
     escad
       .cube({ s: 1 })
@@ -14,7 +13,5 @@ export default () => {
       .union
       .meld
   );
-  const mesh = el.toArrayFlat()[0];
-  ExportType.Registry.getAll(Mesh)[0].manager.store(mesh.sha, Mesh.convert(mesh).process());
   return el;
 };

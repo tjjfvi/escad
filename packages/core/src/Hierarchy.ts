@@ -44,7 +44,7 @@ export class Hierarchy implements FullHierarchyArgs {
   readonly isOutput: boolean;
   readonly isFullOutput: boolean;
 
-  readonly sha: Sha;
+  readonly sha: Promise<Sha>;
 
   readonly writePromise: Promise<void>;
 
@@ -100,7 +100,7 @@ export class Hierarchy implements FullHierarchyArgs {
     const serialized = Serializer.serialize(Hierarchy.serializer(), this);
 
     this.sha = hash(serialized);
-    this.writePromise = Hierarchy.Manager.store(this.sha, Promise.resolve(this)).then(() => { });
+    this.writePromise = this.sha.then(sha => Hierarchy.Manager.store(sha, Promise.resolve(this)).then(() => { }));
   }
 
   static hierarchySha = () => Sha.reference().map<Hierarchy>({

@@ -2,6 +2,7 @@
 import { Product, FinishedProduct } from "./Product";
 import { ArtifactManager } from "./ArtifactManager";
 import { concat, Serializer } from "tszer";
+import { Readable } from "stream";
 
 export class ProductManager extends ArtifactManager<FinishedProduct<Product>> {
 
@@ -19,8 +20,8 @@ export class ProductManager extends ArtifactManager<FinishedProduct<Product>> {
     return Serializer.serialize(this.serializer(), product);
   }
 
-  async deserialize(buffer: Buffer): Promise<FinishedProduct<Product>>{
-    return await Serializer.deserialize(this.serializer(), buffer);
+  deserialize(stream: Readable): Promise<FinishedProduct<Product>>{
+    return Serializer.deserialize(this.serializer(), stream);
   }
 
   getSha(product: Product){

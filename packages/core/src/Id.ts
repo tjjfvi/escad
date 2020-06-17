@@ -29,7 +29,7 @@ export class Id {
     let packageJsonPath = path.normalize(result.path);
     this.filename = path.relative(path.dirname(packageJsonPath), filename);
     this.name = name;
-    this.sha = hash.json(this);
+    this.sha = hash.buffer(this.toString());
     let old = ids.get(this.sha.hex);
     if(old)
       throw new Error(`Duplicative Id under sha "${this.sha.hex}"`);

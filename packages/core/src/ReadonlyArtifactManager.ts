@@ -1,12 +1,14 @@
 
 import fs from "fs-extra";
 import path from "path";
+import { Readable } from "stream";
 
 import { Id } from "./Id";
 import { WeakCache } from "./WeakCache";
 import { Sha } from "./hash";
 import { Hex } from "./hex";
 import { v4 as uuidv4 } from "uuid";
+import { once } from "events";
 
 export abstract class ReadonlyArtifactManager<T> {
 
@@ -40,17 +42,18 @@ export abstract class ReadonlyArtifactManager<T> {
     return this._dirProm = fs.mkdirp(newDir).then(() => this._dir);
   }
 
-  abstract serialize(artifact: T): Buffer | Promise<Buffer>;
+  abstract serialize(artifact: T): Readable
 
   async getPath(sha: Sha){
     return path.join(await this.getDir(), sha.hex);
   }
 
-  async store(sha: Sha, promise: Promise<T>){
+  async store(sha: Sha, artifactPromise: T | Promise<T>){
     return this.cache.setAsync(sha.hex, async () => {
-      let artifact = await promise;
-      let buffer = await this.serialize(artifact);
-      await fs.writeFile(await this.getPath(sha), buffer);
+      let artifact = await artifactPromise;
+      let stream = this.serialize(artifact);
+      stream.pipe(fs.createWriteStream(await this.getPath(sha)));
+      await once(stream, "end");
       return artifact;
     });
   }
