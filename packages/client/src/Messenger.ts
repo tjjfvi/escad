@@ -1,6 +1,6 @@
 
 import { EventEmitter } from "tsee";
-import flatted from "flatted";
+import * as flatted from "flatted";
 import { ServerClientMessage, ClientServerMessage } from "@escad/server-client-messages"
 import { observable } from "rhobo";
 import { Product } from "./Product";
