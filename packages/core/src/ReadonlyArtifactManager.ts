@@ -48,11 +48,20 @@ export abstract class ReadonlyArtifactManager<T> {
     return path.join(await this.getDir(), sha.hex);
   }
 
-  async store(sha: Sha, artifactPromise: T | Promise<T>){
+  async store(sha: Sha, artifactPromise: T | Promise<T>, overwrite = false){
     return this.cache.setAsync(sha.hex, async () => {
+      let path = await this.getPath(sha);
       let artifact = await artifactPromise;
       let stream = this.serialize(artifact);
-      stream.pipe(fs.createWriteStream(await this.getPath(sha)));
+      stream.pipe(
+        fs.createWriteStream(path, {
+          flags: overwrite ? "w" : "wx",
+        })
+      ).on("error", err => {
+        if(err["code" as keyof typeof err] === "EEXIST" && !overwrite)
+          return;
+        throw err;
+      });
       await once(stream, "end");
       return artifact;
     });
