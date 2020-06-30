@@ -1,5 +1,5 @@
 import { Id } from "./Id";
-import { Serializer, DeserializeFunc, SerializeResult } from "tszer";
+import { Serializer, DeserializeFunc, WriteChunk } from "tszer";
 import { Registry } from "./Registry";
 import { Sha, hash } from "./hash";
 import { ParameterManager } from "./ParameterManager";
@@ -37,12 +37,12 @@ export abstract class Parameter<P extends Parameter<P, V>, V> {
 
   abstract valueSerializer: () => Serializer<V>
 
-  abstract serialize(value: P): SerializeResult;
+  abstract serialize(value: P, writeChunk: WriteChunk): Promise<void>;
 
   static getSerializer<P extends Parameter<P, V>, V>(parameterType: ParameterType<P, V>){
     return new Serializer({
       deserialize: parameterType.deserialize,
-      serialize: value => value.serialize(value),
+      serialize: (v, wc) => v.serialize(v, wc),
     });
   }
 

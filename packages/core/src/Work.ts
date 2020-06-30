@@ -99,7 +99,7 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
   static getSerializer<W extends Work<W>>(workType: WorkType<W>){
     return new Serializer({
       deserialize: workType.deserialize,
-      serialize: value => value.serialize(value),
+      serialize: (v, wc) => v.serialize(v, wc),
     });
   }
 

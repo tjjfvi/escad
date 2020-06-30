@@ -22,7 +22,7 @@
     "@escad/core": "^0.0.0",
     "@escad/csg": "^0.0.0",
     "@escad/mesh": "^0.0.0",
-    "tszer": "0.0.18"
+    "tszer": "0.0.20"
   },
   "publishConfig": {
     "access": "public"

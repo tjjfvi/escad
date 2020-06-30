@@ -7,7 +7,7 @@ import { ConvertibleTo } from "./Conversions";
 import { StrictLeaf } from "./Leaf";
 import { Elementish } from "./Element";
 import { ConversionRegistry } from "./ConversionRegistry";
-import { DeserializeFunc, Serializer, SerializeResult } from "tszer";
+import { DeserializeFunc, Serializer, WriteChunk } from "tszer";
 
 export abstract class Product<P extends Product<P> = any> {
 
@@ -48,7 +48,7 @@ export abstract class Product<P extends Product<P> = any> {
 
   abstract clone(): P;
 
-  abstract serialize(value: P): SerializeResult;
+  abstract serialize(value: P, writeChunk: WriteChunk): Promise<void>;
 
   protected process(): Promise<FinishedProduct<P>>{
     if(!this.finished)
@@ -73,7 +73,7 @@ export abstract class Product<P extends Product<P> = any> {
   static getSerializer<P extends Product<P>>(p: ProductType<P>){
     return new Serializer({
       deserialize: p.deserialize,
-      serialize: value => value.serialize(value),
+      serialize: (v, wc) => v.serialize(v, wc),
     });
   }
 
