@@ -32,7 +32,7 @@ type ElementIn<T extends Product<T>> = __Element__<any> | __Operation__<T, any> 
 type ElementOut<T extends Product<T>, Arg extends ElementIn<T>> =
   Arg extends __Element__<infer U> ? Element<T | U> :
   Arg extends __Operation__<T, infer U> ? Element<U> :
-  Arg extends __Component__<infer I, infer U> ? U extends ElementIn<T> ? Component<I, ElementOut<T, U>> : never :
+  Arg extends __Component__<infer I, infer U> ? U extends ElementIn<T> ? Component<I, { 0: ElementOut<T, U> }[T extends any ? 0 : never]> : never :
   never
 
 export interface Element<T extends Product<T>> {
