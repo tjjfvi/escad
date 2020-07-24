@@ -7,7 +7,7 @@ registerViewerRegistration({
   id: Id.get("@escad/client-mesh/Mesh"),
   context: viewer3d,
   map: product => {
-    const buf = product.buffer.slice(2);
+    const buf = product.buffer.slice(6);
     let arr = new Float32Array(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.length));
     let attr = new t.BufferAttribute(arr, 3);
     let geo = new t.BufferGeometry();

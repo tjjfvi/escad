@@ -1,5 +1,5 @@
 import escad from "../packages/core";
-import "../packages/builtins";
+import "../packages/builtins/register";
 
 function range(max: number): number[]
 function range(min: number, max: number): number[]
@@ -43,7 +43,7 @@ export default () => {
       .rotateZ(-45)
       .translate([or - Math.sqrt(2) / 2 * (or - ir), 0, 0])
 
-  const piece = () => ({
+  const piece = () => escad({
     piece: escad.union([0, 90, 180, 270].map(angle =>
       escad.union(
         subpieceConnector(),

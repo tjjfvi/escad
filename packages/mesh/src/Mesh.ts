@@ -2,7 +2,7 @@
 import { Face } from "./Face";
 import { Vector3 } from "./Vector3";
 import { Product, Id } from "@escad/core";
-import { array, Serializer, SerializeFunc, DeserializeFunc } from "tszer";
+import { array, Serializer, SerializeFunc, DeserializeFunc, uint48LE } from "tszer";
 import { registerPlugin } from "@escad/register-client-plugin"
 
 class Mesh extends Product<Mesh> {
@@ -31,7 +31,7 @@ class Mesh extends Product<Mesh> {
   }
 
   static serializer: () => Serializer<Mesh> = () =>
-    array(Face.serializer()).map<Mesh>({
+    array(Face.serializer(), uint48LE()).map<Mesh>({
       serialize: mesh => mesh.faces,
       deserialize: faces => new Mesh(faces).finish(),
     });
