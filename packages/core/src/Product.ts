@@ -8,6 +8,7 @@ import { StrictLeaf } from "./Leaf";
 import { Elementish } from "./Element";
 import { ConversionRegistry } from "./ConversionRegistry";
 import { DeserializeFunc, Serializer, WriteChunk } from "tszer";
+import { timers } from "./Timer";
 
 export abstract class Product<P extends Product<P> = any> {
 
@@ -30,9 +31,18 @@ export abstract class Product<P extends Product<P> = any> {
     if(this.finished)
       return this._sha as any;
     let oldSha = this._sha;
-    this._sha = hash(Serializer.serialize(Product.getSerializer<P>(this.type), this as any));
+    timers.productSha.start();
+    this._sha = hash(Serializer.serialize(Product.getSerializer<P>(this.type), this as any)).then(x => {
+      timers.productSha.end();
+      return x;
+    });
     if(oldSha !== this._sha) {
-      this.writePromise = this._sha.then(sha => Product.Manager.store(sha, this as any).then(() => { }));
+      this.writePromise = this._sha.then(x => {
+        timers.productSerialize.start();
+        return x;
+      }).then(sha => Product.Manager.store(sha, this as any).then(() => {
+        timers.productSerialize.end();
+      }));
     }
     return this._sha;
   }

@@ -40,6 +40,7 @@ export * from './Product';
 export * from './ProductManager';
 export * from './ReadonlyArtifactManager';
 export * from './Registry';
+export * from './Timer';
 export * from './WeakCache';
 export * from './Work';
 export * from './WorkManager';

@@ -3,6 +3,7 @@ import crypto from "crypto";
 import { hex, Hex, unHex } from "./hex";
 import { constLengthBuffer } from "tszer";
 import { Readable } from "stream";
+import { timers } from "./Timer";
 
 export class Sha {
 
@@ -25,9 +26,11 @@ export class Sha {
 
 export const hash = (stream: Readable) => new Promise<Sha>(resolve => {
   const hash = crypto.createHash("sha256");
+  timers.sha.start();
   stream
     .pipe(hash)
     .once("finish", () => {
+      timers.sha.end();
       resolve(new Sha(hash.digest()));
       hash.destroy();
     })

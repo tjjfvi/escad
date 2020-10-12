@@ -9,7 +9,7 @@
       "type": "node",
       "request": "attach",
       "skipFiles": [
-        "<node_internals>/**"
+        "<node_internals>/**/*.js"
       ],
       "port": 2992,
     },
@@ -18,7 +18,7 @@
       "type": "node",
       "request": "attach",
       "skipFiles": [
-        "<node_internals>/**"
+        "<node_internals>/**/*.js"
       ],
       "port": 9229,
     }

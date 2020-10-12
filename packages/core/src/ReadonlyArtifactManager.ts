@@ -53,16 +53,17 @@ export abstract class ReadonlyArtifactManager<T> {
       let path = await this.getPath(sha);
       let artifact = await artifactPromise;
       let stream = this.serialize(artifact);
-      stream.pipe(
-        fs.createWriteStream(path, {
-          flags: overwrite ? "w" : "wx",
-        })
-      ).on("error", err => {
-        if(err["code" as keyof typeof err] === "EEXIST" && !overwrite)
-          return;
-        throw err;
-      });
-      await once(stream, "end");
+      await new Promise(resolve =>
+        stream.pipe(
+          fs.createWriteStream(path, {
+            flags: overwrite ? "w" : "wx",
+          })
+        ).on("error", err => {
+          if(err["code" as keyof typeof err] === "EEXIST" && !overwrite)
+            return resolve();
+          throw err;
+        }).on("end", () => resolve())
+      )
       return artifact;
     });
   }

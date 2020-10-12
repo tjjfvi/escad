@@ -5,6 +5,7 @@ import { Product, FinishedProduct } from "./Product";
 import { Id } from "./Id";
 import { WorkManager } from "./WorkManager";
 import { StrictLeaf } from "./Leaf";
+import { timers } from "./Timer"
 import { Serializer, array, DeserializeFunc, SerializeFunc } from "tszer"
 
 export type ProcessedChildren<C extends Product[]> = {
@@ -37,11 +38,26 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
   }
 
   freeze(){
+    if(this.children.some(c => "redirect" in c && c.redirect))
+      this.redirect = this.clone(this.children.map(c => "redirect" in c && c.redirect || c) as any)
+    if(this.redirect && "redirect" in this.redirect && this.redirect.redirect)
+      this.redirect = this.redirect.redirect;
     if(this.frozen)
       throw new Error("Work.freeze() should only be called once");
-    this.sha = hash(Work.Manager.serialize(this));
+    this.sha = Promise.all(this.children.map(c => c.sha)).then(x => {
+      timers.workSha.start();
+      return hash(Work.Manager.serialize(this)).then(x => {
+        timers.workSha.end();
+        return x;
+      })
+    });
     this.frozen = true;
-    this.writePromise = this.sha.then(sha => Work.Manager.store(sha, this).then(() => { }));
+    this.writePromise = this.sha.then(sha => {
+      timers.workSerialize.start();
+      return sha;
+    }).then(sha => Work.Manager.store(sha, this).then(() => {
+      timers.workSerialize.end();
+    }));
     Object.freeze(this);
   }
 
@@ -74,9 +90,12 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
     }
 
     const resultPromise = (async (): Promise<FinishedProduct<T>> => {
+      timers.workProcess.start();
       const memoized = await Product.Manager.lookup(sha);
-      if(memoized)
+      if(memoized) {
+        timers.workProcess.end();
         return memoized as any;
+      }
 
       const inputs: ProcessedChildren<C> = await Promise.all(this.children.map(c => c.process())) as any;
       const alias = this.clone(inputs);
@@ -86,8 +105,9 @@ export abstract class Work<_W extends Work<_W, T, C>, T extends Product<T> = Pro
       const result = await resultPromise;
 
       await Product.Manager.storePointer(sha, await result.sha);
-      await result.writePromise;
+      // await result.writePromise;
 
+      timers.workProcess.end();
       return result;
     })()
 
