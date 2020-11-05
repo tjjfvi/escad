@@ -1,58 +1,52 @@
 
-import { hash, Sha } from "./hash";
 import { posix as path } from "path";
 import readPkgUp from "read-pkg-up";
-import { Hex } from "./hex";
-import { IdManager } from "./IdManager";
 
-const ids = new Map<Hex, Id>();
+const ids = new Map<string, Id<symbol>>();
 
-export class Id {
+type UniqueSymbolContraint<T> = T extends symbol ? symbol extends T ? "unique symbol" : T : symbol;
 
-  static Manager = new IdManager();
+export interface Id<T extends symbol = symbol> {
+  __symb__?: T,
 
-  packageName: string;
-  packageVersion: string;
-  filename: string;
-  name: string;
-  sha: Sha;
+  packageName: string,
+  packageVersion: string,
+  filename: string,
+  name: string,
 
-  writePromise: Promise<void>;
-
-  constructor(name: string, filename: string){
-    const result = readPkgUp.sync({ cwd: path.dirname(filename) });
-    if(!result)
-      throw new Error("Could not find package.json from file " + filename);
-    let { packageJson: { name: packageName, version } } = result;
-    this.packageName = packageName;
-    this.packageVersion = version;
-    let packageJsonPath = path.normalize(result.path);
-    this.filename = path.relative(path.dirname(packageJsonPath), filename);
-    this.name = name;
-    this.sha = hash.buffer(this.toString());
-    let old = ids.get(this.sha.hex);
-    if(old)
-      throw new Error(`Duplicative Id under sha "${this.sha.hex}"`);
-    ids.set(this.sha.hex, this);
-    this.writePromise = Id.Manager.store(this.sha, Promise.resolve(this)).then(() => { });
-  }
-
-  static get(sha: Sha){
-    return ids.get(sha.hex);
-  }
-
-  toString(){
-    return `${this.packageName}@${this.packageVersion}/${this.filename}/${this.name}`;
-  }
-
-  static reference = () => Sha.reference().map<Id>({
-    serialize: id => id.sha,
-    deserialize: sha => {
-      const id = Id.get(sha);
-      if(!id)
-        throw new Error(`Could not find id of sha ${sha}`);
-      return id;
-    }
-  })
-
+  full: string,
 }
+
+export const Id = Object.assign(
+  <T extends UniqueSymbolContraint<U>, U = T>(name: string, filepath: string): Id<Extract<U, symbol>> => {
+    const result = readPkgUp.sync({ cwd: path.dirname(filepath) });
+    if(!result)
+      throw new Error("Could not find package.json from file " + filepath);
+    const { packageJson: { name: packageName, version: packageVersion } } = result;
+    const packageJsonPath = path.normalize(result.path);
+    const filename = path.relative(path.dirname(packageJsonPath), filepath);
+    const full = `${packageName}@${packageVersion}/${filename}/${name}`;
+    if(ids.has(full))
+      throw new Error(`Duplicate ids created under ${full}`);
+    const id: Id<Extract<U, symbol>> = {
+      packageName,
+      packageVersion,
+      filename,
+      name,
+      full,
+    };
+    ids.set(full, id);
+    return id;
+  },
+  {
+  // Manager: new IdManager(),
+    get: getId,
+  }
+);
+
+function getId(id: Id): Id
+function getId(full: string): Id
+function getId(id: string | Id){
+  return ids.get(typeof id === "string" ? id : id.full);
+}
+

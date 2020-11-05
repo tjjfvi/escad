@@ -1,16 +1,14 @@
 
 import fs from "fs-extra";
 import path from "path";
-import { Readable } from "stream";
 
 import { Id } from "./Id";
 import { WeakCache } from "./WeakCache";
 import { Sha } from "./hash";
 import { Hex } from "./hex";
 import { v4 as uuidv4 } from "uuid";
-import { once } from "events";
 
-export abstract class ReadonlyArtifactManager<T> {
+export abstract class ReadonlyArtifactManager<T, U> {
 
   private static _artifactsDirResolve: null | ((value: string) => void) = null;
   static artifactsDir: Promise<string> = new Promise(r => ReadonlyArtifactManager._artifactsDirResolve = r);
@@ -42,7 +40,7 @@ export abstract class ReadonlyArtifactManager<T> {
     return this._dirProm = fs.mkdirp(newDir).then(() => this._dir);
   }
 
-  abstract serialize(artifact: T): Readable
+  abstract dehydrate(artifact: T): U
 
   async getPath(sha: Sha){
     return path.join(await this.getDir(), sha.hex);
@@ -52,18 +50,8 @@ export abstract class ReadonlyArtifactManager<T> {
     return this.cache.setAsync(sha.hex, async () => {
       let path = await this.getPath(sha);
       let artifact = await artifactPromise;
-      let stream = this.serialize(artifact);
-      await new Promise(resolve =>
-        stream.pipe(
-          fs.createWriteStream(path, {
-            flags: overwrite ? "w" : "wx",
-          })
-        ).on("error", err => {
-          if(err["code" as keyof typeof err] === "EEXIST" && !overwrite)
-            return resolve();
-          throw err;
-        }).on("end", () => resolve())
-      )
+      let obj = this.dehydrate(artifact);
+      await fs.writeFile(path, JSON.stringify(obj), { flag: overwrite ? "w" : "wx" });
       return artifact;
     });
   }

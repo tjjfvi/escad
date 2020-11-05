@@ -1,10 +1,10 @@
 
 import { ExportType } from "./ExportType";
 import { ReadonlyArtifactManager } from "./ReadonlyArtifactManager";
-import { Product, ProductType } from "./Product";
+import { LeafProduct, ProductType } from "./LeafProduct";
 import { Readable } from "stream";
 
-export class ExportTypeManager<P extends Product<P>> extends ReadonlyArtifactManager<ExportType<P>> {
+export class ExportTypeManager<P extends LeafProduct> extends ReadonlyArtifactManager<ExportType<P>> {
 
   private static managerMap = new Map<ProductType<any>, ExportTypeManager<any>>();
 
@@ -22,7 +22,7 @@ export class ExportTypeManager<P extends Product<P>> extends ReadonlyArtifactMan
     }))]);
   }
 
-  static get<P extends Product<P>>(productType: ProductType<P>): ExportTypeManager<P>{
+  static get<P extends LeafProduct>(productType: ProductType<P>): ExportTypeManager<P>{
     let manager = this.managerMap.get(productType) ?? new ExportTypeManager(productType);
     this.managerMap.set(productType, manager);
     return manager;

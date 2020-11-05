@@ -1,12 +1,12 @@
-import { Product } from "./Product";
+import { LeafProduct } from "./LeafProduct";
 import { Operation } from "./Operation";
 import { Hierarchy } from "./Hierarchy";
 import { Element, ArrayElement } from "./Element";
-import { Leaf } from "./Leaf";
+import { ConvertibleTo } from "./Conversions";
 
 
 export const mapOperation = (
- <I extends Product<I>, O extends Product<O> = I>(name: string, func: (i: Leaf<I>) => Leaf<O>) =>
+ <I extends LeafProduct, O extends LeafProduct = I>(name: string, func: (i: ConvertibleTo<I>) => ConvertibleTo<O>) =>
     new Operation<I, O>(name, arg => {
       const argArr = arg.toArray();
       const shouldFlatten = argArr.length === 1;

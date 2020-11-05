@@ -9,17 +9,17 @@ abstract class PointMapWork<W extends PointMapWork<W>> extends Work<W, Mesh, [Co
   _execute(input: Vector3): Vector3
   _execute(input: Face): Face
   _execute(input: Mesh): Mesh
-  _execute(input: Mesh | Face | Vector3): Mesh | Face | Vector3{
-    if(input instanceof Mesh)
+  _execute(input: Mesh | Face | Vector3): Mesh | Face | Vector3 {
+    if (input instanceof Mesh)
       return new Mesh(input.faces.map(f => this._execute(f)));
-    if(input instanceof Face)
+    if (input instanceof Face)
       return new Face(input.points.map(p => this._execute(p)));
-    if(input instanceof Vector3)
+    if (input instanceof Vector3)
       return this.map(input);
     throw new Error("Invalid input to PointMapWork");
   }
 
-  async execute([input]: [StrictLeaf<ConvertibleTo<Mesh>>]){
+  async execute([input]: [ConvertibleTo<Mesh>]) {
     return this._execute(await Mesh.convert(input).process()).finish();
   }
 

@@ -1,38 +1,19 @@
 
 import fs from "fs-extra";
-import { Readable } from "stream";
 
 import { Sha } from "./hash";
 import { ReadonlyArtifactManager } from "./ReadonlyArtifactManager";
 
-export abstract class ArtifactManager<T> extends ReadonlyArtifactManager<T> {
+export abstract class ArtifactManager<T, U> extends ReadonlyArtifactManager<T, U> {
 
-  abstract deserialize(stream: Readable): Promise<T | null>;
+  abstract rehydrate(obj: U): T;
 
   async lookup(sha: Sha){
-    return await this.cache.getAsync(sha.hex, async () => {
+    return await this.cache.getAsync(sha, async () => {
       const path = await this.getPath(sha);
-      let stream = fs.createReadStream(path);
-      return await new Promise(resolve => {
-        stream
-          .once("open", () => {
-            resolve(this.deserialize(stream));
-          })
-          .once("error", () => resolve(null));
-      })
+      const obj: U = JSON.parse(await fs.readFile(path, "utf8"));
+      return this.rehydrate(obj);
     })
   }
-
-  abstract getSha(t: T): Promise<Sha>
-
-  reference = () => Sha.reference().map<T>({
-    serialize: t => this.getSha(t),
-    deserialize: async sha => {
-      const artifact = await this.lookup(sha);
-      if(!artifact)
-        throw new Error(`Could not find artifact of sha ${sha}`);
-      return artifact;
-    }
-  })
 
 }

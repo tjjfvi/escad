@@ -2,10 +2,10 @@
 import { Hierarchy } from "./Hierarchy";
 import { Operation, __Operation__ } from "./Operation";
 import { Component, __Component__ } from "./Component";
-import { Product } from "./Product";
+import { LeafProduct } from "./LeafProduct";
 import { __Thing__ } from "./__Thing__";
 import { builtins, Builtins } from "./builtins";
-import { Leaf } from "./Leaf";
+import { ConvertibleTo } from "./Leaf";
 import { ConvertibleTo } from "./Conversions";
 
 interface ObjMap<T> {
@@ -15,58 +15,58 @@ const isObjMap = (o: unknown): o is ObjMap<unknown> =>
   typeof o === "object" && !!o && (o.constructor === Object || Object.getPrototypeOf(o) === null);
 
 type ElementishFlat<T> = Array<T> | ObjMap<T>;
-export type Elementish<T extends Product<T>> =
+export type Elementish<T extends LeafProduct> =
   | Array<Elementish<T>>
   | ObjMap<Elementish<T>>
-  | Leaf<T>
+  | ConvertibleTo<T>
   | __Element__<ConvertibleTo<T>>
 export type DeepArray<T> = Array<T | DeepArray<T>>;
 
-export class __Element__<T extends Product<T>> extends __Thing__ {
+export class __Element__<T extends LeafProduct> extends __Thing__ {
 
   declare protected __t__: ConvertibleTo<T>;
 
 }
 
-type ElementIn<T extends Product<T>> = __Element__<any> | __Operation__<T, any> | __Component__<any, ElementIn<T>>
-type ElementOut<T extends Product<T>, Arg extends ElementIn<T>> =
+type ElementIn<T extends LeafProduct> = __Element__<any> | __Operation__<T, any> | __Component__<any, ElementIn<T>>
+type ElementOut<T extends LeafProduct, Arg extends ElementIn<T>> =
   Arg extends __Element__<infer U> ? Element<T | U> :
   Arg extends __Operation__<T, infer U> ? Element<U> :
   Arg extends __Component__<infer I, infer U> ? U extends ElementIn<T> ? Component<I, { 0: ElementOut<T, U> }[T extends any ? 0 : never]> : never :
   never
 
-export interface Element<T extends Product<T>> {
+export interface Element<T extends LeafProduct> {
   (): Element<T>,
-  <U extends Product<U>>(el: __Element__<U>): Element<T | U>,
-  <U extends Product<U>>(o: __Operation__<T, U>): Element<U>,
+  <U extends LeafProduct>(el: __Element__<U>): Element<T | U>,
+  <U extends LeafProduct>(o: __Operation__<T, U>): Element<U>,
   <I extends any[], U extends ElementIn<T>>(c: __Component__<I, U>): Component<I, ElementOut<T, U>>,
 }
 
-type _ElementOut<T extends Product<T>, Arg> = Arg extends ElementIn<T> ? ElementOut<T, Arg> : never;
+type _ElementOut<T extends LeafProduct, Arg> = Arg extends ElementIn<T> ? ElementOut<T, Arg> : never;
 
-type _ElementBuiltins<T extends Product<T>> = {
+type _ElementBuiltins<T extends LeafProduct> = {
   [K in keyof Builtins]: _ElementOut<T, Builtins[K]>
 }
 
-export interface Element<T extends Product<T>> extends _ElementBuiltins<T> { }
+export interface Element<T extends LeafProduct> extends _ElementBuiltins<T> { }
 
-export class Element<T extends Product<T>> extends __Element__<T> {
+export class Element<T extends LeafProduct> extends __Element__<T> {
 
   declare protected __t__: T;
 
-  val: ElementishFlat<Element<T>> | Leaf<T>;
+  val: ElementishFlat<Element<T>> | ConvertibleTo<T>;
   hierarchy: Hierarchy;
 
-  static create<T extends Product<T>>(c: Array<Elementish<T>>, h?: Hierarchy): ArrayElement<T>;
-  static create<T extends Product<T>>(c: ObjMap<Elementish<T>>, h?: Hierarchy): ObjMapElement<T>;
-  static create<T extends Product<T>>(c: ElementishFlat<Elementish<T>>, h?: Hierarchy): ArrayishElement<T>;
-  static create<T extends Product<T>>(c: Leaf<T>, h?: Hierarchy): LeafElement<T>;
-  static create<T extends Product<T>>(c: ArrayElement<T>, h?: Hierarchy): ArrayElement<T>;
-  static create<T extends Product<T>>(c: ObjMapElement<T>, h?: Hierarchy): ObjMapElement<T>;
-  static create<T extends Product<T>>(c: ArrayishElement<T>, h?: Hierarchy): ArrayishElement<T>;
-  static create<T extends Product<T>>(c: LeafElement<T>, h?: Hierarchy): LeafElement<T>;
-  static create<T extends Product<T>>(c: Elementish<T>, h?: Hierarchy): Element<T>;
-  static create<T extends Product<T>>(c: Elementish<T>, h?: Hierarchy){
+  static create<T extends LeafProduct>(c: Array<Elementish<T>>, h?: Hierarchy): ArrayElement<T>;
+  static create<T extends LeafProduct>(c: ObjMap<Elementish<T>>, h?: Hierarchy): ObjMapElement<T>;
+  static create<T extends LeafProduct>(c: ElementishFlat<Elementish<T>>, h?: Hierarchy): ArrayishElement<T>;
+  static create<T extends LeafProduct>(c: ConvertibleTo<T>, h?: Hierarchy): LeafElement<T>;
+  static create<T extends LeafProduct>(c: ArrayElement<T>, h?: Hierarchy): ArrayElement<T>;
+  static create<T extends LeafProduct>(c: ObjMapElement<T>, h?: Hierarchy): ObjMapElement<T>;
+  static create<T extends LeafProduct>(c: ArrayishElement<T>, h?: Hierarchy): ArrayishElement<T>;
+  static create<T extends LeafProduct>(c: LeafElement<T>, h?: Hierarchy): LeafElement<T>;
+  static create<T extends LeafProduct>(c: Elementish<T>, h?: Hierarchy): Element<T>;
+  static create<T extends LeafProduct>(c: Elementish<T>, h?: Hierarchy){
     return new Element(c, h);
   }
 
@@ -102,7 +102,7 @@ export class Element<T extends Product<T>> extends __Element__<T> {
     else if(c instanceof Element)
       this.val = c.val;
     else
-      this.val = c as Leaf<T>;
+      this.val = c as ConvertibleTo<T>;
     this.hierarchy = h;
   }
 
@@ -122,8 +122,8 @@ export class Element<T extends Product<T>> extends __Element__<T> {
     return !this.isArrayish();
   }
 
-  map<U extends Product<U>>(
-    f: (x: Leaf<T>) => Elementish<U>,
+  map<U extends LeafProduct>(
+    f: (x: ConvertibleTo<T>) => Elementish<U>,
     hierarchyGen: (
       e: Elementish<U>,
       old: Element<T>,
@@ -148,7 +148,7 @@ export class Element<T extends Product<T>> extends __Element__<T> {
     throw new Error("Invalid Element.val type");
   }
 
-  toArray(): Array<Element<T>> | Leaf<T>{
+  toArray(): Array<Element<T>> | ConvertibleTo<T>{
     if(this.isArray())
       return this.val;
     if(this.isObjMap())
@@ -158,7 +158,7 @@ export class Element<T extends Product<T>> extends __Element__<T> {
     throw new Error("Invalid Element.val type");
   }
 
-  toArrayDeep(): DeepArray<Leaf<T>> | Leaf<T>{
+  toArrayDeep(): DeepArray<ConvertibleTo<T>> | ConvertibleTo<T>{
     if(this.isLeaf())
       return this.val;
     if(this.isArrayish())
@@ -166,7 +166,7 @@ export class Element<T extends Product<T>> extends __Element__<T> {
     throw new Error("Invalid Element.val type")
   }
 
-  toArrayFlat(): Array<Leaf<T>>{
+  toArrayFlat(): Array<ConvertibleTo<T>>{
     if(this.isLeaf())
       return [this.val];
     if(this.isArrayish())
@@ -174,8 +174,8 @@ export class Element<T extends Product<T>> extends __Element__<T> {
     throw new Error("Invalid Element.val type")
   }
 
-  join<U extends Product<U>>(el: __Element__<U>): Element<T | U>{
-    let toArr = <T extends Product<T>>(el: Element<T>) =>
+  join<U extends LeafProduct>(el: __Element__<U>): Element<T | U>{
+    let toArr = <T extends LeafProduct>(el: Element<T>) =>
       el.isArray() ? el.val : [el];
     return new Element<T | U>([...toArr(this), ...toArr(el as Element<U>)])
   }
@@ -192,30 +192,30 @@ export class Element<T extends Product<T>> extends __Element__<T> {
 
 }
 
-export interface ArrayElement<T extends Product<T>> extends ArrayishElement<T> {
+export interface ArrayElement<T extends LeafProduct> extends ArrayishElement<T> {
   val: Array<Element<T>>,
   applyHierarchy(hierarchyGen: (oldHierarchy: Hierarchy) => Hierarchy): ArrayElement<T>,
   applyHierarchy(hierarchy: Hierarchy): ArrayElement<T>,
 }
 
-export interface ObjMapElement<T extends Product<T>> extends ArrayishElement<T> {
+export interface ObjMapElement<T extends LeafProduct> extends ArrayishElement<T> {
   val: ObjMap<Element<T>>,
   applyHierarchy(hierarchyGen: (oldHierarchy: Hierarchy) => Hierarchy): ObjMapElement<T>,
   applyHierarchy(hierarchy: Hierarchy): ObjMapElement<T>,
 }
 
-export interface ArrayishElement<T extends Product<T>> extends Element<T> {
+export interface ArrayishElement<T extends LeafProduct> extends Element<T> {
   val: ElementishFlat<Element<T>>,
   toArray(_?: true): Element<T>[],
-  toArrayDeep(_?: true): DeepArray<Leaf<T>>,
+  toArrayDeep(_?: true): DeepArray<ConvertibleTo<T>>,
   applyHierarchy(hierarchyGen: (oldHierarchy: Hierarchy) => Hierarchy): ArrayishElement<T>,
   applyHierarchy(hierarchy: Hierarchy): ArrayishElement<T>,
 }
 
-export interface LeafElement<T extends Product<T>> extends Element<T> {
-  val: Leaf<T>,
-  toArray(_?: true): Leaf<T>,
-  toArrayDeep(_?: true): Leaf<T>,
+export interface LeafElement<T extends LeafProduct> extends Element<T> {
+  val: ConvertibleTo<T>,
+  toArray(_?: true): ConvertibleTo<T>,
+  toArrayDeep(_?: true): ConvertibleTo<T>,
   applyHierarchy(hierarchyGen: (oldHierarchy: Hierarchy) => Hierarchy): LeafElement<T>,
   applyHierarchy(hierarchy: Hierarchy): LeafElement<T>,
 }

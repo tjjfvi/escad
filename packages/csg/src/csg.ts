@@ -35,11 +35,11 @@ export class CSGWrapper extends Product<CSGWrapper> {
 
   static id = new Id("CSGWrapper", __filename);
 
-  constructor(public node: any){
+  constructor(public node: any) {
     super();
   }
 
-  clone(){
+  clone() {
     return new CSGWrapper(this.node);
   }
 
@@ -60,10 +60,10 @@ export class CSGWrapper extends Product<CSGWrapper> {
     )).map<any>({
       serialize: n => [n ? [n.polygons, n.front, n.back] : undefined],
       deserialize: ([v]) => {
-        if(!v) return null
+        if (!v) return null
         let node = new CSG.Node();
         [node.polygons, node.front, node.back] = v;
-        if(node.polygons.length)
+        if (node.polygons.length)
           node.plane = node.polygons[0].plane.clone();
         return node;
       }
@@ -87,12 +87,12 @@ class MeshToCsgWork extends Work<MeshToCsgWork, CSGWrapper, [Mesh]> {
 
   static id = new Id("MeshToCsgWork", __filename);
 
-  constructor(child: StrictLeaf<Mesh>){
+  constructor(child: Mesh) {
     super([child]);
     this.freeze();
   }
 
-  clone([child]: [StrictLeaf<Mesh>]){
+  clone([child]: [Mesh]) {
     return new MeshToCsgWork(child);
   }
 
@@ -106,7 +106,7 @@ class MeshToCsgWork extends Work<MeshToCsgWork, CSGWrapper, [Mesh]> {
 
   static deserialize: DeserializeFunc<MeshToCsgWork> = MeshToCsgWork.serializer().deserialize;
 
-  async execute([input]: [Mesh]){
+  async execute([input]: [Mesh]) {
     let polygons = input.faces.map(f => new CSG.Polygon(f.points.map(v => new CSG.Vertex(new CSG.Vector(v), []))));
     let node = new CSG.Node(polygons);
     return new CSGWrapper(node).finish();
@@ -120,12 +120,12 @@ class CsgToMeshWork extends Work<CsgToMeshWork, Mesh, [CSGWrapper]> {
 
   static id = new Id("CsgToMeshWork", __filename);
 
-  constructor(child: StrictLeaf<CSGWrapper>){
+  constructor(child: CSGWrapper) {
     super([child]);
     this.freeze();
   }
 
-  clone([child]: [StrictLeaf<CSGWrapper>]){
+  clone([child]: [CSGWrapper]) {
     return new CsgToMeshWork(child);
   }
 
@@ -139,7 +139,7 @@ class CsgToMeshWork extends Work<CsgToMeshWork, Mesh, [CSGWrapper]> {
 
   static deserialize: DeserializeFunc<CsgToMeshWork> = CsgToMeshWork.serializer().deserialize;
 
-  async execute([input]: [CSGWrapper]){
+  async execute([input]: [CSGWrapper]) {
     let faces: any[] = [];
 
     let tv = (v: any) => new Vector3(v.pos.x, v.pos.y, v.pos.z);
@@ -165,12 +165,12 @@ class CsgWork extends Work<CsgWork, CSGWrapper, ConvertibleTo<CSGWrapper>[]> {
 
   static id = new Id("CsgWork", __filename);
 
-  constructor(children: Leaf<CSGWrapper>[], public operations: CsgOperation[], public final: number){
+  constructor(children: Leaf<CSGWrapper>[], public operations: CsgOperation[], public final: number) {
     super(children);
     this.freeze();
   }
 
-  clone(children: Leaf<CSGWrapper>[]){
+  clone(children: Leaf<CSGWrapper>[]) {
     return new CsgWork(children, this.operations, this.final);
   }
 
@@ -188,17 +188,17 @@ class CsgWork extends Work<CsgWork, CSGWrapper, ConvertibleTo<CSGWrapper>[]> {
 
   static deserialize: DeserializeFunc<CsgWork> = CsgWork.serializer().deserialize;
 
-  async execute(rawInputs: FinishedProduct<ConvertibleTo<CSGWrapper>>[]){
+  async execute(rawInputs: FinishedProduct<ConvertibleTo<CSGWrapper>>[]) {
     let inputs = await Promise.all(rawInputs.map(i => CSGWrapper.convert(i).process()));
     let nodes = await Promise.all(inputs.map(async i =>
       new CSG.Node(i.node.allPolygons())
     ));
     this.operations.map(op => {
-      if(op[0] === "invert")
+      if (op[0] === "invert")
         return nodes[op[1]].invert();
-      if(op[0] === "clipTo")
+      if (op[0] === "clipTo")
         return nodes[op[1]].clipTo(nodes[op[2]]);
-      if(op[0] === "build")
+      if (op[0] === "build")
         return nodes[op[1]] = new CSG.Node(nodes[op[1]].allPolygons().concat(nodes[op[2]].allPolygons()));
     })
     return new CSGWrapper(nodes[this.final]).finish();
@@ -209,13 +209,13 @@ class CsgWork extends Work<CsgWork, CSGWrapper, ConvertibleTo<CSGWrapper>[]> {
 Product.Registry.register(CSGWrapper);
 Work.Registry.register(CsgWork);
 
-let _csg = (args: Leaf<CSGWrapper>[], ops: CsgOperation[], fin: number): StrictLeaf<CSGWrapper> =>
+let _csg = (args: Leaf<CSGWrapper>[], ops: CsgOperation[], fin: number): CSGWrapper =>
   new CsgWork(args, ops, fin);
 let _union = (...originalArgs: Elementish<CSGWrapper>[]) => {
   let flatArgs = new Element(originalArgs).toArrayFlat();
-  if(flatArgs.length === 0)
+  if (flatArgs.length === 0)
     return;
-  if(flatArgs.length === 1)
+  if (flatArgs.length === 1)
     return flatArgs[0];
   return _csg(flatArgs, flatArgs.slice(1).flatMap((_, i) => {
     let a = 0;
@@ -233,18 +233,18 @@ let _union = (...originalArgs: Elementish<CSGWrapper>[]) => {
 
 let _diff = (el: Element<CSGWrapper>) => {
   let originalArgs: Elementish<CSGWrapper> = el.toArrayDeep();
-  if(!(originalArgs instanceof Array))
+  if (!(originalArgs instanceof Array))
     return originalArgs;
-  if(originalArgs.length === 0)
+  if (originalArgs.length === 0)
     return;
-  if(originalArgs.length === 1)
+  if (originalArgs.length === 1)
     [originalArgs] = originalArgs;
   const args = new Element(originalArgs).toArrayDeep();
-  if(args instanceof Product || args instanceof Work)
+  if (args instanceof Product || args instanceof Work)
     return args;
   const positive = _union(args[0]);
   const negative = _union(...args.slice(1));
-  if(!positive || !negative)
+  if (!positive || !negative)
     return positive;
   const a = 0,
     b = 1;
@@ -262,9 +262,9 @@ let _diff = (el: Element<CSGWrapper>) => {
 
 let _intersect = (...originalArgs: Elementish<CSGWrapper>[]) => {
   let args = new Element(originalArgs).toArrayFlat();
-  if(args.length === 0)
+  if (args.length === 0)
     return;
-  if(args.length === 1)
+  if (args.length === 1)
     return args[0];
   return _csg(args, [
     ["invert", 0],
@@ -286,7 +286,7 @@ let _intersect = (...originalArgs: Elementish<CSGWrapper>[]) => {
 export const union: Operation<CSGWrapper, CSGWrapper> = (
   new Operation<CSGWrapper, CSGWrapper>("union", el => _union(el) ?? new Element<CSGWrapper>([]))
 );
-export const diff: Operation<CSGWrapper, CSGWrapper>  = (
+export const diff: Operation<CSGWrapper, CSGWrapper> = (
   new Operation<CSGWrapper, CSGWrapper>("diff", el => _diff(el) ?? new Element<CSGWrapper>([]))
 );
 export const intersection: Operation<CSGWrapper, CSGWrapper> = (

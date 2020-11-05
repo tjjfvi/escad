@@ -1,31 +1,21 @@
 
-import { Product, FinishedProduct } from "./Product";
+import { LeafProduct } from "./LeafProduct";
 import { ArtifactManager } from "./ArtifactManager";
-import { concat, Serializer } from "tszer";
-import { Readable } from "stream";
+import { Sha } from "./hash";
+import { Id } from "./Id";
 
-export class ProductManager extends ArtifactManager<FinishedProduct<Product>> {
+export class ProductManager extends ArtifactManager<FinishedProduct<LeafProduct>, { id: Sha, product: any }> {
 
   subdir = "products"
 
-  serializer = () => concat(
-    Product.Registry.reference(),
-    ([productType]) => Product.getSerializer(productType),
-  ).map<FinishedProduct<Product>>({
-    serialize: product => [product.type, product],
-    deserialize: ([, product]) => product.finish(),
-  })
-
-  serialize(product: FinishedProduct<Product>){
-    return Serializer.serialize(this.serializer(), product);
+  dehydrate(product: FinishedProduct<LeafProduct>){
+    return { id: product.type.id.sha, product: product.dehydrate() };
   }
 
-  deserialize(stream: Readable): Promise<FinishedProduct<Product>>{
-    return Serializer.deserialize(this.serializer(), stream);
-  }
-
-  getSha(product: Product){
-    return product.sha;
+  rehydrate(obj: { id: Sha, product: any }): Promise<FinishedProduct<LeafProduct>>{
+    return Product.Registry.get(Id.get(obj.id) ?? (() => {
+      throw new Error("...")
+    })()).rehydrate(obj);
   }
 
 }

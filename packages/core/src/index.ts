@@ -2,9 +2,9 @@
 export * from "./builtins";
 import { builtins } from "./builtins";
 import { Element, Elementish } from "./Element";
-import { Product } from "./Product";
+import { LeafProduct } from "./LeafProduct";
 
-const escadFunc = <T extends Product<T>>(...a: Elementish<T>[]) => new Element(a.length === 1 ? a[0] : a)
+const escadFunc = <T extends LeafProduct>(...a: Elementish<T>[]) => new Element(a.length === 1 ? a[0] : a)
 
 const escad = new Proxy(escadFunc, {
   get: (target, key) =>
@@ -36,7 +36,7 @@ export * from './Leaf';
 export * from './Operation';
 export * from './Parameter';
 export * from './ParameterManager';
-export * from './Product';
+export * from './LeafProduct';
 export * from './ProductManager';
 export * from './ReadonlyArtifactManager';
 export * from './Registry';

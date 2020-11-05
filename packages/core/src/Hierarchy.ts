@@ -1,7 +1,7 @@
 
 import { hash, Sha } from "./hash";
 import { Elementish, Element } from "./Element";
-import { Product } from "./Product";
+import { LeafProduct } from "./LeafProduct";
 import { Work } from "./Work";
 import { HierarchyManager } from "./HierarchyManager";
 import { concat, string, constLengthString, optionalBank, array, Serializer } from "tszer";
@@ -138,7 +138,7 @@ export class Hierarchy implements FullHierarchyArgs {
     })
   })
 
-  static fromElementish(el: Elementish<Product>): Hierarchy{
+  static fromElementish(el: Elementish<LeafProduct>): Hierarchy{
     if(typeof el !== "object" && typeof el !== "function")
       throw new Error("Invalid input to Hierarchy.fromElementish");
     if(el instanceof Hierarchy)
@@ -166,7 +166,7 @@ export class Hierarchy implements FullHierarchyArgs {
     });
   }
 
-  apply<T extends Product<T>>(el: Elementish<T>){
+  apply<T extends LeafProduct>(el: Elementish<T>){
     return new Element(el, this);
   }
 

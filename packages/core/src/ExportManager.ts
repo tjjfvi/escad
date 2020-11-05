@@ -1,10 +1,10 @@
 
 import { ExportType } from "./ExportType";
-import { Product } from "./Product";
+import { LeafProduct } from "./LeafProduct";
 import { Sha } from "./hash";
 import { ReadonlyArtifactManager } from "./ReadonlyArtifactManager";
 
-export class ExportManager<P extends Product<P>> extends ReadonlyArtifactManager<P> {
+export class ExportManager<P extends LeafProduct> extends ReadonlyArtifactManager<P> {
 
   subdir: string;
 

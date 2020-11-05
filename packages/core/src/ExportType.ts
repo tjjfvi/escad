@@ -1,17 +1,17 @@
-import { Product } from "./Product";
+import { LeafProduct } from "./LeafProduct";
 import { Id } from "./Id";
 import { ExportTypeRegistry } from "./ExportTypeRegistry";
 import { ExportManager } from "./ExportManager";
 import { SerializeFunc, Serializer } from "tszer";
 
-export interface ExportTypeArgs<P extends Product<P>> {
+export interface ExportTypeArgs<P extends LeafProduct> {
   id: Id,
   extension: string,
   name: string,
   export: SerializeFunc<P>,
 }
 
-export class ExportType<P extends Product<P>> implements ExportTypeArgs<P> {
+export class ExportType<P extends LeafProduct> implements ExportTypeArgs<P> {
 
   static Registry = new ExportTypeRegistry();
 
