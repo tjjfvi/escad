@@ -1,44 +1,44 @@
 
 import { Component, __Component__ } from "./Component";
 import { Element, Elementish, __Element__, ArrayElement } from "./Element";
-import { LeafProduct } from "./LeafProduct";
+import { Product } from "./Product";
 import { __Thing__ } from "./__Thing__";
 import { builtins, Builtins } from "./builtins";
 import { ConvertibleTo } from "./Conversions";
 
-export class __Operation__<I extends LeafProduct, O extends LeafProduct> extends __Thing__ {
+export class __Operation__<I extends Product, O extends Product> extends __Thing__ {
 
   declare protected __i__: ConvertibleTo<I>;
   declare protected __o__: O;
 
 }
 
-type OperationIn<I extends LeafProduct, O extends LeafProduct> =
+type OperationIn<I extends Product, O extends Product> =
   | __Element__<I>
   | __Operation__<O, any>
   | __Component__<any, OperationIn<I, O>>
-type OperationOut<I extends LeafProduct, O extends LeafProduct, Arg extends OperationIn<I, O>> =
+type OperationOut<I extends Product, O extends Product, Arg extends OperationIn<I, O>> =
   Arg extends __Element__<I> ? Element<O> :
   Arg extends __Operation__<infer T, I> ? Operation<T, O> :
   Arg extends __Component__<infer A, infer T> ? T extends OperationIn<I, O> ? Component<A, OperationOut<I, O, T>> :
   never : never
 
-export interface Operation<I extends LeafProduct, O extends LeafProduct> {
+export interface Operation<I extends Product, O extends Product> {
   (...args: Elementish<I>[]): Element<O>,
-  <T extends LeafProduct>(o: Operation<T, I>): Operation<T, O>,
+  <T extends Product>(o: Operation<T, I>): Operation<T, O>,
   <A extends any[], T extends OperationIn<I, O>>(c: Component<A, T>): Component<A, OperationOut<I, O, T>>,
 }
 
-type _OperationOut<I extends LeafProduct, O extends LeafProduct, Arg> =
+type _OperationOut<I extends Product, O extends Product, Arg> =
   Arg extends OperationIn<I, O> ? OperationOut<I, O, Arg> : never;
 
-export type _OperationBuiltins<I extends LeafProduct, O extends LeafProduct> = {
+export type _OperationBuiltins<I extends Product, O extends Product> = {
   [K in keyof Builtins]: _OperationOut<I, O, Builtins[K]>;
 }
 
-export interface Operation<I extends LeafProduct, O extends LeafProduct> extends _OperationBuiltins<I, O> { }
+export interface Operation<I extends Product, O extends Product> extends _OperationBuiltins<I, O> { }
 
-export class Operation<I extends LeafProduct, O extends LeafProduct> extends __Operation__<I, O> {
+export class Operation<I extends Product, O extends Product> extends __Operation__<I, O> {
 
   constructor(name: string, func: (arg: ArrayElement<I>) => Elementish<O>){
     super((...args) => {

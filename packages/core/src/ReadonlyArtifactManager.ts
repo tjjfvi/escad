@@ -8,7 +8,11 @@ import { Sha } from "./hash";
 import { Hex } from "./hex";
 import { v4 as uuidv4 } from "uuid";
 
-export abstract class ReadonlyArtifactManager<T, U> {
+export class ReadonlyArtifactManager<T> {
+
+  constructor(public subdir: Id, public serialize: (value: T) => string | Buffer = JSON.stringify){
+
+  }
 
   private static _artifactsDirResolve: null | ((value: string) => void) = null;
   static artifactsDir: Promise<string> = new Promise(r => ReadonlyArtifactManager._artifactsDirResolve = r);
@@ -23,10 +27,8 @@ export abstract class ReadonlyArtifactManager<T, U> {
 
   cache = new WeakCache<Hex, T | null>();
 
-  abstract subdir: Id | string;
-
   get subdirString(){
-    return this.subdir instanceof Id ? this.subdir.sha.hex : this.subdir;
+    return this.subdir.full;
   }
 
   private _dir = "";
@@ -40,18 +42,15 @@ export abstract class ReadonlyArtifactManager<T, U> {
     return this._dirProm = fs.mkdirp(newDir).then(() => this._dir);
   }
 
-  abstract dehydrate(artifact: T): U
-
   async getPath(sha: Sha){
-    return path.join(await this.getDir(), sha.hex);
+    return path.join(await this.getDir(), sha);
   }
 
   async store(sha: Sha, artifactPromise: T | Promise<T>, overwrite = false){
-    return this.cache.setAsync(sha.hex, async () => {
+    return this.cache.setAsync(sha, async () => {
       let path = await this.getPath(sha);
       let artifact = await artifactPromise;
-      let obj = this.dehydrate(artifact);
-      await fs.writeFile(path, JSON.stringify(obj), { flag: overwrite ? "w" : "wx" });
+      await fs.writeFile(path, JSON.stringify(artifact), { flag: overwrite ? "w" : "wx" });
       return artifact;
     });
   }

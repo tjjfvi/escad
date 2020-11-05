@@ -1,13 +1,13 @@
 
-import { hash, Sha } from "./hash";
 import { Elementish, Element } from "./Element";
+import { Product } from "./Product";
 import { LeafProduct } from "./LeafProduct";
-import { Work } from "./Work";
-import { HierarchyManager } from "./HierarchyManager";
-import { concat, string, constLengthString, optionalBank, array, Serializer } from "tszer";
+import { CompoundProduct } from "./CompoundProduct";
+import { ArtifactManager } from "./ArtifactManager";
+import { Id } from "./Id";
 
-type BraceType = "{" | "[" | "(" | ":" | "";
-const isBraceType = (x: string): x is BraceType => ["{", "[", "(", ":", ""].includes(x);
+export type BraceType = "{" | "[" | "(" | ":" | "";
+export const isBraceType = (x: string): x is BraceType => ["{", "[", "(", ":", ""].includes(x);
 
 export interface HierarchyArgs {
   readonly name?: string,
@@ -20,7 +20,8 @@ export interface HierarchyArgs {
   readonly isFullOutput?: boolean,
 }
 
-export interface FullHierarchyArgs extends HierarchyArgs {
+export interface Hierarchy extends HierarchyArgs {
+  readonly isHierarchy: true,
   readonly name: string,
   readonly braceType: BraceType,
   readonly children: readonly Hierarchy[],
@@ -31,24 +32,11 @@ export interface FullHierarchyArgs extends HierarchyArgs {
   readonly isFullOutput: boolean,
 }
 
-export class Hierarchy implements FullHierarchyArgs {
+declare const hierarchyManagerIdSymbol: unique symbol;
+const hierarchyManagerId = Id<typeof hierarchyManagerIdSymbol>("hierarchy", __filename, "0");
 
-  static Manager = new HierarchyManager();
-
-  readonly name: string;
-  readonly braceType: BraceType;
-  readonly children: readonly Hierarchy[];
-  readonly output: Hierarchy | null;
-  readonly fullOutput: Hierarchy | null;
-  readonly input: Hierarchy | null;
-  readonly isOutput: boolean;
-  readonly isFullOutput: boolean;
-
-  readonly sha: Promise<Sha>;
-
-  readonly writePromise: Promise<void>;
-
-  constructor({
+export const Hierarchy = Object.assign(
+  ({
     name = "",
     braceType = "",
     children = [],
@@ -57,13 +45,13 @@ export class Hierarchy implements FullHierarchyArgs {
     fullOutput = null,
     isOutput = false,
     isFullOutput = false,
-  }: HierarchyArgs){
+  }: HierarchyArgs): Hierarchy => {
     if(isOutput || isFullOutput)
       output = null;
     if(isFullOutput)
       fullOutput = null;
     if(!output && !isOutput && !isFullOutput)
-      output = new Hierarchy({
+      output = Hierarchy({
         name,
         braceType,
         input,
@@ -71,7 +59,7 @@ export class Hierarchy implements FullHierarchyArgs {
         isOutput: true,
       })
     if(!fullOutput && !isFullOutput)
-      fullOutput = output?.fullOutput ?? new Hierarchy({
+      fullOutput = output?.fullOutput ?? Hierarchy({
         name,
         braceType,
         input,
@@ -87,91 +75,54 @@ export class Hierarchy implements FullHierarchyArgs {
 
     if(braceType === ":" && children.length !== 1)
       throw new Error("braceType \":\" must be used with exactly one child");
-
-    this.name = name;
-    this.braceType = braceType;
-    this.children = children;
-    this.output = output;
-    this.fullOutput = fullOutput;
-    this.input = input;
-    this.isOutput = isOutput;
-    this.isFullOutput = isFullOutput;
-
-    const serialized = Serializer.serialize(Hierarchy.serializer(), this);
-
-    this.sha = hash(serialized);
-    this.writePromise = this.sha.then(sha => Hierarchy.Manager.store(sha, Promise.resolve(this)).then(() => { }));
-  }
-
-  static hierarchySha = () => Sha.reference().map<Hierarchy>({
-    serialize: h => h.sha,
-    deserialize: async sha => await Hierarchy.Manager.lookup(sha) ?? (() => {
-      throw new Error(`Could not find Hierarchy ${sha.hex} referenced in serialized Hierarchy`)
-    })(),
-  })
-
-  static serializer = () => concat(
-    string(),
-    constLengthString(1),
-    optionalBank(
-      Hierarchy.hierarchySha(),
-      Hierarchy.hierarchySha(),
-      Hierarchy.hierarchySha(),
-    ),
-    array(Hierarchy.hierarchySha()),
-  ).map<Hierarchy>({
-    serialize: h => [
-      h.name,
-      h.braceType || " ",
-      [h.output ?? void 0, h.fullOutput ?? void 0, h.input ?? void 0],
-      h.children.slice()
-    ],
-    deserialize: ([name, bt, [o, fo, i], cs]) => new Hierarchy({
+    return {
+      isHierarchy: true,
       name,
-      braceType: isBraceType(bt) ? bt : "",
-      output: o,
-      fullOutput: fo,
-      input: i,
-      isOutput: !fo,
-      isFullOutput: !fo,
-      children: cs,
-    })
-  })
-
-  static fromElementish(el: Elementish<LeafProduct>): Hierarchy{
-    if(typeof el !== "object" && typeof el !== "function")
-      throw new Error("Invalid input to Hierarchy.fromElementish");
-    if(el instanceof Hierarchy)
-      return el;
-    if(el instanceof Element)
-      return el.hierarchy;
-    if(el instanceof Product || el instanceof Work)
-      return new Hierarchy({
-        name: `<${el.type.id.name}>`,
-      })
-    if(el instanceof Array)
-      return new Hierarchy({
-        braceType: "[",
-        children: el.map(e => Hierarchy.fromElementish(e)),
+      braceType,
+      children,
+      fullOutput,
+      input,
+      isFullOutput,
+      isOutput,
+      output,
+    };
+  },
+  {
+    Manager: new ArtifactManager(hierarchyManagerId),
+    isHierarchy: (arg: any): arg is Hierarchy =>
+      arg.isHierarchy === true,
+    fromElementish: (el: Elementish<Product>): Hierarchy => {
+      if(typeof el !== "object" && typeof el !== "function")
+        throw new Error("Invalid input to Hierarchy.fromElementish");
+      if(Hierarchy.isHierarchy(el))
+        return el;
+      if(el instanceof Element)
+        return el.hierarchy;
+      if(LeafProduct.isLeafProduct(el))
+        return Hierarchy({
+          name: `<${el.type.full}>`,
+        });
+      if(CompoundProduct.isCompoundProduct(el))
+        return Hierarchy({
+          name: `<CompoundProduct>`,
+        });
+      if(el instanceof Array)
+        return Hierarchy({
+          braceType: "[",
+          children: el.map(e => Hierarchy.fromElementish(e)),
+        });
+      return Hierarchy({
+        braceType: "{",
+        children: Object.entries(el).map(([k, v]) =>
+          Hierarchy({
+            name: k,
+            braceType: ":",
+            children: [Hierarchy.fromElementish(v)]
+          })
+        )
       });
-    return new Hierarchy({
-      braceType: "{",
-      children: Object.entries(el).map(([k, v]) =>
-        new Hierarchy({
-          name: k,
-          braceType: ":",
-          children: [Hierarchy.fromElementish(v)]
-        })
-      )
-    });
+    },
+    apply: <T extends Product>(hierarchy: Hierarchy, el: Elementish<T>) => new Element(el, hierarchy),
   }
+);
 
-  apply<T extends LeafProduct>(el: Elementish<T>){
-    return new Element(el, this);
-  }
-
-  clone(){
-    return new Hierarchy(this);
-  }
-
-}

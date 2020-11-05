@@ -2,17 +2,23 @@
 import fs from "fs-extra";
 
 import { Sha } from "./hash";
+import { Id } from "./Id";
 import { ReadonlyArtifactManager } from "./ReadonlyArtifactManager";
 
-export abstract class ArtifactManager<T, U> extends ReadonlyArtifactManager<T, U> {
+export class ArtifactManager<T> extends ReadonlyArtifactManager<T> {
 
-  abstract rehydrate(obj: U): T;
+  constructor(
+    subdir: Id,
+    serialize: (value: T) => string | Buffer = JSON.stringify,
+    public deserialize: (value: string) => T = JSON.parse
+  ){
+    super(subdir, serialize);
+  }
 
   async lookup(sha: Sha){
     return await this.cache.getAsync(sha, async () => {
       const path = await this.getPath(sha);
-      const obj: U = JSON.parse(await fs.readFile(path, "utf8"));
-      return this.rehydrate(obj);
+      return this.deserialize(await fs.readFile(path, "utf8"));
     })
   }
 

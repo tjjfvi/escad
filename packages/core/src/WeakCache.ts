@@ -1,11 +1,3 @@
-/* global FinalizationRegistry, FinalizationGroup */
-
-declare class WeakRef<V> {
-
-  constructor(v: V);
-  deref(): void | V;
-
-}
 
 type F<K, V> = (k: K) => V;
 type FA<K, V> = (k: K) => Promise<V>;
@@ -63,9 +55,7 @@ export class WeakCacheBasic<K, V> {
 export let WeakCache = WeakCacheBasic;
 
 const FinReg = (
-  // @ts-ignore
   typeof FinalizationRegistry !== "undefined" ?
-    // @ts-ignore
     FinalizationRegistry :
     // @ts-ignore
     typeof FinalizationGroup !== "undefined" ?
@@ -74,11 +64,10 @@ const FinReg = (
       null
 );
 
-// @ts-ignore
 if("WeakRef" in global && FinReg)
   WeakCache = class WeakCache<K, V> extends WeakCacheBasic<K, V> {
 
-    private cache: Map<K, WeakRef<V>> = new Map();
+    private cache: Map<K, WeakRef<V & object>> = new Map();
     private cleanup: any;
 
     constructor(){
@@ -103,7 +92,7 @@ if("WeakRef" in global && FinReg)
     set(key: K, func: F<K, V>): V{
       const fresh = func(key);
       if(fresh && typeof fresh === "object") {
-        this.cache.set(key, new WeakRef<V>(fresh));
+        this.cache.set(key, new WeakRef<V & object>(fresh as V & object));
         this.cleanup.register(fresh, key);
       }
       return fresh;

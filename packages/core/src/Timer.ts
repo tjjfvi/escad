@@ -8,9 +8,6 @@ export class Timer {
   averageTime = 0;
   averageConcurrency = 0;
 
-  private updateConcerrency(){
-  }
-
   start(){
     if(!this.activeCount)
       this.actualTime -= Date.now();
@@ -20,13 +17,25 @@ export class Timer {
   }
 
   end(){
-    this.updateConcerrency();
     this.activeCount--;
     this.totalTime += Date.now();
     this.averageTime = this.totalTime / this.totalCount;
     if(!this.activeCount)
       this.actualTime += Date.now();
     this.averageConcurrency = this.totalTime / this.actualTime;
+  }
+
+  time<F extends(...args: any[]) => any>(f: F): F{
+    return ((...args) => {
+      this.start()
+      let result;
+      try {
+        result = f(...args);
+      } finally {
+        this.end();
+      }
+      return result;
+    }) as F
   }
 
 }

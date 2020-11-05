@@ -1,34 +1,28 @@
-import { LeafProduct } from "./LeafProduct";
 import { Id } from "./Id";
 import { ExportTypeRegistry } from "./ExportTypeRegistry";
 import { ExportManager } from "./ExportManager";
-import { SerializeFunc, Serializer } from "tszer";
+import { Product, ProductType } from "./Product";
 
-export interface ExportTypeArgs<P extends LeafProduct> {
+export interface ExportTypeArgs<P extends Product> {
   id: Id,
+  productType: ProductType<P>,
   extension: string,
   name: string,
-  export: SerializeFunc<P>,
+  export: (value: P) => string | Buffer,
 }
 
-export class ExportType<P extends LeafProduct> implements ExportTypeArgs<P> {
+export class ExportType<P extends Product> implements ExportTypeArgs<P> {
 
   static Registry = new ExportTypeRegistry();
 
   id: Id;
+  productType: ProductType<P>;
   extension: string;
   name: string;
-  export: SerializeFunc<P>
+  export: (value: P) => string | Buffer;
   manager: ExportManager<P>;
 
-  exportStream(product: P){
-    return Serializer.serialize(new Serializer({
-      serialize: this.export,
-      deserialize: null as any,
-    }), product);
-  }
-
-  constructor({ id, extension, name, export: exportFunc }: ExportTypeArgs<P>){
+  constructor({ id, extension, name, export: exportFunc, productType }: ExportTypeArgs<P>){
     if(!extension.startsWith("."))
       extension = "." + extension;
 
@@ -36,7 +30,8 @@ export class ExportType<P extends LeafProduct> implements ExportTypeArgs<P> {
     this.name = name;
     this.export = exportFunc;
     this.extension = extension;
-    this.manager = new ExportManager(this);
+    this.productType = productType;
+    this.manager = new ExportManager<P>(this);
   }
 
 }

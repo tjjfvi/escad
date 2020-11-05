@@ -1,12 +1,10 @@
 
 import { ExportType } from "./ExportType";
-import { LeafProduct } from "./LeafProduct";
 import { Sha } from "./hash";
+import { Product } from "./Product";
 import { ReadonlyArtifactManager } from "./ReadonlyArtifactManager";
 
-export class ExportManager<P extends LeafProduct> extends ReadonlyArtifactManager<P> {
-
-  subdir: string;
+export class ExportManager<P extends Product> extends ReadonlyArtifactManager<P> {
 
   async getPath(sha: Sha){
     let path = await super.getPath(sha)
@@ -16,21 +14,7 @@ export class ExportManager<P extends LeafProduct> extends ReadonlyArtifactManage
   }
 
   constructor(public exportType: ExportType<P>){
-    super();
-    this.subdir = "exports/" + exportType.id.sha.hex;
-  }
-
-  serialize(product: P){
-    return this.exportType.exportStream(product);
-  }
-
-  async store(sha: Sha, productPromise: Promise<P>){
-    const product = await productPromise;
-    const productSha = await product.sha;
-    if(sha === productSha)
-      return await super.store(sha, productPromise);
-    await super.storePointer(sha, productSha);
-    return await super.store(productSha, productPromise);
+    super(exportType.id, exportType.export);
   }
 
 }
