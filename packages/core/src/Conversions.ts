@@ -1,5 +1,6 @@
 
 import { LeafProduct, __Element__, Elementish } from ".";
+import { CompoundProduct } from "./CompoundProduct";
 import { Product, ProductType } from "./Product";
 
 export interface Conversion<A, B> {
@@ -107,7 +108,11 @@ export type ConvertibleFrom<T extends Product> = Product & {
 declare global {
   namespace escad {
     interface ConversionsObj {
-      aToB: Conversion<ProductA, ProductB>,
+      stuff: (
+        | Conversion<ProductA, ProductB>
+        | Conversion<ProductB, ProductA>
+        | Conversion<CompoundProduct<[ProductA, ProductA]>, ProductA>
+      ),
     }
   }
 }
@@ -119,6 +124,8 @@ interface ProductA extends LeafProduct {
 interface ProductB extends LeafProduct {
   b: 5,
 }
+
+type Z = Assert<__Element__<ProductB>, __Element__<CompoundProduct<[ProductB, ProductA]>>>
 
 type X__<A extends Product> = Assert<ConvertibleTo<A>, ConvertibleTo<ConvertibleTo<A>>>;
 type X_<B extends Product, A extends ConvertibleTo<B>> = Assert<ConvertibleTo<B>, ConvertibleTo<A>>
