@@ -1,199 +1,202 @@
 
-import { Mesh, Face, Vector3 } from "@escad/mesh";
-import { diff } from "@escad/csg";
-import { Work, Element, Id } from "@escad/core";
-import { Serializer, string, SerializeFunc, DeserializeFunc } from "tszer";
+export {}
 
-const tau = Math.PI * 2;
+// import { Mesh, Face, Vector3 } from "@escad/mesh";
+// import { diff } from "@escad/csg";
+// import { Work, Element, Id } from "@escad/core";
+// import { Serializer, string, SerializeFunc, DeserializeFunc } from "tszer";
 
-type CylWorkArgs = [number, number, number, number, [number, number], [number, number], boolean];
+// const tau = Math.PI * 2;
 
-class CylWork extends Work<CylWork, Mesh, []> {
+// type CylWorkArgs = [number, number, number, number, [number, number], [number, number], boolean];
 
-  type = CylWork;
+// class CylWork extends Work<CylWork, Mesh, []> {
 
-  static id = new Id("CylWork", __filename);
+//   type = CylWork;
 
-  constructor(public args: CylWorkArgs){
-    super([]);
-    this.freeze();
-  }
+//   static id = new Id("CylWork", __filename);
 
-  clone(){
-    return new CylWork(this.args);
-  }
+//   constructor(public args: CylWorkArgs){
+//     super([]);
+//     this.freeze();
+//   }
 
-  static serializer: () => Serializer<CylWork> = () =>
-    string().map<CylWork>({
-      serialize: work => JSON.stringify(work.args),
-      deserialize: args => new CylWork(JSON.parse(args)),
-    })
+//   clone(){
+//     return new CylWork(this.args);
+//   }
 
-  serialize: SerializeFunc<CylWork> = CylWork.serializer().serialize;
+//   static serializer: () => Serializer<CylWork> = () =>
+//     string().map<CylWork>({
+//       serialize: work => JSON.stringify(work.args),
+//       deserialize: args => new CylWork(JSON.parse(args)),
+//     })
 
-  static deserialize: DeserializeFunc<CylWork> = CylWork.serializer().deserialize;
+//   serialize: SerializeFunc<CylWork> = CylWork.serializer().serialize;
 
-  async execute(){
-    let [r1, r2, height, sides, o1, o2, c] = this.args;
+//   static deserialize: DeserializeFunc<CylWork> = CylWork.serializer().deserialize;
 
-    let bh = c ? -height / 2 : 0;
-    let th = bh + height;
+//   async execute(){
+//     let [r1, r2, height, sides, o1, o2, c] = this.args;
 
-    let c1 = [o1[0], o1[1], bh] as const;
-    let c2 = [o2[0], o2[1], th] as const;
+//     let bh = c ? -height / 2 : 0;
+//     let th = bh + height;
 
-    return new Mesh([...Array(sides)].flatMap((_, i) => {
-      let p1 = [Math.cos(i / sides * tau), Math.sin(i / sides * tau)] as const;
-      let p2 = [Math.cos((i + 1) / sides * tau), Math.sin((i + 1) / sides * tau)] as const;
-      let p11 = [p1[0] * r1 + o1[0], p1[1] * r1 + o1[1], bh] as const;
-      let p12 = [p1[0] * r2 + o2[0], p1[1] * r2 + o2[1], th] as const;
-      let p21 = [p2[0] * r1 + o1[0], p2[1] * r1 + o1[1], bh] as const;
-      let p22 = [p2[0] * r2 + o2[0], p2[1] * r2 + o2[1], th] as const;
-      return [
-        [p21, p11, c1],
-        [c2, p12, p22],
-        [p12, p11, p22],
-        [p22, p11, p21],
-      ];
-    }).map(f => new Face(f.map(v => new Vector3(...v))))).finish();
-  }
+//     let c1 = [o1[0], o1[1], bh] as const;
+//     let c2 = [o2[0], o2[1], th] as const;
 
-}
+//     return new Mesh([...Array(sides)].flatMap((_, i) => {
+//       let p1 = [Math.cos(i / sides * tau), Math.sin(i / sides * tau)] as const;
+//       let p2 = [Math.cos((i + 1) / sides * tau), Math.sin((i + 1) / sides * tau)] as const;
+//       let p11 = [p1[0] * r1 + o1[0], p1[1] * r1 + o1[1], bh] as const;
+//       let p12 = [p1[0] * r2 + o2[0], p1[1] * r2 + o2[1], th] as const;
+//       let p21 = [p2[0] * r1 + o1[0], p2[1] * r1 + o1[1], bh] as const;
+//       let p22 = [p2[0] * r2 + o2[0], p2[1] * r2 + o2[1], th] as const;
+//       return [
+//         [p21, p11, c1],
+//         [c2, p12, p22],
+//         [p12, p11, p22],
+//         [p22, p11, p21],
+//       ];
+//     }).map(f => new Face(f.map(v => new Vector3(...v))))).finish();
+//   }
 
-Work.Registry.register(CylWork);
+// }
 
-type Pair<T> = T | [T, T];
-type XY<T> = [T, T] | { x: T, y: T };
+// Work.Registry.register(CylWork);
 
-export interface CylArgs {
-  r?: Pair<number>,
-  rs?: Pair<number>,
-  r1?: number,
-  r2?: number,
-  l?: number,
-  length?: number,
-  h?: number,
-  height?: number,
-  offsets?: Pair<XY<number>>,
-  os?: Pair<XY<number>>,
-  offset1?: XY<number>,
-  offset2?: XY<number>,
-  o1?: XY<number>,
-  o2?: XY<number>,
-  center?: boolean,
-  c?: boolean,
-  unionDiff?: boolean,
-  ud?: boolean,
-  t?: Pair<number>,
-  ts?: Pair<number>,
-  t1?: number,
-  t2?: number,
-  i?: number,
-  is?: Pair<number>,
-  i1?: number,
-  i2?: number,
-  iOffsets?: Pair<XY<number>>,
-  ios?: Pair<XY<number>>,
-  iOffset1?: XY<number>,
-  iOffset2?: XY<number>,
-  io1?: XY<number>,
-  io2?: XY<number>,
-  sides?: number,
-}
+// type Pair<T> = T | [T, T];
+// type XY<T> = [T, T] | { x: T, y: T };
 
-export const cyl = (args: CylArgs) => {
-  const rsP: Pair<number> =
-    args.r ??
-    args.rs ??
-    [args.r1 ?? 1, args.r2 ?? 1]
-  const rs = typeof rsP === "number" ? [rsP, rsP] : rsP;
+// export interface CylArgs {
+//   r?: Pair<number>,
+//   rs?: Pair<number>,
+//   r1?: number,
+//   r2?: number,
+//   l?: number,
+//   length?: number,
+//   h?: number,
+//   height?: number,
+//   offsets?: Pair<XY<number>>,
+//   os?: Pair<XY<number>>,
+//   offset1?: XY<number>,
+//   offset2?: XY<number>,
+//   o1?: XY<number>,
+//   o2?: XY<number>,
+//   center?: boolean,
+//   c?: boolean,
+//   unionDiff?: boolean,
+//   ud?: boolean,
+//   t?: Pair<number>,
+//   ts?: Pair<number>,
+//   t1?: number,
+//   t2?: number,
+//   i?: number,
+//   is?: Pair<number>,
+//   i1?: number,
+//   i2?: number,
+//   iOffsets?: Pair<XY<number>>,
+//   ios?: Pair<XY<number>>,
+//   iOffset1?: XY<number>,
+//   iOffset2?: XY<number>,
+//   io1?: XY<number>,
+//   io2?: XY<number>,
+//   sides?: number,
+// }
 
-  const tsP: Pair<number> =
-    args.t ??
-    args.ts ??
-    [args.t1 ?? rs[0], args.t2 ?? rs[1]]
-  const ts = typeof tsP === "number" ? [tsP, tsP] : tsP;
+// export const cyl = (args: CylArgs) => {
+//   const rsP: Pair<number> =
+//     args.r ??
+//     args.rs ??
+//     [args.r1 ?? 1, args.r2 ?? 1]
+//   const rs = typeof rsP === "number" ? [rsP, rsP] : rsP;
 
-  const isP: Pair<number> =
-    args.i ??
-    args.is ??
-    [args.i1 ?? rs[0] - ts[0], args.i2 ?? rs[1] - ts[1]]
-  const is: [number, number] | null = typeof isP === "number" ? [isP, isP] : isP;
+//   const tsP: Pair<number> =
+//     args.t ??
+//     args.ts ??
+//     [args.t1 ?? rs[0], args.t2 ?? rs[1]]
+//   const ts = typeof tsP === "number" ? [tsP, tsP] : tsP;
 
-  const center =
-    args.center ??
-    args.c ??
-    true
-  const unionDiff =
-    args.unionDiff ??
-    args.ud ??
-    false
-  const height =
-    args.height ??
-    args.length ??
-    args.l ??
-    args.h ??
-    1
-  const sides = args.sides ?? 20;
+//   const isP: Pair<number> =
+//     args.i ??
+//     args.is ??
+//     [args.i1 ?? rs[0] - ts[0], args.i2 ?? rs[1] - ts[1]]
+//   const is: [number, number] | null = typeof isP === "number" ? [isP, isP] : isP;
 
-  const osPXY: Pair<XY<number>> =
-    args.offsets ??
-    args.os ??
-    [
-      (
-        ("offset2" in args ? args.offset2 : null) ??
-        ("o2" in args ? args.o2 : null) ??
-        [0, 0]
-      ),
-      (
-        ("offset1" in args ? args.offset1 : null) ??
-        ("o1" in args ? args.o1 : null) ??
-        [0, 0]
-      ),
-    ];
+//   const center =
+//     args.center ??
+//     args.c ??
+//     true
+//   const unionDiff =
+//     args.unionDiff ??
+//     args.ud ??
+//     false
+//   const height =
+//     args.height ??
+//     args.length ??
+//     args.l ??
+//     args.h ??
+//     1
+//   const sides = args.sides ?? 20;
 
-  // @ts-ignore
-  const osXYs: [XY<number>, XY<number>] =
-    osPXY instanceof Array ?
-      typeof osPXY[0] === "number" ?
-        [osPXY, osPXY] :
-        osPXY as [XY<number>, XY<number>] :
-      [osPXY, osPXY]
+//   const osPXY: Pair<XY<number>> =
+//     args.offsets ??
+//     args.os ??
+//     [
+//       (
+//         ("offset2" in args ? args.offset2 : null) ??
+//         ("o2" in args ? args.o2 : null) ??
+//         [0, 0]
+//       ),
+//       (
+//         ("offset1" in args ? args.offset1 : null) ??
+//         ("o1" in args ? args.o1 : null) ??
+//         [0, 0]
+//       ),
+//     ];
 
-  const iosPXY: Pair<XY<number>> =
-    args.iOffsets ??
-    args.ios ??
-    [
-      (
-        ("iOffset1" in args ? args.iOffset1 : null) ??
-        ("io1" in args ? args.io1 : null) ??
-        osXYs[0]
-      ),
-      (
-        ("iOffset2" in args ? args.iOffset2 : null) ??
-        ("io2" in args ? args.io2 : null) ??
-        osXYs[1]
-      ),
-    ];
+//   // @ts-ignore
+//   const osXYs: [XY<number>, XY<number>] =
+//     osPXY instanceof Array ?
+//       typeof osPXY[0] === "number" ?
+//         [osPXY, osPXY] :
+//         osPXY as [XY<number>, XY<number>] :
+//       [osPXY, osPXY]
 
-  // @ts-ignore
-  const iosXYs: [XY<number>, XY<number>] =
-    iosPXY instanceof Array ?
-      typeof iosPXY[0] === "number" ?
-        [iosPXY, iosPXY] :
-        iosPXY as [XY<number>, XY<number>] :
-      [iosPXY, iosPXY]
+//   const iosPXY: Pair<XY<number>> =
+//     args.iOffsets ??
+//     args.ios ??
+//     [
+//       (
+//         ("iOffset1" in args ? args.iOffset1 : null) ??
+//         ("io1" in args ? args.io1 : null) ??
+//         osXYs[0]
+//       ),
+//       (
+//         ("iOffset2" in args ? args.iOffset2 : null) ??
+//         ("io2" in args ? args.io2 : null) ??
+//         osXYs[1]
+//       ),
+//     ];
 
-  const [o1, o2] = osXYs.map((xy): [number, number] => xy instanceof Array ? xy : [xy.x, xy.y]);
-  const [io1, io2] = iosXYs.map((xy): [number, number] => xy instanceof Array ? xy : [xy.x, xy.y]);
+//   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+//   // @ts-ignore
+//   const iosXYs: [XY<number>, XY<number>] =
+//     iosPXY instanceof Array ?
+//       typeof iosPXY[0] === "number" ?
+//         [iosPXY, iosPXY] :
+//         iosPXY as [XY<number>, XY<number>] :
+//       [iosPXY, iosPXY]
 
-  let oc = new CylWork([rs[0], rs[1], height, sides, o1, o2, center]);
-  if(!is)
-    return new Element(oc)
-  let ic = new CylWork([is[0], is[1], height, sides, io1, io2, center]);
-  return new Element(unionDiff ? [oc, ic] : Mesh.convertElementish(diff(oc, ic)));
-}
+//   const [o1, o2] = osXYs.map((xy): [number, number] => xy instanceof Array ? xy : [xy.x, xy.y]);
+//   const [io1, io2] = iosXYs.map((xy): [number, number] => xy instanceof Array ? xy : [xy.x, xy.y]);
 
-export const cylinder = cyl;
-export const hollowCylinder = cyl;
-export const hollowCyl = cyl;
+//   let oc = new CylWork([rs[0], rs[1], height, sides, o1, o2, center]);
+//   if(!is)
+//     return new Element(oc)
+//   let ic = new CylWork([is[0], is[1], height, sides, io1, io2, center]);
+//   return new Element(unionDiff ? [oc, ic] : Mesh.convertElementish(diff(oc, ic)));
+// }
+
+// export const cylinder = cyl;
+// export const hollowCylinder = cyl;
+// export const hollowCyl = cyl;

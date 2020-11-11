@@ -1,57 +1,62 @@
 
 import { Mesh, Vector3 } from "@escad/mesh";
-import { Work, Component, Element, Id } from "@escad/core";
-import { Serializer, SerializeFunc, DeserializeFunc, string } from "tszer";
+import { Component, Element, Id, Conversion, Product, createProductTypeUtils } from "@escad/core";
 
-export type CubeWorkArgs = [[number, number, number], [boolean, boolean, boolean]];
-export class CubeWork extends Work<CubeWork, Mesh, []> {
+declare const cubeIdSymbol: unique symbol;
+const cubeId = Id<typeof cubeIdSymbol>("Cube", __filename);
 
-  type = CubeWork;
+export interface Cube {
+  readonly type: typeof cubeId,
+  readonly center: Vector3,
+  readonly size: Vector3,
+}
 
-  static id = new Id("CubeWork", __filename);
-
-  args: CubeWorkArgs;
-
-  constructor(args: CubeWorkArgs){
-    super([]);
-    this.args = args;
-    this.freeze();
+export const Cube = Object.assign(
+  (center: Vector3, size: Vector3) => ({
+    type: cubeId,
+    center,
+    size,
+  }), {
+    ...createProductTypeUtils(cubeId, "Cube"),
+    id: cubeId,
   }
+)
 
-  clone(){
-    return new CubeWork(this.args);
+declare global {
+  namespace escad {
+    interface Conversions {
+      "@escad/solids": {
+        cube: {
+          cubeToMesh: Conversion<Cube, Mesh>,
+        },
+      },
+    }
   }
+}
 
-  static serializer: () => Serializer<CubeWork> = () =>
-    string().map<CubeWork>({
-      serialize: work => JSON.stringify(work.args),
-      deserialize: args => new CubeWork(JSON.parse(args)),
-    })
+Product.ConversionRegistry.register({
+  fromType: Cube.id,
+  toType: Mesh.id,
+  convert: async (cube: Cube): Promise<Mesh> => {
+    const { center, size } = cube;
 
-  serialize: SerializeFunc<CubeWork> = CubeWork.serializer().serialize;
+    const nx = center.x - size.x / 2;
+    const ny = center.y - size.y / 2;
+    const nz = center.z - size.z / 2;
 
-  static deserialize: DeserializeFunc<CubeWork> = CubeWork.serializer().deserialize;
+    const px = center.x + size.x / 2;
+    const py = center.y + size.y / 2;
+    const pz = center.z + size.z / 2;
 
-  async execute(){
-    let [[x, y, z], cs] = this.args;
-
-    let nx = cs[0] ? -x / 2 : 0;
-    let ny = cs[1] ? -y / 2 : 0;
-    let nz = cs[2] ? -z / 2 : 0;
-
-    let px = cs[0] ? x / 2 : x;
-    let py = cs[1] ? y / 2 : y;
-    let pz = cs[2] ? z / 2 : z;
-
-    let points = [
-      new Vector3(px, py, pz),
-      new Vector3(nx, py, pz),
-      new Vector3(px, ny, pz),
-      new Vector3(nx, ny, pz),
-      new Vector3(px, py, nz),
-      new Vector3(nx, py, nz),
-      new Vector3(px, ny, nz),
-      new Vector3(nx, ny, nz),
+    const points = [
+      Vector3(px, py, pz),
+      Vector3(nx, py, pz),
+      Vector3(px, ny, pz),
+      Vector3(nx, ny, pz),
+      Vector3(px, py, nz),
+      Vector3(nx, py, nz),
+      Vector3(px, ny, nz),
+      Vector3(nx, ny, nz),
     ];
 
     return Mesh.fromVertsFaces(points, [
@@ -67,12 +72,9 @@ export class CubeWork extends Work<CubeWork, Mesh, []> {
       [5, 7, 1],
       [4, 0, 2],
       [6, 4, 2],
-    ]).finish();
-  }
-
-}
-
-Work.Registry.register(CubeWork);
+    ]);
+  },
+})
 
 type TripletObj<T> = { x?: T, y?: T, z?: T, 0?: T, 1?: T, 2?: T };
 type Triplet<T> = T | [T, T, T] | TripletObj<T>;
@@ -96,21 +98,27 @@ export const cube: Component<[CubeArgs], Element<Mesh>> = new Component("cube", 
     n.d ??
     [n.x ?? 1, n.y ?? 1, n.z ?? 1]
 
-  let xyzA: [number, number, number] =
+  const xyzA: [number, number, number] =
     typeof xyzT === "number" ?
       [xyzT, xyzT, xyzT] :
       [xyzT[0] ?? xyzT.x ?? 0, xyzT[1] ?? xyzT.y ?? 0, xyzT[2] ?? xyzT.z ?? 0]
 
-  let cT: Triplet<boolean> =
+  const cT: Triplet<boolean> =
     n.center ??
     n.c ??
     [n.cx ?? true, n.cy ?? true, n.cz ?? true]
 
-  let cA: [boolean, boolean, boolean] =
+  const cA: [boolean, boolean, boolean] =
     typeof cT === "boolean" ?
       [cT, cT, cT] :
       [cT[0] ?? cT.x ?? true, cT[1] ?? cT.y ?? true, cT[2] ?? cT.z ?? true]
 
-  return new Element(new CubeWork([xyzA, cA]));
+  const cP: [number, number, number] = [
+    cA[0] ? 0 : xyzA[0] / 2,
+    cA[1] ? 0 : xyzA[1] / 2,
+    cA[2] ? 0 : xyzA[2] / 2,
+  ]
+
+  return new Element(Cube(Vector3(cP), Vector3(xyzA)));
 })
 

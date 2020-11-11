@@ -1,96 +1,98 @@
 
-import { Mesh, Vector3 } from "@escad/mesh";
-import { diff } from "@escad/csg";
-import { Work, Element, Id, Component } from "@escad/core";
-import { Serializer, string, SerializeFunc, DeserializeFunc } from "tszer";
+export {};
 
-const tau = Math.PI * 2;
+// import { Mesh, Vector3 } from "@escad/mesh";
+// import { diff } from "@escad/csg";
+// import { Work, Element, Id, Component } from "@escad/core";
+// import { Serializer, string, SerializeFunc, DeserializeFunc } from "tszer";
 
-type SphereWorkArgs = [number, number, number];
+// const tau = Math.PI * 2;
 
-class SphereWork extends Work<SphereWork, Mesh, []> {
+// type SphereWorkArgs = [number, number, number];
 
-  type = SphereWork;
+// class SphereWork extends Work<SphereWork, Mesh, []> {
 
-  static id = new Id("SphereWork", __filename);
+//   type = SphereWork;
 
-  constructor(public args: SphereWorkArgs){
-    super([])
-    this.freeze();
-  }
+//   static id = new Id("SphereWork", __filename);
 
-  clone(){
-    return new SphereWork(this.args);
-  }
+//   constructor(public args: SphereWorkArgs){
+//     super([])
+//     this.freeze();
+//   }
 
-  async execute(){
-    let [r, slices, stacks] = this.args;
+//   clone(){
+//     return new SphereWork(this.args);
+//   }
 
-    let v = (theta: number, phi: number) => {
-      theta *= tau / slices;
-      phi *= tau / stacks;
-      phi /= 2;
-      return new Vector3(
-        Math.sin(theta) * Math.sin(phi) * r,
-        Math.cos(theta) * Math.sin(phi) * r,
-        Math.cos(phi) * r,
-      )
-    }
+//   async execute(){
+//     let [r, slices, stacks] = this.args;
 
-    return new Mesh([...Array(slices)].flatMap((_, i) =>
-      [...Array(stacks)].flatMap((_, j) => {
-        let vs = [];
+//     let v = (theta: number, phi: number) => {
+//       theta *= tau / slices;
+//       phi *= tau / stacks;
+//       phi /= 2;
+//       return new Vector3(
+//         Math.sin(theta) * Math.sin(phi) * r,
+//         Math.cos(theta) * Math.sin(phi) * r,
+//         Math.cos(phi) * r,
+//       )
+//     }
 
-        vs.push(v(i, j));
-        if(j > 0)
-          vs.push(v(i + 1, j));
-        if(j < stacks - 1)
-          vs.push(v(i + 1, j + 1));
-        vs.push(v(i, j + 1));
+//     return new Mesh([...Array(slices)].flatMap((_, i) =>
+//       [...Array(stacks)].flatMap((_, j) => {
+//         let vs = [];
 
-        return Mesh.fromVertsFaces(vs, [[...Array(vs.length)].map((_, i) => i)]).faces;
-      })
-    )).finish();
-  }
+//         vs.push(v(i, j));
+//         if(j > 0)
+//           vs.push(v(i + 1, j));
+//         if(j < stacks - 1)
+//           vs.push(v(i + 1, j + 1));
+//         vs.push(v(i, j + 1));
 
-  static serializer: () => Serializer<SphereWork> = () =>
-    string().map<SphereWork>({
-      serialize: work => JSON.stringify(work.args),
-      deserialize: args => new SphereWork(JSON.parse(args)),
-    })
+//         return Mesh.fromVertsFaces(vs, [[...Array(vs.length)].map((_, i) => i)]).faces;
+//       })
+//     )).finish();
+//   }
 
-  serialize: SerializeFunc<SphereWork> = SphereWork.serializer().serialize;
+//   static serializer: () => Serializer<SphereWork> = () =>
+//     string().map<SphereWork>({
+//       serialize: work => JSON.stringify(work.args),
+//       deserialize: args => new SphereWork(JSON.parse(args)),
+//     })
 
-  static deserialize: DeserializeFunc<SphereWork> = SphereWork.serializer().deserialize;
+//   serialize: SerializeFunc<SphereWork> = SphereWork.serializer().serialize;
 
-}
+//   static deserialize: DeserializeFunc<SphereWork> = SphereWork.serializer().deserialize;
 
-Work.Registry.register(SphereWork);
+// }
 
-type SphereArgs = {
-  r: number,
-  slices?: number,
-  stacks?: number,
-  t?: number,
-  i?: number,
-  ir?: number,
-  unionDiff?: boolean,
-  ud?: boolean,
-};
+// Work.Registry.register(SphereWork);
 
-export const sphere: Component<[SphereArgs], Element<Mesh>> = new Component<[SphereArgs], Element<Mesh>>("sphere", ({
-  r = 1,
-  slices = 16,
-  stacks = 8,
-  t = r,
-  i = r - t, ir = i,
-  unionDiff = false, ud = unionDiff,
-}) => {
-  let os = new SphereWork([r, slices, stacks]);
-  if(!ir)
-    return new Element(os);
-  let is = new SphereWork([ir, slices, stacks]);
-  return new Element<Mesh>(ud ? [os, is] : Mesh.convertElementish(diff(os, is)));
-})
+// type SphereArgs = {
+//   r: number,
+//   slices?: number,
+//   stacks?: number,
+//   t?: number,
+//   i?: number,
+//   ir?: number,
+//   unionDiff?: boolean,
+//   ud?: boolean,
+// };
 
-export const hollowSphere = sphere;
+// export const sphere: Component<[SphereArgs], Element<Mesh>> = new Component<[SphereArgs], Element<Mesh>>("sphere", ({
+//   r = 1,
+//   slices = 16,
+//   stacks = 8,
+//   t = r,
+//   i = r - t, ir = i,
+//   unionDiff = false, ud = unionDiff,
+// }) => {
+//   let os = new SphereWork([r, slices, stacks]);
+//   if(!ir)
+//     return new Element(os);
+//   let is = new SphereWork([ir, slices, stacks]);
+//   return new Element<Mesh>(ud ? [os, is] : Mesh.convertElementish(diff(os, is)));
+// })
+
+// export const hollowSphere = sphere;
