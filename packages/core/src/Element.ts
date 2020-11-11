@@ -15,8 +15,8 @@ const isObjMap = (o: unknown): o is ObjMap<unknown> =>
 
 type ElementishFlat<T> = Array<T> | ObjMap<T>;
 export type Elementish<T extends Product> =
-  // | ReadonlyArray<Elementish<T>>
-  // | ObjMap<Elementish<T>>
+  | ReadonlyArray<Elementish<T>>
+  | ObjMap<Elementish<T>>
   | ConvertibleTo<T>
   | __Element__<T>
 export type DeepArray<T> = Array<T | DeepArray<T>>;

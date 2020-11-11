@@ -4,26 +4,33 @@ import { LeafProduct, LeafProductType } from "./LeafProduct"
 import { CompoundProduct, CompoundProductType } from "./CompoundProduct"
 import { ArtifactManager } from "./ArtifactManager";
 import { Id } from "./Id";
-import { __convertibleTo, __convertibleToOverride, _ConvertibleTo, _ConvertibleFrom, __convertibleFrom } from "./Conversions";
+import {
+  __convertibleTo,
+  __convertibleToOverride,
+  _ConvertibleTo,
+  _ConvertibleFrom,
+  __convertibleFrom,
+  __convertibleFromOverride,
+} from "./Conversions";
 
 export interface _Product {
   readonly [__convertibleTo]?: (
     __convertibleToOverride extends keyof this
-      ? Product
+      ? unknown
       : LeafProduct extends this
-        ? Product
+        ? unknown
         : CompoundProduct<any> extends this
-          ? Product
+          ? unknown
           : _ConvertibleTo<this>
   ),
 
   readonly [__convertibleFrom]?: (
-    __convertibleToOverride extends keyof this
-      ? Product
+    __convertibleFromOverride extends keyof this
+      ? unknown
       : LeafProduct extends this
-        ? Product
+        ? unknown
         : CompoundProduct<any> extends this
-          ? Product
+          ? unknown
           : _ConvertibleFrom<this>
   ),
 }

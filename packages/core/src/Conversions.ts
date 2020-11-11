@@ -1,8 +1,8 @@
 
-import { CompoundProduct } from "./CompoundProduct";
+import { LeafProduct, __Element__, Elementish } from ".";
 import { Product, ProductType } from "./Product";
 
-export interface Conversion<A extends Product, B extends Product> {
+export interface Conversion<A, B> {
   (value: A): B,
 }
 
@@ -28,26 +28,25 @@ export type ConversionImpls<C = ConversionsUnion> = (
   C extends Conversion<infer A, infer B>
     ? A extends Product
       ? B extends Product
-        ? ConversionImpl<A, B>
+        ? ConversionImpl<Extract<A, Product>, Extract<B, Product>>
         : never
       : never
     : never
 );
 
 export type DirectConvertibleTo<T, C = ConversionsUnion> =
-  C extends Conversion<infer F, T & Product> ? F : never
+  C extends Conversion<infer F, infer T2>
+    ? Omit<T2, __convertibleTo | __convertibleFrom> extends T
+      ? Omit<F, __convertibleTo | __convertibleFrom>
+      : never
+    : never
+
 export type DirectConvertibleFrom<F, C = ConversionsUnion> =
-  C extends Conversion<F & Product, infer T> ? T : never
-
-interface CompoundConvertibleTo<T extends readonly Product[]> {
-  isCompoundProduct: true,
-  children: { [K in keyof T]: K extends number ? ConvertibleTo<T[K]> : T[K] },
-}
-
-interface CompoundConvertibleFrom<T extends readonly Product[]> {
-  isCompoundProduct: true,
-  children: { [K in keyof T]: K extends number ? ConvertibleFrom<T[K]> : T[K] },
-}
+  C extends Conversion<infer F2, infer T>
+    ? Omit<F2, __convertibleTo | __convertibleFrom> extends F
+      ? Omit<T, __convertibleTo | __convertibleFrom>
+      : never
+    : never
 
 export declare const __convertibleTo: unique symbol;
 export declare const __convertibleToOverride: unique symbol;
@@ -59,7 +58,15 @@ export declare const __convertibleFromOverride: unique symbol;
 export type __convertibleFrom = typeof __convertibleFrom;
 export type __convertibleFromOverride = typeof __convertibleFromOverride;
 
-type _SafeCompoundConvertibleTo<A> = A extends CompoundProduct<infer T> ? CompoundConvertibleTo<T> : A;
+type _SafeCompoundConvertibleTo<A> =
+  "children" extends keyof A
+    ? {
+      readonly isCompoundProduct: true,
+      readonly children: {
+        [K in keyof A["children"]]: K extends number ? _ConvertibleTo<A["children"][K]> : A["children"][K]
+      },
+    }
+    : A
 export type _ConvertibleTo<T, E=never> =
   | T
   | _SafeCompoundConvertibleTo<T>
@@ -69,7 +76,15 @@ export type _ConvertibleTo<T, E=never> =
       : _ConvertibleTo<DirectConvertibleTo<_SafeCompoundConvertibleTo<T>>, E | T>
   )
 
-type _SafeCompoundConvertibleFrom<A> = A extends CompoundProduct<infer T> ? CompoundConvertibleFrom<T> : A;
+type _SafeCompoundConvertibleFrom<A> =
+  "children" extends keyof A
+    ? {
+      readonly isCompoundProduct: true,
+      readonly children: {
+        [K in keyof A["children"]]: K extends number ? _ConvertibleFrom<A["children"][K]> : A["children"][K]
+      },
+    }
+    : A
 export type _ConvertibleFrom<T, E=never> =
   | T
   | _SafeCompoundConvertibleFrom<T>
@@ -89,29 +104,29 @@ export type ConvertibleFrom<T extends Product> = Product & {
   [__convertibleFrom]?: T[__convertibleFrom],
 }
 
-// declare global {
-//   namespace escad {
-//     interface ConversionsObj {
-//       aToB: Conversion<ProductA, ProductB>,
-//     }
-//   }
-// }
+declare global {
+  namespace escad {
+    interface ConversionsObj {
+      aToB: Conversion<ProductA, ProductB>,
+    }
+  }
+}
 
-// type Assert<T, U extends T> = U;
-// interface ProductA extends LeafProduct {
-//   a: 5,
-// }
-// interface ProductB extends LeafProduct {
-//   b: 5,
-// }
+type Assert<T, U extends T> = U;
+interface ProductA extends LeafProduct {
+  a: 5,
+}
+interface ProductB extends LeafProduct {
+  b: 5,
+}
 
-// type X__<A extends Product> = Assert<ConvertibleTo<A>, ConvertibleTo<ConvertibleTo<A>>>;
-// type X_<B extends Product, A extends ConvertibleTo<B>> = Assert<ConvertibleTo<B>, ConvertibleTo<A>>
-// type X = Assert<__Element__<ProductB>, __Element__<ProductA>>
-// type Y = Assert<Elementish<ProductB>, Elementish<ProductA>>
-// type Y_<B extends Product, A extends ConvertibleTo<B>> = Assert<Elementish<B>, Elementish<A>>
+type X__<A extends Product> = Assert<ConvertibleTo<A>, ConvertibleTo<ConvertibleTo<A>>>;
+type X_<B extends Product, A extends ConvertibleTo<B>> = Assert<ConvertibleTo<B>, ConvertibleTo<A>>
+type X = Assert<__Element__<ProductB>, __Element__<ProductA>>
+type Y = Assert<Elementish<ProductB>, Elementish<ProductA>>
+type Y_<B extends Product, A extends ConvertibleTo<B>> = Assert<Elementish<B>, Elementish<A>>
 
-// type T = ConvertibleTo<ProductA>;
-// type U = ConvertibleTo<ProductB>;
-// type V = ConversionsUnion
-// type W = DirectConvertibleTo<ProductB>;
+type T = ConvertibleTo<ProductA>;
+type U = ConvertibleTo<ProductB>;
+type V = ConversionsUnion
+type W = DirectConvertibleTo<ProductB>;
