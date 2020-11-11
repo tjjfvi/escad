@@ -15,8 +15,10 @@ export const LeafProduct = {
 };
 
 export const createProductTypeUtils = <P extends LeafProduct, N extends string>(id: ProductType<P>, name: N) => ({
-  [`is${name}` as `is${N}`]: (q: Product): q is P =>
-    LeafProduct.isLeafProduct(q) && q.type === id,
+  ...({
+    [`is${name}`]: (q: Product): q is P =>
+      LeafProduct.isLeafProduct(q) && q.type === id,
+  } as Record<`is${N}`, (q: Product) => q is P>),
   convert<Q extends ConvertibleTo<P>>(q: Q): Promise<P>{
     return Product.ConversionRegistry.convertProduct<P, Q>(id, q);
   }

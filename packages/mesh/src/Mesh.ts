@@ -1,7 +1,7 @@
 
 import { Face } from "./Face";
 import { Vector3 } from "./Vector3";
-import { Id, LeafProduct } from "@escad/core";
+import { createProductTypeUtils, Id, LeafProduct } from "@escad/core";
 import { registerPlugin } from "@escad/register-client-plugin"
 
 declare const __meshIdSymbol: unique symbol;
@@ -11,7 +11,6 @@ export interface Mesh extends LeafProduct {
   readonly type: typeof meshId,
   readonly faces: readonly Face[],
 }
-
 
 export const Mesh = Object.assign(
   (faces: readonly Face[]): Mesh => ({
@@ -24,6 +23,7 @@ export const Mesh = Object.assign(
         .map(is => Face(is.map(i => verts[i])))
     ),
     id: meshId,
+    ...createProductTypeUtils(meshId, "Mesh")
   }
 )
 
