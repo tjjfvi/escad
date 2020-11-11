@@ -41,6 +41,8 @@ rules:
     - off
   '@typescript-eslint/no-namespace':
     - off
+  '@typescript-eslint/explicit-module-boundary-types':
+    - off
   '@typescript-eslint/class-name-casing':
     - off
   '@typescript-eslint/explicit-function-return-type':
