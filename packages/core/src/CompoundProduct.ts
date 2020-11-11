@@ -21,6 +21,9 @@ export interface CompoundProduct<T extends readonly Product[]> extends _Product 
 }
 
 export const CompoundProduct = {
-  isCompoundProduct: (arg: any): arg is CompoundProduct<readonly Product[]> =>
-    typeof arg === "object" && arg.isCompoundProduct === true
+  isCompoundProduct: (arg: unknown): arg is CompoundProduct<readonly Product[]> =>
+    typeof arg === "object" &&
+    arg !== null &&
+    "isCompoundProduct" in arg &&
+    arg["isCompoundProduct" as keyof typeof arg] === true
 };

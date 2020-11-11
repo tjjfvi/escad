@@ -43,7 +43,6 @@ export class Operation<I extends Product, O extends Product> extends __Operation
   constructor(name: string, func: (arg: ArrayElement<I>) => Elementish<O>){
     super((...args) => {
       if(args[0] instanceof Operation)
-        // @ts-ignore
         return new Operation(name + "+" + args[0].name, (a: any) => that(args[0](...a.val)));
       if(args[0] instanceof Component)
         return new Component(args[0].name + "+" + name, (...a: any) => (that as any)((args[0](...a) as any)));
@@ -57,7 +56,6 @@ export class Operation<I extends Product, O extends Product> extends __Operation
           return;
 
         const val = builtins[prop as keyof typeof builtins];
-        // @ts-ignore
         return this(val);
       }
     }, name)

@@ -1,6 +1,5 @@
 import { ProductType, getProductType, Product } from "./Product";
-import { Conversion, ConvertibleTo, ConversionImpl } from "./Conversions";
-import { Elementish } from "./Element";
+import { ConvertibleTo, ConversionImpl } from "./Conversions";
 import { Hex } from "./hex";
 import { MultiMap } from "./MultiMap";
 import { hash } from "./hash";
@@ -121,15 +120,6 @@ export class ConversionRegistry {
     return this.composed;
   }
 
-  get<A extends Product, B extends Product>(
-    a: ProductType<A>,
-    b: ProductType<B>,
-  ): Conversion<A, B> | undefined{
-    a; b;
-    // to do
-    return null as any;
-  }
-
   async convertProduct<T extends Product, F extends ConvertibleTo<T> & Product>(
     toType: ProductType<T>,
     from: F,
@@ -151,11 +141,11 @@ export class ConversionRegistry {
     return currentProduct as T;
   }
 
-  convertElementish<A extends Product, B extends ConvertibleTo<A> & Product>(
-    a: ProductType<A>,
-    b: Elementish<B>,
-  ): Elementish<A>{
-    return b;
-  }
+  // convertElementish<A extends Product, B extends ConvertibleTo<A> & Product>(
+  //   a: ProductType<A>,
+  //   b: Elementish<B>,
+  // ): Elementish<A>{
+  //   return b;
+  // }
 
 }

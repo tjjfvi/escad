@@ -3,6 +3,7 @@ const map = new WeakMap<ExtensibleFunction, typeof ExtensibleFunction>();
 
 export class ExtensibleFunction extends Function {
 
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   constructor(func: (...x: any[]) => any, handler: ProxyHandler<any> = {}, name = ""){
     const that = Object.setPrototypeOf({

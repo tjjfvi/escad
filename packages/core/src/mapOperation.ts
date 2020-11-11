@@ -15,7 +15,7 @@ export const mapOperation = (
       const flattenedArg = shouldFlatten ? flatten(arg) : arg;
 
       const output = new Element(flattenedArg).map(func, (eish, old, isLeaf, isRoot) =>
-        new Hierarchy({
+        Hierarchy({
           name,
           braceType: "(",
           children: isRoot && !isLeaf ? old.hierarchy.children : [old.hierarchy],

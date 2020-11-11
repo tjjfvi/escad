@@ -92,7 +92,6 @@ export class Element<T extends Product> extends __Element__<T> {
           return;
 
         const val = builtins[prop as keyof typeof builtins];
-        // @ts-ignore
         return this(val);
       }
     })

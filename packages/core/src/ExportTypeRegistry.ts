@@ -1,32 +1,34 @@
 
-import { Id } from "./Id";
-import { Product, ProductType } from "./Product";
-import { ExportType } from "./ExportType"
+export {}
 
-export class ExportTypeRegistry {
+// import { Id } from "./Id";
+// import { Product, ProductType } from "./Product";
+// import { ExportType } from "./ExportType"
 
-  private mapMap = new Map<Id, Map<Id, ExportType<any>>>();
+// export class ExportTypeRegistry {
 
-  register<P extends Product>(productType: ProductType<P>, exportType: ExportType<P>){
-    let map = this.mapMap.get(productType.id) ?? new Map<Id, ExportType<any>>();
-    this.mapMap.set(productType.id, map);
-    map.set(exportType.id, exportType);
-    ExportTypeManager.get(productType).store(exportType.id.sha, Promise.resolve(exportType));
-  }
+//   private mapMap = new Map<Id, Map<Id, ExportType<any>>>();
 
-  getAll<P extends Product>(productType: ProductType<P>): ExportType<P>[]{
-    let map = this.mapMap.get(productType.id);
-    return map ? [...map.values()] : [];
-  }
+//   register<P extends Product>(productType: ProductType<P>, exportType: ExportType<P>){
+//     let map = this.mapMap.get(productType.id) ?? new Map<Id, ExportType<any>>();
+//     this.mapMap.set(productType.id, map);
+//     map.set(exportType.id, exportType);
+//     ExportTypeManager.get(productType).store(exportType.id.sha, Promise.resolve(exportType));
+//   }
 
-  get<P extends Product>(productType: ProductType<P>, exportId: Id): ExportType<P>{
-    let map = this.mapMap.get(productType.id);
-    if(!map)
-      throw new Error(`Product type ${productType.id} has no exportTypes`);
-    let exportType = map.get(exportId);
-    if(!exportType)
-      throw new Error(`Product type ${productType.id} has no exportType ${exportId}`);
-    return exportType;
-  }
+//   getAll<P extends Product>(productType: ProductType<P>): ExportType<P>[]{
+//     let map = this.mapMap.get(productType.id);
+//     return map ? [...map.values()] : [];
+//   }
 
-}
+//   get<P extends Product>(productType: ProductType<P>, exportId: Id): ExportType<P>{
+//     let map = this.mapMap.get(productType.id);
+//     if(!map)
+//       throw new Error(`Product type ${productType.id} has no exportTypes`);
+//     let exportType = map.get(exportId);
+//     if(!exportType)
+//       throw new Error(`Product type ${productType.id} has no exportType ${exportId}`);
+//     return exportType;
+//   }
+
+// }

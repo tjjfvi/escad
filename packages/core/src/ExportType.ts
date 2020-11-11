@@ -1,5 +1,5 @@
 import { Id } from "./Id";
-import { ExportTypeRegistry } from "./ExportTypeRegistry";
+// import { ExportTypeRegistry } from "./ExportTypeRegistry";
 import { ExportManager } from "./ExportManager";
 import { Product, ProductType } from "./Product";
 
@@ -13,7 +13,7 @@ export interface ExportTypeArgs<P extends Product> {
 
 export class ExportType<P extends Product> implements ExportTypeArgs<P> {
 
-  static Registry = new ExportTypeRegistry();
+  // static Registry = new ExportTypeRegistry();
 
   id: Id;
   productType: ProductType<P>;
