@@ -1,5 +1,5 @@
 import { ProductType, getProductType, Product } from "./Product";
-import { Conversion, ConvertibleTo, ConversionsUnion, ConversionImpls, ConversionImpl } from "./Conversions";
+import { Conversion, ConvertibleTo, ConversionImpl } from "./Conversions";
 import { Elementish } from "./Element";
 import { Hex } from "./hex";
 import { MultiMap } from "./MultiMap";
@@ -11,8 +11,8 @@ export class ConversionRegistry {
   private registered = new MultiMap<Hex, ConversionImpl<any, any>>();
   private composed: DeepMap<Hex, Hex, ConversionImpl<any, any>[]> | null = null;
 
-  register<C extends ConversionsUnion>(
-    conversion: ConversionImpls<C>,
+  register<F extends Product, T extends Product>(
+    conversion: ConversionImpl<F, T>,
   ): void {
     if(this.composed !== null)
       console.warn("ConversionRegistry.register called late")
