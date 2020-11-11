@@ -1,5 +1,4 @@
 
-import { LeafProduct, __Element__, Elementish } from ".";
 import { Product, ProductType } from "./Product";
 
 export interface Conversion<A, B> {
@@ -104,29 +103,37 @@ export type ConvertibleFrom<T extends Product> = Product & {
   [__convertibleFrom]?: T[__convertibleFrom],
 }
 
-declare global {
-  namespace escad {
-    interface ConversionsObj {
-      aToB: Conversion<ProductA, ProductB>,
-    }
-  }
-}
+// Tests:
 
-type Assert<T, U extends T> = U;
-interface ProductA extends LeafProduct {
-  a: 5,
-}
-interface ProductB extends LeafProduct {
-  b: 5,
-}
+// declare global {
+//   namespace escad {
+//     interface ConversionsObj {
+//       stuff: (
+//         | Conversion<ProductA, ProductB>
+//         | Conversion<ProductB, ProductA>
+//         | Conversion<CompoundProduct<[ProductA, ProductA]>, ProductA>
+//       ),
+//     }
+//   }
+// }
 
-type X__<A extends Product> = Assert<ConvertibleTo<A>, ConvertibleTo<ConvertibleTo<A>>>;
-type X_<B extends Product, A extends ConvertibleTo<B>> = Assert<ConvertibleTo<B>, ConvertibleTo<A>>
-type X = Assert<__Element__<ProductB>, __Element__<ProductA>>
-type Y = Assert<Elementish<ProductB>, Elementish<ProductA>>
-type Y_<B extends Product, A extends ConvertibleTo<B>> = Assert<Elementish<B>, Elementish<A>>
+// type Assert<T, U extends T> = U;
+// interface ProductA extends LeafProduct {
+//   a: 5,
+// }
+// interface ProductB extends LeafProduct {
+//   b: 5,
+// }
 
-type T = ConvertibleTo<ProductA>;
-type U = ConvertibleTo<ProductB>;
-type V = ConversionsUnion
-type W = DirectConvertibleTo<ProductB>;
+// type Z = Assert<__Element__<ProductB>, __Element__<CompoundProduct<[ProductB, ProductA]>>>
+
+// type X__<A extends Product> = Assert<ConvertibleTo<A>, ConvertibleTo<ConvertibleTo<A>>>;
+// type X_<B extends Product, A extends ConvertibleTo<B>> = Assert<ConvertibleTo<B>, ConvertibleTo<A>>
+// type X = Assert<__Element__<ProductB>, __Element__<ProductA>>
+// type Y = Assert<Elementish<ProductB>, Elementish<ProductA>>
+// type Y_<B extends Product, A extends ConvertibleTo<B>> = Assert<Elementish<B>, Elementish<A>>
+
+// type T = ConvertibleTo<ProductA>;
+// type U = ConvertibleTo<ProductB>;
+// type V = ConversionsUnion
+// type W = DirectConvertibleTo<ProductB>;
