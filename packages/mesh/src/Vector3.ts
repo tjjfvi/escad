@@ -5,6 +5,8 @@ export interface Vector3 {
   readonly z: number,
 }
 
+Object.defineProperty(_Vector3, "length", { writable: true })
+
 export const Vector3 = Object.assign(
   _Vector3,
   {

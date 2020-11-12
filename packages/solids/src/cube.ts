@@ -1,11 +1,11 @@
 
 import { Mesh, Vector3 } from "@escad/mesh";
-import { Component, Element, Id, Conversion, Product, createProductTypeUtils } from "@escad/core";
+import { Component, Element, Id, Conversion, Product, createProductTypeUtils, LeafElement, LeafProduct } from "@escad/core";
 
 declare const cubeIdSymbol: unique symbol;
 const cubeId = Id<typeof cubeIdSymbol>("Cube", __filename);
 
-export interface Cube {
+export interface Cube extends LeafProduct {
   readonly type: typeof cubeId,
   readonly center: Vector3,
   readonly size: Vector3,
@@ -24,7 +24,7 @@ export const Cube = Object.assign(
 
 declare global {
   namespace escad {
-    interface Conversions {
+    interface ConversionsObj {
       "@escad/solids": {
         cube: {
           cubeToMesh: Conversion<Cube, Mesh>,
@@ -90,7 +90,7 @@ export interface CubeArgs extends TripletObj<number> {
   cz?: boolean,
 }
 
-export const cube: Component<[CubeArgs], Element<Mesh>> = new Component("cube", n => {
+export const cube: Component<[CubeArgs], LeafElement<Mesh>> = new Component("cube", n => {
   let xyzT: Triplet<number> =
     n.sideLength ??
     n.s ??
@@ -119,6 +119,6 @@ export const cube: Component<[CubeArgs], Element<Mesh>> = new Component("cube", 
     cA[2] ? 0 : xyzA[2] / 2,
   ]
 
-  return new Element(Cube(Vector3(cP), Vector3(xyzA)));
+  return Element.create(Cube(Vector3(cP), Vector3(xyzA)));
 })
 

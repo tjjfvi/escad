@@ -23,11 +23,11 @@ export const Mesh = Object.assign(
         .map(is => Face(is.map(i => verts[i])))
     ),
     id: meshId,
-    ...createProductTypeUtils(meshId, "Mesh")
+    ...createProductTypeUtils<Mesh, "Mesh">(meshId, "Mesh")
   }
 )
 
-registerPlugin({
-  path: require.resolve("@escad/client-mesh"),
-  idMap: { "@escad/client-mesh/Mesh": Mesh.id },
-})
+// registerPlugin({
+//   path: require.resolve("@escad/client-mesh"),
+//   idMap: { "@escad/client-mesh/Mesh": Mesh.id },
+// })

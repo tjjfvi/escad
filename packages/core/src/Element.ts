@@ -11,7 +11,7 @@ interface ObjMap<T> {
   readonly [x: string]: T,
 }
 const isObjMap = (o: unknown): o is ObjMap<unknown> =>
-  typeof o === "object" && !!o && (o.constructor === Object || Object.getPrototypeOf(o) === null);
+  !Product.isProduct(o) && typeof o === "object" && !!o && (o.constructor === Object || Object.getPrototypeOf(o) === null);
 
 type ElementishFlat<T> = Array<T> | ObjMap<T>;
 export type Elementish<T extends Product> =
@@ -112,7 +112,7 @@ export class Element<T extends Product> extends __Element__<T> {
   }
 
   isObjMap(): this is ObjMapElement<T>{
-    return isObjMap(this.val);
+    return !isObjMap(this.val);
   }
 
   isArrayish(): this is ArrayishElement<T>{
@@ -120,7 +120,7 @@ export class Element<T extends Product> extends __Element__<T> {
   }
 
   isLeaf(): this is LeafElement<T>{
-    return !this.isArrayish();
+    return Product.isProduct(this.val)
   }
 
   map<U extends Product>(

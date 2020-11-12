@@ -92,9 +92,6 @@ export class ConversionRegistry {
           });
       }
 
-      for(let index = -1; index < prior.length; index++)
-        this.composed.set(hash(prior[index]?.fromType ?? fromType), typeHash, prior)
-
       if(this.composed.hasAny(typeHash))
         if(hash(fromType) !== typeHash)
           for(const conversions of this.composed.getAll(typeHash).values())
@@ -114,6 +111,9 @@ export class ConversionRegistry {
             deepIndex: 0,
           });
 
+      for(let index = -1; index < prior.length; index++)
+        this.composed.set(hash(prior[index]?.fromType ?? fromType), typeHash, prior)
+
       done.add(taskId);
     }
 
@@ -129,7 +129,7 @@ export class ConversionRegistry {
     if(!this.composed?.hasAny(hash(fromType)))
       this.composed = this.compose<F>(fromType);
 
-    const conversions = this.composed.get(hash(toType), hash(getProductType(from)));
+    const conversions = this.composed.get(hash(fromType), hash(toType));
 
     if(!conversions)
       throw new Error(`Could not find path to convert product type ${hash(fromType)} to ${hash(toType)}`);
