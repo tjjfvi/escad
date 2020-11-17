@@ -19,7 +19,7 @@ export interface _Product {
       ? unknown
       : LeafProduct extends this
         ? unknown
-        : CompoundProduct<any> extends this
+        : CompoundProduct<readonly Product[]> extends this
           ? unknown
           : _ConvertibleTo<this>
   ),
@@ -29,7 +29,7 @@ export interface _Product {
       ? unknown
       : LeafProduct extends this
         ? unknown
-        : CompoundProduct<any> extends this
+        : CompoundProduct<readonly Product[]> extends this
           ? unknown
           : _ConvertibleFrom<this>
   ),
@@ -37,7 +37,7 @@ export interface _Product {
 
 export type Product = LeafProduct | CompoundProduct<readonly Product[]>;
 
-export type _ProductType = Id | readonly _ProductType[];
+export type _ProductType = Id | { readonly [k: number]: _ProductType };
 
 export type ProductType<U extends Product = Product> = Extract<
   Product extends U ?

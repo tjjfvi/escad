@@ -11,7 +11,9 @@ interface ObjMap<T> {
   readonly [x: string]: T,
 }
 const isObjMap = (o: unknown): o is ObjMap<unknown> =>
-  !Product.isProduct(o) && typeof o === "object" && !!o && (o.constructor === Object || Object.getPrototypeOf(o) === null);
+  !Product.isProduct(o) &&
+  typeof o === "object" && !!o &&
+  (o.constructor === Object || Object.getPrototypeOf(o) === null)
 
 type ElementishFlat<T> = Array<T> | ObjMap<T>;
 export type Elementish<T extends Product> =
@@ -28,24 +30,19 @@ export class __Element__<T extends Product> extends __Thing__ {
 
 }
 
-type ElementIn<T extends Product> = __Element__<any> | __Operation__<T, any> | __Component__<any, ElementIn<T>>
-type ElementOut<T extends Product, Arg extends ElementIn<T>> =
+export type ElementOut<T extends Product, Arg> =
   Arg extends __Element__<infer U> ? Element<T | U> :
-  Arg extends __Operation__<T, infer U> ? Element<U> :
-  Arg extends __Component__<infer I, infer U> ? U extends ElementIn<T> ? Component<I, ElementOut<T, U>> : never :
+  Arg extends __Operation__<infer I, infer O> ? T extends Elementish<I> ? Element<O> : never :
+  Arg extends __Component__<infer I, infer O> ? Component<I, ElementOut<T, O>> :
   never
 
 export interface Element<T extends Product> {
   (): Element<T>,
-  <U extends Product>(el: __Element__<U>): Element<T | U>,
-  <U extends Product>(o: __Operation__<T, U>): Element<U>,
-  <I extends any[], U extends ElementIn<T>>(c: __Component__<I, U>): Component<I, ElementOut<T, U>>,
+  <A extends Product>(arg: A): ElementOut<T, A>,
 }
 
-type _ElementOut<T extends Product, Arg> = Arg extends ElementIn<T> ? ElementOut<T, Arg> : never;
-
 type _ElementBuiltins<T extends Product> = {
-  [K in keyof Builtins]: _ElementOut<T, Builtins[K]>
+  [K in keyof Builtins]: ElementOut<T, Builtins[K]>
 }
 
 type _ExcludeNevers<T> = {
@@ -112,7 +109,7 @@ export class Element<T extends Product> extends __Element__<T> {
   }
 
   isObjMap(): this is ObjMapElement<T>{
-    return !isObjMap(this.val);
+    return isObjMap(this.val);
   }
 
   isArrayish(): this is ArrayishElement<T>{
@@ -134,6 +131,8 @@ export class Element<T extends Product> extends __Element__<T> {
     isRoot = true,
   ): Element<U>{
     let createElement = (e: Elementish<U>) => new Element(e, hierarchyGen(e, this, this.isLeaf(), isRoot));
+
+    console.log(this, this.isArray(), this.isObjMap(), this.isLeaf());
 
     if(this.isArray())
       return createElement((this as ArrayElement<T>).val.map(v => v.map<U>(f, hierarchyGen, false)));

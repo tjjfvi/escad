@@ -3,7 +3,7 @@ import { Id } from "./Id";
 import { ConvertibleTo } from "./Conversions";
 import { Product, ProductType, _Product } from "./Product";
 
-export type LeafProductType<T extends LeafProduct> = any extends T ? Id : T["type"];
+export type LeafProductType<T extends LeafProduct> = T["type"];
 
 export interface LeafProduct extends _Product {
   readonly type: Id,

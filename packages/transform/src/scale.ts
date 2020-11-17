@@ -1,17 +1,17 @@
 
-import { TransformWork } from "./TransformWork";
 import { Matrix4 } from "./Matrix4"
 import { Mesh } from "@escad/mesh";
-import { FlipWork } from "./flip";
 import { Component, Operation, mapOperation } from "@escad/core";
+import { Transformation } from "./Transformation";
+import { FlipFaces } from ".";
 
 type ScaleArgs =
   | [number]
   | [number, number, number]
   | [{ x?: number, y?: number, z?: number }]
   | [[number, number, number]]
-export const scale: Component<ScaleArgs, Operation<Mesh, Mesh>> =
-  new Component<ScaleArgs, Operation<Mesh, Mesh>>("scale", (...args: ScaleArgs) => {
+export const scale: Component<ScaleArgs, Operation<Mesh, Transformation<Mesh>>> =
+  new Component<ScaleArgs, Operation<Mesh, Transformation<Mesh>>>("scale", (...args: ScaleArgs) => {
     let triple =
       args.length === 3 ?
         args :
@@ -25,15 +25,18 @@ export const scale: Component<ScaleArgs, Operation<Mesh, Mesh>> =
     let sign = Math.sign(arr[0] * arr[1] * arr[2]);
     let shouldFlip = sign === -1;
 
-    return mapOperation<Mesh>("scale", leaf => {
-      let transformed = new TransformWork(leaf, matrix);
-      return shouldFlip ? new FlipWork(transformed) : transformed;
+    return mapOperation<Mesh, Transformation<Mesh>>("scale", leaf => {
+      let transformed = Transformation(matrix, leaf);
+      return shouldFlip ?  FlipFaces(transformed) : transformed;
     });
   });
 
-export const sX: Component<[number], Operation<Mesh, Mesh>> = new Component("sX", (n: number) => scale({ x: n }));
-export const sY: Component<[number], Operation<Mesh, Mesh>> = new Component("sY", (n: number) => scale({ y: n }));
-export const sZ: Component<[number], Operation<Mesh, Mesh>> = new Component("sZ", (n: number) => scale({ z: n }));
+export const sX: Component<[number], Operation<Mesh, Transformation<Mesh>>> =
+  new Component("sX", (n: number) => scale({ x: n }));
+export const sY: Component<[number], Operation<Mesh, Transformation<Mesh>>> =
+  new Component("sY", (n: number) => scale({ y: n }));
+export const sZ: Component<[number], Operation<Mesh, Transformation<Mesh>>> =
+  new Component("sZ", (n: number) => scale({ z: n }));
 
 export const scaleX = sX;
 export const scaleY = sY;

@@ -1,8 +1,8 @@
 
-import { TransformWork } from "./TransformWork";
 import { Matrix4 } from "./Matrix4"
 import { Mesh } from "@escad/mesh";
 import { Component, Operation, mapOperation } from "@escad/core";
+import { Transformation } from "./Transformation";
 
 const tau = Math.PI * 2;
 
@@ -13,8 +13,8 @@ type RotateArgs =
   | [{ x?: number, y?: number, z?: number } & RotateOpts]
   | [[number, number, number], RotateOpts?]
 
-export const rotate: Component<RotateArgs, Operation<Mesh, Mesh>> =
-  new Component<RotateArgs, Operation<Mesh, Mesh>>("rotate", (...args: RotateArgs) => {
+export const rotate: Component<RotateArgs, Operation<Mesh, Transformation<Mesh>>> =
+  new Component<RotateArgs, Operation<Mesh, Transformation<Mesh>>>("rotate", (...args: RotateArgs) => {
     let [first] = args;
     let triple =
     args.length === 3 ?
@@ -44,16 +44,16 @@ export const rotate: Component<RotateArgs, Operation<Mesh, Mesh>> =
     y *= multiplier;
     z *= multiplier;
 
-    let m = Matrix4.rotateX(x).rotateY(y).rotateZ(z);
+    let m = Matrix4.multiply(Matrix4.multiply(Matrix4.rotateX(x), Matrix4.rotateY(y)), Matrix4.rotateZ(z));
 
-    return mapOperation<Mesh>("rotate", leaf => new TransformWork(leaf, m));
+    return mapOperation<Mesh, Transformation<Mesh>>("rotate", leaf => Transformation(m, leaf));
   });
 
-export const rX: Component<[number], Operation<Mesh, Mesh>> =
+export const rX: Component<[number], Operation<Mesh, Transformation<Mesh>>> =
   new Component("rX", (n: number) => rotate({ x: n }));
-export const rY: Component<[number], Operation<Mesh, Mesh>> =
+export const rY: Component<[number], Operation<Mesh, Transformation<Mesh>>> =
   new Component("rY", (n: number) => rotate({ y: n }));
-export const rZ: Component<[number], Operation<Mesh, Mesh>> =
+export const rZ: Component<[number], Operation<Mesh, Transformation<Mesh>>> =
   new Component("rZ", (n: number) => rotate({ z: n }));
 
 export const rotateX = rX;

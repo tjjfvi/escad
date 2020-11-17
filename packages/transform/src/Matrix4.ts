@@ -1,7 +1,7 @@
 /* eslint-disable array-element-newline */
 
+import { createProductTypeUtils, Id, LeafProduct } from "@escad/core";
 import { Vector3 } from "@escad/mesh";
-import { floatLE, Serializer, concat } from "tszer";
 
 const c = Math.cos;
 const s = Math.sin;
@@ -14,121 +14,75 @@ export type Sixteen<T> = [
   T, T, T, T,
 ];
 
-class Matrix4 {
+declare const matrix4IdSymbol: unique symbol;
+const matrix4Id = Id<typeof matrix4IdSymbol, "Matrix4">("Matrix4", __filename);
 
-  type = Matrix4;
+export interface Matrix4 extends LeafProduct {
+  readonly type: typeof matrix4Id,
+  readonly vs: Sixteen<number>,
+}
 
-  vs: Sixteen<number>;
+export const Matrix4 = Object.assign(
+  (vs: Sixteen<number>): Matrix4 => ({
+    type: Matrix4.id,
+    vs,
+  }), {
+    ...createProductTypeUtils<Matrix4, "Matrix4">(matrix4Id, "Matrix4"),
 
-  constructor(vs: Sixteen<number>){
-    if(vs.length !== 16)
-      throw new Error("Must give 16 numbers to Matrix4");
-    this.vs = vs;
-  }
+    id: matrix4Id,
 
-  clone(){
-    return new Matrix4([...this.vs] as Sixteen<number>);
-  }
+    multiplyVector: (matrix: Matrix4, vector: Vector3) => {
+      let v = [vector.x, vector.y, vector.z];
+      let m = matrix.vs;
+      return Vector3(
+        v[0] * m[0] + v[1] * m[1] + v[2] * m[2] + m[3],
+        v[0] * m[4] + v[1] * m[5] + v[2] * m[6] + m[7],
+        v[0] * m[8] + v[1] * m[9] + v[2] * m[10] + m[11],
+      );
+    },
 
-  static serializer: () => Serializer<Matrix4> = () =>
-    concat(
-      concat(floatLE(), floatLE(), floatLE(), floatLE()),
-      concat(floatLE(), floatLE(), floatLE(), floatLE()),
-      concat(floatLE(), floatLE(), floatLE(), floatLE()),
-      concat(floatLE(), floatLE(), floatLE(), floatLE()),
-    ).map<Sixteen<number>>({
-      serialize: ([a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p]) =>
-        [[a, b, c, d], [e, f, g, h], [i, j, k, l], [m, n, o, p]],
-      deserialize: ([[a, b, c, d], [e, f, g, h], [i, j, k, l], [m, n, o, p]]) =>
-        [a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p]
-    }).map<Matrix4>({
-      serialize: matrix => matrix.vs,
-      deserialize: vs => new Matrix4(vs),
-    });
+    multiply: (a: Matrix4, b: Matrix4) => {
+      const _get = (t: Matrix4) => (i: number, j: number) => t.vs[i * 4 + j];
+      const getA = _get(a);
+      const getB = _get(b);
+      const cellValue = (i: number, j: number) =>
+        [0, 1, 2, 3].map(x => getA(i, x) * getB(x, j)).reduce((a, b) => a + b);
+      return Matrix4(a.vs.map((_, x) => cellValue(Math.floor(x / 4), x % 4)) as Sixteen<number>);
+    },
 
-  multiplyVector(V: Vector3){
-    let v = [V.x, V.y, V.z];
-    let m = this.vs;
-    return new Vector3(
-      v[0] * m[0] + v[1] * m[1] + v[2] * m[2] + m[3],
-      v[0] * m[4] + v[1] * m[5] + v[2] * m[6] + m[7],
-      v[0] * m[8] + v[1] * m[9] + v[2] * m[10] + m[11],
-    );
-  }
-
-  multiply(that: Matrix4){
-    let _g = (t: Matrix4, i: number, j: number) => t.vs[i * 4 + j];
-    let g = (i: number, j: number) => _g(this, i, j);
-    let G = (i: number, j: number) => _g(that, i, j);
-    let c = (i: number, j: number) => [0, 1, 2, 3].map(x => g(i, x) * G(x, j)).reduce((a, b) => a + b);
-    return new Matrix4(this.vs.map((_, x) => c(Math.floor(x / 4), x % 4)) as Sixteen<number>);
-  }
-
-  static scale(x: number, y: number, z: number){
-    return new Matrix4([
+    scale: (x: number, y: number, z: number) => Matrix4([
       x, 0, 0, 0,
       0, y, 0, 0,
       0, 0, z, 0,
       0, 0, 0, 1,
-    ]);
-  }
+    ]),
 
-  static rotateX(t: number){
-    return new Matrix4([
+    rotateX: (t: number) => Matrix4([
       1, 0, 0, 0,
       0, c(t), S(t), 0,
       0, s(t), c(t), 0,
       0, 0, 0, 1,
-    ]);
-  }
+    ]),
 
-  static rotateY(t: number){
-    return new Matrix4([
+    rotateY: (t: number) => Matrix4([
       c(t), 0, s(t), 0,
       0, 1, 0, 0,
       S(t), 0, c(t), 0,
       0, 0, 0, 1,
-    ]);
-  }
+    ]),
 
-  static rotateZ(t: number){
-    return new Matrix4([
+    rotateZ: (t: number) => Matrix4([
       c(t), s(t), 0, 0,
       S(t), c(t), 0, 0,
       0, 0, 1, 0,
       0, 0, 0, 1,
-    ]);
-  }
+    ]),
 
-  static translate(x: number, y: number, z: number){
-    return new Matrix4([
+    translate: (x: number, y: number, z: number) => Matrix4([
       1, 0, 0, x,
       0, 1, 0, y,
       0, 0, 1, z,
       0, 0, 0, 1,
-    ])
+    ]),
   }
-
-  scale(x: number, y: number, z: number){
-    return this.multiply(Matrix4.scale(x, y, z));
-  }
-
-  translate(x: number, y: number, z: number){
-    return this.multiply(Matrix4.translate(x, y, z));
-  }
-
-  rotateX(t: number){
-    return this.multiply(Matrix4.rotateX(t));
-  }
-
-  rotateY(t: number){
-    return this.multiply(Matrix4.rotateY(t));
-  }
-
-  rotateZ(t: number){
-    return this.multiply(Matrix4.rotateZ(t));
-  }
-
-}
-
-export { Matrix4 };
+)

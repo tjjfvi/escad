@@ -4,6 +4,7 @@ import { Hex } from "./hex";
 import { MultiMap } from "./MultiMap";
 import { hash } from "./hash";
 import { DeepMap } from "./DeepMap";
+import { CompoundProduct } from "./CompoundProduct";
 
 export class ConversionRegistry {
 
@@ -62,12 +63,13 @@ export class ConversionRegistry {
 
     let task: Task | null;
     while((task = todo.shift() ?? null)) {
+      console.log(task);
       const { fromType, type, prior, deepIndex } = task;
       const typeHash = hash(type);
       const taskId = hash([fromType, type]);
 
-      if(done.has(taskId))
-        continue;
+      // if(done.has(taskId))
+      //   continue;
 
       if(type instanceof Array && deepIndex < type.length) {
         const subtype = type[deepIndex];
@@ -83,15 +85,24 @@ export class ConversionRegistry {
           continue;
         }
 
-        for(const conversion of this.registered.getAll(hash(subtype)))
+        for(const [, conversions] of this.composed.getAll(hash(subtype))) {
+          console.log(conversions);
+          const toType = type.map((x, i) => i === deepIndex ? conversions[conversions.length - 1]?.toType ?? x : x);
           todo.unshift({
             fromType,
-            prior: [...prior, conversion],
-            type: conversion.toType,
-            deepIndex: 0,
+            prior: [...prior, ...conversions.map(c => ({
+              fromType: null as any,
+              toType: type.map((x, i) => i === deepIndex ? c.toType : x),
+              convert: async (product: CompoundProduct<readonly Product[]>) =>
+                CompoundProduct(await Promise.all(product.children.map((x, i) => i === deepIndex ? c.convert(x) : x))),
+            }))],
+            type: toType,
+            deepIndex: deepIndex + 1,
           });
+        }
       }
 
+      console.log("!!!", this.composed.hasAny(typeHash));
       if(this.composed.hasAny(typeHash))
         if(hash(fromType) !== typeHash)
           for(const conversions of this.composed.getAll(typeHash).values())
@@ -130,6 +141,10 @@ export class ConversionRegistry {
       this.composed = this.compose<F>(fromType);
 
     const conversions = this.composed.get(hash(fromType), hash(toType));
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    console.log(fromType, toType, this.registered.map, this.composed.map);
 
     if(!conversions)
       throw new Error(`Could not find path to convert product type ${hash(fromType)} to ${hash(toType)}`);
