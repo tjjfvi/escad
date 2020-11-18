@@ -1,6 +1,15 @@
 
 import { Mesh, Vector3 } from "@escad/mesh";
-import { Component, Element, Id, Conversion, Product, createProductTypeUtils, LeafElement, LeafProduct } from "@escad/core";
+import {
+  Component,
+  Element,
+  Id,
+  Conversion,
+  Product,
+  createProductTypeUtils,
+  LeafElement,
+  LeafProduct,
+} from "@escad/core";
 
 declare const cubeIdSymbol: unique symbol;
 const cubeId = Id<typeof cubeIdSymbol>("Cube", __filename);
@@ -25,10 +34,8 @@ export const Cube = Object.assign(
 declare global {
   namespace escad {
     interface ConversionsObj {
-      "@escad/solids": {
-        cube: {
-          cubeToMesh: Conversion<Cube, Mesh>,
-        },
+      "@escad/solids/cube": {
+        cubeToMesh: Conversion<Cube, Mesh>,
       },
     }
   }
@@ -90,35 +97,36 @@ export interface CubeArgs extends TripletObj<number> {
   cz?: boolean,
 }
 
-export const cube: Component<[CubeArgs], LeafElement<Mesh>> = new Component("cube", n => {
-  let xyzT: Triplet<number> =
-    n.sideLength ??
-    n.s ??
-    n.dimensions ??
-    n.d ??
-    [n.x ?? 1, n.y ?? 1, n.z ?? 1]
+export const cube: Component<[CubeArgs], LeafElement<Cube>> =
+  new Component<[CubeArgs], LeafElement<Cube>>("cube", (n): LeafElement<Cube> => {
+    let xyzT: Triplet<number> =
+      n.sideLength ??
+      n.s ??
+      n.dimensions ??
+      n.d ??
+      [n.x ?? 1, n.y ?? 1, n.z ?? 1]
 
-  const xyzA: [number, number, number] =
-    typeof xyzT === "number" ?
-      [xyzT, xyzT, xyzT] :
-      [xyzT[0] ?? xyzT.x ?? 0, xyzT[1] ?? xyzT.y ?? 0, xyzT[2] ?? xyzT.z ?? 0]
+    const xyzA: [number, number, number] =
+      typeof xyzT === "number" ?
+        [xyzT, xyzT, xyzT] :
+        [xyzT[0] ?? xyzT.x ?? 0, xyzT[1] ?? xyzT.y ?? 0, xyzT[2] ?? xyzT.z ?? 0]
 
-  const cT: Triplet<boolean> =
-    n.center ??
-    n.c ??
-    [n.cx ?? true, n.cy ?? true, n.cz ?? true]
+    const cT: Triplet<boolean> =
+      n.center ??
+      n.c ??
+      [n.cx ?? true, n.cy ?? true, n.cz ?? true]
 
-  const cA: [boolean, boolean, boolean] =
-    typeof cT === "boolean" ?
-      [cT, cT, cT] :
-      [cT[0] ?? cT.x ?? true, cT[1] ?? cT.y ?? true, cT[2] ?? cT.z ?? true]
+    const cA: [boolean, boolean, boolean] =
+      typeof cT === "boolean" ?
+        [cT, cT, cT] :
+        [cT[0] ?? cT.x ?? true, cT[1] ?? cT.y ?? true, cT[2] ?? cT.z ?? true]
 
-  const cP: [number, number, number] = [
-    cA[0] ? 0 : xyzA[0] / 2,
-    cA[1] ? 0 : xyzA[1] / 2,
-    cA[2] ? 0 : xyzA[2] / 2,
-  ]
+    const cP: [number, number, number] = [
+      cA[0] ? 0 : xyzA[0] / 2,
+      cA[1] ? 0 : xyzA[1] / 2,
+      cA[2] ? 0 : xyzA[2] / 2,
+    ]
 
-  return Element.create(Cube(Vector3(cP), Vector3(xyzA)));
-})
+    return Element.create(Cube(Vector3(cP), Vector3(xyzA)));
+  })
 

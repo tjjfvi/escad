@@ -1,17 +1,14 @@
 
-// import { cyl, cylinder, hollowCyl, hollowCylinder } from "../cyl";
+import { cylinder, cyl } from "../cylinder";
 import { cube } from "../cube";
-// import { hollowSphere, sphere } from "../sphere";
+import { sphere } from "../sphere";
 import { extendBuiltins } from "@escad/core";
 
 const cylBuiltins = {
-  // cyl,
-  // cylinder,
-  // hollowCyl,
-  // hollowCylinder,
+  cylinder,
+  cyl,
   cube,
-  // hollowSphere,
-  // sphere,
+  sphere,
 }
 
 type CylBuiltins = typeof cylBuiltins;
