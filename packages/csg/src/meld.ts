@@ -1,40 +1,53 @@
 
+import {
+  CompoundProduct,
+  Conversion,
+  createProductTypeUtils,
+  Id,
+  LeafProduct,
+  Product,
+  Operation,
+} from "@escad/core";
 import { Mesh } from "@escad/mesh";
-import { Work, Leaf, Id, Operation, ConvertibleTo, FinishedProduct } from "@escad/core";
-import { Serializer, SerializeFunc, DeserializeFunc } from "tszer";
 
-export class MeldWork extends Work<MeldWork, Mesh, ConvertibleTo<Mesh>[]> {
+declare const meldMarkerIdSymbol: unique symbol;
+const meldMarkerId = Id<typeof meldMarkerIdSymbol>("MeldMarker", __filename);
 
-  type = MeldWork;
-
-  static id = new Id("MeldWork", __filename);
-
-  constructor(children: Leaf<Mesh>[]){
-    super(children);
-    this.freeze();
-  }
-
-  static serializer: () => Serializer<MeldWork> = () =>
-    Work.childrenReference<ConvertibleTo<Mesh>[]>().map<MeldWork>({
-      serialize: work => work.children,
-      deserialize: children => new MeldWork(children),
-    })
-
-  serialize: SerializeFunc<MeldWork> = MeldWork.serializer().serialize;
-
-  static deserialize: DeserializeFunc<MeldWork> = MeldWork.serializer().deserialize;
-
-  clone(children: Leaf<Mesh>[]){
-    return new MeldWork(children);
-  }
-
-  async execute(rawInputs: FinishedProduct<ConvertibleTo<Mesh>>[]){
-    const inputs = await Promise.all(rawInputs.map(i => Mesh.convert(i).process()));
-    return new Mesh(inputs.flatMap(i => i.faces)).finish();
-  }
-
+export interface MeldMarker extends LeafProduct {
+  readonly type: typeof meldMarkerId,
 }
 
-Work.Registry.register(MeldWork);
+export const MeldMarker = Object.assign(
+  (): MeldMarker => ({ type: meldMarkerId }),
+  {
+    ...createProductTypeUtils<MeldMarker, "MeldMarker">(meldMarkerId, "MeldMarker"),
+    id: meldMarkerId,
+  }
+);
 
-export const meld: Operation<Mesh, Mesh> = new Operation("meld", el => new MeldWork(el.toArrayFlat()));
+export type Meld<A extends Product, B extends Product> = CompoundProduct<[MeldMarker, A, B]>;
+export const Meld = <A extends Product, B extends Product>(a: A, b: B): Meld<A, B> =>
+  CompoundProduct([MeldMarker(), a, b]);
+
+declare global {
+  namespace escad {
+    interface ConversionsObj {
+      "@escad/csg/meld": {
+        computeMeld: Conversion<Meld<Mesh, Mesh>, Mesh>,
+      },
+    }
+  }
+}
+
+Product.ConversionRegistry.register({
+  fromType: [MeldMarker.id, Mesh.id, Mesh.id],
+  toType: Mesh.id,
+  convert: async ({ children: [, a, b] }: Meld<Mesh, Mesh>): Promise<Mesh> =>
+    Mesh(a.faces.concat(b.faces))
+})
+
+export const meld: Operation<Mesh, Mesh> = (
+  new Operation<Mesh, Mesh>("meld", el =>
+    el.toArrayFlat().reduce(Meld)
+  )
+);

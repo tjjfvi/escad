@@ -1,5 +1,7 @@
 
-import { union, diff, intersect, sub, add, intersection } from "../csg";
+import { add, union } from "../union";
+import { diff, sub } from "../diff";
+import { intersect, intersection } from "../intersection";
 import { meld } from "../meld";
 import { udMeld, unionDiff, unionDiffMeld } from "../unionDifference";
 import { extendBuiltins } from "@escad/core";
