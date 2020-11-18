@@ -5,6 +5,7 @@
     "target": "ES2019",
     "downlevelIteration": true,
     "declaration": true,
+    "declarationMap": true,
     "moduleResolution": "node",
     "module": "CommonJS",
     "sourceMap": true,
