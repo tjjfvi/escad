@@ -16,7 +16,6 @@ export const translate: Component<TranslateArgs, Operation<Mesh, Transformation<
 
     let matrix = Matrix4.translate(...arr);
 
-    console.log(matrix);
     return mapOperation<Mesh, Transformation<Mesh>>("translate", mesh => Transformation(matrix, mesh));
   });
 

@@ -132,8 +132,6 @@ export class Element<T extends Product> extends __Element__<T> {
   ): Element<U>{
     let createElement = (e: Elementish<U>) => new Element(e, hierarchyGen(e, this, this.isLeaf(), isRoot));
 
-    console.log(this, this.isArray(), this.isObjMap(), this.isLeaf());
-
     if(this.isArray())
       return createElement((this as ArrayElement<T>).val.map(v => v.map<U>(f, hierarchyGen, false)));
 

@@ -5,8 +5,7 @@ import { MultiMap } from "./MultiMap";
 import { hash } from "./hash";
 import { DeepMap } from "./DeepMap";
 import { CompoundProduct } from "./CompoundProduct";
-import { v4 } from "uuid";
-import { formatConversion, log } from "./logging";
+// import { formatConversion, log } from "./logging";
 
 export namespace ConversionRegistry {
   export interface Task {
@@ -69,7 +68,7 @@ export class ConversionRegistry {
 
     let task: Task | null;
     while((task = todo.shift() ?? null)) {
-      log.conversionRegistryTask(task);
+      // log.conversionRegistryTask(task);
       const { fromType, type, prior, deepIndex } = task;
       const typeHash = hash(type);
       const taskId = hash([fromType, type]);
@@ -89,7 +88,7 @@ export class ConversionRegistry {
         }
 
         for(const [, conversions] of this.composed.getAll(hash(subtype))) {
-          console.log("Found:", conversions.map(formatConversion));
+          // console.log("Found:", conversions.map(formatConversion));
           const toType = type.map((x, i) => i === deepIndex ? conversions[conversions.length - 1]?.toType ?? x : x);
           todo.unshift({
             fromType,
@@ -98,14 +97,6 @@ export class ConversionRegistry {
               toType: type.map((x, i) => i === deepIndex ? c.toType : x),
               convert: async (product: CompoundProduct<readonly Product[]>) =>
                 CompoundProduct(await Promise.all(product.children.map((x, i) => i === deepIndex ? c.convert(x) : x))),
-              // __from: c,
-              // __deepIndex: deepIndex,
-              // __deepIndexType: type[deepIndex],
-              // __toType: toType,
-              // __type: type,
-              // __ind: i,
-              // __total: a.length,
-              // __id: id,
             }))],
             type: toType,
             deepIndex: deepIndex + 1,
@@ -163,11 +154,9 @@ export class ConversionRegistry {
 
     const conversions = this.composed.get(hash(fromType), hash(toType));
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    log.productType(fromType);
-    log.productType(toType);
-    console.log(conversions?.map(formatConversion), conversions?.length);
+    // log.productType(fromType);
+    // log.productType(toType);
+    // console.log(conversions?.map(formatConversion), conversions?.length);
 
     if(!conversions)
       throw new Error(`Could not find path to convert product type ${hash(fromType)} to ${hash(toType)}`);

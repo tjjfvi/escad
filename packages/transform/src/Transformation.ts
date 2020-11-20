@@ -3,10 +3,8 @@ import { Face, Mesh } from "@escad/mesh";
 import { Matrix4 } from "./Matrix4";
 
 export type Transformation<T extends Product> = CompoundProduct<readonly [Matrix4, T]>;
-export const Transformation = <T extends Product>(matrix: Matrix4, p: T): Transformation<T> => {
-  console.log(matrix, p);
-  return CompoundProduct([matrix, p])
-}
+export const Transformation = <T extends Product>(matrix: Matrix4, p: T): Transformation<T> =>
+  CompoundProduct([matrix, p])
 
 declare global {
   namespace escad {
