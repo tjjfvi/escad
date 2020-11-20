@@ -47,6 +47,7 @@ Product.ConversionRegistry.register({
   fromType: [DiffMarker.id, Bsp.id, Bsp.id],
   toType: Bsp.id,
   convert: async ({ children: [, a, b] }: Diff<Bsp, Bsp>): Promise<Bsp> => {
+    console.log("!!!!!!!!!!!", a, b)
     a = Bsp.invert(a);
     a = Bsp.clipTo(a, b);
     b = Bsp.clipTo(b, a);

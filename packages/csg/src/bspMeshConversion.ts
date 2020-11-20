@@ -18,7 +18,7 @@ Product.ConversionRegistry.register({
   fromType: Mesh.id,
   toType: Bsp.id,
   convert: async (mesh: Mesh): Promise<Bsp> =>
-    Bsp.build(null, mesh.faces) ?? Bsp.null(),
+    Bsp.build(null, mesh.faces) ?? Bsp.null()
 })
 
 Product.ConversionRegistry.register({

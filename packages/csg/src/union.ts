@@ -45,11 +45,17 @@ Product.ConversionRegistry.register({
   fromType: [UnionMarker.id, Bsp.id, Bsp.id],
   toType: Bsp.id,
   convert: async ({ children: [, a, b] }: Union<Bsp, Bsp>): Promise<Bsp> => {
+    console.log(a, b);
     a = Bsp.clipTo(a, b);
+    console.log(a, b);
     b = Bsp.clipTo(b, a);
+    console.log(a, b);
     b = Bsp.invert(b);
+    console.log(a, b);
     b = Bsp.clipTo(b, a);
+    console.log(a, b);
     b = Bsp.invert(b);
+    console.log(a, b);
     return Bsp.build(a, Bsp.allFaces(b)) ?? Bsp.null();
   }
 })

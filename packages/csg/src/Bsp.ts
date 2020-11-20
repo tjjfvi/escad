@@ -28,8 +28,8 @@ export const Bsp = Object.assign(
 
     invert: (bsp: Bsp): Bsp =>
       Bsp(
-        bsp.front && Bsp.invert(bsp.front),
         bsp.back && Bsp.invert(bsp.back),
+        bsp.front && Bsp.invert(bsp.front),
         bsp.faces.map(Face.flip),
         Plane.flip(bsp.plane),
       ),
@@ -39,8 +39,9 @@ export const Bsp = Object.assign(
       let front: Face[] = [];
       let back: Face[] = [];
       faces.map(f => Plane.splitFace(bsp.plane, f, front, back, front, back));
-      if(bsp.front) front = Bsp.clipFaces(bsp.front, front);
-      if(bsp.back) back = Bsp.clipFaces(bsp.back, front);
+      console.log(faces.length, front.length, back.length, !!bsp.front, !!bsp.back)
+      if(bsp.front && front.length) front = Bsp.clipFaces(bsp.front, front);
+      if(bsp.back && back.length) back = Bsp.clipFaces(bsp.back, back);
       else back = []; // Remove the polygons; they must be inside the mesh
       return front.concat(back);
     },
@@ -64,6 +65,7 @@ export const Bsp = Object.assign(
       const back: Face[] = [];
       const faces = bsp?.faces.slice() ?? [];
       allFaces.map(f => Plane.splitFace(plane, f, faces, faces, front, back));
+      console.log(bsp, allFaces.length, front.length, back.length, faces.length - (bsp?.faces.length ?? 0), bsp?.faces.length);
       return Bsp(
         Bsp.build(bsp?.front ?? null, front),
         Bsp.build(bsp?.back ?? null, back),

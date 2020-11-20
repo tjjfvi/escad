@@ -41,5 +41,6 @@ export * from './WeakCache';
 export * from './builtins';
 export * from './hash';
 export * from './hex';
+export * from './logging';
 export * from './mapOperation';
 
