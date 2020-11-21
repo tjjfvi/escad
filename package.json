@@ -6,7 +6,12 @@
   "scripts": {
     "bootstrap": "lerna bootstrap --hoist",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "npm run bootstrap; npm run index; lerna run build",
+    "prebuild": "npm run bootstrap; npm run index",
+    "build": "lerna run build",
+    "force-build": "npm run prebuild; lerna run build --no-bail",
+    "build-force": "npm run force-build",
+    "quick-build": "lerna run quick-build --parallel --no-bail >/dev/null && printf '\\e[1;92m\u2713 Build successful\\n'",
+    "build-quick": "npm run force-quick",
     "index": "create-index -X ts -x ts -x tsx -Sui packages/",
     "lint": "eslint '**/*.{ts,tsx}' --quiet --fix"
   },

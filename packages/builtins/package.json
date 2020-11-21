@@ -7,10 +7,10 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -rf dist",
-    "force-build": "npm run clean; tsc",
+    "build": "npm run clean; tsc",
     "hash": "find src/ -type f -print0 | sort -z | xargs -0 openssl dgst -sha256 | openssl dgst -sha256 > .hash",
     "changed": "touch .hash; mv .hash old.hash; npm run hash; cmp old.hash .hash >/dev/null 2>&1",
-    "build": "npm run changed && echo 'Skipping build' || npm run force-build; rm old.hash",
+    "quick-build": "npm run changed && echo 'Skipping build' || npm run build; rm old.hash",
     "prepack": "npm run force-build"
   },
   "author": "",
