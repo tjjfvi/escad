@@ -26,8 +26,8 @@ export const scale: Component<ScaleArgs, Operation<Mesh, Transformation<Mesh>>> 
     let shouldFlip = sign === -1;
 
     return mapOperation<Mesh, Transformation<Mesh>>("scale", leaf => {
-      let transformed = Transformation(matrix, leaf);
-      return shouldFlip ?  FlipFaces(transformed) : transformed;
+      let transformed = Transformation.create(matrix, leaf);
+      return shouldFlip ?  FlipFaces.create(transformed) : transformed;
     });
   });
 

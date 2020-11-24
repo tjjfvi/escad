@@ -46,7 +46,7 @@ export const rotate: Component<RotateArgs, Operation<Mesh, Transformation<Mesh>>
 
     let m = Matrix4.multiply(Matrix4.multiply(Matrix4.rotateX(x), Matrix4.rotateY(y)), Matrix4.rotateZ(z));
 
-    return mapOperation<Mesh, Transformation<Mesh>>("rotate", leaf => Transformation(m, leaf));
+    return mapOperation<Mesh, Transformation<Mesh>>("rotate", leaf => Transformation.create(m, leaf));
   });
 
 export const rX: Component<[number], Operation<Mesh, Transformation<Mesh>>> =

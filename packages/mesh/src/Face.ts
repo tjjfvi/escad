@@ -7,17 +7,15 @@ export interface Face {
   readonly plane: Plane,
 }
 
-export const Face = Object.assign(
-  (points: Array<Vector3>): Face => {
+export const Face = {
+  create: (points: Array<Vector3>): Face => {
     if(points.length !== 3)
       throw new Error("Faces can only be triangles");
     return {
       points,
-      plane: Plane(points),
+      plane: Plane.create(points),
     };
-  }, {
-    flip(face: Face){
-      return Face([...face.points].reverse());
-    }
-  }
-)
+  },
+  flip: (face: Face) =>
+    Face.create([...face.points].reverse())
+}

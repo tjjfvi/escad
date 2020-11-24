@@ -9,7 +9,7 @@ export interface Parameter<V> {
 }
 
 declare const parameterManagerIdSymbol: unique symbol;
-const parameterManagerId = Id<typeof parameterManagerIdSymbol>("parameter", __filename, "0");
+const parameterManagerId = Id.create<typeof parameterManagerIdSymbol>("parameter", __filename, "0");
 
 export const Parameter = {
   Manager: new ArtifactManager<Parameter<any>>(parameterManagerId),

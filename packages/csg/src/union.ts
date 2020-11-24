@@ -13,23 +13,23 @@ import {
 import { Bsp } from "./Bsp";
 
 declare const unionMarkerIdSymbol: unique symbol;
-const unionMarkerId = Id<typeof unionMarkerIdSymbol>("UnionMarker", __filename);
+const unionMarkerId = Id.create<typeof unionMarkerIdSymbol>("UnionMarker", __filename);
 
 export interface UnionMarker extends LeafProduct {
   readonly type: typeof unionMarkerId,
 }
 
-export const UnionMarker = Object.assign(
-  (): UnionMarker => ({ type: unionMarkerId }),
-  {
-    ...createProductTypeUtils<UnionMarker, "UnionMarker">(unionMarkerId, "UnionMarker"),
-    id: unionMarkerId,
-  }
-);
+export const UnionMarker = {
+  create: (): UnionMarker => ({ type: unionMarkerId }),
+  ...createProductTypeUtils<UnionMarker, "UnionMarker">(unionMarkerId, "UnionMarker"),
+  id: unionMarkerId,
+};
 
 export type Union<A extends Product, B extends Product> = CompoundProduct<[UnionMarker, A, B]>;
-export const Union = <A extends Product, B extends Product>(a: A, b: B): Union<A, B> =>
-  CompoundProduct([UnionMarker(), a, b]);
+export const Union = {
+  create: <A extends Product, B extends Product>(a: A, b: B): Union<A, B> =>
+    CompoundProduct.create([UnionMarker.create(), a, b])
+};
 
 declare global {
   namespace escad {
@@ -56,7 +56,7 @@ Product.ConversionRegistry.register({
 
 export const union: Operation<Bsp, Bsp> = (
   new Operation<Bsp, Bsp>("union", el =>
-    el.toArrayFlat().reduce(Union)
+    el.toArrayFlat().reduce(Union.create)
   )
 );
 

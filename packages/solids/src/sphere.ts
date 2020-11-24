@@ -6,7 +6,7 @@ import { Diff } from "@escad/csg";
 const tau = Math.PI * 2;
 
 declare const sphereIdSymbol: unique symbol;
-const sphereId = Id<typeof sphereIdSymbol>("sphere", __filename);
+const sphereId = Id.create<typeof sphereIdSymbol>("sphere", __filename);
 
 export interface Sphere extends LeafProduct {
   readonly type: typeof sphereId,
@@ -15,18 +15,17 @@ export interface Sphere extends LeafProduct {
   readonly stacks: number,
 }
 
-export const Sphere = Object.assign(
-  (radius: number, slices: number, stacks: number): Sphere => ({
+export const Sphere = {
+  create: (radius: number, slices: number, stacks: number): Sphere => ({
     type: sphereId,
     radius,
     slices,
     stacks,
   }),
-  {
-    ...createProductTypeUtils<Sphere, "Sphere">(sphereId, "Sphere"),
-    id: sphereId,
-  }
-)
+  ...createProductTypeUtils<Sphere, "Sphere">(sphereId, "Sphere"),
+  id: sphereId,
+};
+
 
 declare global {
   namespace escad {
@@ -48,14 +47,14 @@ Product.ConversionRegistry.register({
       theta *= tau / slices;
       phi *= tau / stacks;
       phi /= 2;
-      return Vector3(
+      return Vector3.create(
         Math.sin(theta) * Math.sin(phi) * radius,
         Math.cos(theta) * Math.sin(phi) * radius,
         Math.cos(phi) * radius,
       )
     }
 
-    return Mesh([...Array(slices)].flatMap((_, i) =>
+    return Mesh.create([...Array(slices)].flatMap((_, i) =>
       [...Array(stacks)].flatMap((_, j) => {
         let vs = [];
 
@@ -92,11 +91,11 @@ export const sphere: Component<[SphereArgs], Element<Sphere>> =
     i = r - t, ir = i,
     unionDiff = false, ud = unionDiff,
   }) => {
-    let os = Sphere(r, slices, stacks);
+    let os = Sphere.create(r, slices, stacks);
     if(!ir)
       return new Element(os);
-    let is = Sphere(ir, slices, stacks);
-    return new Element(ud ? [os, is] : Diff(os, is));
+    let is = Sphere.create(ir, slices, stacks);
+    return new Element(ud ? [os, is] : Diff.create(os, is));
   })
 
 export const hollowSphere = sphere;

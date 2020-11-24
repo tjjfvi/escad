@@ -9,66 +9,64 @@ export interface Plane {
   readonly w: number,
 }
 
-export const Plane = Object.assign(
-  _Plane,
-  {
-    flip: (plane: Plane): Plane => Plane(Vector3.negate(plane.normal), -plane.w),
-    splitFace(
-      plane: Plane,
-      face: Face,
-      coplanarFront: Array<Face>,
-      coplanarBack: Array<Face>,
-      front: Array<Face>,
-      back: Array<Face>
-    ){
-      const Coplanar = 0;
-      const Front = 1;
-      const Back = 2;
-      const Spanning = 3;
+export const Plane = {
+  create: _Plane,
+  flip: (plane: Plane): Plane => Plane.create(Vector3.negate(plane.normal), -plane.w),
+  splitFace(
+    plane: Plane,
+    face: Face,
+    coplanarFront: Array<Face>,
+    coplanarBack: Array<Face>,
+    front: Array<Face>,
+    back: Array<Face>
+  ){
+    const Coplanar = 0;
+    const Front = 1;
+    const Back = 2;
+    const Spanning = 3;
 
-      let faceType = 0;
-      let types = face.points.map(v => {
-        let t = Vector3.dot(plane.normal, v) - plane.w;
-        let type = t < -epsilon ? Back : t > epsilon ? Front : Coplanar;
-        faceType |= type; // Bitwise or
-        return type;
-      });
+    let faceType = 0;
+    let types = face.points.map(v => {
+      let t = Vector3.dot(plane.normal, v) - plane.w;
+      let type = t < -epsilon ? Back : t > epsilon ? Front : Coplanar;
+      faceType |= type; // Bitwise or
+      return type;
+    });
 
-      switch(faceType) {
-        case Coplanar:
-          (Vector3.dot(plane.normal, face.plane.normal) > 0 ? coplanarFront : coplanarBack).push(face);
-          break;
-        case Front:
-          front.push(face);
-          break;
-        case Back:
-          back.push(face);
-          break;
-        case Spanning: {
-          let f: Vector3[] = [];
-          let b: Vector3[] = [];
-          face.points.map((vi, i, a) => {
-            let j = (i + 1) % a.length;
-            let ti = types[i];
-            let tj = types[j];
-            let vj = a[j];
-            if(ti !== Back) f.push(vi);
-            if(ti !== Front) b.push(vi);
-            if((ti | tj) !== Spanning) // Bitwise or
-              return
-            let t = (plane.w - Vector3.dot(plane.normal, vi)) / Vector3.dot(plane.normal, Vector3.subtract(vj, vi));
-            let v = Vector3.lerp(vi, vj, t);
-            f.push(v);
-            b.push(v);
-          })
-          f.slice(2).map((_, i) => front.push(Face([f[0], f[i + 1], f[i + 2]])));
-          b.slice(2).map((_, i) => back.push(Face([b[0], b[i + 1], b[i + 2]])));
-          break;
-        }
+    switch(faceType) {
+      case Coplanar:
+        (Vector3.dot(plane.normal, face.plane.normal) > 0 ? coplanarFront : coplanarBack).push(face);
+        break;
+      case Front:
+        front.push(face);
+        break;
+      case Back:
+        back.push(face);
+        break;
+      case Spanning: {
+        let f: Vector3[] = [];
+        let b: Vector3[] = [];
+        face.points.map((vi, i, a) => {
+          let j = (i + 1) % a.length;
+          let ti = types[i];
+          let tj = types[j];
+          let vj = a[j];
+          if(ti !== Back) f.push(vi);
+          if(ti !== Front) b.push(vi);
+          if((ti | tj) !== Spanning) // Bitwise or
+            return
+          let t = (plane.w - Vector3.dot(plane.normal, vi)) / Vector3.dot(plane.normal, Vector3.subtract(vj, vi));
+          let v = Vector3.lerp(vi, vj, t);
+          f.push(v);
+          b.push(v);
+        })
+        f.slice(2).map((_, i) => front.push(Face.create([f[0], f[i + 1], f[i + 2]])));
+        b.slice(2).map((_, i) => back.push(Face.create([b[0], b[i + 1], b[i + 2]])));
+        break;
       }
     }
   }
-)
+};
 
 function _Plane(normal: Vector3, w: number): Plane
 function _Plane(points: Array<Vector3>, w?: number): Plane

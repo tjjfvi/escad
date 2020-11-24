@@ -13,23 +13,23 @@ import {
 import { Bsp } from "./Bsp";
 
 declare const intersectionMarkerIdSymbol: unique symbol;
-const intersectionMarkerId = Id<typeof intersectionMarkerIdSymbol>("IntersectionMarker", __filename);
+const intersectionMarkerId = Id.create<typeof intersectionMarkerIdSymbol>("IntersectionMarker", __filename);
 
 export interface IntersectionMarker extends LeafProduct {
   readonly type: typeof intersectionMarkerId,
 }
 
-export const IntersectionMarker = Object.assign(
-  (): IntersectionMarker => ({ type: intersectionMarkerId }),
-  {
-    ...createProductTypeUtils<IntersectionMarker, "IntersectionMarker">(intersectionMarkerId, "IntersectionMarker"),
-    id: intersectionMarkerId,
-  }
-);
+export const IntersectionMarker = {
+  create: (): IntersectionMarker => ({ type: intersectionMarkerId }),
+  ...createProductTypeUtils<IntersectionMarker, "IntersectionMarker">(intersectionMarkerId, "IntersectionMarker"),
+  id: intersectionMarkerId,
+};
 
 export type Intersection<A extends Product, B extends Product> = CompoundProduct<[IntersectionMarker, A, B]>;
-export const Intersection = <A extends Product, B extends Product>(a: A, b: B): Intersection<A, B> =>
-  CompoundProduct([IntersectionMarker(), a, b]);
+export const Intersection = {
+  create: <A extends Product, B extends Product>(a: A, b: B): Intersection<A, B> =>
+    CompoundProduct.create([IntersectionMarker.create(), a, b])
+};
 
 declare global {
   namespace escad {
@@ -56,7 +56,7 @@ Product.ConversionRegistry.register({
 
 export const intersection: Operation<Bsp, Bsp> = (
   new Operation<Bsp, Bsp>("intersection", el =>
-    el.toArrayFlat().reduce(Intersection)
+    el.toArrayFlat().reduce(Intersection.create)
   )
 );
 

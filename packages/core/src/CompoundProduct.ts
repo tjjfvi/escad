@@ -12,15 +12,14 @@ export interface CompoundProduct<T extends readonly Product[]> extends _Product 
   readonly children: T,
 }
 
-export const CompoundProduct = Object.assign(
-  <T extends readonly Product[]>(children: T): CompoundProduct<T> => ({
+export const CompoundProduct = {
+  create: <T extends readonly Product[]>(children: T): CompoundProduct<T> => ({
     children,
     isCompoundProduct: true,
-  }), {
-    isCompoundProduct: (arg: unknown): arg is CompoundProduct<readonly Product[]> =>
-      typeof arg === "object" &&
+  }),
+  isCompoundProduct: (arg: unknown): arg is CompoundProduct<readonly Product[]> =>
+    typeof arg === "object" &&
     arg !== null &&
     "isCompoundProduct" in arg &&
     arg["isCompoundProduct" as keyof typeof arg] === true
-  }
-)
+}

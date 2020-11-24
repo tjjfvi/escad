@@ -48,7 +48,7 @@ export type ProductType<U extends Product = Product> = Extract<
 , _ProductType>
 
 declare const productManagerIdSymbol: unique symbol;
-const productManagerId = Id<typeof productManagerIdSymbol>("product", __filename, "0");
+const productManagerId = Id.create<typeof productManagerIdSymbol>("product", __filename, "0");
 
 export const Product = {
   ConversionRegistry: new ConversionRegistry(),

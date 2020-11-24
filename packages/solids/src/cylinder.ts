@@ -6,7 +6,7 @@ import { Diff } from "@escad/csg";
 const tau = Math.PI * 2;
 
 declare const cylinderIdSymbol: unique symbol;
-const cylinderId = Id<typeof cylinderIdSymbol>("Cylinder", __filename);
+const cylinderId = Id.create<typeof cylinderIdSymbol>("Cylinder", __filename);
 
 export interface Cylinder extends LeafProduct {
   readonly type: typeof cylinderId,
@@ -19,16 +19,14 @@ export interface Cylinder extends LeafProduct {
   readonly c: boolean,
 }
 
-export const Cylinder = Object.assign(
-  (args: Omit<Cylinder, "type">): Cylinder => ({
+export const Cylinder = {
+  create: (args: Omit<Cylinder, "type">): Cylinder => ({
     type: cylinderId,
     ...args,
   }),
-  {
-    ...createProductTypeUtils<Cylinder, "Cylinder">(cylinderId, "Cylinder"),
-    id: cylinderId,
-  }
-)
+  ...createProductTypeUtils<Cylinder, "Cylinder">(cylinderId, "Cylinder"),
+  id: cylinderId,
+};
 
 declare global {
   namespace escad {
@@ -52,7 +50,7 @@ Product.ConversionRegistry.register({
     const c1 = [o1[0], o1[1], bh] as const;
     const c2 = [o2[0], o2[1], th] as const;
 
-    return Mesh([...Array(sides)].flatMap((_, i) => {
+    return Mesh.create([...Array(sides)].flatMap((_, i) => {
       let p1 = [Math.cos(i / sides * tau), Math.sin(i / sides * tau)] as const;
       let p2 = [Math.cos((i + 1) / sides * tau), Math.sin((i + 1) / sides * tau)] as const;
       let p11 = [p1[0] * r1 + o1[0], p1[1] * r1 + o1[1], bh] as const;
@@ -65,7 +63,7 @@ Product.ConversionRegistry.register({
         [p12, p11, p22],
         [p22, p11, p21],
       ];
-    }).map(f => Face(f.map(v => Vector3(...v)))));
+    }).map(f => Face.create(f.map(v => Vector3.create(...v)))));
   },
 })
 
@@ -196,7 +194,7 @@ export const cylinder = (args: CylArgs) => {
   const [o1, o2] = osXYs.map((xy): [number, number] => xy instanceof Array ? xy : [xy.x, xy.y]);
   const [io1, io2] = iosXYs.map((xy): [number, number] => xy instanceof Array ? xy : [xy.x, xy.y]);
 
-  let oc = Cylinder({
+  let oc = Cylinder.create({
     r1: rs[0],
     r2: rs[1],
     height,
@@ -207,7 +205,7 @@ export const cylinder = (args: CylArgs) => {
   });
   if(!is)
     return new Element(oc)
-  let ic = Cylinder({
+  let ic = Cylinder.create({
     r1: is[0],
     r2:
     is[1],
@@ -217,7 +215,7 @@ export const cylinder = (args: CylArgs) => {
     o2: io2,
     c: center
   });
-  return new Element(unionDiff ? [oc, ic] : Diff(oc, ic))
+  return new Element(unionDiff ? [oc, ic] : Diff.create(oc, ic))
 }
 
 export const cyl = cylinder;

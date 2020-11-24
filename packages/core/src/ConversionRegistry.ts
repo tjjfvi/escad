@@ -96,7 +96,9 @@ export class ConversionRegistry {
               fromType: type.map((x, i) => i === deepIndex ? a[j - 1]?.toType ?? x : x),
               toType: type.map((x, i) => i === deepIndex ? c.toType : x),
               convert: async (product: CompoundProduct<readonly Product[]>) =>
-                CompoundProduct(await Promise.all(product.children.map((x, i) => i === deepIndex ? c.convert(x) : x))),
+                CompoundProduct.create(await Promise.all(product.children.map((x, i) =>
+                  i === deepIndex ? c.convert(x) : x))
+                ),
             }))],
             type: toType,
             deepIndex: deepIndex + 1,

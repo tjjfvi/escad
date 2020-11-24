@@ -15,23 +15,23 @@ import { Bsp } from "./Bsp";
 import { Union } from "./union";
 
 declare const diffMarkerIdSymbol: unique symbol;
-const diffMarkerId = Id<typeof diffMarkerIdSymbol>("DiffMarker", __filename);
+const diffMarkerId = Id.create<typeof diffMarkerIdSymbol>("DiffMarker", __filename);
 
 export interface DiffMarker extends LeafProduct {
   readonly type: typeof diffMarkerId,
 }
 
-export const DiffMarker = Object.assign(
-  (): DiffMarker => ({ type: diffMarkerId }),
-  {
-    ...createProductTypeUtils<DiffMarker, "DiffMarker">(diffMarkerId, "DiffMarker"),
-    id: diffMarkerId,
-  }
-);
+export const DiffMarker = {
+  create: (): DiffMarker => ({ type: diffMarkerId }),
+  ...createProductTypeUtils<DiffMarker, "DiffMarker">(diffMarkerId, "DiffMarker"),
+  id: diffMarkerId,
+};
 
 export type Diff<A extends Product, B extends Product> = CompoundProduct<[DiffMarker, A, B]>;
-export const Diff = <A extends Product, B extends Product>(a: A, b: B): Diff<A, B> =>
-  CompoundProduct([DiffMarker(), a, b]);
+export const Diff = {
+  create: <A extends Product, B extends Product>(a: A, b: B): Diff<A, B> =>
+    CompoundProduct.create([DiffMarker.create(), a, b]),
+}
 
 declare global {
   namespace escad {
@@ -69,11 +69,11 @@ export const diff: Operation<Bsp, Bsp> = (
     const args = Element.create(originalArgs).toArrayDeep();
     if(Product.isProduct(args))
       return args;
-    const positive = new Element<Bsp>(args[0]).toArrayFlat().reduce(Union);
-    const negative = new Element<Bsp>(args.slice(1)).toArrayFlat().reduce(Union);
+    const positive = new Element<Bsp>(args[0]).toArrayFlat().reduce(Union.create);
+    const negative = new Element<Bsp>(args.slice(1)).toArrayFlat().reduce(Union.create);
     if(!positive || !negative) // If array length is zero, reduce returns undefined
       return positive ?? [];
-    return Diff(positive, negative);
+    return Diff.create(positive, negative);
   })
 );
 

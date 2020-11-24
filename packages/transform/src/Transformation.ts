@@ -3,8 +3,10 @@ import { Face, Mesh } from "@escad/mesh";
 import { Matrix4 } from "./Matrix4";
 
 export type Transformation<T extends Product> = CompoundProduct<readonly [Matrix4, T]>;
-export const Transformation = <T extends Product>(matrix: Matrix4, p: T): Transformation<T> =>
-  CompoundProduct([matrix, p])
+export const Transformation = {
+  create: <T extends Product>(matrix: Matrix4, p: T): Transformation<T> =>
+    CompoundProduct.create([matrix, p])
+};
 
 declare global {
   namespace escad {
@@ -18,8 +20,8 @@ declare global {
 
 Product.ConversionRegistry.register<Transformation<Mesh>, Mesh>({
   convert: async ({ children: [matrix, mesh] }) =>
-    Mesh(mesh.faces.map(face =>
-      Face(face.points.map(vector =>
+    Mesh.create(mesh.faces.map(face =>
+      Face.create(face.points.map(vector =>
         Matrix4.multiplyVector(matrix, vector)
       ))
     )),

@@ -33,10 +33,10 @@ export interface Hierarchy extends HierarchyArgs {
 }
 
 declare const hierarchyManagerIdSymbol: unique symbol;
-const hierarchyManagerId = Id<typeof hierarchyManagerIdSymbol>("hierarchy", __filename, "0");
+const hierarchyManagerId = Id.create<typeof hierarchyManagerIdSymbol>("hierarchy", __filename, "0");
 
-export const Hierarchy = Object.assign(
-  ({
+export const Hierarchy = {
+  create: ({
     name = "",
     braceType = "",
     children = [],
@@ -51,7 +51,7 @@ export const Hierarchy = Object.assign(
     if(isFullOutput)
       fullOutput = null;
     if(!output && !isOutput && !isFullOutput)
-      output = Hierarchy({
+      output = Hierarchy.create({
         name,
         braceType,
         input,
@@ -59,7 +59,7 @@ export const Hierarchy = Object.assign(
         isOutput: true,
       })
     if(!fullOutput && !isFullOutput)
-      fullOutput = output?.fullOutput ?? Hierarchy({
+      fullOutput = output?.fullOutput ?? Hierarchy.create({
         name,
         braceType,
         input,
@@ -87,42 +87,40 @@ export const Hierarchy = Object.assign(
       output,
     };
   },
-  {
-    Manager: new ArtifactManager(hierarchyManagerId),
-    isHierarchy: (arg: any): arg is Hierarchy =>
-      arg.isHierarchy === true,
-    fromElementish: (el: Elementish<Product>): Hierarchy => {
-      if(typeof el !== "object" && typeof el !== "function")
-        throw new Error("Invalid input to Hierarchy.fromElementish");
-      if(Hierarchy.isHierarchy(el))
-        return el;
-      if(el instanceof Element)
-        return el.hierarchy;
-      if(LeafProduct.isLeafProduct(el))
-        return Hierarchy({
-          name: `<${el.type.full}>`,
-        });
-      if(CompoundProduct.isCompoundProduct(el))
-        return Hierarchy({
-          name: `<CompoundProduct>`,
-        });
-      if(el instanceof Array)
-        return Hierarchy({
-          braceType: "[",
-          children: el.map(e => Hierarchy.fromElementish(e)),
-        });
-      return Hierarchy({
-        braceType: "{",
-        children: Object.entries(el).map(([k, v]) =>
-          Hierarchy({
-            name: k,
-            braceType: ":",
-            children: [Hierarchy.fromElementish(v)]
-          })
-        )
+  Manager: new ArtifactManager(hierarchyManagerId),
+  isHierarchy: (arg: any): arg is Hierarchy =>
+    arg.isHierarchy === true,
+  fromElementish: (el: Elementish<Product>): Hierarchy => {
+    if(typeof el !== "object" && typeof el !== "function")
+      throw new Error("Invalid input to Hierarchy.fromElementish");
+    if(Hierarchy.isHierarchy(el))
+      return el;
+    if(el instanceof Element)
+      return el.hierarchy;
+    if(LeafProduct.isLeafProduct(el))
+      return Hierarchy.create({
+        name: `<${el.type.full}>`,
       });
-    },
-    apply: <T extends Product>(hierarchy: Hierarchy, el: Elementish<T>) => new Element(el, hierarchy),
-  }
-);
+    if(CompoundProduct.isCompoundProduct(el))
+      return Hierarchy.create({
+        name: `<CompoundProduct>`,
+      });
+    if(el instanceof Array)
+      return Hierarchy.create({
+        braceType: "[",
+        children: el.map(e => Hierarchy.fromElementish(e)),
+      });
+    return Hierarchy.create({
+      braceType: "{",
+      children: Object.entries(el).map(([k, v]) =>
+        Hierarchy.create({
+          name: k,
+          braceType: ":",
+          children: [Hierarchy.fromElementish(v)]
+        })
+      )
+    });
+  },
+  apply: <T extends Product>(hierarchy: Hierarchy, el: Elementish<T>) => new Element(el, hierarchy),
+};
 

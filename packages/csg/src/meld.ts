@@ -11,23 +11,23 @@ import {
 import { Mesh } from "@escad/mesh";
 
 declare const meldMarkerIdSymbol: unique symbol;
-const meldMarkerId = Id<typeof meldMarkerIdSymbol>("MeldMarker", __filename);
+const meldMarkerId = Id.create<typeof meldMarkerIdSymbol>("MeldMarker", __filename);
 
 export interface MeldMarker extends LeafProduct {
   readonly type: typeof meldMarkerId,
 }
 
-export const MeldMarker = Object.assign(
-  (): MeldMarker => ({ type: meldMarkerId }),
-  {
-    ...createProductTypeUtils<MeldMarker, "MeldMarker">(meldMarkerId, "MeldMarker"),
-    id: meldMarkerId,
-  }
-);
+export const MeldMarker = {
+  create: (): MeldMarker => ({ type: meldMarkerId }),
+  ...createProductTypeUtils<MeldMarker, "MeldMarker">(meldMarkerId, "MeldMarker"),
+  id: meldMarkerId,
+};
 
 export type Meld<A extends Product, B extends Product> = CompoundProduct<[MeldMarker, A, B]>;
-export const Meld = <A extends Product, B extends Product>(a: A, b: B): Meld<A, B> =>
-  CompoundProduct([MeldMarker(), a, b]);
+export const Meld = {
+  create: <A extends Product, B extends Product>(a: A, b: B): Meld<A, B> =>
+    CompoundProduct.create([MeldMarker.create(), a, b]),
+};
 
 declare global {
   namespace escad {
@@ -43,11 +43,11 @@ Product.ConversionRegistry.register({
   fromType: [MeldMarker.id, Mesh.id, Mesh.id],
   toType: Mesh.id,
   convert: async ({ children: [, a, b] }: Meld<Mesh, Mesh>): Promise<Mesh> =>
-    Mesh(a.faces.concat(b.faces))
+    Mesh.create(a.faces.concat(b.faces))
 })
 
 export const meld: Operation<Mesh, Mesh> = (
   new Operation<Mesh, Mesh>("meld", el =>
-    el.toArrayFlat().reduce(Meld)
+    el.toArrayFlat().reduce(Meld.create)
   )
 );

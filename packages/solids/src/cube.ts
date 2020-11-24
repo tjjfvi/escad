@@ -12,7 +12,7 @@ import {
 } from "@escad/core";
 
 declare const cubeIdSymbol: unique symbol;
-const cubeId = Id<typeof cubeIdSymbol>("Cube", __filename);
+const cubeId = Id.create<typeof cubeIdSymbol>("Cube", __filename);
 
 export interface Cube extends LeafProduct {
   readonly type: typeof cubeId,
@@ -20,16 +20,15 @@ export interface Cube extends LeafProduct {
   readonly size: Vector3,
 }
 
-export const Cube = Object.assign(
-  (center: Vector3, size: Vector3) => ({
+export const Cube = {
+  create: (center: Vector3, size: Vector3) => ({
     type: cubeId,
     center,
     size,
-  }), {
-    ...createProductTypeUtils(cubeId, "Cube"),
-    id: cubeId,
-  }
-)
+  }),
+  ...createProductTypeUtils(cubeId, "Cube"),
+  id: cubeId,
+};
 
 declare global {
   namespace escad {
@@ -56,14 +55,14 @@ Product.ConversionRegistry.register({
     const pz = center.z + size.z / 2;
 
     const points = [
-      Vector3(px, py, pz),
-      Vector3(nx, py, pz),
-      Vector3(px, ny, pz),
-      Vector3(nx, ny, pz),
-      Vector3(px, py, nz),
-      Vector3(nx, py, nz),
-      Vector3(px, ny, nz),
-      Vector3(nx, ny, nz),
+      Vector3.create(px, py, pz),
+      Vector3.create(nx, py, pz),
+      Vector3.create(px, ny, pz),
+      Vector3.create(nx, ny, pz),
+      Vector3.create(px, py, nz),
+      Vector3.create(nx, py, nz),
+      Vector3.create(px, ny, nz),
+      Vector3.create(nx, ny, nz),
     ];
 
     return Mesh.fromVertsFaces(points, [
@@ -127,6 +126,6 @@ export const cube: Component<[CubeArgs], LeafElement<Cube>> =
       cA[2] ? 0 : xyzA[2] / 2,
     ]
 
-    return Element.create(Cube(Vector3(cP), Vector3(xyzA)));
+    return Element.create(Cube.create(Vector3.create(cP), Vector3.create(xyzA)));
   })
 

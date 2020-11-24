@@ -20,8 +20,8 @@ export interface Id<T = any, S extends symbol = symbol> {
   isId: true,
 }
 
-export const Id = Object.assign(
-  <S extends UniqueSymbolContraint<S2>, T = any, S2 = S>(
+export const Id = {
+  create: <S extends UniqueSymbolContraint<S2>, T = any, S2 = S>(
     name: string,
     filepath: string,
     forcedVersion?: string,
@@ -47,12 +47,10 @@ export const Id = Object.assign(
     ids.set(full, id);
     return id;
   },
-  {
-    get: getId,
-    isId: (arg: any): arg is Id =>
-      typeof arg === "object" && arg.isId === true,
-  }
-);
+  get: getId,
+  isId: (arg: any): arg is Id =>
+    typeof arg === "object" && arg.isId === true,
+};
 
 function getId(id: Id): Id
 function getId(full: string): Id

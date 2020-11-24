@@ -25,5 +25,5 @@ Product.ConversionRegistry.register({
   fromType: Bsp.id,
   toType: Mesh.id,
   convert: async (bsp: Bsp): Promise<Mesh> =>
-    Mesh(Bsp.allFaces(bsp))
+    Mesh.create(Bsp.allFaces(bsp))
 })
