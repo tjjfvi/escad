@@ -13,7 +13,8 @@
     "quick-build": "lerna run quick-build --parallel --no-bail >/dev/null && printf '\\e[1;92m\u2713 Build successful\\n'",
     "build-quick": "npm run force-quick",
     "index": "create-index -X ts -x ts -x tsx -Sui packages/",
-    "lint": "eslint '**/*.{ts,tsx}' --quiet --fix"
+    "lint": "eslint '**/*.{ts,tsx}' --quiet --fix",
+    "open-errors": "lerna run open-errors"
   },
   "author": "",
   "license": "ISC",
