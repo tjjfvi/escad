@@ -1,6 +1,7 @@
 
 import { Mesh, Vector3 } from "@escad/mesh";
 import { Element, Id, Component, LeafProduct, createProductTypeUtils, Conversion, Product } from "@escad/core";
+import { Diff } from "@escad/csg";
 
 const tau = Math.PI * 2;
 
@@ -75,11 +76,11 @@ type SphereArgs = {
   r: number,
   slices?: number,
   stacks?: number,
-  // t?: number,
-  // i?: number,
-  // ir?: number,
-  // unionDiff?: boolean,
-  // ud?: boolean,
+  t?: number,
+  i?: number,
+  ir?: number,
+  unionDiff?: boolean,
+  ud?: boolean,
 };
 
 export const sphere: Component<[SphereArgs], Element<Sphere>> =
@@ -87,16 +88,15 @@ export const sphere: Component<[SphereArgs], Element<Sphere>> =
     r = 1,
     slices = 16,
     stacks = 8,
-    // t = r,
-    // i = r - t, ir = i,
-    // unionDiff = false, ud = unionDiff,
+    t = r,
+    i = r - t, ir = i,
+    unionDiff = false, ud = unionDiff,
   }) => {
     let os = Sphere(r, slices, stacks);
-    return Element.create(os);
-    // if(!ir)
-    //   return new Element(os);
-    // let is = new SphereWork([ir, slices, stacks]);
-    // return new Element<Mesh>(ud ? [os, is] : Mesh.convertElementish(diff(os, is)));
+    if(!ir)
+      return new Element(os);
+    let is = Sphere(ir, slices, stacks);
+    return new Element(ud ? [os, is] : Diff(os, is));
   })
 
 export const hollowSphere = sphere;

@@ -1,6 +1,7 @@
 
 import { Mesh, Face, Vector3 } from "@escad/mesh";
 import { Conversion, createProductTypeUtils, Element, Id, LeafProduct, Product } from "@escad/core";
+import { Diff } from "@escad/csg";
 
 const tau = Math.PI * 2;
 
@@ -88,22 +89,22 @@ export interface CylArgs {
   o2?: XY<number>,
   center?: boolean,
   c?: boolean,
-  // unionDiff?: boolean,
-  // ud?: boolean,
-  // t?: Pair<number>,
-  // ts?: Pair<number>,
-  // t1?: number,
-  // t2?: number,
-  // i?: number,
-  // is?: Pair<number>,
-  // i1?: number,
-  // i2?: number,
-  // iOffsets?: Pair<XY<number>>,
-  // ios?: Pair<XY<number>>,
-  // iOffset1?: XY<number>,
-  // iOffset2?: XY<number>,
-  // io1?: XY<number>,
-  // io2?: XY<number>,
+  unionDiff?: boolean,
+  ud?: boolean,
+  t?: Pair<number>,
+  ts?: Pair<number>,
+  t1?: number,
+  t2?: number,
+  i?: number,
+  is?: Pair<number>,
+  i1?: number,
+  i2?: number,
+  iOffsets?: Pair<XY<number>>,
+  ios?: Pair<XY<number>>,
+  iOffset1?: XY<number>,
+  iOffset2?: XY<number>,
+  io1?: XY<number>,
+  io2?: XY<number>,
   sides?: number,
 }
 
@@ -114,26 +115,26 @@ export const cylinder = (args: CylArgs) => {
     [args.r1 ?? 1, args.r2 ?? 1]
   const rs = typeof rsP === "number" ? [rsP, rsP] : rsP;
 
-  // const tsP: Pair<number> =
-  //   args.t ??
-  //   args.ts ??
-  //   [args.t1 ?? rs[0], args.t2 ?? rs[1]]
-  // const ts = typeof tsP === "number" ? [tsP, tsP] : tsP;
+  const tsP: Pair<number> =
+    args.t ??
+    args.ts ??
+    [args.t1 ?? rs[0], args.t2 ?? rs[1]]
+  const ts = typeof tsP === "number" ? [tsP, tsP] : tsP;
 
-  // const isP: Pair<number> =
-  //   args.i ??
-  //   args.is ??
-  //   [args.i1 ?? rs[0] - ts[0], args.i2 ?? rs[1] - ts[1]]
-  // const is: [number, number] | null = typeof isP === "number" ? [isP, isP] : isP;
+  const isP: Pair<number> =
+    args.i ??
+    args.is ??
+    [args.i1 ?? rs[0] - ts[0], args.i2 ?? rs[1] - ts[1]]
+  const is: [number, number] | null = typeof isP === "number" ? [isP, isP] : isP;
 
   const center =
     args.center ??
     args.c ??
     true
-  // const unionDiff =
-  //   args.unionDiff ??
-  //   args.ud ??
-  //   false
+  const unionDiff =
+    args.unionDiff ??
+    args.ud ??
+    false
   const height =
     args.height ??
     args.length ??
@@ -167,33 +168,33 @@ export const cylinder = (args: CylArgs) => {
         osPXY as [XY<number>, XY<number>] :
       [osPXY, osPXY]
 
-  // const iosPXY: Pair<XY<number>> =
-  //   args.iOffsets ??
-  //   args.ios ??
-  //   [
-  //     (
-  //       ("iOffset1" in args ? args.iOffset1 : null) ??
-  //       ("io1" in args ? args.io1 : null) ??
-  //       osXYs[0]
-  //     ),
-  //     (
-  //       ("iOffset2" in args ? args.iOffset2 : null) ??
-  //       ("io2" in args ? args.io2 : null) ??
-  //       osXYs[1]
-  //     ),
-  //   ];
+  const iosPXY: Pair<XY<number>> =
+    args.iOffsets ??
+    args.ios ??
+    [
+      (
+        ("iOffset1" in args ? args.iOffset1 : null) ??
+        ("io1" in args ? args.io1 : null) ??
+        osXYs[0]
+      ),
+      (
+        ("iOffset2" in args ? args.iOffset2 : null) ??
+        ("io2" in args ? args.io2 : null) ??
+        osXYs[1]
+      ),
+    ];
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  // const iosXYs: [XY<number>, XY<number>] =
-  //   iosPXY instanceof Array ?
-  //     typeof iosPXY[0] === "number" ?
-  //       [iosPXY, iosPXY] :
-  //       iosPXY as [XY<number>, XY<number>] :
-  //     [iosPXY, iosPXY]
+  const iosXYs: [XY<number>, XY<number>] =
+    iosPXY instanceof Array ?
+      typeof iosPXY[0] === "number" ?
+        [iosPXY, iosPXY] :
+        iosPXY as [XY<number>, XY<number>] :
+      [iosPXY, iosPXY]
 
   const [o1, o2] = osXYs.map((xy): [number, number] => xy instanceof Array ? xy : [xy.x, xy.y]);
-  // const [io1, io2] = iosXYs.map((xy): [number, number] => xy instanceof Array ? xy : [xy.x, xy.y]);
+  const [io1, io2] = iosXYs.map((xy): [number, number] => xy instanceof Array ? xy : [xy.x, xy.y]);
 
   let oc = Cylinder({
     r1: rs[0],
@@ -204,10 +205,19 @@ export const cylinder = (args: CylArgs) => {
     o2,
     c: center,
   });
-  // if(!is)
-  return new Element(oc)
-  // let ic = new CylWork([is[0], is[1], height, sides, io1, io2, center]);
-  // return new Element(unionDiff ? [oc, ic] : Mesh.convertElementish(diff(oc, ic)));
+  if(!is)
+    return new Element(oc)
+  let ic = Cylinder({
+    r1: is[0],
+    r2:
+    is[1],
+    height,
+    sides,
+    o1: io1,
+    o2: io2,
+    c: center
+  });
+  return new Element(unionDiff ? [oc, ic] : Diff(oc, ic))
 }
 
 export const cyl = cylinder;
