@@ -29,8 +29,8 @@ export const DiffMarker = Object.assign(
   }
 );
 
-type Diff<A extends Product, B extends Product> = CompoundProduct<[DiffMarker, A, B]>;
-const Diff = <A extends Product, B extends Product>(a: A, b: B): Diff<A, B> =>
+export type Diff<A extends Product, B extends Product> = CompoundProduct<[DiffMarker, A, B]>;
+export const Diff = <A extends Product, B extends Product>(a: A, b: B): Diff<A, B> =>
   CompoundProduct([DiffMarker(), a, b]);
 
 declare global {

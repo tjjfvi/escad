@@ -27,8 +27,8 @@ export const IntersectionMarker = Object.assign(
   }
 );
 
-type Intersection<A extends Product, B extends Product> = CompoundProduct<[IntersectionMarker, A, B]>;
-const Intersection = <A extends Product, B extends Product>(a: A, b: B): Intersection<A, B> =>
+export type Intersection<A extends Product, B extends Product> = CompoundProduct<[IntersectionMarker, A, B]>;
+export const Intersection = <A extends Product, B extends Product>(a: A, b: B): Intersection<A, B> =>
   CompoundProduct([IntersectionMarker(), a, b]);
 
 declare global {
