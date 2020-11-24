@@ -33,7 +33,6 @@ export * from './Id';
 export * from './LeafProduct';
 export * from './MultiMap';
 export * from './Operation';
-export * from './Parameter';
 export * from './Product';
 export * from './ReadonlyArtifactManager';
 export * from './Timer';
