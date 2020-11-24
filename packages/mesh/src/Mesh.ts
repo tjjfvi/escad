@@ -26,7 +26,6 @@ export const Mesh = {
   ...createProductTypeUtils<Mesh, "Mesh">(meshId, "Mesh")
 };
 
-// registerPlugin({
-//   path: require.resolve("@escad/client-mesh"),
-//   idMap: { "@escad/client-mesh/Mesh": Mesh.id },
-// })
+registerPlugin({
+  path: require.resolve("@escad/client-mesh"),
+})
