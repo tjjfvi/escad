@@ -1,19 +1,10 @@
 
-import { LeafProduct, LeafProductType } from "./LeafProduct";
-import { Product, _ProductType, _Product, ProductType } from "./Product";
+import { Product, _Product, ProductType } from "./Product";
 
 export type CompoundProductType<T extends CompoundProduct<readonly Product[]>> =
   {
     readonly [K in Exclude<keyof T["children"], keyof any[]>]:
-      T["children"][K] extends infer U ? U extends Product ? (
-        ProductType<U>
-        // Inlined from ProductType because otherwise it was 2589ing for some reason
-        // Product extends U ?
-        //   _ProductType :
-        //   U extends LeafProduct ?
-        //     LeafProductType<U> :
-        //       CompoundProductType<Extract<U, CompoundProduct<any>>>
-       ) : never : never
+      T["children"][K] extends infer U ? U extends Product ? ProductType<U> : never : never
   }
 
 export interface CompoundProduct<T extends readonly Product[]> extends _Product {
