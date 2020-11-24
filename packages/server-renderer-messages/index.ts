@@ -1,21 +1,37 @@
-import { Hex } from "@escad/core";
+
+import { Hex, ProductType } from "@escad/core";
+import { PluginRegistration } from "@escad/register-client-plugin";
 
 export type RequestId = string;
 
 export type ServerRendererMessage =
-  | ["artifactsDir", string]
-  | ["load", string]
-  | ["export", RequestId, Hex, Hex]
-  | ["run", RequestId, Buffer]
+  | ServerRendererMessage.ArtifactsDir
+  | ServerRendererMessage.Load
+  | ServerRendererMessage.Export
+  | ServerRendererMessage.Run
+  | ServerRendererMessage.Convert
+
+export namespace ServerRendererMessage {
+  export type ArtifactsDir = ["artifactsDir", string];
+  export type Load = ["load", string]
+  export type Export = ["export", RequestId, Hex, Hex]
+  export type Run = ["run", RequestId, unknown]
+  export type Convert = ["convert", RequestId, Hex, ProductType];
+}
 
 export type RendererServerMessage =
-  | ["shas", Hex[]]
-  | ["exportFinish", RequestId]
-  | ["clientPlugins", ClientPluginRegistration[]]
-  | ["paramDef", Hex | null]
-  | ["runFinish", RequestId, Hex[]]
+  | RendererServerMessage.Shas
+  | RendererServerMessage.ExportFinish
+  | RendererServerMessage.ClientPlugins
+  | RendererServerMessage.ParamDef
+  | RendererServerMessage.RunFinish
+  | RendererServerMessage.ConvertFinish
 
-export interface ClientPluginRegistration {
-  path: string,
-  idMap: [string, Hex][],
+export namespace RendererServerMessage {
+  export type Shas = ["shas", Hex[]];
+  export type ExportFinish = ["exportFinish", RequestId];
+  export type ClientPlugins = ["clientPlugins", PluginRegistration[]];
+  export type ParamDef = ["paramDef", Hex | null];
+  export type RunFinish = ["runFinish", RequestId, Hex[]];
+  export type ConvertFinish = ["convertFinish", RequestId, Hex];
 }

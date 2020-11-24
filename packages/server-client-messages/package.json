@@ -16,7 +16,9 @@
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {},
+  "dependencies": {
+    "@escad/core": "^0.0.0"
+  },
   "devDependencies": {
     "typescript": "^4.1.0-dev.20201015"
   },
