@@ -1,12 +1,10 @@
 
-import { Id } from "@escad/core";
 import path from "path";
 
 export const registeredPlugins: PluginRegistration[] = [];
 
 export interface PluginRegistration {
   path: string,
-  idMap: Record<string, Id>,
 }
 
 export const registerPlugin = (registration: PluginRegistration) => {
