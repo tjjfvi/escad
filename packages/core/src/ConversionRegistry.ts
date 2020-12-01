@@ -5,6 +5,8 @@ import { MultiMap } from "./MultiMap";
 import { hash } from "./hash";
 import { DeepMap } from "./DeepMap";
 import { CompoundProduct } from "./CompoundProduct";
+import { ArtifactManager } from "./ArtifactManager";
+import { Id } from "./Id";
 // import { formatConversion, log } from "./logging";
 
 export namespace ConversionRegistry {
@@ -20,6 +22,7 @@ export class ConversionRegistry {
 
   private registered = new MultiMap<Hex, ConversionImpl<any, any>>();
   private composed: DeepMap<Hex, Hex, ConversionImpl<any, any>[]> | null = null;
+  private conversionManager = new ArtifactManager<Product>(Id.create("ConversionManager", __dirname))
 
   register<F extends Product, T extends Product>(
     conversion: ConversionImpl<F, T>,
@@ -163,9 +166,30 @@ export class ConversionRegistry {
     if(!conversions)
       throw new Error(`Could not find path to convert product type ${hash(fromType)} to ${hash(toType)}`);
 
+    let prevProducts: (Product | null)[] = [from];
     let currentProduct: Product = from;
-    for(const conversion of conversions)
-      currentProduct = await conversion.convert(currentProduct);
+
+    main: for(let i = 0; i < conversions.length; i++) {
+      for(let j = conversions.length - 1; j >= i; j--) {
+        const { toType } = conversions[j]
+        const sha = hash([toType, currentProduct]);
+        const result = await this.conversionManager.lookup(sha);
+        if(!result) continue;
+        currentProduct = result;
+        prevProducts.push(...Array(j - i + 1).fill(null));
+        i = j;
+        continue main;
+      }
+      currentProduct = await conversions[i].convert(currentProduct);
+      prevProducts.push(currentProduct);
+      for(let k = 0; k < i; k++) {
+        const { toType } = conversions[i];
+        const fromProduct = prevProducts[k];
+        if(!fromProduct) continue;
+        const sha = hash([toType, fromProduct]);
+        await this.conversionManager.store(sha, currentProduct);
+      }
+    }
 
     return currentProduct as T;
   }

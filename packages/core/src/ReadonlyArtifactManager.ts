@@ -50,7 +50,7 @@ export class ReadonlyArtifactManager<T> {
     return this.cache.setAsync(sha, async () => {
       let path = await this.getPath(sha);
       let artifact = await artifactPromise;
-      await fs.writeFile(path, JSON.stringify(artifact), { flag: overwrite ? "w" : "wx" });
+      await fs.writeFile(path, JSON.stringify(artifact), { flag: overwrite ? "w" : "wx" }).catch(() => null);
       return artifact;
     });
   }

@@ -19,7 +19,7 @@ export class ArtifactManager<T> extends ReadonlyArtifactManager<T> {
     return await this.cache.getAsync(sha, async () => {
       const path = await this.getPath(sha);
       return this.deserialize(await fs.readFile(path, "utf8"));
-    })
+    }).catch(() => null)
   }
 
 }
