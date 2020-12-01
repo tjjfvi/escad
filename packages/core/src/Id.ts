@@ -34,7 +34,7 @@ export const Id = {
       forcedVersion ?
         `${packageName}/${name}/${forcedVersion}` :
         `${packageName}/${packageVersion}/${name}`
-    ).replace("/", "-");
+    ).replace(/\//g, "-");
     if(ids.has(full))
       throw new Error(`Duplicate ids created under ${full}`);
     const id: Id<T, Extract<S2, symbol>> = {
