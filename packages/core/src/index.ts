@@ -34,7 +34,6 @@ export * from './LeafProduct';
 export * from './MultiMap';
 export * from './Operation';
 export * from './Product';
-export * from './ReadonlyArtifactManager';
 export * from './Timer';
 export * from './WeakCache';
 export * from './builtins';

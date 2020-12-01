@@ -3,8 +3,7 @@ import "../packages/csg/register";
 import { cube } from "../packages/solids/dist";
 import { Mesh, Vector3 } from "../packages/mesh/dist";
 import { writeFile } from "fs-extra";
-import { ArtifactManager } from "../packages/csg/node_modules/@escad/core/src";
-import { ReadonlyArtifactManager } from "../packages/mesh/node_modules/@escad/core/dist";
+import { ArtifactManager } from "../packages/core/dist";
 
 const stlVector = (v: Vector3) => `${v.x} ${v.y} ${v.z}`
 const stl = (mesh: Mesh) =>
@@ -32,8 +31,7 @@ const stl = (mesh: Mesh) =>
   // a = Bsp.build(a, Bsp.allFaces(b)) ?? Bsp.null();
   // a = Bsp.invert(a);
   // const x = await Mesh.convert(a);
-  ReadonlyArtifactManager.setArtifactsDir(__dirname + "/../artifacts");
-  console.log(ArtifactManager.artifactsDir);
+  ArtifactManager.setArtifactsDir(__dirname + "/../artifacts");
   const x = await Mesh.convert(
     cube({ s: 1 })
       .sub(cube({ s: .9 }))

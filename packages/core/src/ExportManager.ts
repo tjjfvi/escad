@@ -1,10 +1,10 @@
 
+import { ArtifactManager } from "./ArtifactManager";
 import { ExportType } from "./ExportType";
 import { Sha } from "./hash";
 import { Product } from "./Product";
-import { ReadonlyArtifactManager } from "./ReadonlyArtifactManager";
 
-export class ExportManager<P extends Product> extends ReadonlyArtifactManager<P> {
+export class ExportManager<P extends Product> extends ArtifactManager<P> {
 
   async getPath(sha: Sha){
     let path = await super.getPath(sha)
@@ -14,7 +14,9 @@ export class ExportManager<P extends Product> extends ReadonlyArtifactManager<P>
   }
 
   constructor(public exportType: ExportType<P>){
-    super(exportType.id, exportType.export);
+    super(exportType.id, exportType.export, () => {
+      throw new Error("Cannot deserialize exported products");
+    });
   }
 
 }
