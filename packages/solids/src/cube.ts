@@ -9,6 +9,7 @@ import {
   createProductTypeUtils,
   LeafElement,
   LeafProduct,
+  conversionRegistry,
 } from "@escad/core";
 
 declare const cubeIdSymbol: unique symbol;
@@ -40,7 +41,7 @@ declare global {
   }
 }
 
-Product.ConversionRegistry.register({
+conversionRegistry.register({
   fromType: Cube.id,
   toType: Mesh.id,
   convert: async (cube: Cube): Promise<Mesh> => {

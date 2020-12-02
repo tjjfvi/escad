@@ -8,6 +8,7 @@ import {
   Conversion,
   Operation,
   mapOperation,
+  conversionRegistry,
 } from "@escad/core";
 import { Mesh, Face } from "@escad/mesh";
 
@@ -40,7 +41,7 @@ declare global {
   }
 }
 
-Product.ConversionRegistry.register<FlipFaces<Mesh>, Mesh>({
+conversionRegistry.register<FlipFaces<Mesh>, Mesh>({
   convert: async ({ children: [, mesh] }) =>
     Mesh.create(mesh.faces.map(face =>
       Face.create(face.points.slice().reverse())

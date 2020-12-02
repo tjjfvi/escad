@@ -10,6 +10,7 @@ import {
   Element,
   Component,
   Operation,
+  conversionRegistry,
 } from "@escad/core";
 import { Bsp } from "./Bsp";
 import { Union } from "./union";
@@ -43,7 +44,7 @@ declare global {
   }
 }
 
-Product.ConversionRegistry.register({
+conversionRegistry.register({
   fromType: [DiffMarker.id, Bsp.id, Bsp.id],
   toType: Bsp.id,
   convert: async ({ children: [, a, b] }: Diff<Bsp, Bsp>): Promise<Bsp> => {

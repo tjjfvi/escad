@@ -5,7 +5,8 @@ import { MultiMap } from "./MultiMap";
 import { hash } from "./hash";
 import { DeepMap } from "./DeepMap";
 import { CompoundProduct } from "./CompoundProduct";
-import { ArtifactManager } from "./ArtifactManager";
+import { artifactManager, ArtifactManager } from "./ArtifactManager";
+import { ArtifactStore } from "./ArtifactStore";
 import { Id } from "./Id";
 // import { formatConversion, log } from "./logging";
 
@@ -20,9 +21,24 @@ export namespace ConversionRegistry {
 
 export class ConversionRegistry {
 
-  private registered = new MultiMap<Hex, ConversionImpl<any, any>>();
+  constructor(public artifactManager: ArtifactManager){
+    this.artifactManager.artifactStores.push(this.artifactStore)
+  }
+
+
+  readonly artifactStoreId = Id.create("ConversionRegistryArtifactStore", __filename);
+  readonly artifactStore: ArtifactStore = {
+    lookupRef: async ([id, toType, product]) => {
+      if(id !== this.artifactStoreId) return null;
+      if(!Product.isProduct(product)) return null;
+      return this.convertProduct(toType as ProductType, product);
+    }
+  }
+
+  readonly excludeStores: ReadonlySet<ArtifactStore> = new Set([this.artifactStore]);
+
+  private readonly registered = new MultiMap<Hex, ConversionImpl<any, any>>();
   private composed: DeepMap<Hex, Hex, ConversionImpl<any, any>[]> | null = null;
-  private conversionManager = new ArtifactManager<Product>(Id.create("ConversionManager", __dirname))
 
   register<F extends Product, T extends Product>(
     conversion: ConversionImpl<F, T>,
@@ -172,9 +188,11 @@ export class ConversionRegistry {
     main: for(let i = 0; i < conversions.length; i++) {
       for(let j = conversions.length - 1; j >= i; j--) {
         const { toType } = conversions[j]
-        const sha = hash([toType, currentProduct]);
-        const result = await this.conversionManager.lookup(sha);
-        if(!result) continue;
+        const result = await this.artifactManager.lookupRef(
+          [this.artifactStoreId, toType, currentProduct],
+          this.excludeStores
+        );
+        if(!result || !Product.isProduct(result)) continue;
         currentProduct = result;
         prevProducts.push(...Array(j - i + 1).fill(null));
         i = j;
@@ -186,8 +204,7 @@ export class ConversionRegistry {
         const { toType } = conversions[i];
         const fromProduct = prevProducts[k];
         if(!fromProduct) continue;
-        const sha = hash([toType, fromProduct]);
-        await this.conversionManager.store(sha, currentProduct);
+        await this.artifactManager.storeRef([this.artifactStoreId, toType, fromProduct], currentProduct);
       }
     }
 
@@ -202,3 +219,5 @@ export class ConversionRegistry {
   // }
 
 }
+
+export const conversionRegistry = new ConversionRegistry(artifactManager);

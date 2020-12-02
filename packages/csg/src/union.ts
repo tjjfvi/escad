@@ -9,6 +9,7 @@ import {
   Product,
   Component,
   Operation,
+  conversionRegistry,
 } from "@escad/core";
 import { Bsp } from "./Bsp";
 
@@ -41,7 +42,7 @@ declare global {
   }
 }
 
-Product.ConversionRegistry.register({
+conversionRegistry.register({
   fromType: [UnionMarker.id, Bsp.id, Bsp.id],
   toType: Bsp.id,
   convert: async ({ children: [, a, b] }: Union<Bsp, Bsp>): Promise<Bsp> => {

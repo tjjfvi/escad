@@ -7,6 +7,7 @@ import {
   LeafProduct,
   Product,
   Operation,
+  conversionRegistry,
 } from "@escad/core";
 import { Mesh } from "@escad/mesh";
 
@@ -39,7 +40,7 @@ declare global {
   }
 }
 
-Product.ConversionRegistry.register({
+conversionRegistry.register({
   fromType: [MeldMarker.id, Mesh.id, Mesh.id],
   toType: Mesh.id,
   convert: async ({ children: [, a, b] }: Meld<Mesh, Mesh>): Promise<Mesh> =>

@@ -1,5 +1,5 @@
 
-import { Conversion, Product } from "@escad/core";
+import { Conversion, conversionRegistry } from "@escad/core";
 import { Mesh } from "@escad/mesh";
 import { Bsp } from "./Bsp";
 
@@ -14,14 +14,14 @@ declare global {
   }
 }
 
-Product.ConversionRegistry.register({
+conversionRegistry.register({
   fromType: Mesh.id,
   toType: Bsp.id,
   convert: async (mesh: Mesh): Promise<Bsp> =>
     Bsp.build(null, mesh.faces) ?? Bsp.null()
 })
 
-Product.ConversionRegistry.register({
+conversionRegistry.register({
   fromType: Bsp.id,
   toType: Mesh.id,
   convert: async (bsp: Bsp): Promise<Mesh> =>

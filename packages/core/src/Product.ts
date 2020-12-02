@@ -1,8 +1,6 @@
 
-import { ConversionRegistry } from "./ConversionRegistry";
 import { LeafProduct, LeafProductType } from "./LeafProduct"
 import { CompoundProduct, CompoundProductType } from "./CompoundProduct"
-import { ArtifactManager } from "./ArtifactManager";
 import { Id } from "./Id";
 import {
   __convertibleTo,
@@ -47,13 +45,7 @@ export type ProductType<U extends Product = Product> = Extract<
         CompoundProductType<Extract<U, CompoundProduct<any>>>
 , _ProductType>
 
-declare const productManagerIdSymbol: unique symbol;
-const productManagerId = Id.create<typeof productManagerIdSymbol>("product", __filename, "0");
-
 export const Product = {
-  ConversionRegistry: new ConversionRegistry(),
-  Manager: new ArtifactManager<Product>(productManagerId),
-
   isProduct: (arg: any): arg is Product =>
     LeafProduct.isLeafProduct(arg) || CompoundProduct.isCompoundProduct(arg)
 }

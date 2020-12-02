@@ -1,4 +1,4 @@
-import { CompoundProduct, Conversion, Product } from "@escad/core";
+import { CompoundProduct, Conversion, Product, conversionRegistry } from "@escad/core";
 import { Face, Mesh } from "@escad/mesh";
 import { Matrix4 } from "./Matrix4";
 
@@ -18,7 +18,7 @@ declare global {
   }
 }
 
-Product.ConversionRegistry.register<Transformation<Mesh>, Mesh>({
+conversionRegistry.register<Transformation<Mesh>, Mesh>({
   convert: async ({ children: [matrix, mesh] }) =>
     Mesh.create(mesh.faces.map(face =>
       Face.create(face.points.map(vector =>

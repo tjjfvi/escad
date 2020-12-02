@@ -3,7 +3,7 @@ import "../packages/csg/register";
 import { cube } from "../packages/solids/dist";
 import { Mesh, Vector3 } from "../packages/mesh/dist";
 import { writeFile } from "fs-extra";
-import { ArtifactManager } from "../packages/core/dist";
+import { artifactManager, ArtifactManager, conversionRegistry, FsArtifactStore } from "../packages/core/dist";
 
 const stlVector = (v: Vector3) => `${v.x} ${v.y} ${v.z}`
 const stl = (mesh: Mesh) =>
@@ -31,13 +31,15 @@ const stl = (mesh: Mesh) =>
   // a = Bsp.build(a, Bsp.allFaces(b)) ?? Bsp.null();
   // a = Bsp.invert(a);
   // const x = await Mesh.convert(a);
-  ArtifactManager.setArtifactsDir(__dirname + "/../artifacts");
-  const x = await Mesh.convert(
+  artifactManager.artifactStores.unshift(new FsArtifactStore(__dirname + "/../artifacts"));
+  const x = await artifactManager.lookupRef([
+    conversionRegistry.artifactStoreId,
+    Mesh.id,
     cube({ s: 1 })
       .sub(cube({ s: .9 }))
       .sub(cube({ s: .5, c: false }))
-      .toArrayFlat()[0]
-  )
+      .toArrayFlat()[0],
+  ]) as Mesh
   await writeFile(__dirname + "/test.stl", stl(x), "utf8");
 })()
 

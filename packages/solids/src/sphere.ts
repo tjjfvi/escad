@@ -1,6 +1,14 @@
 
 import { Mesh, Vector3 } from "@escad/mesh";
-import { Element, Id, Component, LeafProduct, createProductTypeUtils, Conversion, Product } from "@escad/core";
+import {
+  Element,
+  Id,
+  Component,
+  LeafProduct,
+  createProductTypeUtils,
+  Conversion,
+  conversionRegistry,
+} from "@escad/core";
 import { Diff } from "@escad/csg";
 
 const tau = Math.PI * 2;
@@ -37,7 +45,7 @@ declare global {
   }
 }
 
-Product.ConversionRegistry.register({
+conversionRegistry.register({
   fromType: Sphere.id,
   toType: Mesh.id,
   convert: async (sphere: Sphere): Promise<Mesh> => {

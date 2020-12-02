@@ -18,6 +18,7 @@ export default escad;
 // @create-index {"mode":"*"}
 
 export * from './ArtifactManager';
+export * from './ArtifactStore';
 export * from './Component';
 export * from './CompoundProduct';
 export * from './ConversionRegistry';
@@ -28,6 +29,7 @@ export * from './ExportManager';
 export * from './ExportType';
 export * from './ExportTypeRegistry';
 export * from './ExtensibleFunction';
+export * from './FsArtifactStore';
 export * from './Hierarchy';
 export * from './Id';
 export * from './LeafProduct';

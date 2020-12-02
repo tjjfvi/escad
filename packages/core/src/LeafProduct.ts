@@ -2,6 +2,7 @@
 import { Id } from "./Id";
 import { ConvertibleTo } from "./Conversions";
 import { Product, ProductType, _Product } from "./Product";
+import { conversionRegistry } from "./ConversionRegistry";
 
 export type LeafProductType<T extends LeafProduct> = T["type"];
 
@@ -20,6 +21,6 @@ export const createProductTypeUtils = <P extends LeafProduct, N extends string>(
       LeafProduct.isLeafProduct(q) && q.type === id,
   } as Record<`is${N}`, (q: Product) => q is P>),
   convert<Q extends ConvertibleTo<P>>(q: Q): Promise<P>{
-    return Product.ConversionRegistry.convertProduct<P, Q>(id, q);
+    return conversionRegistry.convertProduct<P, Q>(id, q);
   }
 });
