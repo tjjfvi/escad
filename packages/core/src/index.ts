@@ -25,7 +25,6 @@ export * from './ConversionRegistry';
 export * from './Conversions';
 export * from './DeepMap';
 export * from './Element';
-export * from './ExportManager';
 export * from './ExportType';
 export * from './ExportTypeRegistry';
 export * from './ExtensibleFunction';

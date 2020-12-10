@@ -1,34 +1,22 @@
 
-export {}
+import { ExportType } from "./ExportType"
+import { artifactManager, ArtifactManager } from "./ArtifactManager";
 
-// import { Id } from "./Id";
-// import { Product, ProductType } from "./Product";
-// import { ExportType } from "./ExportType"
+export class ExportTypeRegistry {
 
-// export class ExportTypeRegistry {
+  private registered = new Set<ExportType<any>>();
 
-//   private mapMap = new Map<Id, Map<Id, ExportType<any>>>();
+  constructor(public artifactManager: ArtifactManager){}
 
-//   register<P extends Product>(productType: ProductType<P>, exportType: ExportType<P>){
-//     let map = this.mapMap.get(productType.id) ?? new Map<Id, ExportType<any>>();
-//     this.mapMap.set(productType.id, map);
-//     map.set(exportType.id, exportType);
-//     ExportTypeManager.get(productType).store(exportType.id.sha, Promise.resolve(exportType));
-//   }
+  register(exportType: ExportType<any>){
+    this.registered.add(exportType);
+    this.artifactManager.artifactStores.push(exportType.store);
+  }
 
-//   getAll<P extends Product>(productType: ProductType<P>): ExportType<P>[]{
-//     let map = this.mapMap.get(productType.id);
-//     return map ? [...map.values()] : [];
-//   }
+  listRegistered(): Iterable<ExportType<any>>{
+    return this.registered;
+  }
 
-//   get<P extends Product>(productType: ProductType<P>, exportId: Id): ExportType<P>{
-//     let map = this.mapMap.get(productType.id);
-//     if(!map)
-//       throw new Error(`Product type ${productType.id} has no exportTypes`);
-//     let exportType = map.get(exportId);
-//     if(!exportType)
-//       throw new Error(`Product type ${productType.id} has no exportType ${exportId}`);
-//     return exportType;
-//   }
+}
 
-// }
+export const exportTypeRegistry = new ExportTypeRegistry(artifactManager);

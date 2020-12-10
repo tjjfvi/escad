@@ -37,7 +37,7 @@ export class ArtifactManager {
 
     let serialized;
     await Promise.all(this.artifactStores.map(s =>
-      !excludeStores?.has(s) && s.storeRaw?.(artifactHash, serialized ??= this.serialize(artifact))
+      !excludeStores?.has(s) && s.storeRaw?.(artifactHash, serialized ??= this.serialize(artifact), this)
     ));
 
     return artifact;
@@ -57,7 +57,7 @@ export class ArtifactManager {
       this.storeRaw(artifact, excludeStores),
       ...loc.map(l => this.storeRaw(l, excludeStores)),
       ...this.artifactStores.map(s =>
-        !excludeStores?.has(s) && s.storeRef?.(loc, artifactHash)
+        !excludeStores?.has(s) && s.storeRef?.(loc, artifactHash, this)
       ),
     ]);
 
@@ -70,7 +70,7 @@ export class ArtifactManager {
   ){
     for(const store of this.artifactStores)
       if(!excludeStores?.has(store)) {
-        const buffer = await store.lookupRaw?.(hash);
+        const buffer = await store.lookupRaw?.(hash, this);
         if(buffer)
           return this.deserialize(buffer);
       }
@@ -83,7 +83,7 @@ export class ArtifactManager {
   ){
     for(const store of this.artifactStores)
       if(!excludeStores?.has(store)) {
-        const buffer = await store.lookupRef?.(loc);
+        const buffer = await store.lookupRef?.(loc, this);
         if(buffer)
           return this.deserialize(buffer);
       }

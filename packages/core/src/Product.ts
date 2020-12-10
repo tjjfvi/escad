@@ -10,6 +10,7 @@ import {
   __convertibleFrom,
   __convertibleFromOverride,
 } from "./Conversions";
+import { hash } from "./hash";
 
 export interface _Product {
   readonly [__convertibleTo]?: (
@@ -46,8 +47,16 @@ export type ProductType<U extends Product = Product> = Extract<
 , _ProductType>
 
 export const Product = {
-  isProduct: (arg: any): arg is Product =>
-    LeafProduct.isLeafProduct(arg) || CompoundProduct.isCompoundProduct(arg)
+  isProduct,
+}
+
+function isProduct(arg: any): arg is Product
+function isProduct<P extends Product>(arg: any, productType: ProductType<P>): arg is P
+function isProduct(arg: any, productType: ProductType | null = null){
+  return (
+    (LeafProduct.isLeafProduct(arg) || CompoundProduct.isCompoundProduct(arg)) &&
+    (!productType || hash(getProductType(arg)) === hash(productType))
+  );
 }
 
 export const getProductType = <P extends Product>(product: P): ProductType<P> => {
