@@ -44,4 +44,9 @@ export class MultiMap<K, V> {
     return newSet;
   }
 
+  *values(){
+    for(const set of this.map.values())
+      yield* set
+  }
+
 }

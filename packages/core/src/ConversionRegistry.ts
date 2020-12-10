@@ -25,7 +25,6 @@ export class ConversionRegistry {
     this.artifactManager.artifactStores.push(this.artifactStore)
   }
 
-
   readonly artifactStoreId = Id.create("ConversionRegistryArtifactStore", __filename);
   readonly artifactStore: ArtifactStore = {
     lookupRef: async ([id, toType, product]) => {
@@ -67,6 +66,10 @@ export class ConversionRegistry {
 
     for(const conversionChain of this.composed.getAll(hash(fromType)).values())
       yield conversionChain[conversionChain.length - 1].toType as any;
+  }
+
+  listAll(): Iterable<ConversionImpl<any, any>>{
+    return this.registered.values();
   }
 
   private compose<F extends Product>(
