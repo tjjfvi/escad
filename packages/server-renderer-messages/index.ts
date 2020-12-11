@@ -1,37 +1,62 @@
 
-import { Hex, ProductType } from "@escad/core";
+import { Hex } from "@escad/core";
 import { PluginRegistration } from "@escad/register-client-plugin";
-
-export type RequestId = string;
 
 export type ServerRendererMessage =
   | ServerRendererMessage.ArtifactsDir
   | ServerRendererMessage.Load
-  | ServerRendererMessage.Export
   | ServerRendererMessage.Run
-  | ServerRendererMessage.Convert
+  | ServerRendererMessage.LookupRef
 
 export namespace ServerRendererMessage {
-  export type ArtifactsDir = ["artifactsDir", string];
-  export type Load = ["load", string]
-  export type Export = ["export", RequestId, Hex, Hex]
-  export type Run = ["run", RequestId, unknown]
-  export type Convert = ["convert", RequestId, Hex, ProductType];
+  export interface ArtifactsDir {
+    type: "artifactsDir",
+    artifactsDir: string,
+  }
+  export interface Load {
+    type: "load",
+    path: string,
+  }
+  export interface Run {
+    type: "run",
+    id: string,
+    params: unknown,
+  }
+  export interface LookupRef {
+    type: "lookupRef",
+    id: string,
+    loc: unknown[],
+  }
 }
 
 export type RendererServerMessage =
-  | RendererServerMessage.Shas
-  | RendererServerMessage.ExportFinish
+  | RendererServerMessage.Products
   | RendererServerMessage.ClientPlugins
   | RendererServerMessage.ParamDef
-  | RendererServerMessage.RunFinish
-  | RendererServerMessage.ConvertFinish
+  | RendererServerMessage.RunResponse
+  | RendererServerMessage.LookupRefResponse
 
 export namespace RendererServerMessage {
-  export type Shas = ["shas", Hex[]];
-  export type ExportFinish = ["exportFinish", RequestId];
-  export type ClientPlugins = ["clientPlugins", PluginRegistration[]];
-  export type ParamDef = ["paramDef", Hex | null];
-  export type RunFinish = ["runFinish", RequestId, Hex[]];
-  export type ConvertFinish = ["convertFinish", RequestId, Hex];
+  export interface Products {
+    type: "products",
+    products: Hex[],
+  }
+  export interface ClientPlugins {
+    type: "clientPlugins",
+    plugins: PluginRegistration[],
+  }
+  export interface ParamDef {
+    type: "paramDef",
+    paramDef: Hex | null,
+  }
+  export interface RunResponse {
+    type: "runResponse",
+    id: string,
+    products: Hex[],
+  }
+  export interface LookupRefResponse {
+    type: "lookupRefResponse",
+    id: string,
+    hash: Hex,
+  }
 }
