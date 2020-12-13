@@ -19,7 +19,7 @@ export interface NumberParam extends Parameter<number>, NumberParamArgs {
 }
 
 export const NumberParam = {
-  create: (args: NumberParamArgs) => ({
+  create: (args: NumberParamArgs): NumberParam => ({
     ...args,
     type: numberParamId,
   }),

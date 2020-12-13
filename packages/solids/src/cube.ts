@@ -22,7 +22,7 @@ export interface Cube extends LeafProduct {
 }
 
 export const Cube = {
-  create: (center: Vector3, size: Vector3) => ({
+  create: (center: Vector3, size: Vector3): Cube => ({
     type: cubeId,
     center,
     size,
