@@ -22,7 +22,7 @@ export class Messenger extends EventEmitter<{
     })
   }
 
-  send(...message: RendererServerMessage){
+  send(message: RendererServerMessage){
     processSend(message);
   }
 

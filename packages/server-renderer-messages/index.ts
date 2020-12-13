@@ -2,11 +2,13 @@
 import { Hex } from "@escad/core";
 import { PluginRegistration } from "@escad/register-client-plugin";
 
-export type ServerRendererMessage =
+export type ServerRendererMessageTypes = ServerRendererMessage["type"]
+export type ServerRendererMessage<T extends ServerRendererMessageTypes = any> = Extract<
   | ServerRendererMessage.ArtifactsDir
   | ServerRendererMessage.Load
   | ServerRendererMessage.Run
   | ServerRendererMessage.LookupRef
+, { type: T }>
 
 export namespace ServerRendererMessage {
   export interface ArtifactsDir {
@@ -29,12 +31,14 @@ export namespace ServerRendererMessage {
   }
 }
 
-export type RendererServerMessage =
+export type RendererServerMessageTypes = RendererServerMessage["type"]
+export type RendererServerMessage<T extends ServerRendererMessageTypes = any> = Extract<
   | RendererServerMessage.Products
   | RendererServerMessage.ClientPlugins
   | RendererServerMessage.ParamDef
   | RendererServerMessage.RunResponse
   | RendererServerMessage.LookupRefResponse
+, { type: T }>
 
 export namespace RendererServerMessage {
   export interface Products {
