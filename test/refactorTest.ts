@@ -3,7 +3,8 @@ import "../packages/csg/register";
 import { cube } from "../packages/solids/dist";
 import { Mesh, Vector3 } from "../packages/mesh/dist";
 import { writeFile } from "fs-extra";
-import { artifactManager, ArtifactManager, conversionRegistry, FsArtifactStore } from "../packages/core/dist";
+
+import { artifactManager, conversionRegistry, FsArtifactStore } from "../packages/core/dist";
 
 const stlVector = (v: Vector3) => `${v.x} ${v.y} ${v.z}`
 const stl = (mesh: Mesh) =>
@@ -20,47 +21,20 @@ const stl = (mesh: Mesh) =>
   "\nendsolid test";
 
 (async () => {
-  // let a = await Bsp.convert(cube({ s: 1 }).val);
-  // let b = await Bsp.convert(cube({ s: 1, c: false }).val);
-  // a = Bsp.invert(a);
-  // a = Bsp.clipTo(a, b);
-  // b = Bsp.clipTo(b, a);
-  // b = Bsp.invert(b);
-  // b = Bsp.clipTo(b, a);
-  // b = Bsp.invert(b);
-  // a = Bsp.build(a, Bsp.allFaces(b)) ?? Bsp.null();
-  // a = Bsp.invert(a);
-  // const x = await Mesh.convert(a);
   artifactManager.artifactStores.unshift(new FsArtifactStore(__dirname + "/../artifacts"));
+  // const x = Mesh.convert(model().toArrayFlat()[0]);
   const x = await artifactManager.lookupRef([
     conversionRegistry.artifactStoreId,
     Mesh.id,
-    cube({ s: 1 })
-      .sub(cube({ s: .9 }))
-      .sub(cube({ s: .5, c: false }))
-      .toArrayFlat()[0],
+    model().toArrayFlat()[0],
   ]) as Mesh
   await writeFile(__dirname + "/test.stl", stl(x), "utf8");
 })()
 
-// cube({ s: 1 })
-//   .add(cube({ s: 1, c: false }))
-//   .toArrayFlat()
-//   .map(async product => {
-//     console.log(product);
-//     const fv = (v: Vector3) => `${v.x} ${v.y} ${v.z}`
-//     const x = await Mesh.convert(product);
-//     console.log(x);
-//     console.log(x.faces.length);
-//     console.log("solid test")
-//     console.log(x.faces.flatMap(f => [
-//       `facet normal ${fv(f.plane.normal)}`,
-//       `outer loop`,
-//       `vertex ${fv(f.points[0])}`,
-//       `vertex ${fv(f.points[1])}`,
-//       `vertex ${fv(f.points[2])}`,
-//       `endloop`,
-//       `endfacet`,
-//     ]).join("\n"));
-//     console.log("endsolid test")
-//   })
+function model(){
+  return (
+    cube({ s: 1 })
+      .sub(cube({ s: .75 }))
+      .sub(cube({ s: 1, c: false }))
+  );
+}
