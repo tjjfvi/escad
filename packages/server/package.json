@@ -32,6 +32,7 @@
     "@escad/renderer": "^0.0.0",
     "@escad/server-renderer-messages": "^0.0.0",
     "@escad/server-client-messages": "^0.0.0",
+    "@escad/register-client-plugin": "^0.0.0",
     "@escad/client-bundler": "^0.0.0"
   },
   "devDependencies": {

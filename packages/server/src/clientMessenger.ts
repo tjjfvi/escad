@@ -9,15 +9,15 @@ import { serverId } from "./serverId";
 import { v4 as uuidv4 } from "uuid";
 import { RendererServerMessage } from "@escad/server-renderer-messages";
 
-let curShas: Hex[] | null = null;
-let paramDef: Hex | null = null;
+let curProducts: Hex[] | null = null;
+let curParamDef: Hex | null = null;
 
-rendererMessenger.on("shas", shas => {
-  curShas = shas;
+rendererMessenger.on("products", products => {
+  curProducts = products;
 })
 
-rendererMessenger.on("paramDef", pd => {
-  paramDef = pd;
+rendererMessenger.on("paramDef", paramDef => {
+  curParamDef = paramDef;
 })
 
 export class ClientMessenger extends EventEmitter<{
@@ -26,7 +26,7 @@ export class ClientMessenger extends EventEmitter<{
 }> {
 
   initialized: Promise<void>;
-  params: Buffer | null = null;
+  params: unknown | null = null;
   cancelRun = () => {};
 
   constructor(public ws: WebSocket){
@@ -44,17 +44,17 @@ export class ClientMessenger extends EventEmitter<{
   }
 
   private startPing(){
-    const interval = setInterval(() => this.send("ping"), 1000);
+    const interval = setInterval(() => this.send({ type: "ping" }), 1000);
     this.on("close", () => clearInterval(interval));
   }
 
   private awaitInitialization(){
     return new Promise<void>(resolve => {
       const handler = (message: ClientServerMessage) => {
-        if(message[0] !== "init")
+        if(message.type !== "init")
           return;
 
-        const [, requestedId, oldServerId] = message;
+        const { clientId: requestedId, serverId: oldServerId } = message;
 
         this.initialize(requestedId, oldServerId);
 
@@ -67,30 +67,30 @@ export class ClientMessenger extends EventEmitter<{
   }
 
   private initialize(requestedId: string | null, oldServerId: string | null){
-    let id: string;
+    let clientId: string;
 
     if(requestedId && oldServerId === serverId) {
-      id = requestedId;
-      console.log("Client reattached; id:", id);
+      clientId = requestedId;
+      console.log("Client reattached; id:", clientId);
     } else {
-      id = uuidv4();
-      console.log("Client attached; id:", id);
+      clientId = uuidv4();
+      console.log("Client attached; id:", clientId);
     }
 
-    this.send("init", id, serverId)
-    this.send("shas", curShas ?? []);
-    this.send("paramDef", paramDef);
+    this.send({ type: "init", clientId, serverId })
+    this.send({ type: "products", products: curProducts ?? [] });
+    this.send({ type: "paramDef", paramDef: curParamDef });
 
-    const shasHandler = (shas: Hex[]) => this.send("shas", shas);
-    rendererMessenger.on("shas", shasHandler);
+    const productsHandler = (products: Hex[]) => this.send({ type: "products", products });
+    rendererMessenger.on("products", productsHandler);
 
-    const paramDefHandler = (paramDef: Hex | null) => this.send("paramDef", paramDef);
+    const paramDefHandler = (paramDef: Hex | null) => this.send({ type: "paramDef", paramDef });
     rendererMessenger.on("paramDef", paramDefHandler);
 
-    this.on("message", msg => {
-      if(msg[0] === "params") {
+    this.on("message", async msg => {
+      if(msg.type === "params") {
 
-        const [, newParams] = msg;
+        const { params: newParams } = msg;
         const oldParams = this.params;
         this.params = newParams;
 
@@ -98,22 +98,27 @@ export class ClientMessenger extends EventEmitter<{
           return;
 
         if(!newParams && oldParams) {
-          this.send("shas", curShas ?? []);
-          rendererMessenger.on("shas", shasHandler);
+          this.send({ type: "products", products: curProducts ?? [] });
+          rendererMessenger.on("products", productsHandler);
         }
 
         if(newParams && !oldParams)
-          rendererMessenger.removeListener("shas", shasHandler);
+          rendererMessenger.removeListener("products", productsHandler);
 
         if(newParams)
           this.run();
+      } else if(msg.type === "lookupRaw") {
+        this.send({ type: "lookupRawResponse", id: msg.id, url: "/artifacts/raw/" + msg.hash })
+      } else if(msg.type === "lookupRef") {
+        const hash = await rendererMessenger.lookupRef(msg.loc);
+        this.send({ type: "lookupRefResponse", id: msg.id, url: "/artifacts/raw/" + hash })
       }
     })
 
     this.on("close", () => {
-      rendererMessenger.removeListener("shas", shasHandler);
+      rendererMessenger.removeListener("products", productsHandler);
       rendererMessenger.removeListener("paramDef", paramDefHandler);
-      console.log("Client detached, id:", id);
+      console.log("Client detached, id:", clientId);
     })
 
     this.startPing();
@@ -124,16 +129,16 @@ export class ClientMessenger extends EventEmitter<{
     this.cancelRun();
     const id = uuidv4();
     const handler = (msg: RendererServerMessage) => {
-      if(msg[0] !== "runFinish" || msg[1] !== id)
+      if(msg.type !== "runResponse" || msg.id !== id)
         return;
-      this.send("shas", msg[2]);
+      this.send({ type: "products", products: msg.products });
       rendererMessenger.removeListener("message", handler);
     }
     rendererMessenger.addListener("message", handler);
     this.cancelRun = () => rendererMessenger.removeListener("message", handler);
   }
 
-  send(...message: ServerClientMessage){
+  send(message: ServerClientMessage){
     this.ws.send(flatted.stringify(message));
   }
 

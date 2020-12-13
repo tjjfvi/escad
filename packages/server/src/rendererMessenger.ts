@@ -1,15 +1,17 @@
 
-import { ServerRendererMessage, RendererServerMessage, ClientPluginRegistration } from "@escad/server-renderer-messages"
+import { ServerRendererMessage, RendererServerMessage } from "@escad/server-renderer-messages"
 import { EventEmitter } from "tsee"
 import { fork, ChildProcess } from "child_process";
 import watch from "node-watch";
 import config from "./config";
 import { Hex } from "@escad/core";
+import { PluginRegistration } from "@escad/register-client-plugin";
+import { v4 as uuidv4 } from "uuid";
 
 export class RendererMessenger extends EventEmitter<{
   message: (message: RendererServerMessage) => void,
-  shas: (shas: Hex[]) => void,
-  clientPlugins: (clientPlugins: ClientPluginRegistration[]) => void,
+  products: (products: Hex[]) => void,
+  clientPlugins: (clientPlugins: PluginRegistration[]) => void,
   paramDef: (paramDef: Hex | null) => void,
 }> {
 
@@ -22,12 +24,12 @@ export class RendererMessenger extends EventEmitter<{
     this.startWatch();
 
     this.on("message", msg => {
-      if(msg[0] === "shas")
-        this.emit(...msg);
-      if(msg[0] === "clientPlugins")
-        this.emit(...msg);
-      if(msg[0] === "paramDef")
-        this.emit(...msg);
+      if(msg.type === "products")
+        this.emit("products", msg.products);
+      if(msg.type === "clientPlugins")
+        this.emit("clientPlugins", msg.plugins);
+      if(msg.type === "paramDef")
+        this.emit("paramDef", msg.paramDef);
     })
   }
 
@@ -39,8 +41,8 @@ export class RendererMessenger extends EventEmitter<{
       execArgv: [...process.execArgv, "--debug-port=2992"],
     });
 
-    this.send("artifactsDir", config.artifactsDir);
-    this.send("load", config.loadFile);
+    this.send({ type: "artifactsDir",  artifactsDir: config.artifactsDir });
+    this.send({ type: "load", path: config.loadFile });
 
     this.childProcess.on("message", message => this.emit("message", message as any));
 
@@ -54,8 +56,22 @@ export class RendererMessenger extends EventEmitter<{
     }, () => this.reload());
   }
 
-  send(...message: ServerRendererMessage){
+  send(message: ServerRendererMessage){
     this.childProcess.send(message);
+  }
+
+  lookupRef(loc: unknown[]){
+    return new Promise<Hex>(resolve => {
+      const id = uuidv4();
+      this.send({ type: "lookupRef", id, loc })
+      const handler = (message: RendererServerMessage) => {
+        if(message.type !== "lookupRefResponse" || message.id !== id)
+          return;
+        resolve(message.hash)
+        this.removeListener("message", handler);
+      }
+      this.on("message", handler);
+    })
   }
 
 }
