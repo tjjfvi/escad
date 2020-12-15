@@ -10,7 +10,7 @@
     "build": "npm run clean; tsc",
     "hash": "find src/ -type f -print0 | sort -z | xargs -0 openssl dgst -sha256 | openssl dgst -sha256 > .hash",
     "changed": "touch .hash; mv .hash old.hash; npm run hash; cmp old.hash .hash >/dev/null 2>&1",
-    "quick-build": "npm run changed && echo 'Skipping build' || npm run build; rm old.hash",
+    "quick-build": "if npm run changed; then echo 'Skipping build'; else npm run build; fi; rm old.hash",
     "prepack": "npm run build",
     "open-errors": "tsc | grep -p '^\\S' | sed -e 's/(.*//' | sort | uniq | xargs code"
   },
