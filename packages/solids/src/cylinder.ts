@@ -5,8 +5,7 @@ import { Diff } from "@escad/csg";
 
 const tau = Math.PI * 2;
 
-declare const cylinderIdSymbol: unique symbol;
-const cylinderId = Id.create<typeof cylinderIdSymbol>("Cylinder", __filename);
+const cylinderId = Id.create(__filename, "@escad/solids", "0", "Cylinder");
 
 export interface Cylinder extends LeafProduct {
   readonly type: typeof cylinderId,

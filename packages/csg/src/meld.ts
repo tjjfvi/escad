@@ -11,8 +11,7 @@ import {
 } from "@escad/core";
 import { Mesh } from "@escad/mesh";
 
-declare const meldMarkerIdSymbol: unique symbol;
-const meldMarkerId = Id.create<typeof meldMarkerIdSymbol>("MeldMarker", __filename);
+const meldMarkerId = Id.create(__filename, "@escad/csg", "0", "MeldMarker");
 
 export interface MeldMarker extends LeafProduct {
   readonly type: typeof meldMarkerId,

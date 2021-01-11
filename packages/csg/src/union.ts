@@ -13,8 +13,7 @@ import {
 } from "@escad/core";
 import { Bsp } from "./Bsp";
 
-declare const unionMarkerIdSymbol: unique symbol;
-const unionMarkerId = Id.create<typeof unionMarkerIdSymbol>("UnionMarker", __filename);
+const unionMarkerId = Id.create(__filename, "@escad/csg", "0", "UnionMarker");
 
 export interface UnionMarker extends LeafProduct {
   readonly type: typeof unionMarkerId,

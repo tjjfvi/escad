@@ -5,15 +5,13 @@ import {
   Element,
   Id,
   Conversion,
-  Product,
   createProductTypeUtils,
   LeafElement,
   LeafProduct,
   conversionRegistry,
 } from "@escad/core";
 
-declare const cubeIdSymbol: unique symbol;
-const cubeId = Id.create<typeof cubeIdSymbol>("Cube", __filename);
+const cubeId = Id.create(__filename, "@escad/solids", "0", "Cube");
 
 export interface Cube extends LeafProduct {
   readonly type: typeof cubeId,

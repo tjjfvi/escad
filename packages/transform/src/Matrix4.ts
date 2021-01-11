@@ -14,8 +14,7 @@ export type Sixteen<T> = [
   T, T, T, T,
 ];
 
-declare const matrix4IdSymbol: unique symbol;
-const matrix4Id = Id.create<typeof matrix4IdSymbol, "Matrix4">("Matrix4", __filename);
+const matrix4Id = Id.create(__filename, "@escad/transform", "0", "Matrix4");
 
 export interface Matrix4 extends LeafProduct {
   readonly type: typeof matrix4Id,

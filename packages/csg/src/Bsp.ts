@@ -2,8 +2,7 @@
 import { createProductTypeUtils, Id, LeafProduct } from "@escad/core";
 import { Face, Plane, Vector3 } from "@escad/mesh";
 
-declare const bspIdSymbol: unique symbol;
-const bspId = Id.create<typeof bspIdSymbol>("Bsp", __filename);
+const bspId = Id.create(__filename, "@escad/csg", "0", "Bsp");
 
 export interface Bsp extends LeafProduct {
   readonly type: typeof bspId,

@@ -4,16 +4,10 @@ import readPkgUp from "read-pkg-up";
 
 const ids = new Map<string, Id>();
 
-type UniqueSymbolContraint<T> = T extends symbol ? symbol extends T ? "unique symbol" : T : symbol;
-
-export interface Id<T = any, S extends symbol = symbol> {
-  __t__?: T,
-  __symb__?: S,
-
-  packageName: string,
-  packageVersion?: string,
-  forcedVersion?: string,
-  name: string,
+export interface Id<P extends string = string, V extends string = string, N extends string = string> {
+  packageName: P,
+  version: V,
+  name: N,
 
   full: string,
 
@@ -21,28 +15,35 @@ export interface Id<T = any, S extends symbol = symbol> {
 }
 
 export const Id = {
-  create: <S extends UniqueSymbolContraint<S2>, T = any, S2 = S>(
-    name: string,
+  create: <P extends string, V extends string, N extends string>(
     filepath: string,
-    forcedVersion?: string,
-  ): Id<T, Extract<S2, symbol>> => {
-    const result = readPkgUp.sync({ cwd: path.dirname(filepath) });
-    if(!result)
-      throw new Error("Could not find package.json from file " + filepath);
-    const { packageJson: { name: packageName, version: packageVersion } } = result;
-    const full = (
-      forcedVersion ?
-        `${packageName}/${name}/${forcedVersion}` :
-        `${packageName}/${packageVersion}/${name}`
-    ).replace(/\//g, "-");
+    packageName: P,
+    version: V,
+    name: N,
+  ): Id<P, V, N> => {
+    if(readPkgUp) {
+      const result = readPkgUp.sync({ cwd: path.dirname(filepath) });
+      if(!result)
+        throw new Error("Could not find package.json from file " + filepath);
+      const { packageJson: { name: packageJsonName, version: packageJsonVersion } } = result;
+      if(packageName !== packageJsonName)
+        throw new Error(
+          `Id.create: packageName mismatch; ${packageJsonName} attempted to create an id under ${packageName}`
+        )
+      if(version.startsWith("v") && version.slice(1) !== packageJsonVersion)
+        throw new Error(
+          `Id.create: version mismatch; ${packageName}@${packageJsonVersion} attempted to create an id under ${version}`
+        );
+    }
+    const full = `${packageName}/${version}/${name}`.replace(/\//g, "-");
     if(ids.has(full))
       throw new Error(`Duplicate ids created under ${full}`);
-    const id: Id<T, Extract<S2, symbol>> = {
+    const id: Id<P, V, N> = {
       packageName,
       name,
+      version,
       full,
       isId: true,
-      ...(forcedVersion ? { forcedVersion } : { packageVersion }),
     };
     ids.set(full, id);
     return id;

@@ -13,8 +13,7 @@ import {
 } from "@escad/core";
 import { Bsp } from "./Bsp";
 
-declare const intersectionMarkerIdSymbol: unique symbol;
-const intersectionMarkerId = Id.create<typeof intersectionMarkerIdSymbol>("IntersectionMarker", __filename);
+const intersectionMarkerId = Id.create(__filename, "@escad/csg", "0", "IntersectionMarker");
 
 export interface IntersectionMarker extends LeafProduct {
   readonly type: typeof intersectionMarkerId,

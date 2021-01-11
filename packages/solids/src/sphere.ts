@@ -13,8 +13,7 @@ import { Diff } from "@escad/csg";
 
 const tau = Math.PI * 2;
 
-declare const sphereIdSymbol: unique symbol;
-const sphereId = Id.create<typeof sphereIdSymbol>("sphere", __filename);
+const sphereId = Id.create(__filename, "@escad/solids", "0", "Sphere");
 
 export interface Sphere extends LeafProduct {
   readonly type: typeof sphereId,

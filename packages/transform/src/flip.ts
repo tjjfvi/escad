@@ -12,8 +12,7 @@ import {
 } from "@escad/core";
 import { Mesh, Face } from "@escad/mesh";
 
-declare const flipFacesProductIdSymbol: unique symbol;
-const flipFacesProductId = Id.create<typeof flipFacesProductIdSymbol>("FlipFacesProduct", __filename);
+const flipFacesProductId = Id.create(__filename, "@escad/transform", "0", "FlipFacesProduct");
 
 export interface FlipFacesProduct extends LeafProduct {
   readonly type: typeof flipFacesProductId,

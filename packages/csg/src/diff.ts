@@ -15,8 +15,7 @@ import {
 import { Bsp } from "./Bsp";
 import { Union } from "./union";
 
-declare const diffMarkerIdSymbol: unique symbol;
-const diffMarkerId = Id.create<typeof diffMarkerIdSymbol>("DiffMarker", __filename);
+const diffMarkerId = Id.create(__filename, "@escad/csg", "0", "DiffMarker");
 
 export interface DiffMarker extends LeafProduct {
   readonly type: typeof diffMarkerId,

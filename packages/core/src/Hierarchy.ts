@@ -3,7 +3,6 @@ import { Elementish, Element } from "./Element";
 import { Product } from "./Product";
 import { LeafProduct } from "./LeafProduct";
 import { CompoundProduct } from "./CompoundProduct";
-import { ArtifactManager } from "./ArtifactManager";
 import { Id } from "./Id";
 
 export type BraceType = "{" | "[" | "(" | ":" | "";
@@ -32,8 +31,7 @@ export interface Hierarchy extends HierarchyArgs {
   readonly isFullOutput: boolean,
 }
 
-declare const hierarchyManagerIdSymbol: unique symbol;
-const hierarchyManagerId = Id.create<typeof hierarchyManagerIdSymbol>("hierarchy", __filename, "0");
+const hierarchyManagerId = Id.create(__filename, "@escad/core", "0", "Hierarchy");
 
 export const Hierarchy = {
   create: ({
@@ -87,7 +85,6 @@ export const Hierarchy = {
       output,
     };
   },
-  Manager: new ArtifactManager(hierarchyManagerId),
   isHierarchy: (arg: any): arg is Hierarchy =>
     arg.isHierarchy === true,
   fromElementish: (el: Elementish<Product>): Hierarchy => {
