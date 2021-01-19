@@ -13,12 +13,12 @@ ReactDOM.render(
 
 export * from './App';
 export * from './Disconnected';
-export * from './Id';
+export * from './IdView';
 export * from './Messenger';
 export * from './Pane';
 export * from './Parameters';
 export * from './Preview';
-export * from './Product';
+export * from './ProductTypeView';
 export * from './Viewer';
 export * from './ViewerRegistration';
 

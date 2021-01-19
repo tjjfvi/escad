@@ -1,4 +1,5 @@
 
+import fs from "fs";
 import { posix as path } from "path";
 import readPkgUp from "read-pkg-up";
 
@@ -21,7 +22,7 @@ export const Id = {
     version: V,
     name: N,
   ): Id<P, V, N> => {
-    if(readPkgUp) {
+    if(!("mocked" in fs)) {
       const result = readPkgUp.sync({ cwd: path.dirname(filepath) });
       if(!result)
         throw new Error("Could not find package.json from file " + filepath);

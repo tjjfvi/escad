@@ -28,7 +28,6 @@ export * from './Element';
 export * from './ExportType';
 export * from './ExportTypeRegistry';
 export * from './ExtensibleFunction';
-export * from './FsArtifactStore';
 export * from './Hierarchy';
 export * from './Id';
 export * from './LeafProduct';

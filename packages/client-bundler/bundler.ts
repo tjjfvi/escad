@@ -6,9 +6,9 @@ import stylus from "stylus";
 import watchDir from "node-watch";
 import path from "path";
 import webpack, { Compiler } from "webpack"
-import { ClientPluginRegistration } from "@escad/server-renderer-messages"
 import { EventEmitter } from "tsee";
 import readPkgUp from "read-pkg-up";
+import { PluginRegistration } from "@escad/register-client-plugin";
 
 export interface BundlerOptions {
   outDir: string,
@@ -25,22 +25,15 @@ export class Bundler extends EventEmitter<{
   private watcher?: Compiler.Watching;
   private compiler?: Compiler;
   private closeStylusWatch = () => {};
-  private coreClientRootDir: string;
 
-  clientPlugins: ClientPluginRegistration[] = []
+  clientPlugins: PluginRegistration[] = []
 
   constructor(private options: BundlerOptions){
     super();
-
-    let result = readPkgUp.sync({ cwd: this.options.coreClientPath });
-    if(!result)
-      throw new Error(`Could not find package.json from ${this.options.coreClientPath}`);
-    this.coreClientRootDir = path.dirname(result.path);
-
     this.forceRefresh();
   }
 
-  updateClientPlugins(clientPlugins: ClientPluginRegistration[]){
+  updateClientPlugins(clientPlugins: PluginRegistration[]){
     const oldClientPlugins = this.clientPlugins;
     this.clientPlugins = clientPlugins;
     if(JSON.stringify(this.clientPlugins) !== JSON.stringify(oldClientPlugins))
@@ -50,18 +43,8 @@ export class Bundler extends EventEmitter<{
   forceRefresh(){
     this.createCompiler();
     this.bundleStylus();
-    this.bundleJson();
     if(this.options.watch)
       this.createStylusWatchers();
-  }
-
-  private async bundleJson(){
-    const idMap: Record<string, string> = {};
-    this.clientPlugins.flatMap(cp => cp.idMap).forEach(([key, hex]) => {
-      idMap[key] = hex;
-    })
-    const json = { idMap };
-    await fs.writeFile(path.join(this.options.outDir, "bundle.json"), JSON.stringify(json));
   }
 
   private getTsPaths(){
@@ -92,6 +75,11 @@ export class Bundler extends EventEmitter<{
       },
       optimization: {
         minimize: false,
+      },
+      resolve: {
+        alias: {
+          "fs": require.resolve("./fs-mock")
+        }
       },
       devtool: "source-map",
       mode: "development",
@@ -133,6 +121,7 @@ export class Bundler extends EventEmitter<{
       ).join("\n"),
       {
         filename: "_.styl",
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         sourcemap: {
           comment: false,

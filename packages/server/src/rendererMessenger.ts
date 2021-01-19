@@ -60,7 +60,7 @@ export class RendererMessenger extends EventEmitter<{
     this.childProcess.send(message);
   }
 
-  lookupRef(loc: unknown[]){
+  lookupRef(loc: readonly unknown[]){
     return new Promise<Hex>(resolve => {
       const id = uuidv4();
       this.send({ type: "lookupRef", id, loc })

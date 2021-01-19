@@ -27,7 +27,7 @@ export namespace ServerRendererMessage {
   export interface LookupRef {
     type: "lookupRef",
     id: string,
-    loc: unknown[],
+    loc: readonly unknown[],
   }
 }
 

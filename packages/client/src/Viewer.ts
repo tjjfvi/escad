@@ -1,6 +1,5 @@
 
-import React from "react";
-import { Product } from "./Product";
+import { Product } from "@escad/core";
 
 export interface ViewerInput {
   product: Product,
@@ -9,7 +8,7 @@ export interface ViewerInput {
 export interface Viewer<I extends ViewerInput> {
   className?: string,
   name: string,
-  component: React.FunctionComponent<{ inputs: I[] }>,
+  component: (props: { inputs: I[] }) => JSX.Element,
 }
 
 

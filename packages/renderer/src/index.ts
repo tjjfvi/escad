@@ -1,8 +1,9 @@
 
-import { artifactManager, FsArtifactStore, hash } from "@escad/core";
+import { artifactManager, hash } from "@escad/core";
 import { messenger } from "./messenger";
 import { ServerRendererMessage, ServerRendererMessageTypes } from "@escad/server-renderer-messages";
 import { load, run } from "./load";
+import { FsArtifactStore } from "./FsArtifactStore";
 
 messenger.on("message", <T extends ServerRendererMessageTypes>(message: ServerRendererMessage<T>) => {
   messageHandlers[message.type](message as any);

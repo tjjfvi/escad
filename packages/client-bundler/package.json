@@ -17,9 +17,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@escad/server-renderer-messages": "^0.0.0",
+    "@escad/register-client-plugin": "^0.0.0",
     "commander": "^5.1.0",
     "fs-extra": "^9.0.0",
+    "node-libs-browser": "^2.2.1",
     "node-watch": "^0.6.4",
     "read-pkg-up": "^7.0.1",
     "stylus": "^0.54.7",

@@ -1,8 +1,5 @@
 
-import { hash } from "./hash";
-import { Hex } from "./hex";
-import { Id } from "./Id";
-import { ArtifactStore, BufferLike } from "./ArtifactStore";
+import { hash, Hex, Id, ArtifactStore, BufferLike } from "@escad/core";
 import { join, dirname } from "path";
 import fs from "fs-extra";
 import { v4 as uuidv4 } from "uuid";

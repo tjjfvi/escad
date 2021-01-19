@@ -14,7 +14,7 @@ const { app } = expressWs(express());
 const staticDir = path.join(__dirname, "../static/")
 
 app.use(express.static(staticDir));
-app.use(express.static(config.artifactsDir));
+app.use("/artifacts", express.static(config.artifactsDir));
 
 const bundler = new Bundler({
   coreClientPath: require.resolve("@escad/client"),

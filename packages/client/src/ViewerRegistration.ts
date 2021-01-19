@@ -1,38 +1,29 @@
 
-import { Id } from "./Id";
 import { Viewer, ViewerInput } from "./Viewer";
-import { Product } from "./Product";
+import { getProductType, hash, Hex, MultiMap, Product, ProductType } from "@escad/core";
 
-export interface ViewerRegistration<T extends ViewerInput> {
-  id: Id,
+export interface ViewerRegistration<P extends Product, T extends ViewerInput> {
+  type: ProductType<P>,
   context: Viewer<T>,
-  map: (product: Product) => T,
+  map: (product: P) => T,
 }
 
-export interface ViewerRegistrationInput<T extends ViewerInput> {
-  id: Id | Promise<Id>,
-  context: Viewer<T>,
-  map: (product: Product) => T,
-}
+export const productTypeViewers = new MultiMap<Hex, ViewerRegistration<any, any>>();
 
-export const productTypeViewers = new Map<Id, ViewerRegistration<any>[]>();
-
-export const registerViewerRegistration = async <T extends ViewerInput>(registration: ViewerRegistrationInput<T>) => {
-  const { id: idProm } = registration;
-  const id = await idProm;
-  const registrations = productTypeViewers.get(id) ?? [];
-  productTypeViewers.set(id, registrations);
-  registrations.push({ ...registration, id });
-}
+export const registerViewerRegistration =
+  async <P extends Product, T extends ViewerInput>(registration: ViewerRegistration<P, T>) => {
+    productTypeViewers.add(hash(registration.type), registration);
+  }
 
 export const mapProduct = <T extends ViewerInput>(context: Viewer<T>, product: Product) => {
-  const registration = productTypeViewers.get(product.type)?.find(r => r.context === context);
+  const productTypeHash = hash(getProductType(product));
+  const registration = [...productTypeViewers.getAll(productTypeHash)].find(r => r.context === context);
   if(!registration)
-    throw new Error(`Could not find registration for product type ${product.type.sha} for context ${context.name}`);
+    throw new Error(`Could not find registration for product type ${productTypeHash} for context ${context.name}`);
   return registration.map(product);
 }
 
-export const getViewersForAll = (types: Iterable<Id>) => {
+export const getViewersForAll = (types: Iterable<ProductType>) => {
   const displayss = [...types].map(getViewers);
   const union = new Set((function*(){
     for(const set of displayss)
@@ -49,5 +40,5 @@ export const getViewersForAll = (types: Iterable<Id>) => {
   return intersection;
 }
 
-export const getViewers = (type: Id) =>
-  new Set(productTypeViewers.get(type)?.map(r => r.context) ?? [])
+export const getViewers = (type: ProductType) =>
+  new Set([...productTypeViewers.getAll(hash(type))].map(r => r.context))

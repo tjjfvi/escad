@@ -18,6 +18,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@escad/mesh": "^0.0.0",
     "@escad/client": "^0.0.0",
     "@escad/client-3d-viewer": "^0.0.0",
     "rhobo": "^0.3.2",

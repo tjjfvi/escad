@@ -3,52 +3,45 @@ import { EventEmitter } from "tsee";
 import * as flatted from "flatted";
 import { ServerClientMessage, ClientServerMessage } from "@escad/server-client-messages"
 import { observable } from "rhobo";
-import { Product } from "./Product";
-import { Id } from "./Id";
+import { ArtifactManager, artifactManager, ArtifactStore, Hex, Product } from "@escad/core";
+import { v4 as uuidv4 } from "uuid";
 
 export class Messenger extends EventEmitter<{
   message: (message: ServerClientMessage) => void,
-}> {
+}> implements ArtifactStore {
 
   ws: WebSocket | null;
   connected = observable<boolean>(false);
   id = observable<string>();
   serverId = observable<string>();
-  shas = observable<Array<string>>([]);
+  shas = observable<Hex[]>([]);
   products = observable<Product[]>([]);
 
   disconnectTimeout: any;
 
-  constructor(public url: string){
+  constructor(public url: string, public artifactManager: ArtifactManager){
     super();
+    this.artifactManager.artifactStores.unshift(this);
     this.ws = this.initWs();
     this.on("message", async msg => {
-      if(msg[0] === "init") {
-        this.id(msg[1]);
-        this.serverId(msg[2]);
+      if(msg.type === "init") {
+        this.id(msg.clientId);
+        this.serverId(msg.serverId);
         return;
       }
 
-      if(msg[0] === "shas") {
-        this.shas(msg[1]);
-        this.products(await Promise.all(msg[1].map(async (sha): Promise<Product> => {
-          const buf = Buffer.from(await fetch(`/products/${sha}`).then(r => r.arrayBuffer()));
-          const idBuf = buf.slice(0, 32);
-          const id = new Id(idBuf.toString("hex"));
-          const data = buf.slice(32);
-          return {
-            sha,
-            type: id,
-            buffer: data,
-          };
-        })));
+      if(msg.type === "products") {
+        this.shas(msg.products);
+        this.products(await Promise.all(msg.products.map(async (sha): Promise<Product> =>
+          await this.artifactManager.lookupRaw(sha) as Product
+        )));
         return;
       }
     })
   }
 
-  send(...message: ClientServerMessage){
-    console.log("→", ...message);
+  send(message: ClientServerMessage){
+    console.log("→", message);
     this.ws?.send(flatted.stringify(message));
   }
 
@@ -64,7 +57,11 @@ export class Messenger extends EventEmitter<{
       if(this.ws !== ws)
         return ws.close();
       this.connected(true);
-      this.send("init", this.id(), this.serverId());
+      this.send({
+        type: "init",
+        clientId: this.id(),
+        serverId: this.serverId()
+      });
     });
 
     this.ws.addEventListener("close", () => this.disconnect(ws));
@@ -80,15 +77,43 @@ export class Messenger extends EventEmitter<{
         clearTimeout(this.disconnectTimeout);
       this.disconnectTimeout = setTimeout(() => this.disconnect(ws), 5000);
 
-      if(message[0] === "ping")
+      if(message.type === "ping")
         return;
 
-      this.emit("message", message);
+      console.log("←", message);
 
-      console.log("←", ...message);
+      this.emit("message", message);
     })
 
     return this.ws;
+  }
+
+  lookupRaw(hash: Hex){
+    return new Promise<Buffer>(resolve => {
+      const id = uuidv4();
+      this.send({ type: "lookupRaw", id, hash })
+      const handler = (message: ServerClientMessage) => {
+        if(message.type !== "lookupRawResponse" || message.id !== id)
+          return;
+        resolve(fetch(message.url).then(async r => Buffer.from(await r.arrayBuffer())));
+        this.removeListener("message", handler);
+      }
+      this.on("message", handler);
+    })
+  }
+
+  lookupRef(loc: readonly unknown[]){
+    return new Promise<Buffer>(resolve => {
+      const id = uuidv4();
+      this.send({ type: "lookupRef", id, loc })
+      const handler = (message: ServerClientMessage) => {
+        if(message.type !== "lookupRefResponse" || message.id !== id)
+          return;
+        resolve(fetch(message.url).then(r => Buffer.from(r.arrayBuffer())));
+        this.removeListener("message", handler);
+      }
+      this.on("message", handler);
+    })
   }
 
   private disconnect(ws: WebSocket){
@@ -102,4 +127,4 @@ export class Messenger extends EventEmitter<{
 
 }
 
-export const messenger = new Messenger("ws" + window.location.toString().slice(4) + "ws/");
+export const messenger = new Messenger("ws" + window.location.toString().slice(4) + "ws/", artifactManager);

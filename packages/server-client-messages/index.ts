@@ -1,13 +1,15 @@
 
 import { Hex } from "@escad/core";
 
-export type ServerClientMessage =
+export type ServerClientMessageTypes = ServerClientMessage["type"];
+export type ServerClientMessage<T extends ServerClientMessageTypes = any> = Extract<
   | ServerClientMessage.Ping
   | ServerClientMessage.Init
   | ServerClientMessage.Products
   | ServerClientMessage.ParamDef
   | ServerClientMessage.LookupRawResponse
   | ServerClientMessage.LookupRefResponse
+, { type: T }>
 
 export namespace ServerClientMessage {
   export interface Ping {
@@ -38,11 +40,13 @@ export namespace ServerClientMessage {
   }
 }
 
-export type ClientServerMessage =
+export type ClientServerMessageTypes = ClientServerMessage["type"];
+export type ClientServerMessage<T extends ClientServerMessageTypes = any> = Extract<
   | ClientServerMessage.Init
   | ClientServerMessage.Params
   | ClientServerMessage.LookupRaw
   | ClientServerMessage.LookupRef
+, { type: T }>
 
 export namespace ClientServerMessage {
   export interface Init {
@@ -62,6 +66,6 @@ export namespace ClientServerMessage {
   export interface LookupRef {
     type: "lookupRef",
     id: string,
-    loc: unknown[],
+    loc: readonly unknown[],
   }
 }

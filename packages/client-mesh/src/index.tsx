@@ -1,14 +1,21 @@
 
-import { registerViewerRegistration, Id } from "@escad/client";
-import { viewer3d, colors, EdgesGeometry } from "@escad/client-3d-viewer";
+import { registerViewerRegistration } from "@escad/client";
+import { viewer3d, colors, EdgesGeometry, Viewer3dInput } from "@escad/client-3d-viewer";
+import { Mesh } from "@escad/mesh";
 import * as t from "three";
 
-registerViewerRegistration({
-  id: Id.get("@escad/client-mesh/Mesh"),
+registerViewerRegistration<Mesh, Viewer3dInput>({
+  type: Mesh.id,
   context: viewer3d,
   map: product => {
-    const buf = product.buffer.slice(6);
-    let arr = new Float32Array(buf.buffer.slice(buf.byteOffset, buf.byteOffset + buf.length));
+    let arr = new Float32Array(function*(){
+      for(let face of product.faces)
+        for(let vertex of face.points) {
+          yield vertex.x;
+          yield vertex.y;
+          yield vertex.z;
+        }
+    }());
     let attr = new t.BufferAttribute(arr, 3);
     let geo = new t.BufferGeometry();
     geo.setAttribute("position", attr);
@@ -26,6 +33,7 @@ registerViewerRegistration({
       polygonOffsetFactor: 1,
       polygonOffsetUnits: 1,
     })
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     let lines = new t.LineSegments(new EdgesGeometry(geo), new t.LineBasicMaterial({ color: colors.white }))
     let mesh = new t.Mesh(geo, mat);
