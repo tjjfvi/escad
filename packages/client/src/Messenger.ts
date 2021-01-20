@@ -40,13 +40,14 @@ export class Messenger extends EventEmitter<{
 
       if(msg.type === "registeredConversions") {
         for(const [fromType, toType] of msg.conversions)
-          conversionRegistry.register({
-            fromType,
-            toType,
-            convert: () => {
-              throw new Error("Stub conversion erroneously called")
-            }
-          })
+          if(!conversionRegistry.has(fromType, toType))
+            conversionRegistry.register({
+              fromType,
+              toType,
+              convert: () => {
+                throw new Error("Stub conversion erroneously called")
+              }
+            })
       }
     })
   }
