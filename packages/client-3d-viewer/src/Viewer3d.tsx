@@ -12,7 +12,7 @@ export interface Viewer3dInput extends ViewerInput {
 
 const s = createScene();
 
-const Viewer3d = ({ inputs }: { inputs: Viewer3dInput[] }) => {
+const Viewer3d = ({ inputs }: { inputs: Promise<Viewer3dInput>[] }) => {
   let el: HTMLDivElement | null = null;
 
   const {
@@ -32,7 +32,7 @@ const Viewer3d = ({ inputs }: { inputs: Viewer3dInput[] }) => {
   } = s;
 
   inputGroup.remove(...inputGroup.children);
-  inputGroup.add(...inputs.map(i => i.group));
+  inputs.map(async i => inputGroup.add((await i).group));
 
   function render(){
     if(!el)

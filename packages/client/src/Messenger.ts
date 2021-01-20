@@ -3,7 +3,7 @@ import { EventEmitter } from "tsee";
 import * as flatted from "flatted";
 import { ServerClientMessage, ClientServerMessage } from "@escad/server-client-messages"
 import { observable } from "rhobo";
-import { ArtifactManager, artifactManager, ArtifactStore, Hex, Product } from "@escad/core";
+import { ArtifactManager, artifactManager, ArtifactStore, conversionRegistry, Hex, Product } from "@escad/core";
 import { v4 as uuidv4 } from "uuid";
 
 export class Messenger extends EventEmitter<{
@@ -36,6 +36,17 @@ export class Messenger extends EventEmitter<{
           await this.artifactManager.lookupRaw(sha) as Product
         )));
         return;
+      }
+
+      if(msg.type === "registeredConversions") {
+        for(const [fromType, toType] of msg.conversions)
+          conversionRegistry.register({
+            fromType,
+            toType,
+            convert: () => {
+              throw new Error("Stub conversion erroneously called")
+            }
+          })
       }
     })
   }
@@ -109,7 +120,7 @@ export class Messenger extends EventEmitter<{
       const handler = (message: ServerClientMessage) => {
         if(message.type !== "lookupRefResponse" || message.id !== id)
           return;
-        resolve(fetch(message.url).then(r => Buffer.from(r.arrayBuffer())));
+        resolve(fetch(message.url).then(async r => Buffer.from(await r.arrayBuffer())));
         this.removeListener("message", handler);
       }
       this.on("message", handler);

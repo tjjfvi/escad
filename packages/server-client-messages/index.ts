@@ -1,11 +1,12 @@
 
-import { Hex } from "@escad/core";
+import { Hex, ProductType } from "@escad/core";
 
 export type ServerClientMessageTypes = ServerClientMessage["type"];
 export type ServerClientMessage<T extends ServerClientMessageTypes = any> = Extract<
   | ServerClientMessage.Ping
   | ServerClientMessage.Init
   | ServerClientMessage.Products
+  | ServerClientMessage.RegisteredConversions
   | ServerClientMessage.ParamDef
   | ServerClientMessage.LookupRawResponse
   | ServerClientMessage.LookupRefResponse
@@ -23,6 +24,10 @@ export namespace ServerClientMessage {
   export interface Products {
     type: "products",
     products: Hex[],
+  }
+  export interface RegisteredConversions {
+    type: "registeredConversions",
+    conversions: [ProductType, ProductType][],
   }
   export interface ParamDef {
     type: "paramDef",

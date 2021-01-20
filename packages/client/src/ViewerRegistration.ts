@@ -1,44 +1,44 @@
 
 import { Viewer, ViewerInput } from "./Viewer";
-import { getProductType, hash, Hex, MultiMap, Product, ProductType } from "@escad/core";
+import { conversionRegistry, getProductType, Product, ProductType } from "@escad/core";
 
 export interface ViewerRegistration<P extends Product, T extends ViewerInput> {
   type: ProductType<P>,
   context: Viewer<T>,
-  map: (product: P) => T,
+  map: (product: P) => T | Promise<T>,
 }
 
-export const productTypeViewers = new MultiMap<Hex, ViewerRegistration<any, any>>();
+export const registrations = new Set<ViewerRegistration<any, any>>();
 
 export const registerViewerRegistration =
   async <P extends Product, T extends ViewerInput>(registration: ViewerRegistration<P, T>) => {
-    productTypeViewers.add(hash(registration.type), registration);
+    registrations.add(registration);
   }
 
-export const mapProduct = <T extends ViewerInput>(context: Viewer<T>, product: Product) => {
-  const productTypeHash = hash(getProductType(product));
-  const registration = [...productTypeViewers.getAll(productTypeHash)].find(r => r.context === context);
-  if(!registration)
-    throw new Error(`Could not find registration for product type ${productTypeHash} for context ${context.name}`);
-  return registration.map(product);
+export function* findRegistrations(productType: ProductType){
+  for(const viewerRegistration of registrations.values())
+    if(conversionRegistry.has(productType, viewerRegistration.type))
+      yield viewerRegistration;
 }
 
-export const getViewersForAll = (types: Iterable<ProductType>) => {
-  const displayss = [...types].map(getViewers);
-  const union = new Set((function*(){
-    for(const set of displayss)
-      yield* set;
-  })());
-  const intersection = new Set((function*(){
-    main: for(const display of union) {
+export function* findViewers(productType: ProductType){
+  for(const registration of findRegistrations(productType))
+    yield registration.context;
+}
+
+export const mapProduct = async <T extends ViewerInput>(context: Viewer<T>, product: Product) => {
+  for(const registration of findRegistrations(getProductType(product)))
+    if(registration.context === context)
+      return await registration.map(await conversionRegistry.convertProduct(registration.type, product));
+}
+
+export function* getViewersForAll(types: Iterable<ProductType>){
+  const displayss = [...types].map(t => new Set(findViewers(t)));
+  for(const set of displayss)
+    main: for(const display of set) {
       for(const set of displayss)
         if(!set.has(display))
           continue main;
       yield display;
     }
-  })());
-  return intersection;
 }
-
-export const getViewers = (type: ProductType) =>
-  new Set([...productTypeViewers.getAll(hash(type))].map(r => r.context))

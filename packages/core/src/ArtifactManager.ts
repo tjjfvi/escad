@@ -84,8 +84,11 @@ export class ArtifactManager {
     for(const store of this.artifactStores)
       if(!excludeStores?.has(store)) {
         const buffer = await store.lookupRef?.(loc, this);
-        if(buffer)
+        if(buffer) {
+          const artifact = this.deserialize(buffer);
+          await this.storeRaw(artifact, excludeStores);
           return this.deserialize(buffer);
+        }
       }
     return null;
   }

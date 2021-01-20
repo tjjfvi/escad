@@ -3,7 +3,7 @@ import { EventEmitter } from "tsee"
 import { ClientServerMessage, ServerClientMessage } from "@escad/server-client-messages"
 import WebSocket = require("ws");
 import flatted from "flatted";
-import { Hex } from "@escad/core";
+import { Hex, ProductType } from "@escad/core";
 import { rendererMessenger } from "./rendererMessenger";
 import { serverId } from "./serverId";
 import { v4 as uuidv4 } from "uuid";
@@ -11,6 +11,7 @@ import { RendererServerMessage } from "@escad/server-renderer-messages";
 
 let curProducts: Hex[] | null = null;
 let curParamDef: Hex | null = null;
+let curConversions: [ProductType, ProductType][] | null = null;
 
 rendererMessenger.on("products", products => {
   curProducts = products;
@@ -18,6 +19,10 @@ rendererMessenger.on("products", products => {
 
 rendererMessenger.on("paramDef", paramDef => {
   curParamDef = paramDef;
+})
+
+rendererMessenger.on("registeredConversions", conversions => {
+  curConversions = conversions;
 })
 
 export class ClientMessenger extends EventEmitter<{
@@ -80,12 +85,17 @@ export class ClientMessenger extends EventEmitter<{
     this.send({ type: "init", clientId, serverId })
     this.send({ type: "products", products: curProducts ?? [] });
     this.send({ type: "paramDef", paramDef: curParamDef });
+    this.send({ type: "registeredConversions", conversions: curConversions ?? [] });
 
     const productsHandler = (products: Hex[]) => this.send({ type: "products", products });
     rendererMessenger.on("products", productsHandler);
 
     const paramDefHandler = (paramDef: Hex | null) => this.send({ type: "paramDef", paramDef });
     rendererMessenger.on("paramDef", paramDefHandler);
+
+    const conversionsHandler = (conversions: [ProductType, ProductType][]) =>
+      this.send({ type: "registeredConversions", conversions });
+    rendererMessenger.on("registeredConversions", conversionsHandler);
 
     this.on("message", async msg => {
       if(msg.type === "params") {
@@ -118,6 +128,7 @@ export class ClientMessenger extends EventEmitter<{
     this.on("close", () => {
       rendererMessenger.removeListener("products", productsHandler);
       rendererMessenger.removeListener("paramDef", paramDefHandler);
+      rendererMessenger.removeListener("registeredConversions", conversionsHandler);
       console.log("Client detached, id:", clientId);
     })
 

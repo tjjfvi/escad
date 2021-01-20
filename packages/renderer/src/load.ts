@@ -1,5 +1,5 @@
 
-import { artifactManager, hash, Product, Element } from "@escad/core";
+import { artifactManager, hash, Product, Element, conversionRegistry } from "@escad/core";
 import { ObjectParam } from "@escad/parameters";
 import { registeredPlugins } from "@escad/register-client-plugin";
 import { ServerRendererMessage } from "@escad/server-renderer-messages";
@@ -29,6 +29,11 @@ export async function load({ path }: ServerRendererMessage.Load){
   messenger.send({
     type: "clientPlugins",
     plugins: registeredPlugins,
+  });
+
+  messenger.send({
+    type: "registeredConversions",
+    conversions: [...conversionRegistry.listAll()].map(x => [x.fromType, x.toType]),
   });
 
   run = async (id, params) =>

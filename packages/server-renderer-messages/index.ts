@@ -1,5 +1,5 @@
 
-import { Hex } from "@escad/core";
+import { Hex, ProductType } from "@escad/core";
 import { PluginRegistration } from "@escad/register-client-plugin";
 
 export type ServerRendererMessageTypes = ServerRendererMessage["type"]
@@ -34,6 +34,7 @@ export namespace ServerRendererMessage {
 export type RendererServerMessageTypes = RendererServerMessage["type"]
 export type RendererServerMessage<T extends ServerRendererMessageTypes = any> = Extract<
   | RendererServerMessage.Products
+  | RendererServerMessage.RegisteredConversions
   | RendererServerMessage.ClientPlugins
   | RendererServerMessage.ParamDef
   | RendererServerMessage.RunResponse
@@ -44,6 +45,10 @@ export namespace RendererServerMessage {
   export interface Products {
     type: "products",
     products: Hex[],
+  }
+  export interface RegisteredConversions {
+    type: "registeredConversions",
+    conversions: [ProductType, ProductType][],
   }
   export interface ClientPlugins {
     type: "clientPlugins",

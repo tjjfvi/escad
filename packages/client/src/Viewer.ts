@@ -8,7 +8,7 @@ export interface ViewerInput {
 export interface Viewer<I extends ViewerInput> {
   className?: string,
   name: string,
-  component: (props: { inputs: I[] }) => JSX.Element,
+  component: (props: { inputs: Promise<I>[] }) => JSX.Element,
 }
 
 

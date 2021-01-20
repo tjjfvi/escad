@@ -52,6 +52,7 @@ export const Id = {
   get: getId,
   isId: (arg: any): arg is Id =>
     typeof arg === "object" && arg.isId === true,
+  equal: (a: Id, b: Id) => a.full === b.full
 };
 
 function getId(id: Id): Id
