@@ -1,6 +1,14 @@
 
 import { Mesh, Face, Vector3 } from "@escad/mesh";
-import { Conversion, createProductTypeUtils, Element, Id, LeafProduct, conversionRegistry } from "@escad/core";
+import {
+  Conversion,
+  createProductTypeUtils,
+  Element,
+  Id,
+  LeafProduct,
+  conversionRegistry,
+  Component,
+} from "@escad/core";
 import { Diff } from "@escad/csg";
 
 const tau = Math.PI * 2;
@@ -106,116 +114,116 @@ export interface CylArgs {
   sides?: number,
 }
 
-export const cylinder = (args: CylArgs) => {
-  const rsP: Pair<number> =
-    args.r ??
-    args.rs ??
-    [args.r1 ?? 1, args.r2 ?? 1]
-  const rs = typeof rsP === "number" ? [rsP, rsP] : rsP;
+export const cylinder: Component<[CylArgs], Element<Mesh>> =
+  new Component<[CylArgs], Element<Mesh>>("sphere", (args: CylArgs) => {
+    const rsP: Pair<number> =
+      args.r ??
+      args.rs ??
+      [args.r1 ?? 1, args.r2 ?? 1]
+    const rs = typeof rsP === "number" ? [rsP, rsP] : rsP;
 
-  const tsP: Pair<number> =
-    args.t ??
-    args.ts ??
-    [args.t1 ?? rs[0], args.t2 ?? rs[1]]
-  const ts = typeof tsP === "number" ? [tsP, tsP] : tsP;
+    const tsP: Pair<number> =
+      args.t ??
+      args.ts ??
+      [args.t1 ?? rs[0], args.t2 ?? rs[1]]
+    const ts = typeof tsP === "number" ? [tsP, tsP] : tsP;
 
-  const isP: Pair<number> =
-    args.i ??
-    args.is ??
-    [args.i1 ?? rs[0] - ts[0], args.i2 ?? rs[1] - ts[1]]
-  const is: [number, number] | null = typeof isP === "number" ? [isP, isP] : isP;
+    const isP: Pair<number> =
+      args.i ??
+      args.is ??
+      [args.i1 ?? rs[0] - ts[0], args.i2 ?? rs[1] - ts[1]]
+    const is: [number, number] | null = typeof isP === "number" ? [isP, isP] : isP;
 
-  const center =
-    args.center ??
-    args.c ??
-    true
-  const unionDiff =
-    args.unionDiff ??
-    args.ud ??
-    false
-  const height =
-    args.height ??
-    args.length ??
-    args.l ??
-    args.h ??
-    1
-  const sides = args.sides ?? 20;
+    const center =
+      args.center ??
+      args.c ??
+      true
+    const unionDiff =
+      args.unionDiff ??
+      args.ud ??
+      false
+    const height =
+      args.height ??
+      args.length ??
+      args.l ??
+      args.h ??
+      1
+    const sides = args.sides ?? 20;
 
-  const osPXY: Pair<XY<number>> =
-    args.offsets ??
-    args.os ??
-    [
-      (
-        ("offset2" in args ? args.offset2 : null) ??
-        ("o2" in args ? args.o2 : null) ??
-        [0, 0]
-      ),
-      (
-        ("offset1" in args ? args.offset1 : null) ??
-        ("o1" in args ? args.o1 : null) ??
-        [0, 0]
-      ),
-    ];
+    const osPXY: Pair<XY<number>> =
+      args.offsets ??
+      args.os ??
+      [
+        (
+          ("offset2" in args ? args.offset2 : null) ??
+          ("o2" in args ? args.o2 : null) ??
+          [0, 0]
+        ),
+        (
+          ("offset1" in args ? args.offset1 : null) ??
+          ("o1" in args ? args.o1 : null) ??
+          [0, 0]
+        ),
+      ];
+
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    const osXYs: [XY<number>, XY<number>] =
+      osPXY instanceof Array ?
+        typeof osPXY[0] === "number" ?
+          [osPXY, osPXY] :
+          osPXY as [XY<number>, XY<number>] :
+        [osPXY, osPXY]
+
+    const iosPXY: Pair<XY<number>> =
+      args.iOffsets ??
+      args.ios ??
+      [
+        (
+          ("iOffset1" in args ? args.iOffset1 : null) ??
+          ("io1" in args ? args.io1 : null) ??
+          osXYs[0]
+        ),
+        (
+          ("iOffset2" in args ? args.iOffset2 : null) ??
+          ("io2" in args ? args.io2 : null) ??
+          osXYs[1]
+        ),
+      ];
 
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  const osXYs: [XY<number>, XY<number>] =
-    osPXY instanceof Array ?
-      typeof osPXY[0] === "number" ?
-        [osPXY, osPXY] :
-        osPXY as [XY<number>, XY<number>] :
-      [osPXY, osPXY]
+    const iosXYs: [XY<number>, XY<number>] =
+      iosPXY instanceof Array ?
+        typeof iosPXY[0] === "number" ?
+          [iosPXY, iosPXY] :
+          iosPXY as [XY<number>, XY<number>] :
+        [iosPXY, iosPXY]
 
-  const iosPXY: Pair<XY<number>> =
-    args.iOffsets ??
-    args.ios ??
-    [
-      (
-        ("iOffset1" in args ? args.iOffset1 : null) ??
-        ("io1" in args ? args.io1 : null) ??
-        osXYs[0]
-      ),
-      (
-        ("iOffset2" in args ? args.iOffset2 : null) ??
-        ("io2" in args ? args.io2 : null) ??
-        osXYs[1]
-      ),
-    ];
+    const [o1, o2] = osXYs.map((xy): [number, number] => xy instanceof Array ? xy : [xy.x, xy.y]);
+    const [io1, io2] = iosXYs.map((xy): [number, number] => xy instanceof Array ? xy : [xy.x, xy.y]);
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  const iosXYs: [XY<number>, XY<number>] =
-    iosPXY instanceof Array ?
-      typeof iosPXY[0] === "number" ?
-        [iosPXY, iosPXY] :
-        iosPXY as [XY<number>, XY<number>] :
-      [iosPXY, iosPXY]
-
-  const [o1, o2] = osXYs.map((xy): [number, number] => xy instanceof Array ? xy : [xy.x, xy.y]);
-  const [io1, io2] = iosXYs.map((xy): [number, number] => xy instanceof Array ? xy : [xy.x, xy.y]);
-
-  let oc = Cylinder.create({
-    r1: rs[0],
-    r2: rs[1],
-    height,
-    sides,
-    o1,
-    o2,
-    c: center,
+    let oc = Cylinder.create({
+      r1: rs[0],
+      r2: rs[1],
+      height,
+      sides,
+      o1,
+      o2,
+      c: center,
+    });
+    if(!is)
+      return new Element(oc)
+    let ic = Cylinder.create({
+      r1: is[0],
+      r2: is[1],
+      height,
+      sides,
+      o1: io1,
+      o2: io2,
+      c: center
+    });
+    return new Element(unionDiff ? [oc, ic] : Diff.create(oc, ic))
   });
-  if(!is)
-    return new Element(oc)
-  let ic = Cylinder.create({
-    r1: is[0],
-    r2:
-    is[1],
-    height,
-    sides,
-    o1: io1,
-    o2: io2,
-    c: center
-  });
-  return new Element(unionDiff ? [oc, ic] : Diff.create(oc, ic))
-}
 
 export const cyl = cylinder;
