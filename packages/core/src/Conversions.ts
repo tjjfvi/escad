@@ -58,10 +58,10 @@ export declare const __convertibleFromOverride: unique symbol;
 export type __convertibleFrom = typeof __convertibleFrom;
 export type __convertibleFromOverride = typeof __convertibleFromOverride;
 
-type _SafeCompoundConvertibleTo<A> =
+type _SafeTupleConvertibleTo<A> =
   "children" extends keyof A
     ? {
-      readonly isCompoundProduct: true,
+      readonly isTupleProduct: true,
       readonly children: {
         [K in keyof A["children"]]: K extends number ? _ConvertibleTo<A["children"][K]> : A["children"][K]
       },
@@ -69,17 +69,17 @@ type _SafeCompoundConvertibleTo<A> =
     : A
 export type _ConvertibleTo<T, E=never> =
   | T
-  | _SafeCompoundConvertibleTo<T>
+  | _SafeTupleConvertibleTo<T>
   | (
     T extends E
       ? never
-      : _ConvertibleTo<DirectConvertibleTo<_SafeCompoundConvertibleTo<T>>, E | T>
+      : _ConvertibleTo<DirectConvertibleTo<_SafeTupleConvertibleTo<T>>, E | T>
   )
 
-type _SafeCompoundConvertibleFrom<A> =
+type _SafeTupleConvertibleFrom<A> =
   "children" extends keyof A
     ? {
-      readonly isCompoundProduct: true,
+      readonly isTupleProduct: true,
       readonly children: {
         [K in keyof A["children"]]: K extends number ? _ConvertibleFrom<A["children"][K]> : A["children"][K]
       },
@@ -87,11 +87,11 @@ type _SafeCompoundConvertibleFrom<A> =
     : A
 export type _ConvertibleFrom<T, E=never> =
   | T
-  | _SafeCompoundConvertibleFrom<T>
+  | _SafeTupleConvertibleFrom<T>
   | (
     T extends E
       ? never
-      : _ConvertibleTo<DirectConvertibleTo<_SafeCompoundConvertibleFrom<T>>, E | T>
+      : _ConvertibleTo<DirectConvertibleTo<_SafeTupleConvertibleFrom<T>>, E | T>
   )
 
 export type ConvertibleTo<T extends Product> = Product & {
@@ -112,7 +112,7 @@ export type ConvertibleFrom<T extends Product> = Product & {
 //       stuff: (
 //         | Conversion<ProductA, ProductB>
 //         | Conversion<ProductB, ProductA>
-//         | Conversion<CompoundProduct<[ProductA, ProductA]>, ProductA>
+//         | Conversion<TupleProduct<[ProductA, ProductA]>, ProductA>
 //       ),
 //     }
 //   }
@@ -126,7 +126,7 @@ export type ConvertibleFrom<T extends Product> = Product & {
 //   b: 5,
 // }
 
-// type Z = Assert<__Element__<ProductB>, __Element__<CompoundProduct<[ProductB, ProductA]>>>
+// type Z = Assert<__Element__<ProductB>, __Element__<TupleProduct<[ProductB, ProductA]>>>
 
 // type X__<A extends Product> = Assert<ConvertibleTo<A>, ConvertibleTo<ConvertibleTo<A>>>;
 // type X_<B extends Product, A extends ConvertibleTo<B>> = Assert<ConvertibleTo<B>, ConvertibleTo<A>>

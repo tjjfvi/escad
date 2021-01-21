@@ -1,6 +1,6 @@
 
 import { LeafProduct, LeafProductType } from "./LeafProduct"
-import { CompoundProduct, CompoundProductType } from "./CompoundProduct"
+import { TupleProduct, TupleProductType } from "./TupleProduct"
 import { Id } from "./Id";
 import {
   __convertibleTo,
@@ -18,7 +18,7 @@ export interface _Product {
       ? unknown
       : LeafProduct extends this
         ? unknown
-        : CompoundProduct<readonly Product[]> extends this
+        : TupleProduct<readonly Product[]> extends this
           ? unknown
           : _ConvertibleTo<this>
   ),
@@ -28,13 +28,13 @@ export interface _Product {
       ? unknown
       : LeafProduct extends this
         ? unknown
-        : CompoundProduct<readonly Product[]> extends this
+        : TupleProduct<readonly Product[]> extends this
           ? unknown
           : _ConvertibleFrom<this>
   ),
 }
 
-export type Product = LeafProduct | CompoundProduct<readonly Product[]>;
+export type Product = LeafProduct | TupleProduct<readonly Product[]>;
 
 export type _ProductType = Id | { readonly [k: number]: _ProductType };
 
@@ -43,7 +43,7 @@ export type ProductType<U extends Product = Product> = Extract<
     _ProductType :
     U extends LeafProduct ?
       LeafProductType<U> :
-        CompoundProductType<Extract<U, CompoundProduct<any>>>
+        TupleProductType<Extract<U, TupleProduct<any>>>
 , _ProductType>
 
 export const Product = {
@@ -54,7 +54,7 @@ function isProduct(arg: any): arg is Product
 function isProduct<P extends Product>(arg: any, productType: ProductType<P>): arg is P
 function isProduct(arg: any, productType: ProductType | null = null){
   return (
-    (LeafProduct.isLeafProduct(arg) || CompoundProduct.isCompoundProduct(arg)) &&
+    (LeafProduct.isLeafProduct(arg) || TupleProduct.isTupleProduct(arg)) &&
     (!productType || hash(getProductType(arg)) === hash(productType))
   );
 }
@@ -62,7 +62,7 @@ function isProduct(arg: any, productType: ProductType | null = null){
 export const getProductType = <P extends Product>(product: P): ProductType<P> => {
   if(LeafProduct.isLeafProduct(product))
     return product.type as any;
-  if(CompoundProduct.isCompoundProduct(product))
+  if(TupleProduct.isTupleProduct(product))
     return product.children.map(getProductType) as any;
   throw new Error("Invalid product passed to getProductType");
 }

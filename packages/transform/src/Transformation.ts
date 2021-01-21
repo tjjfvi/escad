@@ -1,11 +1,11 @@
-import { CompoundProduct, Conversion, Product, conversionRegistry } from "@escad/core";
+import { TupleProduct, Conversion, Product, conversionRegistry } from "@escad/core";
 import { Face, Mesh } from "@escad/mesh";
 import { Matrix4 } from "./Matrix4";
 
-export type Transformation<T extends Product> = CompoundProduct<readonly [Matrix4, T]>;
+export type Transformation<T extends Product> = TupleProduct<readonly [Matrix4, T]>;
 export const Transformation = {
   create: <T extends Product>(matrix: Matrix4, p: T): Transformation<T> =>
-    CompoundProduct.create([matrix, p])
+    TupleProduct.create([matrix, p])
 };
 
 declare global {

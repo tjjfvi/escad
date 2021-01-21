@@ -2,7 +2,7 @@
 import { Elementish, Element } from "./Element";
 import { Product } from "./Product";
 import { LeafProduct } from "./LeafProduct";
-import { CompoundProduct } from "./CompoundProduct";
+import { TupleProduct } from "./TupleProduct";
 import { Id } from "./Id";
 
 export type BraceType = "{" | "[" | "(" | ":" | "";
@@ -98,9 +98,9 @@ export const Hierarchy = {
       return Hierarchy.create({
         name: `<${el.type.full}>`,
       });
-    if(CompoundProduct.isCompoundProduct(el))
+    if(TupleProduct.isTupleProduct(el))
       return Hierarchy.create({
-        name: `<CompoundProduct>`,
+        name: `<TupleProduct>`,
       });
     if(el instanceof Array)
       return Hierarchy.create({

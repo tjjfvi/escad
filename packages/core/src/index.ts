@@ -20,7 +20,7 @@ export default escad;
 export * from './ArtifactManager';
 export * from './ArtifactStore';
 export * from './Component';
-export * from './CompoundProduct';
+export * from './TupleProduct';
 export * from './ConversionRegistry';
 export * from './Conversions';
 export * from './Element';

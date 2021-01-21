@@ -1,6 +1,6 @@
 
 import {
-  CompoundProduct,
+  TupleProduct,
   Conversion,
   createProductTypeUtils,
   Id,
@@ -23,10 +23,10 @@ export const MeldMarker = {
   id: meldMarkerId,
 };
 
-export type Meld<A extends Product, B extends Product> = CompoundProduct<[MeldMarker, A, B]>;
+export type Meld<A extends Product, B extends Product> = TupleProduct<[MeldMarker, A, B]>;
 export const Meld = {
   create: <A extends Product, B extends Product>(a: A, b: B): Meld<A, B> =>
-    CompoundProduct.create([MeldMarker.create(), a, b]),
+    TupleProduct.create([MeldMarker.create(), a, b]),
 };
 
 declare global {

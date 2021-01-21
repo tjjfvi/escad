@@ -4,7 +4,7 @@ import {
   LeafProduct,
   createProductTypeUtils,
   Product,
-  CompoundProduct,
+  TupleProduct,
   Conversion,
   Operation,
   mapOperation,
@@ -24,10 +24,10 @@ export const FlipFacesProduct = {
   id: flipFacesProductId,
 };
 
-export type FlipFaces<T extends Product> = CompoundProduct<readonly [FlipFacesProduct, T]>;
+export type FlipFaces<T extends Product> = TupleProduct<readonly [FlipFacesProduct, T]>;
 export const FlipFaces = {
   create: <T extends Product>(p: T): FlipFaces<T> =>
-    CompoundProduct.create([FlipFacesProduct.create(), p])
+    TupleProduct.create([FlipFacesProduct.create(), p])
 };
 
 declare global {

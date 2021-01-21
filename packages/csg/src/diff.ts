@@ -1,6 +1,6 @@
 
 import {
-  CompoundProduct,
+  TupleProduct,
   Conversion,
   createProductTypeUtils,
   Elementish,
@@ -27,10 +27,10 @@ export const DiffMarker = {
   id: diffMarkerId,
 };
 
-export type Diff<A extends Product, B extends Product> = CompoundProduct<[DiffMarker, A, B]>;
+export type Diff<A extends Product, B extends Product> = TupleProduct<[DiffMarker, A, B]>;
 export const Diff = {
   create: <A extends Product, B extends Product>(a: A, b: B): Diff<A, B> =>
-    CompoundProduct.create([DiffMarker.create(), a, b]),
+    TupleProduct.create([DiffMarker.create(), a, b]),
 }
 
 declare global {

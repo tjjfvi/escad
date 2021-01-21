@@ -1,6 +1,6 @@
 
 import {
-  CompoundProduct,
+  TupleProduct,
   Conversion,
   createProductTypeUtils,
   Elementish,
@@ -25,10 +25,10 @@ export const UnionMarker = {
   id: unionMarkerId,
 };
 
-export type Union<A extends Product, B extends Product> = CompoundProduct<[UnionMarker, A, B]>;
+export type Union<A extends Product, B extends Product> = TupleProduct<[UnionMarker, A, B]>;
 export const Union = {
   create: <A extends Product, B extends Product>(a: A, b: B): Union<A, B> =>
-    CompoundProduct.create([UnionMarker.create(), a, b])
+    TupleProduct.create([UnionMarker.create(), a, b])
 };
 
 declare global {

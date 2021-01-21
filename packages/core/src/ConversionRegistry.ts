@@ -8,7 +8,7 @@ import { ArtifactStore } from "./ArtifactStore";
 import { Id } from "./Id";
 import { depthFirst } from "./depthFirst";
 import { HashMap } from "./HashMap";
-import { CompoundProduct } from "./CompoundProduct";
+import { TupleProduct } from "./TupleProduct";
 // import { formatConversion, log } from "./logging";
 
 type ConversionPath = ConversionImpl<any, any>[]
@@ -31,34 +31,26 @@ export class ConversionRegistry {
   readonly excludeStores: ReadonlySet<ArtifactStore> = new Set([this.artifactStore]);
 
   private readonly registered = new Set<ConversionImpl<any, any>>();
-  private initialComposed: MultiHashMap<[ProductType, ProductType], ConversionPath> | null = null;
-  private composed: HashMap<[ProductType, ProductType], ConversionPath | null> | null = null;
+  private initialComposed = new MultiHashMap<[ProductType, ProductType], ConversionPath>();
+  private composed = new HashMap<[ProductType, ProductType], ConversionPath | null>();
 
   register<F extends Product, T extends Product>(
     conversion: ConversionImpl<F, T>,
   ): void {
-    // if(this.composed !== null || this.initialCompose !== null)
-    //   console.warn("ConversionRegistry.register called late")
-    this.composed = null;
-    this.initialComposed = null;
+    this.initialComposed.clear();
+    this.composed.clear();
     this.registered.add(conversion)
   }
 
-  has<A extends Product, B extends Product>(
-    a: ProductType<A>,
-    b: ProductType<B>,
-  ): boolean{
-    if(!this.composed?.has([a, b]))
-      this.composed = this.compose(a, b);
-
-    return !!this.composed.get([a, b]);
+  has(a: ProductType, b: ProductType): boolean{
+    return !!this.compose(a, b);
   }
 
   listAll(): Iterable<ConversionImpl<any, any>>{
     return this.registered.values();
   }
 
-  private initialCompose(fromType: ProductType): MultiHashMap<[ProductType, ProductType], ConversionPath>{
+  private initialCompose(fromType: ProductType){
     const initialComposed = this.initialComposed ??= new MultiHashMap();
 
     depthFirst([{
@@ -77,19 +69,17 @@ export class ConversionRegistry {
             type: conversion.toType,
           };
     }, this)
-
-    return initialComposed;
   }
 
   private compose(
     fromType: ProductType,
     toType: ProductType,
-  ): HashMap<[ProductType, ProductType], ConversionPath | null>{
-    if(!this.initialComposed?.hasAny([fromType, toType]))
-      this.initialComposed = this.initialCompose(fromType);
+  ){
+    if(this.composed.has([fromType, toType]))
+      return this.composed.get([fromType, toType]) ?? null
 
-    if(!this.composed)
-      this.composed = new HashMap();
+    if(!this.initialComposed.hasAny([fromType, toType]))
+      this.initialCompose(fromType);
 
     let bestPath: ConversionPath | null = null;
     for(const initialPath of this.initialComposed.getAll([fromType, toType])) {
@@ -100,7 +90,7 @@ export class ConversionRegistry {
 
     this.composed.set([fromType, toType], bestPath)
 
-    return this.composed;
+    return bestPath;
   }
 
   private similar(a: ProductType, b: ProductType): boolean{
@@ -137,8 +127,8 @@ export class ConversionRegistry {
       path.splice(i, 0, {
         fromType,
         toType,
-        convert: async (product: CompoundProduct<any[]>) =>
-          CompoundProduct.create(await Promise.all(product.children.map((p, i) => this.convertProduct(toType[i], p)))),
+        convert: async (product: TupleProduct<any[]>) =>
+          TupleProduct.create(await Promise.all(product.children.map((p, i) => this.convertProduct(toType[i], p)))),
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         weight: fromType.map((f, i) => this.weight(this.composed!.get([f, toType[i]])!)).reduce((a, b) => a + b)
       })
@@ -167,9 +157,7 @@ export class ConversionRegistry {
   ): Promise<T>{
     const fromType = getProductType(from);
 
-    if(!this.composed?.has([fromType, toType]))
-      this.composed = this.compose(fromType, toType);
-
+    this.compose(fromType, toType);
     const conversions = this.composed.get([fromType, toType]);
 
     // log.productType(fromType);

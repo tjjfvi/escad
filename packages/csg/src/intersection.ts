@@ -1,6 +1,6 @@
 
 import {
-  CompoundProduct,
+  TupleProduct,
   Conversion,
   createProductTypeUtils,
   Elementish,
@@ -25,10 +25,10 @@ export const IntersectionMarker = {
   id: intersectionMarkerId,
 };
 
-export type Intersection<A extends Product, B extends Product> = CompoundProduct<[IntersectionMarker, A, B]>;
+export type Intersection<A extends Product, B extends Product> = TupleProduct<[IntersectionMarker, A, B]>;
 export const Intersection = {
   create: <A extends Product, B extends Product>(a: A, b: B): Intersection<A, B> =>
-    CompoundProduct.create([IntersectionMarker.create(), a, b])
+    TupleProduct.create([IntersectionMarker.create(), a, b])
 };
 
 declare global {
