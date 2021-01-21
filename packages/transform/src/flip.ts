@@ -47,6 +47,7 @@ conversionRegistry.register<FlipFaces<Mesh>, Mesh>({
     )),
   fromType: [FlipFacesProduct.id, Mesh.id],
   toType: Mesh.id,
+  weight: 1,
 })
 
 export const flip: Operation<Mesh, FlipFaces<Mesh>> = mapOperation<Mesh, FlipFaces<Mesh>>("flip", FlipFaces.create);

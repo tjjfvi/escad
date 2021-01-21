@@ -3,7 +3,6 @@ import { ProductType } from "./Product";
 import { inspect, InspectOptionsStylized } from "util";
 import { Id } from "./Id";
 import { hash } from "./hash";
-import { ConversionRegistry } from "./ConversionRegistry";
 import { ConversionImpl } from "./Conversions";
 
 interface Loggable {
@@ -24,17 +23,6 @@ export const formatProductType = (type: ProductType): Loggable =>
     }
   })
 
-export const formatConversionRegistryTask = (task: ConversionRegistry.Task): Loggable =>
-  ({
-    [inspect.custom]: () =>
-      ({
-        from: formatProductType(task.fromType),
-        type: formatProductType(task.type),
-        prior: task.prior.map(formatConversion),
-        deepIndex: task.deepIndex,
-      })
-  })
-
 export const formatConversion = (conversion: ConversionImpl<any, any>): Loggable =>
   ({
     [inspect.custom]: (depth, options) => {
@@ -50,7 +38,6 @@ const createLogFunction = <T>(format: (value: T) => Loggable) => (...values: T[]
 
 export const log = {
   conversion: createLogFunction(formatConversion),
-  conversionRegistryTask: createLogFunction(formatConversionRegistryTask),
   productType: createLogFunction(formatProductType),
 }
 

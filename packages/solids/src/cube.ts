@@ -79,6 +79,7 @@ conversionRegistry.register({
       [6, 4, 2],
     ]);
   },
+  weight: 1,
 })
 
 type TripletObj<T> = { x?: T, y?: T, z?: T, 0?: T, 1?: T, 2?: T };

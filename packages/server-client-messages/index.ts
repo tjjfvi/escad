@@ -1,5 +1,5 @@
 
-import { Hex, ProductType } from "@escad/core";
+import { Hash, ProductType } from "@escad/core";
 
 export type ServerClientMessageTypes = ServerClientMessage["type"];
 export type ServerClientMessage<T extends ServerClientMessageTypes = any> = Extract<
@@ -23,7 +23,7 @@ export namespace ServerClientMessage {
   }
   export interface Products {
     type: "products",
-    products: Hex[],
+    products: Hash[],
   }
   export interface RegisteredConversions {
     type: "registeredConversions",
@@ -31,7 +31,7 @@ export namespace ServerClientMessage {
   }
   export interface ParamDef {
     type: "paramDef",
-    paramDef: Hex | null,
+    paramDef: Hash | null,
   }
   export interface LookupRawResponse {
     type: "lookupRawResponse",
@@ -66,7 +66,7 @@ export namespace ClientServerMessage {
   export interface LookupRaw {
     type: "lookupRaw",
     id: string,
-    hash: Hex,
+    hash: Hash,
   }
   export interface LookupRef {
     type: "lookupRef",

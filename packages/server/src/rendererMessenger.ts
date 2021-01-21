@@ -4,16 +4,16 @@ import { EventEmitter } from "tsee"
 import { fork, ChildProcess } from "child_process";
 import watch from "node-watch";
 import config from "./config";
-import { Hex, ProductType } from "@escad/core";
+import { Hash, ProductType } from "@escad/core";
 import { PluginRegistration } from "@escad/register-client-plugin";
 import { v4 as uuidv4 } from "uuid";
 
 export class RendererMessenger extends EventEmitter<{
   message: (message: RendererServerMessage) => void,
-  products: (products: Hex[]) => void,
+  products: (products: Hash[]) => void,
   registeredConversions: (conversions: [ProductType, ProductType][]) => void,
   clientPlugins: (clientPlugins: PluginRegistration[]) => void,
-  paramDef: (paramDef: Hex | null) => void,
+  paramDef: (paramDef: Hash | null) => void,
 }> {
 
   childProcess: ChildProcess;
@@ -64,7 +64,7 @@ export class RendererMessenger extends EventEmitter<{
   }
 
   lookupRef(loc: readonly unknown[]){
-    return new Promise<Hex>(resolve => {
+    return new Promise<Hash>(resolve => {
       const id = uuidv4();
       this.send({ type: "lookupRef", id, loc })
       const handler = (message: RendererServerMessage) => {

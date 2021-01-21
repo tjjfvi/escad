@@ -76,6 +76,7 @@ conversionRegistry.register({
       })
     ));
   },
+  weight: 1,
 })
 
 type SphereArgs = {

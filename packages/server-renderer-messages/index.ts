@@ -1,5 +1,5 @@
 
-import { Hex, ProductType } from "@escad/core";
+import { Hash, ProductType } from "@escad/core";
 import { PluginRegistration } from "@escad/register-client-plugin";
 
 export type ServerRendererMessageTypes = ServerRendererMessage["type"]
@@ -44,7 +44,7 @@ export type RendererServerMessage<T extends ServerRendererMessageTypes = any> = 
 export namespace RendererServerMessage {
   export interface Products {
     type: "products",
-    products: Hex[],
+    products: Hash[],
   }
   export interface RegisteredConversions {
     type: "registeredConversions",
@@ -56,16 +56,16 @@ export namespace RendererServerMessage {
   }
   export interface ParamDef {
     type: "paramDef",
-    paramDef: Hex | null,
+    paramDef: Hash | null,
   }
   export interface RunResponse {
     type: "runResponse",
     id: string,
-    products: Hex[],
+    products: Hash[],
   }
   export interface LookupRefResponse {
     type: "lookupRefResponse",
     id: string,
-    hash: Hex,
+    hash: Hash,
   }
 }

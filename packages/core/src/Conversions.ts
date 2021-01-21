@@ -9,6 +9,7 @@ export interface ConversionImpl<A extends Product, B extends Product> {
   convert: (value: A) => Promise<B>,
   fromType: ProductType<A>,
   toType: ProductType<B>,
+  weight: number,
 }
 
 type Values<T> = T[keyof T];

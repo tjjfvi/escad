@@ -51,7 +51,8 @@ conversionRegistry.register({
     a = Bsp.clipTo(a, b);
     b = Bsp.clipTo(b, a);
     return Bsp.invert(Bsp.build(a, Bsp.allFaces(b)) ?? Bsp.null());
-  }
+  },
+  weight: 1,
 })
 
 export const intersection: Operation<Bsp, Bsp> = (

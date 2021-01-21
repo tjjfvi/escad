@@ -1,7 +1,9 @@
 
-export class MultiMap<K, V> {
+import { HashMap } from "./HashMap";
 
-  private map = new Map<K, Set<V>>();
+export class MultiHashMap<K, V> {
+
+  private map = new HashMap<K, Set<V>>();
 
   clear(){
     this.map.clear();

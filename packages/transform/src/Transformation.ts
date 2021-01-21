@@ -27,4 +27,5 @@ conversionRegistry.register<Transformation<Mesh>, Mesh>({
     )),
   fromType: [Matrix4.id, Mesh.id],
   toType: Mesh.id,
+  weight: 1,
 })

@@ -54,7 +54,8 @@ conversionRegistry.register({
     b = Bsp.clipTo(b, a);
     b = Bsp.invert(b);
     return Bsp.invert(Bsp.build(a, Bsp.allFaces(b)) ?? Bsp.null());
-  }
+  },
+  weight: 1,
 })
 
 export const diff: Operation<Bsp, Bsp> = (

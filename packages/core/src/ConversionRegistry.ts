@@ -1,23 +1,17 @@
+
 import { ProductType, getProductType, Product } from "./Product";
 import { ConvertibleTo, ConversionImpl } from "./Conversions";
-import { Hex } from "./hex";
-import { MultiMap } from "./MultiMap";
+import { MultiHashMap } from "./MultiHashMap";
 import { hash } from "./hash";
-import { DeepMap } from "./DeepMap";
-import { CompoundProduct } from "./CompoundProduct";
 import { artifactManager, ArtifactManager } from "./ArtifactManager";
 import { ArtifactStore } from "./ArtifactStore";
 import { Id } from "./Id";
+import { depthFirst } from "./depthFirst";
+import { HashMap } from "./HashMap";
+import { CompoundProduct } from "./CompoundProduct";
 // import { formatConversion, log } from "./logging";
 
-export namespace ConversionRegistry {
-  export interface Task {
-    fromType: ProductType,
-    type: ProductType,
-    prior: ConversionImpl<any, any>[],
-    deepIndex: number,
-  }
-}
+type ConversionPath = ConversionImpl<any, any>[]
 
 export class ConversionRegistry {
 
@@ -36,135 +30,135 @@ export class ConversionRegistry {
 
   readonly excludeStores: ReadonlySet<ArtifactStore> = new Set([this.artifactStore]);
 
-  private readonly registered = new MultiMap<Hex, ConversionImpl<any, any>>();
-  private composed: DeepMap<Hex, Hex, ConversionImpl<any, any>[]> | null = null;
+  private readonly registered = new Set<ConversionImpl<any, any>>();
+  private initialComposed: MultiHashMap<[ProductType, ProductType], ConversionPath> | null = null;
+  private composed: HashMap<[ProductType, ProductType], ConversionPath | null> | null = null;
 
   register<F extends Product, T extends Product>(
     conversion: ConversionImpl<F, T>,
   ): void {
-    if(this.composed !== null)
-      console.warn("ConversionRegistry.register called late")
+    // if(this.composed !== null || this.initialCompose !== null)
+    //   console.warn("ConversionRegistry.register called late")
     this.composed = null;
-    this.registered.add(hash(conversion.fromType), conversion)
+    this.initialComposed = null;
+    this.registered.add(conversion)
   }
 
   has<A extends Product, B extends Product>(
     a: ProductType<A>,
     b: ProductType<B>,
   ): boolean{
-    if(!this.composed?.hasAny(hash(a)))
-      this.composed = this.compose<A>(a);
+    if(!this.composed?.has([a, b]))
+      this.composed = this.compose(a, b);
 
-    return this.composed.has(hash(a), hash(b));
-  }
-
-  *list<F extends Product>(
-    fromType: ProductType<F>,
-  ): Iterable<ProductType>{
-    if(!this.composed?.hasAny(hash(fromType)))
-      this.composed = this.compose<F>(fromType);
-
-    for(const conversionChain of this.composed.getAll(hash(fromType)).values())
-      yield conversionChain[conversionChain.length - 1].toType as any;
+    return !!this.composed.get([a, b]);
   }
 
   listAll(): Iterable<ConversionImpl<any, any>>{
     return this.registered.values();
   }
 
-  private compose<F extends Product>(
-    fromType: ProductType<F>,
-  ): DeepMap<Hex, Hex, ConversionImpl<any, any>[]>{
-    type Task = ConversionRegistry.Task;
+  private initialCompose(fromType: ProductType): MultiHashMap<[ProductType, ProductType], ConversionPath>{
+    const initialComposed = this.initialComposed ??= new MultiHashMap();
 
-    if(!this.composed)
-      this.composed = new DeepMap();
-
-    const done = new Set<Hex>();
-    const todo: Task[] = [{
-      fromType,
+    depthFirst([{
       type: fromType,
-      prior: [],
-      deepIndex: 0,
-    }];
+      prior: [] as ConversionPath,
+    }], function*({ type, prior }){
+      if(prior.some(c => hash(c.fromType) === hash(type)))
+        return;
 
-    let task: Task | null;
-    while((task = todo.shift() ?? null)) {
-      // log.conversionRegistryTask(task);
-      const { fromType, type, prior, deepIndex } = task;
-      const typeHash = hash(type);
-      const taskId = hash([fromType, type]);
+      initialComposed.add([fromType, type], prior);
 
-      if(type instanceof Array && deepIndex < type.length) {
-        const subtype = type[deepIndex];
-
-        if(!this.composed.hasAny(hash(subtype))) {
-          todo.unshift(task);
-          todo.unshift({
-            fromType: subtype,
-            type: subtype,
-            prior: [],
-            deepIndex: 0,
-          });
-          continue;
-        }
-
-        for(const [, conversions] of this.composed.getAll(hash(subtype))) {
-          // console.log("Found:", conversions.map(formatConversion));
-          const toType = type.map((x, i) => i === deepIndex ? conversions[conversions.length - 1]?.toType ?? x : x);
-          todo.unshift({
-            fromType,
-            prior: [...prior, ...conversions.map((c, j, a) => ({
-              fromType: type.map((x, i) => i === deepIndex ? a[j - 1]?.toType ?? x : x),
-              toType: type.map((x, i) => i === deepIndex ? c.toType : x),
-              convert: async (product: CompoundProduct<readonly Product[]>) =>
-                CompoundProduct.create(await Promise.all(product.children.map((x, i) =>
-                  i === deepIndex ? c.convert(x) : x))
-                ),
-            }))],
-            type: toType,
-            deepIndex: deepIndex + 1,
-          });
-        }
-      }
-
-      if(done.has(taskId))
-        continue;
-
-      if(this.composed.hasAny(typeHash))
-        if(hash(fromType) !== typeHash)
-          for(const conversions of this.composed.getAll(typeHash).values())
-            todo.unshift({
-              fromType,
-              prior: [...prior, ...conversions],
-              type: conversions[conversions.length - 1]?.toType ?? type,
-              deepIndex: 0,
-            });
-        else;
-      else
-        for(const conversion of this.registered.getAll(typeHash))
-          todo.unshift({
-            fromType,
+      for(const conversion of this.registered)
+        if(this.similar(type, conversion.fromType))
+          yield {
             prior: [...prior, conversion],
             type: conversion.toType,
-            deepIndex: 0,
-          });
+          };
+    }, this)
 
-      if(!prior.length)
-        this.composed.set(hash(fromType), typeHash, prior);
+    return initialComposed;
+  }
 
-      for(let index = 0; index < prior.length; index++) {
-        const fromHash = hash(prior[index].fromType);
-        const existing = this.composed.get(fromHash, typeHash);
-        const conversions = prior.slice(index);
-        if(existing?.length ?? Infinity > conversions.length)
-          this.composed.set(fromHash, typeHash, conversions)
-      }
+  private compose(
+    fromType: ProductType,
+    toType: ProductType,
+  ): HashMap<[ProductType, ProductType], ConversionPath | null>{
+    if(!this.initialComposed?.hasAny([fromType, toType]))
+      this.initialComposed = this.initialCompose(fromType);
 
-      done.add(taskId);
+    if(!this.composed)
+      this.composed = new HashMap();
+
+    let bestPath: ConversionPath | null = null;
+    for(const initialPath of this.initialComposed.getAll([fromType, toType])) {
+      const path = this.finishPath(fromType, initialPath, toType);
+      if(!bestPath || path && this.weight(path) <= this.weight(bestPath))
+        bestPath = path;
     }
 
+    this.composed.set([fromType, toType], bestPath)
+
     return this.composed;
+  }
+
+  private similar(a: ProductType, b: ProductType): boolean{
+    return hash(a) === hash(b) || (
+      a instanceof Array &&
+      b instanceof Array &&
+      a.length === b.length
+    );
+  }
+
+  private finishPath(fromType: ProductType, initialPath: ConversionPath | null, toType: ProductType){
+    if(!initialPath)
+      return initialPath;
+
+    let path = [this.noopConversion(fromType), ...initialPath, this.noopConversion(toType)]
+
+    for(let i = 1; i < path.length; i++) {
+      const fromType = path[i - 1].toType;
+      const toType = path[i].fromType;
+
+      if(hash(fromType) === hash(toType))
+        continue;
+
+      if(
+        !(fromType instanceof Array) ||
+        !(toType instanceof Array) ||
+        fromType.length !== toType.length
+      )
+        throw new Error("Internal bug in escad; unhandled similar condition")
+
+      if(!fromType.every((f, i) => this.has(f, toType[i])))
+        return null;
+
+      path.splice(i, 0, {
+        fromType,
+        toType,
+        convert: async (product: CompoundProduct<any[]>) =>
+          CompoundProduct.create(await Promise.all(product.children.map((p, i) => this.convertProduct(toType[i], p)))),
+        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+        weight: fromType.map((f, i) => this.weight(this.composed!.get([f, toType[i]])!)).reduce((a, b) => a + b)
+      })
+      i++
+    }
+
+    return path.slice(1, -1);
+  }
+
+  private noopConversion(type: ProductType): ConversionImpl<any, any>{
+    return {
+      fromType: type,
+      toType: type,
+      convert: x => x,
+      weight: 0,
+    };
+  }
+
+  private weight(path: ConversionPath){
+    return path.reduce((a, b) => a + b.weight, 0)
   }
 
   async convertProduct<T extends Product, F extends ConvertibleTo<T> & Product>(
@@ -173,10 +167,10 @@ export class ConversionRegistry {
   ): Promise<T>{
     const fromType = getProductType(from);
 
-    if(!this.composed?.hasAny(hash(fromType)))
-      this.composed = this.compose<F>(fromType);
+    if(!this.composed?.has([fromType, toType]))
+      this.composed = this.compose(fromType, toType);
 
-    const conversions = this.composed.get(hash(fromType), hash(toType));
+    const conversions = this.composed.get([fromType, toType]);
 
     // log.productType(fromType);
     // log.productType(toType);

@@ -43,7 +43,8 @@ conversionRegistry.register({
   fromType: [MeldMarker.id, Mesh.id, Mesh.id],
   toType: Mesh.id,
   convert: async ({ children: [, a, b] }: Meld<Mesh, Mesh>): Promise<Mesh> =>
-    Mesh.create(a.faces.concat(b.faces))
+    Mesh.create(a.faces.concat(b.faces)),
+  weight: 1,
 })
 
 export const meld: Operation<Mesh, Mesh> = (

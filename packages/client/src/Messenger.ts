@@ -3,7 +3,7 @@ import { EventEmitter } from "tsee";
 import * as flatted from "flatted";
 import { ServerClientMessage, ClientServerMessage } from "@escad/server-client-messages"
 import { observable } from "rhobo";
-import { ArtifactManager, artifactManager, ArtifactStore, conversionRegistry, Hex, Product } from "@escad/core";
+import { ArtifactManager, artifactManager, ArtifactStore, conversionRegistry, Hash, Product } from "@escad/core";
 import { v4 as uuidv4 } from "uuid";
 
 export class Messenger extends EventEmitter<{
@@ -14,7 +14,7 @@ export class Messenger extends EventEmitter<{
   connected = observable<boolean>(false);
   id = observable<string>();
   serverId = observable<string>();
-  shas = observable<Hex[]>([]);
+  shas = observable<Hash[]>([]);
   products = observable<Product[]>([]);
 
   disconnectTimeout: any;
@@ -46,7 +46,8 @@ export class Messenger extends EventEmitter<{
               toType,
               convert: () => {
                 throw new Error("Stub conversion erroneously called")
-              }
+              },
+              weight: Infinity,
             })
       }
     })
@@ -100,7 +101,7 @@ export class Messenger extends EventEmitter<{
     return this.ws;
   }
 
-  lookupRaw(hash: Hex){
+  lookupRaw(hash: Hash){
     return new Promise<Buffer>(resolve => {
       const id = uuidv4();
       this.send({ type: "lookupRaw", id, hash })

@@ -3,14 +3,14 @@ import { EventEmitter } from "tsee"
 import { ClientServerMessage, ServerClientMessage } from "@escad/server-client-messages"
 import WebSocket = require("ws");
 import flatted from "flatted";
-import { Hex, ProductType } from "@escad/core";
+import { Hash, ProductType } from "@escad/core";
 import { rendererMessenger } from "./rendererMessenger";
 import { serverId } from "./serverId";
 import { v4 as uuidv4 } from "uuid";
 import { RendererServerMessage } from "@escad/server-renderer-messages";
 
-let curProducts: Hex[] | null = null;
-let curParamDef: Hex | null = null;
+let curProducts: Hash[] | null = null;
+let curParamDef: Hash | null = null;
 let curConversions: [ProductType, ProductType][] | null = null;
 
 rendererMessenger.on("products", products => {
@@ -87,10 +87,10 @@ export class ClientMessenger extends EventEmitter<{
     this.send({ type: "paramDef", paramDef: curParamDef });
     this.send({ type: "registeredConversions", conversions: curConversions ?? [] });
 
-    const productsHandler = (products: Hex[]) => this.send({ type: "products", products });
+    const productsHandler = (products: Hash[]) => this.send({ type: "products", products });
     rendererMessenger.on("products", productsHandler);
 
-    const paramDefHandler = (paramDef: Hex | null) => this.send({ type: "paramDef", paramDef });
+    const paramDefHandler = (paramDef: Hash | null) => this.send({ type: "paramDef", paramDef });
     rendererMessenger.on("paramDef", paramDefHandler);
 
     const conversionsHandler = (conversions: [ProductType, ProductType][]) =>

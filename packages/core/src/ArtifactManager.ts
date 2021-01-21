@@ -1,7 +1,6 @@
 
 import { WeakCache } from "./WeakCache";
-import { hash } from "./hash";
-import { Hex } from "./hex";
+import { Hash, hash } from "./hash";
 import { ArtifactStore, BufferLike } from "./ArtifactStore";
 
 export type SerializeFunc<T> = (artifact: T) => BufferLike;
@@ -65,7 +64,7 @@ export class ArtifactManager {
   }
 
   async lookupRaw(
-    hash: Hex,
+    hash: Hash,
     excludeStores?: ReadonlySet<ArtifactStore>,
   ){
     for(const store of this.artifactStores)

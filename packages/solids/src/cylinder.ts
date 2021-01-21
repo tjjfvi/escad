@@ -64,6 +64,7 @@ conversionRegistry.register({
       ];
     }).map(f => Face.create(f.map(v => Vector3.create(...v)))));
   },
+  weight: 1,
 })
 
 type Pair<T> = T | [T, T];

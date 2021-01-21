@@ -1,5 +1,5 @@
 
-import { hash, Hex, Id, ArtifactStore, BufferLike } from "@escad/core";
+import { hash, Hash, Id, ArtifactStore, BufferLike } from "@escad/core";
 import { join, dirname } from "path";
 import fs from "fs-extra";
 import { v4 as uuidv4 } from "uuid";
@@ -8,12 +8,12 @@ export class FsArtifactStore implements ArtifactStore {
 
   constructor(public rootDir: string){}
 
-  async storeRaw(hash: Hex, buffer: BufferLike){
+  async storeRaw(hash: Hash, buffer: BufferLike){
     const path = await this.getPathRaw(hash);
     await fs.writeFile(path, buffer)
   }
 
-  async storeRef(loc: readonly unknown[], hash: Hex){
+  async storeRef(loc: readonly unknown[], hash: Hash){
     const fromPath = await this.getPathRef(loc);
     const toPath = await this.getPathRaw(hash);
     const tmpPath = await this.getPathTmp();
@@ -21,7 +21,7 @@ export class FsArtifactStore implements ArtifactStore {
     await fs.rename(tmpPath, fromPath);
   }
 
-  async lookupRaw(hash: Hex){
+  async lookupRaw(hash: Hash){
     const path = await this.getPathRaw(hash);
     return await fs.readFile(path).catch(() => null);
   }
@@ -38,7 +38,7 @@ export class FsArtifactStore implements ArtifactStore {
     return path;
   }
 
-  private async getPathRaw(hash: Hex){
+  private async getPathRaw(hash: Hash){
     const path = join(this.rootDir, "raw", hash);
     await fs.mkdirp(dirname(path));
     return path;
