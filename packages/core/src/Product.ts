@@ -6,9 +6,6 @@ import {
   __convertibleTo,
   __convertibleToOverride,
   _ConvertibleTo,
-  _ConvertibleFrom,
-  __convertibleFrom,
-  __convertibleFromOverride,
 } from "./Conversions";
 import { hash } from "./hash";
 
@@ -21,16 +18,6 @@ export interface _Product {
         : TupleProduct<readonly Product[]> extends this
           ? unknown
           : _ConvertibleTo<this>
-  ),
-
-  readonly [__convertibleFrom]?: (
-    __convertibleFromOverride extends keyof this
-      ? unknown
-      : LeafProduct extends this
-        ? unknown
-        : TupleProduct<readonly Product[]> extends this
-          ? unknown
-          : _ConvertibleFrom<this>
   ),
 }
 

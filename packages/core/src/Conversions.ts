@@ -36,15 +36,8 @@ export type ConversionImpls<C = ConversionsUnion> = (
 
 export type DirectConvertibleTo<T, C = ConversionsUnion> =
   C extends Conversion<infer F, infer T2>
-    ? Omit<T2, __convertibleTo | __convertibleFrom> extends T
-      ? Omit<F, __convertibleTo | __convertibleFrom>
-      : never
-    : never
-
-export type DirectConvertibleFrom<F, C = ConversionsUnion> =
-  C extends Conversion<infer F2, infer T>
-    ? Omit<F2, __convertibleTo | __convertibleFrom> extends F
-      ? Omit<T, __convertibleTo | __convertibleFrom>
+    ? Omit<T2, __convertibleTo> extends T
+      ? Omit<F, __convertibleTo>
       : never
     : never
 
@@ -52,11 +45,6 @@ export declare const __convertibleTo: unique symbol;
 export declare const __convertibleToOverride: unique symbol;
 export type __convertibleTo = typeof __convertibleTo;
 export type __convertibleToOverride = typeof __convertibleToOverride;
-
-export declare const __convertibleFrom: unique symbol;
-export declare const __convertibleFromOverride: unique symbol;
-export type __convertibleFrom = typeof __convertibleFrom;
-export type __convertibleFromOverride = typeof __convertibleFromOverride;
 
 type _SafeTupleConvertibleTo<A> =
   "children" extends keyof A
@@ -76,32 +64,9 @@ export type _ConvertibleTo<T, E=never> =
       : _ConvertibleTo<DirectConvertibleTo<_SafeTupleConvertibleTo<T>>, E | T>
   )
 
-type _SafeTupleConvertibleFrom<A> =
-  "children" extends keyof A
-    ? {
-      readonly isTupleProduct: true,
-      readonly children: {
-        [K in keyof A["children"]]: K extends number ? _ConvertibleFrom<A["children"][K]> : A["children"][K]
-      },
-    }
-    : A
-export type _ConvertibleFrom<T, E=never> =
-  | T
-  | _SafeTupleConvertibleFrom<T>
-  | (
-    T extends E
-      ? never
-      : _ConvertibleTo<DirectConvertibleTo<_SafeTupleConvertibleFrom<T>>, E | T>
-  )
-
 export type ConvertibleTo<T extends Product> = Product & {
   [__convertibleToOverride]?: true,
   [__convertibleTo]?: T[__convertibleTo],
-}
-
-export type ConvertibleFrom<T extends Product> = Product & {
-  [__convertibleFromOverride]?: true,
-  [__convertibleFrom]?: T[__convertibleFrom],
 }
 
 // Tests:
