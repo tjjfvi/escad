@@ -25,7 +25,7 @@ export const Cube = {
     center,
     size,
   }),
-  ...createProductTypeUtils(cubeId, "Cube"),
+  ...createProductTypeUtils<Cube, "Cube">(cubeId, "Cube"),
   id: cubeId,
 };
 
@@ -40,8 +40,8 @@ declare global {
 }
 
 conversionRegistry.register({
-  fromType: Cube.id,
-  toType: Mesh.id,
+  fromType: Cube.productType,
+  toType: Mesh.productType,
   convert: async (cube: Cube): Promise<Mesh> => {
     const { center, size } = cube;
 

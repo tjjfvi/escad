@@ -3,7 +3,7 @@ import React from "react";
 import { messenger } from "./Messenger";
 import { getViewersForAll, mapProduct } from "./ViewerRegistration";
 import { observer, useComputed, fromProm } from "rhobo";
-import { getProductType } from "@escad/core";
+import { Product } from "@escad/core";
 import { ProductTypeView } from "./ProductTypeView";
 
 export const Preview = observer(() => {
@@ -11,7 +11,7 @@ export const Preview = observer(() => {
   if(!products)
     return <></>;
 
-  const productTypes = products.map(getProductType);
+  const productTypes = products.map(Product.getProductType);
   const [viewer] = [...getViewersForAll(productTypes)];
 
   if(!viewer)

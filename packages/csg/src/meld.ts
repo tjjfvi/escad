@@ -5,9 +5,11 @@ import {
   createProductTypeUtils,
   Id,
   LeafProduct,
-  Product,
   Operation,
   conversionRegistry,
+  ArrayProduct,
+  TupleProductType,
+  ArrayProductType,
 } from "@escad/core";
 import { Mesh } from "@escad/mesh";
 
@@ -18,37 +20,37 @@ export interface MeldMarker extends LeafProduct {
 }
 
 export const MeldMarker = {
+  id: meldMarkerId,
   create: (): MeldMarker => ({ type: meldMarkerId }),
   ...createProductTypeUtils<MeldMarker, "MeldMarker">(meldMarkerId, "MeldMarker"),
-  id: meldMarkerId,
 };
 
-export type Meld<A extends Product, B extends Product> = TupleProduct<[MeldMarker, A, B]>;
+export type Meld<T extends ArrayProduct | TupleProduct> = TupleProduct<[MeldMarker, T]>;
 export const Meld = {
-  create: <A extends Product, B extends Product>(a: A, b: B): Meld<A, B> =>
-    TupleProduct.create([MeldMarker.create(), a, b]),
+  create: <T extends ArrayProduct | TupleProduct>(children: T): Meld<T> =>
+    TupleProduct.create([MeldMarker.create(), children]),
 };
 
 declare global {
   namespace escad {
     interface ConversionsObj {
       "@escad/csg/meld": {
-        computeMeld: Conversion<Meld<Mesh, Mesh>, Mesh>,
+        computeMeld: Conversion<Meld<ArrayProduct<Mesh>>, Mesh>,
       },
     }
   }
 }
 
 conversionRegistry.register({
-  fromType: [MeldMarker.id, Mesh.id, Mesh.id],
-  toType: Mesh.id,
-  convert: async ({ children: [, a, b] }: Meld<Mesh, Mesh>): Promise<Mesh> =>
-    Mesh.create(a.faces.concat(b.faces)),
+  fromType: TupleProductType.create([MeldMarker.productType, ArrayProductType.create(Mesh.productType)]),
+  toType: Mesh.productType,
+  convert: async ({ children: [, c] }: Meld<ArrayProduct<Mesh>>): Promise<Mesh> =>
+    Mesh.create(c.children.flatMap(x => x.faces)),
   weight: 1,
 })
 
 export const meld: Operation<Mesh, Mesh> = (
   new Operation<Mesh, Mesh>("meld", el =>
-    el.toArrayFlat().reduce(Meld.create)
+    Meld.create(TupleProduct.create(el.toArrayFlat()))
   )
 );

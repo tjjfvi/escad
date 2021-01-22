@@ -5,7 +5,7 @@ import { Mesh } from "@escad/mesh";
 import * as t from "three";
 
 registerViewerRegistration<Mesh, Viewer3dInput>({
-  type: Mesh.id,
+  type: Mesh.productType,
   context: viewer3d,
   map: product => {
     let arr = new Float32Array(function*(){

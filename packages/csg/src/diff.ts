@@ -11,6 +11,7 @@ import {
   Component,
   Operation,
   conversionRegistry,
+  TupleProductType,
 } from "@escad/core";
 import { Bsp } from "./Bsp";
 import { Union } from "./union";
@@ -44,8 +45,8 @@ declare global {
 }
 
 conversionRegistry.register({
-  fromType: [DiffMarker.id, Bsp.id, Bsp.id],
-  toType: Bsp.id,
+  fromType: TupleProductType.create([DiffMarker.productType, Bsp.productType, Bsp.productType]),
+  toType: Bsp.productType,
   convert: async ({ children: [, a, b] }: Diff<Bsp, Bsp>): Promise<Bsp> => {
     a = Bsp.invert(a);
     a = Bsp.clipTo(a, b);
@@ -70,10 +71,8 @@ export const diff: Operation<Bsp, Bsp> = (
     const args = Element.create(originalArgs).toArrayDeep();
     if(Product.isProduct(args))
       return args;
-    const positive = new Element<Bsp>(args[0]).toArrayFlat().reduce(Union.create);
-    const negative = new Element<Bsp>(args.slice(1)).toArrayFlat().reduce(Union.create);
-    if(!positive || !negative) // If array length is zero, reduce returns undefined
-      return positive ?? [];
+    const positive = Union.create(TupleProduct.create(new Element<Bsp>(args[0]).toArrayFlat()));
+    const negative = Union.create(TupleProduct.create(new Element<Bsp>(args.slice(1)).toArrayFlat()));
     return Diff.create(positive, negative);
   })
 );

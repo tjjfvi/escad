@@ -45,8 +45,8 @@ declare global {
 }
 
 conversionRegistry.register({
-  fromType: Sphere.id,
-  toType: Mesh.id,
+  fromType: Sphere.productType,
+  toType: Mesh.productType,
   convert: async (sphere: Sphere): Promise<Mesh> => {
     const { radius, slices, stacks } = sphere;
 
@@ -90,8 +90,8 @@ type SphereArgs = {
   ud?: boolean,
 };
 
-export const sphere: Component<[SphereArgs], Element<Sphere>> =
-  new Component<[SphereArgs], Element<Sphere>>("sphere", ({
+export const sphere: Component<[SphereArgs], Element<Mesh>> =
+  new Component<[SphereArgs], Element<Mesh>>("sphere", ({
     r = 1,
     slices = 16,
     stacks = 8,

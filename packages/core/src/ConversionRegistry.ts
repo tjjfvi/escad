@@ -82,7 +82,7 @@ export class ConversionRegistry {
     if(!this.initialComposed.hasAny([fromType, toType]))
       this.initialCompose(fromType);
 
-    let bestPath: ConversionPath | null = null;
+    let bestPath = this.finishPath(fromType, [], toType);
     for(const initialPath of this.initialComposed.getAll([fromType, toType])) {
       const path = this.finishPath(fromType, initialPath, toType);
       if(!bestPath || path && this.weight(path) <= this.weight(bestPath))

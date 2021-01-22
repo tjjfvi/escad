@@ -10,6 +10,9 @@ import {
   Component,
   Operation,
   conversionRegistry,
+  ArrayProduct,
+  TupleProductType,
+  ArrayProductType,
 } from "@escad/core";
 import { Bsp } from "./Bsp";
 
@@ -25,39 +28,40 @@ export const UnionMarker = {
   id: unionMarkerId,
 };
 
-export type Union<A extends Product, B extends Product> = TupleProduct<[UnionMarker, A, B]>;
+export type Union<T extends Product> = TupleProduct<[UnionMarker, T]>;
 export const Union = {
-  create: <A extends Product, B extends Product>(a: A, b: B): Union<A, B> =>
-    TupleProduct.create([UnionMarker.create(), a, b])
+  create: <T extends Product>(children: T): Union<T> =>
+    TupleProduct.create([UnionMarker.create(), children])
 };
 
 declare global {
   namespace escad {
     interface ConversionsObj {
       "@escad/csg/union": {
-        computeUnion: Conversion<Union<Bsp, Bsp>, Bsp>,
+        computeUnion: Conversion<Union<ArrayProduct<Bsp>>, Bsp>,
       },
     }
   }
 }
 
 conversionRegistry.register({
-  fromType: [UnionMarker.id, Bsp.id, Bsp.id],
-  toType: Bsp.id,
-  convert: async ({ children: [, a, b] }: Union<Bsp, Bsp>): Promise<Bsp> => {
-    a = Bsp.clipTo(a, b);
-    b = Bsp.clipTo(b, a);
-    b = Bsp.invert(b);
-    b = Bsp.clipTo(b, a);
-    b = Bsp.invert(b);
-    return Bsp.build(a, Bsp.allFaces(b)) ?? Bsp.null();
-  },
+  fromType: TupleProductType.create([UnionMarker.productType, ArrayProductType.create(Bsp.productType)]),
+  toType: Bsp.productType,
+  convert: async ({ children: [, c] }: Union<ArrayProduct<Bsp>>): Promise<Bsp> =>
+    c.children.reduce((a, b) => {
+      a = Bsp.clipTo(a, b);
+      b = Bsp.clipTo(b, a);
+      b = Bsp.invert(b);
+      b = Bsp.clipTo(b, a);
+      b = Bsp.invert(b);
+      return Bsp.build(a, Bsp.allFaces(b)) ?? Bsp.null();
+    }),
   weight: 1,
 })
 
 export const union: Operation<Bsp, Bsp> = (
   new Operation<Bsp, Bsp>("union", el =>
-    el.toArrayFlat().reduce(Union.create)
+    Union.create(TupleProduct.create(el.toArrayFlat()))
   )
 );
 

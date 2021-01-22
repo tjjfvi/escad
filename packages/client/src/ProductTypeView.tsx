@@ -1,14 +1,15 @@
 
 import React, { Fragment } from "react";
-import { Id, ProductType } from "@escad/core";
+import { LeafProductType, ArrayProductType, TupleProductType, ProductType } from "@escad/core";
 import { IdView } from "./IdView";
 
-export const ProductTypeView = ({ productType }: { productType: ProductType }) =>
-  Id.isId(productType) ?
-    <IdView id={productType}/> :
-    <span className="ProductType">
+export const ProductTypeView = ({ productType }: { productType: ProductType }) => {
+  if(LeafProductType.isLeafProductType(productType))
+    return <IdView id={productType.id}/>;
+  if(TupleProductType.isTupleProductType(productType))
+    return <span className="ProductType">
       {"["}
-      {(productType as ProductType[]).map((x, i) =>
+      {productType.elementTypes.map((x, i) =>
         <Fragment key={i}>
           {i === 0 ? null : ", "}
           <ProductTypeView productType={x}/>
@@ -16,3 +17,10 @@ export const ProductTypeView = ({ productType }: { productType: ProductType }) =
       )}
       {"]"}
     </span>
+  if(ArrayProductType.isArrayProductType(productType))
+    return <span className="ProductType">
+      <ProductTypeView productType={productType.elementType}/>
+      {"[]"}
+    </span>
+  throw new Error("Invalid product type passed to ProductTypeView")
+}

@@ -1,6 +1,6 @@
 
 import { Viewer, ViewerInput } from "./Viewer";
-import { conversionRegistry, getProductType, Product, ProductType } from "@escad/core";
+import { conversionRegistry, Product, ProductType } from "@escad/core";
 
 export interface ViewerRegistration<P extends Product, T extends ViewerInput> {
   type: ProductType<P>,
@@ -27,7 +27,7 @@ export function* findViewers(productType: ProductType){
 }
 
 export const mapProduct = async <T extends ViewerInput>(context: Viewer<T>, product: Product) => {
-  for(const registration of findRegistrations(getProductType(product)))
+  for(const registration of findRegistrations(Product.getProductType(product)))
     if(registration.context === context)
       return await registration.map(await conversionRegistry.convertProduct(registration.type, product));
 }

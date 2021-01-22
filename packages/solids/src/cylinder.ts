@@ -46,8 +46,8 @@ declare global {
 }
 
 conversionRegistry.register({
-  fromType: Cylinder.id,
-  toType: Mesh.id,
+  fromType: Cylinder.productType,
+  toType: Mesh.productType,
   convert: async (cyl: Cylinder): Promise<Mesh> => {
     const { r1, r2, height, sides, o1, o2, c } = cyl;
 

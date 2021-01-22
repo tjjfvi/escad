@@ -17,7 +17,7 @@ export const LeafProduct = {
 };
 
 export const createProductTypeUtils = <P extends LeafProduct, N extends string>(id: P["type"], name: N) => ({
-  productType: LeafProductType.create(id),
+  productType: LeafProductType.create(id) as LeafProductType<P>,
   ...({
     [`is${name}`]: (q: Product): q is P =>
       Product.isProduct(q, LeafProductType.create(id))

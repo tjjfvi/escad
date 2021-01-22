@@ -12,7 +12,7 @@ import {
 import { hash } from "./hash";
 
 export interface _Product {
-  [__convertibleToTransitivityOverride]?: TransitivityOverride.A,
+  readonly [__convertibleToTransitivityOverride]?: TransitivityOverride.A,
   readonly [__convertibleTo]?: (
     __convertibleToOverride extends keyof this
       ? unknown

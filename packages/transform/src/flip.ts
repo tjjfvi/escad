@@ -9,6 +9,7 @@ import {
   Operation,
   mapOperation,
   conversionRegistry,
+  TupleProductType,
 } from "@escad/core";
 import { Mesh, Face } from "@escad/mesh";
 
@@ -45,8 +46,8 @@ conversionRegistry.register<FlipFaces<Mesh>, Mesh>({
     Mesh.create(mesh.faces.map(face =>
       Face.create(face.points.slice().reverse())
     )),
-  fromType: [FlipFacesProduct.id, Mesh.id],
-  toType: Mesh.id,
+  fromType: TupleProductType.create([FlipFacesProduct.productType, Mesh.productType]),
+  toType: Mesh.productType,
   weight: 1,
 })
 
