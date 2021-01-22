@@ -1,5 +1,5 @@
 
-import { ProductType, getProductType, Product } from "./Product";
+import { ProductType, Product } from "./Product";
 import { ConvertibleTo, ConversionImpl } from "./Conversions";
 import { MultiHashMap } from "./MultiHashMap";
 import { hash } from "./hash";
@@ -8,7 +8,7 @@ import { ArtifactStore } from "./ArtifactStore";
 import { Id } from "./Id";
 import { depthFirst } from "./depthFirst";
 import { HashMap } from "./HashMap";
-import { TupleProduct } from "./TupleProduct";
+import { TupleProduct, TupleProductType } from "./TupleProduct";
 // import { formatConversion, log } from "./logging";
 
 type ConversionPath = ConversionImpl<any, any>[]
@@ -95,9 +95,9 @@ export class ConversionRegistry {
 
   private similar(a: ProductType, b: ProductType): boolean{
     return hash(a) === hash(b) || (
-      a instanceof Array &&
-      b instanceof Array &&
-      a.length === b.length
+      TupleProductType.isTupleProductType(a) &&
+      TupleProductType.isTupleProductType(b) &&
+      a.elementTypes.length === b.elementTypes.length
     );
   }
 
@@ -115,22 +115,26 @@ export class ConversionRegistry {
         continue;
 
       if(
-        !(fromType instanceof Array) ||
-        !(toType instanceof Array) ||
-        fromType.length !== toType.length
+        !(TupleProductType.isTupleProductType(fromType)) ||
+        !(TupleProductType.isTupleProductType(toType)) ||
+        fromType.elementTypes.length !== toType.elementTypes.length
       )
         throw new Error("Internal bug in escad; unhandled similar condition")
 
-      if(!fromType.every((f, i) => this.has(f, toType[i])))
+      if(!fromType.elementTypes.every((f, i) => this.has(f, toType.elementTypes[i])))
         return null;
 
       path.splice(i, 0, {
         fromType,
         toType,
         convert: async (product: TupleProduct<any[]>) =>
-          TupleProduct.create(await Promise.all(product.children.map((p, i) => this.convertProduct(toType[i], p)))),
-        // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-        weight: fromType.map((f, i) => this.weight(this.composed!.get([f, toType[i]])!)).reduce((a, b) => a + b)
+          TupleProduct.create(await Promise.all(product.children.map((p, i) =>
+            this.convertProduct(toType.elementTypes[i], p)
+          ))),
+        weight: fromType.elementTypes.map((f, i) =>
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          this.weight(this.composed!.get([f, toType.elementTypes[i]])!)
+        ).reduce((a, b) => a + b)
       })
       i++
     }
@@ -155,7 +159,7 @@ export class ConversionRegistry {
     toType: ProductType<T>,
     from: F,
   ): Promise<T>{
-    const fromType = getProductType(from);
+    const fromType = Product.getProductType(from);
 
     this.compose(fromType, toType);
     const conversions = this.composed.get([fromType, toType]);

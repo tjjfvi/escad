@@ -46,22 +46,39 @@ export declare const __convertibleToOverride: unique symbol;
 export type __convertibleTo = typeof __convertibleTo;
 export type __convertibleToOverride = typeof __convertibleToOverride;
 
-type _SafeTupleConvertibleTo<A> =
-  "children" extends keyof A
-    ? {
-      readonly isTupleProduct: true,
-      readonly children: {
-        [K in keyof A["children"]]: K extends number ? _ConvertibleTo<A["children"][K]> : A["children"][K]
-      },
-    }
-    : A
+type Match<T, U> = keyof U extends keyof T ? Pick<T, keyof U> extends U ? true : false : false;
+
+type _ImplicitlyConvertibleTo<A> = A extends A ?
+  Match<A, { type: "TupleProduct" }> extends true
+    ? "children" extends keyof A
+      ? {
+        readonly type: "TupleProduct",
+        readonly children: {
+          readonly [K in keyof A["children"]]: K extends number ? _ConvertibleTo<A["children"][K]> : A["children"][K]
+        },
+      }
+      : never
+    : Match<A, { type: "ArrayProduct" }> extends true
+      ? "children" extends keyof A ? number extends keyof A["children"]
+        ? {
+          readonly type: "ArrayProduct",
+          readonly children: readonly _ConvertibleTo<A["children"][number]>[],
+        }
+        | {
+          readonly type: "TupleProduct",
+          readonly children: Readonly<Record<number | "0", _ConvertibleTo<A["children"][number]>>>,
+        }
+        : never : never
+      : A
+: never;
+
 export type _ConvertibleTo<T, E=never> =
   | T
-  | _SafeTupleConvertibleTo<T>
+  | _ImplicitlyConvertibleTo<T>
   | (
     T extends E
       ? never
-      : _ConvertibleTo<DirectConvertibleTo<_SafeTupleConvertibleTo<T>>, E | T>
+      : _ConvertibleTo<DirectConvertibleTo<_ImplicitlyConvertibleTo<T>>, E | T>
   )
 
 export type ConvertibleTo<T extends Product> = Product & {
@@ -77,7 +94,7 @@ export type ConvertibleTo<T extends Product> = Product & {
 //       stuff: (
 //         | Conversion<ProductA, ProductB>
 //         | Conversion<ProductB, ProductA>
-//         | Conversion<TupleProduct<[ProductA, ProductA]>, ProductA>
+//         | Conversion<ArrayProduct<ProductA>, ProductA>
 //       ),
 //     }
 //   }
@@ -90,6 +107,32 @@ export type ConvertibleTo<T extends Product> = Product & {
 // interface ProductB extends LeafProduct {
 //   b: 5,
 // }
+// interface ProductC extends LeafProduct {
+//   c: 5,
+// }
+
+// type A = Assert<ConvertibleTo<ArrayProduct<ProductA>>, ArrayProduct<ProductB>>
+// // @ts-expect-error anti-axiom
+// type B = Assert<ConvertibleTo<ArrayProduct<ProductA>>, ArrayProduct<ProductC>>
+// type C = Assert<
+//   ConvertibleTo<ArrayProduct<ProductA>>,
+//   TupleProduct<[ProductA, TupleProduct<[ProductB, ProductA]>, ArrayProduct<ProductB>]>
+// >
+// // @ts-expect-error anti-axiom
+// type D = Assert<ConvertibleTo<ArrayProduct<ProductA>>, TupleProduct<[]>>
+
+// // type A0 = Assert<A1, A2>
+// // type A1 = ConvertibleTo<ProductA>[__convertibleTo];
+// // type A2 = TupleProduct<[ProductC]>[__convertibleTo];
+// // type A3 = UnionToTuple<
+// //   NonNullable<A2> extends infer Y ? Y extends Y ? NonNullable<A1> extends infer X ? X extends X ?
+// //     Y extends X ? never : [X, Y]
+// //   : never : never : never : never
+// // >[3]
+// // type A4 = Assert<A3[0], A3[1]>
+// // type A5 = A3[1]["x"]
+// // type A6 = Assert<ConvertibleTo<ProductA>, ConvertibleTo<ProductB>>;
+
 
 // type Z = Assert<__Element__<ProductB>, __Element__<TupleProduct<[ProductB, ProductA]>>>
 
@@ -103,3 +146,22 @@ export type ConvertibleTo<T extends Product> = Product & {
 // type U = ConvertibleTo<ProductB>;
 // type V = ConversionsUnion
 // type W = DirectConvertibleTo<ProductB>;
+
+// type UnionToTuple<T> = (
+//   (
+//       (
+//           T extends any
+//               ? (t: T) => T
+//               : never
+//       ) extends infer U
+//           ? (U extends any
+//               ? (u: U) => any
+//               : never
+//           ) extends (v: infer V) => any
+//               ? V
+//               : never
+//           : never
+//   ) extends (_: any) => infer W
+//       ? [...UnionToTuple<Exclude<T, W>>, W]
+//       : []
+// );

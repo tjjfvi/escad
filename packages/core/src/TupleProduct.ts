@@ -1,25 +1,35 @@
 
+import { checkTypeProperty } from "./checkTypeProperty";
 import { Product, _Product, ProductType } from "./Product";
 
-export type TupleProductType<T extends TupleProduct<readonly Product[]>> =
-  {
-    readonly [K in Exclude<keyof T["children"], keyof any[]>]:
-      T["children"][K] extends infer U ? U extends Product ? ProductType<U> : never : never
-  }
-
-export interface TupleProduct<T extends readonly Product[]> extends _Product {
-  readonly isTupleProduct: true,
+export interface TupleProduct<T extends readonly Product[] = readonly Product[]> extends _Product {
+  readonly type: "TupleProduct",
   readonly children: T,
 }
 
 export const TupleProduct = {
   create: <T extends readonly Product[]>(children: T): TupleProduct<T> => ({
+    type: "TupleProduct",
     children,
-    isTupleProduct: true,
   }),
-  isTupleProduct: (arg: unknown): arg is TupleProduct<readonly Product[]> =>
-    typeof arg === "object" &&
-    arg !== null &&
-    "isTupleProduct" in arg &&
-    arg["isTupleProduct" as keyof typeof arg] === true
+  isTupleProduct: checkTypeProperty<TupleProduct>("TupleProduct"),
+  getTupleProductType: <T extends TupleProduct>(product: T): TupleProductType<T> =>
+    TupleProductType.create(product.children.map(Product.getProductType)) as any,
+}
+
+export interface TupleProductType<T extends TupleProduct = TupleProduct> {
+  readonly type: "TupleProductType",
+  readonly elementTypes: (
+    T extends TupleProduct<infer U>
+      ? { [K in keyof U]: U[K] extends Product ? ProductType<U[K]> : never }
+      : never
+  ),
+}
+
+export const TupleProductType = {
+  create: (elementTypes: ProductType[]): TupleProductType => ({
+    type: "TupleProductType",
+    elementTypes,
+  }),
+  isTupleProductType: checkTypeProperty<TupleProductType>("TupleProductType"),
 }
