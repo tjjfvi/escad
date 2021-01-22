@@ -164,7 +164,7 @@ export class Element<T extends Product> extends __Element__<T> {
     throw new Error("Invalid Element.val type")
   }
 
-  toArrayFlat(): Array<ConvertibleTo<T>>{
+  toArrayFlat(): ReadonlyArray<ConvertibleTo<T>>{
     if(this.isLeaf())
       return [this.val];
     if(this.isArrayish())

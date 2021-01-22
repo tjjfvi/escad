@@ -4,11 +4,11 @@ import { Product, _Product, ProductType } from "./Product";
 
 export interface ArrayProduct<T extends Product = Product> extends _Product {
   readonly type: "ArrayProduct",
-  readonly children: T[],
+  readonly children: readonly T[],
 }
 
 export const ArrayProduct = {
-  create: <T extends Product>(children: T[]): ArrayProduct<T> => {
+  create: <T extends Product>(children: readonly T[]): ArrayProduct<T> => {
     if(children.length === 0)
       throw new Error("ArrayProducts cannot be empty");
     return {

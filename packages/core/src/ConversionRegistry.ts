@@ -9,6 +9,7 @@ import { Id } from "./Id";
 import { depthFirst } from "./depthFirst";
 import { HashMap } from "./HashMap";
 import { TupleProduct, TupleProductType } from "./TupleProduct";
+import { ArrayProduct, ArrayProductType } from "./ArrayProduct";
 // import { formatConversion, log } from "./logging";
 
 type ConversionPath = ConversionImpl<any, any>[]
@@ -63,7 +64,7 @@ export class ConversionRegistry {
       initialComposed.add([fromType, type], prior);
 
       for(const conversion of this.registered)
-        if(this.similar(type, conversion.fromType))
+        if(this.maybeImplicitlyConvertibleTo(type, conversion.fromType))
           yield {
             prior: [...prior, conversion],
             type: conversion.toType,
@@ -93,11 +94,14 @@ export class ConversionRegistry {
     return bestPath;
   }
 
-  private similar(a: ProductType, b: ProductType): boolean{
+  private maybeImplicitlyConvertibleTo(a: ProductType, b: ProductType): boolean{
     return hash(a) === hash(b) || (
       TupleProductType.isTupleProductType(a) &&
       TupleProductType.isTupleProductType(b) &&
       a.elementTypes.length === b.elementTypes.length
+    ) || (
+      TupleProductType.isTupleProductType(a) &&
+      ArrayProductType.isArrayProductType(b)
     );
   }
 
@@ -114,12 +118,24 @@ export class ConversionRegistry {
       if(hash(fromType) === hash(toType))
         continue;
 
+      if(TupleProductType.isTupleProductType(fromType) && ArrayProductType.isArrayProductType(toType)) {
+        path.splice(i, 0, {
+          fromType: TupleProductType.create(Array(fromType.elementTypes.length).fill(toType.elementType)),
+          toType,
+          convert: async (product: TupleProduct) =>
+            ArrayProduct.create(product.children),
+          weight: 0,
+        })
+        i--;
+        continue;
+      }
+
       if(
         !(TupleProductType.isTupleProductType(fromType)) ||
         !(TupleProductType.isTupleProductType(toType)) ||
         fromType.elementTypes.length !== toType.elementTypes.length
       )
-        throw new Error("Internal bug in escad; unhandled similar condition")
+        return null
 
       if(!fromType.elementTypes.every((f, i) => this.has(f, toType.elementTypes[i])))
         return null;

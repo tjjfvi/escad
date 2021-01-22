@@ -17,10 +17,10 @@ export default escad;
 
 // @create-index {"mode":"*"}
 
+export * from './ArrayProduct';
 export * from './ArtifactManager';
 export * from './ArtifactStore';
 export * from './Component';
-export * from './TupleProduct';
 export * from './ConversionRegistry';
 export * from './Conversions';
 export * from './Element';
@@ -35,8 +35,10 @@ export * from './MultiHashMap';
 export * from './Operation';
 export * from './Product';
 export * from './Timer';
+export * from './TupleProduct';
 export * from './WeakCache';
 export * from './builtins';
+export * from './checkTypeProperty';
 export * from './depthFirst';
 export * from './hash';
 export * from './logging';

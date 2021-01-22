@@ -43,8 +43,17 @@ export type DirectConvertibleTo<T, C = ConversionsUnion> =
 
 export declare const __convertibleTo: unique symbol;
 export declare const __convertibleToOverride: unique symbol;
+export declare const __convertibleToTransitivityOverride: unique symbol;
 export type __convertibleTo = typeof __convertibleTo;
 export type __convertibleToOverride = typeof __convertibleToOverride;
+export type __convertibleToTransitivityOverride = typeof __convertibleToTransitivityOverride;
+
+// A is assignable to B, and B is assignable to C, but A is not assignable to C
+export namespace TransitivityOverride {
+  export type A = (x?: true) => never;
+  export type B = () => true;
+  export type C = (x?: false) => boolean;
+}
 
 type Match<T, U> = keyof U extends keyof T ? Pick<T, keyof U> extends U ? true : false : false;
 
@@ -54,8 +63,9 @@ type _ImplicitlyConvertibleTo<A> = A extends A ?
       ? {
         readonly type: "TupleProduct",
         readonly children: {
-          readonly [K in keyof A["children"]]: K extends number ? _ConvertibleTo<A["children"][K]> : A["children"][K]
+          readonly [K in keyof A["children"] & (number | `${number}`)]: _ConvertibleTo<A["children"][K]>
         },
+        x?: true,
       }
       : never
     : Match<A, { type: "ArrayProduct" }> extends true
@@ -66,27 +76,42 @@ type _ImplicitlyConvertibleTo<A> = A extends A ?
         }
         | {
           readonly type: "TupleProduct",
-          readonly children: Readonly<Record<number | "0", _ConvertibleTo<A["children"][number]>>>,
+          readonly children: Readonly<Record<number, _ConvertibleTo<A["children"][number]>>>,
         }
         : never : never
       : A
 : never;
 
 export type _ConvertibleTo<T, E=never> =
-  | T
-  | _ImplicitlyConvertibleTo<T>
-  | (
-    T extends E
-      ? never
-      : _ConvertibleTo<DirectConvertibleTo<_ImplicitlyConvertibleTo<T>>, E | T>
-  )
+  T extends T
+    ? __convertibleToOverride extends keyof T
+      ? _ConvertibleTo<Unphantom<T[__convertibleToOverride]>>
+      : T
+      | _ImplicitlyConvertibleTo<T>
+      | (
+        T extends E
+          ? never
+          : _ConvertibleTo<DirectConvertibleTo<_ImplicitlyConvertibleTo<T>>, E | T>
+      )
+      | {
+        [__convertibleTo]?: _ConvertibleTo<T, E> | T[Extract<__convertibleTo, keyof T>],
+        [__convertibleToTransitivityOverride]?: TransitivityOverride.C,
+      }
+    : never
+
+// Preserves type info but does not affect assignability
+interface Phantom<T> { _: Phantom<T> }
+type Unphantom<T> = T extends Phantom<infer U> ? U : never;
 
 export type ConvertibleTo<T extends Product> = Product & {
-  [__convertibleToOverride]?: true,
+  [__convertibleToTransitivityOverride]?: TransitivityOverride.B,
+  [__convertibleToOverride]?: Phantom<T>,
   [__convertibleTo]?: T[__convertibleTo],
 }
 
-// Tests:
+/* Tests */
+
+// import { ArrayProduct, LeafProduct, TupleProduct, __Element__, Elementish } from ".";
 
 // declare global {
 //   namespace escad {
@@ -111,6 +136,9 @@ export type ConvertibleTo<T extends Product> = Product & {
 //   c: 5,
 // }
 
+// type _ = [A, B, C, E, F, G, W<Product>, X__<Product>, X_<Product, Product>, X, Y, Y_<Product, Product>, Z, __]
+// type __ = _;
+
 // type A = Assert<ConvertibleTo<ArrayProduct<ProductA>>, ArrayProduct<ProductB>>
 // // @ts-expect-error anti-axiom
 // type B = Assert<ConvertibleTo<ArrayProduct<ProductA>>, ArrayProduct<ProductC>>
@@ -118,34 +146,37 @@ export type ConvertibleTo<T extends Product> = Product & {
 //   ConvertibleTo<ArrayProduct<ProductA>>,
 //   TupleProduct<[ProductA, TupleProduct<[ProductB, ProductA]>, ArrayProduct<ProductB>]>
 // >
-// // @ts-expect-error anti-axiom
-// type D = Assert<ConvertibleTo<ArrayProduct<ProductA>>, TupleProduct<[]>>
+// // // @ts-expect-error anti-axiom
+// // type D = Assert<ConvertibleTo<ArrayProduct<ProductA>>, TupleProduct<[]>>
+// type E = Assert<ConvertibleTo<ProductA>, ArrayProduct<ConvertibleTo<ProductA>>>;
+// type F = Assert<ConvertibleTo<ProductA>, TupleProduct<ConvertibleTo<ProductA>[]>>;
+// type G = Assert<
+//   ConvertibleTo<TupleProduct<[ProductC, ProductA]>>,
+//   TupleProduct<[ProductC, TupleProduct<ConvertibleTo<ProductA>[]>]>
+// >;
+
 
 // // type A0 = Assert<A1, A2>
-// // type A1 = ConvertibleTo<ProductA>[__convertibleTo];
-// // type A2 = TupleProduct<[ProductC]>[__convertibleTo];
+// // type A1 = ConvertibleTo<TupleProduct<[ProductC, ProductA]>>;
+// // type A2 = TupleProduct<[ProductC, TupleProduct<ConvertibleTo<ProductA>[]>]>;
 // // type A3 = UnionToTuple<
 // //   NonNullable<A2> extends infer Y ? Y extends Y ? NonNullable<A1> extends infer X ? X extends X ?
 // //     Y extends X ? never : [X, Y]
 // //   : never : never : never : never
-// // >[3]
+// // >[0]
 // // type A4 = Assert<A3[0], A3[1]>
-// // type A5 = A3[1]["x"]
+// // type A5 = keyof A3[1]["children"]
 // // type A6 = Assert<ConvertibleTo<ProductA>, ConvertibleTo<ProductB>>;
 
 
-// type Z = Assert<__Element__<ProductB>, __Element__<TupleProduct<[ProductB, ProductA]>>>
-
+// type W<A extends Product> = Assert<_ConvertibleTo<A>, _ConvertibleTo<ConvertibleTo<A>>>;
 // type X__<A extends Product> = Assert<ConvertibleTo<A>, ConvertibleTo<ConvertibleTo<A>>>;
 // type X_<B extends Product, A extends ConvertibleTo<B>> = Assert<ConvertibleTo<B>, ConvertibleTo<A>>
 // type X = Assert<__Element__<ProductB>, __Element__<ProductA>>
 // type Y = Assert<Elementish<ProductB>, Elementish<ProductA>>
 // type Y_<B extends Product, A extends ConvertibleTo<B>> = Assert<Elementish<B>, Elementish<A>>
 
-// type T = ConvertibleTo<ProductA>;
-// type U = ConvertibleTo<ProductB>;
-// type V = ConversionsUnion
-// type W = DirectConvertibleTo<ProductB>;
+// type Z = Assert<__Element__<ProductB>, __Element__<TupleProduct<[ProductB, ProductA]>>>
 
 // type UnionToTuple<T> = (
 //   (

@@ -6,10 +6,13 @@ import {
   __convertibleTo,
   __convertibleToOverride,
   _ConvertibleTo,
+  __convertibleToTransitivityOverride,
+  TransitivityOverride,
 } from "./Conversions";
 import { hash } from "./hash";
 
 export interface _Product {
+  [__convertibleToTransitivityOverride]?: TransitivityOverride.A,
   readonly [__convertibleTo]?: (
     __convertibleToOverride extends keyof this
       ? unknown
