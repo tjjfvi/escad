@@ -20,10 +20,12 @@
     "typescript": "^4.1.0-dev.20201015"
   },
   "dependencies": {
-    "@escad/client-mesh": "^0.0.0",
     "@escad/core": "^0.0.0",
     "@escad/register-client-plugin": "^0.0.0",
     "tszer": "0.0.20"
+  },
+  "optionalDependencies": {
+    "@escad/client-mesh": "^0.0.0"
   },
   "publishConfig": {
     "access": "public"
