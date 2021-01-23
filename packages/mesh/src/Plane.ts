@@ -9,17 +9,17 @@ export interface Plane {
   readonly w: number,
 }
 
+export interface SplitFaceArguments {
+  front: Face[],
+  back: Face[],
+  coplanarFront: Face[],
+  coplanarBack: Face[],
+}
+
 export const Plane = {
   create: _Plane,
   flip: (plane: Plane): Plane => Plane.create(Vector3.negate(plane.normal), -plane.w),
-  splitFace(
-    plane: Plane,
-    face: Face,
-    coplanarFront: Array<Face>,
-    coplanarBack: Array<Face>,
-    front: Array<Face>,
-    back: Array<Face>
-  ){
+  splitFace(plane: Plane, face: Face, { front, back, coplanarFront, coplanarBack }: SplitFaceArguments){
     const Coplanar = 0;
     const Front = 1;
     const Back = 2;

@@ -13,7 +13,7 @@ import {
   conversionRegistry,
   TupleProductType,
 } from "@escad/core";
-import { Bsp } from "./Bsp";
+import { Bsp, ClipOptions } from "./Bsp";
 import { Union } from "./union";
 
 const diffMarkerId = Id.create(__filename, "@escad/csg", "0", "DiffMarker");
@@ -48,13 +48,10 @@ conversionRegistry.register({
   fromType: TupleProductType.create([DiffMarker.productType, Bsp.productType, Bsp.productType]),
   toType: Bsp.productType,
   convert: async ({ children: [, a, b] }: Diff<Bsp, Bsp>): Promise<Bsp> => {
-    a = Bsp.invert(a);
-    a = Bsp.clipTo(a, b);
-    b = Bsp.clipTo(b, a);
     b = Bsp.invert(b);
-    b = Bsp.clipTo(b, a);
-    b = Bsp.invert(b);
-    return Bsp.invert(Bsp.build(a, Bsp.allFaces(b)) ?? Bsp.null());
+    a = Bsp.clipTo(a, b, ClipOptions.DropFront | ClipOptions.DropCoplanar)
+    b = Bsp.clipTo(b, a, ClipOptions.DropFront | ClipOptions.DropCoplanarBack)
+    return Bsp.build(a, Bsp.allFaces(b)) ?? Bsp.null();
   },
   weight: 1,
 })

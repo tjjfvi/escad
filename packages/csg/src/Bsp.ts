@@ -1,8 +1,21 @@
 
-import { createProductTypeUtils, Id, LeafProduct } from "@escad/core";
+import { createProductTypeUtils, Id, LeafProduct, Stack } from "@escad/core";
 import { Face, Plane, Vector3 } from "@escad/mesh";
 
 const bspId = Id.create(__filename, "@escad/csg", "0", "Bsp");
+
+type Mutable<T> = { -readonly [K in keyof T]: T[K] }
+type PartialBsp =
+  & Pick<Bsp, "type" | "faces" | "plane">
+  & Mutable<Partial<Pick<Bsp, "front" | "back">>>
+
+export enum ClipOptions {
+  DropFront = 1 << 0,
+  DropBack = 0,
+  DropCoplanarFront = 1 << 1,
+  DropCoplanarBack = 1 << 2,
+  DropCoplanar = DropCoplanarFront | DropCoplanarBack,
+}
 
 export interface Bsp extends LeafProduct {
   readonly type: typeof bspId,
@@ -24,51 +37,114 @@ export const Bsp = {
 
   id: bspId,
 
-  invert: (bsp: Bsp): Bsp =>
-    Bsp.create(
-      bsp.back && Bsp.invert(bsp.back),
-      bsp.front && Bsp.invert(bsp.front),
-      bsp.faces.map(Face.flip),
-      Plane.flip(bsp.plane),
-    ),
-
-
-  clipFaces: (bsp: Bsp, faces: readonly Face[]): Face[] => {
-    let front: Face[] = [];
-    let back: Face[] = [];
-    faces.map(f => Plane.splitFace(bsp.plane, f, front, back, front, back));
-    if(bsp.front && front.length) front = Bsp.clipFaces(bsp.front, front);
-    if(bsp.back && back.length) back = Bsp.clipFaces(bsp.back, back);
-    else back = []; // Remove the polygons; they must be inside the mesh
-    return front.concat(back);
+  mapExtra: <E>(bsp: [Bsp, E], fn: (bsp: Bsp | null, extra: E) => [PartialBsp | null, [E, E] | null]) => {
+    const nodeStack = new Stack<[Bsp | null, E]>([bsp]);
+    const buildStack = new Stack<PartialBsp | null>([]);
+    for(const [origNode, origExtra] of nodeStack) {
+      const [mappedNode, mappedExtras] = fn(origNode, origExtra);
+      if(mappedExtras && mappedNode !== null) {
+        nodeStack.push([mappedNode.back ?? null, mappedExtras[1]]).push([mappedNode.front ?? null, mappedExtras[0]])
+        mappedNode.front = undefined
+        mappedNode.back = undefined
+      } else if(mappedNode) {
+        mappedNode.front ??= null;
+        mappedNode.back ??= null;
+      }
+      let node = mappedNode;
+      while(node === null || node.front !== undefined && node.back !== undefined) {
+        const next = buildStack.pop();
+        if(next === undefined || next === null)
+          break;
+        if(next.front === undefined)
+          next.front = node as Bsp | null
+        else
+          next.back = node as Bsp | null
+        node = next;
+      }
+      buildStack.push(node);
+    }
+    const node = buildStack.pop();
+    if(!node) throw new Error("Error in Bsp.map: final node was null/undefined");
+    return node as Bsp;
   },
 
-  clipTo: (a: Bsp, b: Bsp): Bsp => Bsp.create(
-    a.front && Bsp.clipTo(a.front, b),
-    a.back && Bsp.clipTo(a.back, b),
-    Bsp.clipFaces(b, a.faces),
-    a.plane,
-  ),
+  map: (bsp: Bsp, fn: (bsp: Bsp | null) => PartialBsp | null) =>
+    Bsp.mapExtra([bsp, undefined], bsp => [fn(bsp), [undefined, undefined]]),
 
-  allFaces: (bsp: Bsp | null): Face[] =>
-    bsp ? bsp.faces.concat(Bsp.allFaces(bsp.front)).concat(Bsp.allFaces(bsp.back)) : [],
+  invert: (bsp: Bsp): Bsp =>
+    Bsp.map(bsp, bsp =>
+      bsp ? {
+        type: Bsp.id,
+        front: bsp.back,
+        back: bsp.front,
+        faces: bsp.faces.map(Face.flip),
+        plane: Plane.flip(bsp.plane),
+      } : null
+    ),
+
+  clipFaces: arrayify(function*(bsp: Bsp, faces: readonly Face[], options: ClipOptions){
+    const stack = new Stack([[bsp, faces]] as const);
+    for(const [node, faces] of stack) {
+      const frontFaces: Face[] = [];
+      const backFaces: Face[] = [];
+      const dropFront = !!(options & ClipOptions.DropFront);
+      for(const face of faces)
+        Plane.splitFace(node.plane, face, {
+          front: frontFaces,
+          back: backFaces,
+          coplanarFront: !!(options & ClipOptions.DropCoplanarFront) === dropFront ? frontFaces : backFaces,
+          coplanarBack: !!(options & ClipOptions.DropCoplanarBack) === dropFront ?  frontFaces : backFaces,
+        });
+      if(node.front && frontFaces.length) stack.push([node.front, frontFaces])
+      else if(!dropFront) yield* frontFaces;
+      if(node.back && backFaces.length) stack.push([node.back, backFaces])
+      else if(dropFront) yield* backFaces;
+    }
+  }),
+
+  clipTo: (a: Bsp, b: Bsp, options: ClipOptions): Bsp =>
+    Bsp.map(a, bsp =>
+      bsp ? {
+        ...bsp,
+        faces: Bsp.clipFaces(b, bsp.faces, options)
+      } : null
+    ),
+
+  allFaces: arrayify(function*(bsp: Bsp | null){
+    const stack = new Stack([bsp]);
+    for(const node of stack) if(node) {
+      yield* node.faces;
+      stack.push(node.back).push(node.front);
+    }
+  }),
 
   null: () => Bsp.create(null, null, [], Plane.create(Vector3.create(0, 0, 1), 0)),
 
-  build: (bsp: Bsp | null, allFaces: readonly Face[]): Bsp | null => {
-    if(!allFaces.length) return bsp;
-    const plane = bsp?.plane ?? allFaces[0].plane;
-    const front: Face[] = [];
-    const back: Face[] = [];
-    const faces = bsp?.faces.slice() ?? [];
-    allFaces.map(f => Plane.splitFace(plane, f, faces, faces, front, back));
-    return Bsp.create(
-      Bsp.build(bsp?.front ?? null, front),
-      Bsp.build(bsp?.back ?? null, back),
-      faces,
-      plane,
-    );
-  },
+  build: (bsp: Bsp | null, allFaces: readonly Face[]): Bsp | null =>
+    Bsp.mapExtra([bsp ?? Bsp.create(null, null, [], allFaces[0].plane), allFaces], (bsp, allFaces) => {
+      if(!allFaces.length)
+        return [bsp, null];
+      const plane = bsp?.plane ?? allFaces[0].plane;
+      const front: Face[] = [];
+      const back: Face[] = [];
+      const faces = bsp?.faces.slice() ?? [];
+      for(const face of allFaces)
+        Plane.splitFace(plane, face, {
+          coplanarFront: faces,
+          coplanarBack: faces,
+          front,
+          back,
+        });
+      return [
+        {
+          type: Bsp.id,
+          ...bsp,
+          faces,
+          plane,
+        },
+        [front, back]
+      ]
+    }),
 
   trim: (bsp: Bsp | null): Bsp | null => {
     if(!bsp) return bsp;
@@ -79,4 +155,8 @@ export const Bsp = {
       return Bsp.create(front, back, bsp.faces, bsp.plane);
     return front ?? back ?? null;
   },
+}
+
+function arrayify<A extends any[], T>(fn: (...args: A) => Iterable<T>){
+  return (...args: A) => [...fn(...args)]
 }

@@ -1,5 +1,5 @@
 
-import "../packages/csg/register";
+import "../packages/builtins/register";
 import { cube } from "../packages/solids/dist";
 
 export default () => (

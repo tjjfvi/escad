@@ -4,7 +4,7 @@ interface LinkedList<T> {
   next?: LinkedList<T>,
 }
 
-class Stack<T> {
+export class Stack<T> {
 
   private list: LinkedList<T> | undefined;
 
@@ -25,9 +25,11 @@ class Stack<T> {
   }
 
   *[Symbol.iterator](){
-    while(this.list)
-      // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      yield this.pop()!
+    while(this.list) {
+      const value = this.list.value;
+      this.list = this.list.next;
+      yield value;
+    }
   }
 
 }

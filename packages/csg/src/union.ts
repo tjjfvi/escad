@@ -14,7 +14,7 @@ import {
   TupleProductType,
   ArrayProductType,
 } from "@escad/core";
-import { Bsp } from "./Bsp";
+import { Bsp, ClipOptions } from "./Bsp";
 
 const unionMarkerId = Id.create(__filename, "@escad/csg", "0", "UnionMarker");
 
@@ -49,11 +49,8 @@ conversionRegistry.register({
   toType: Bsp.productType,
   convert: async ({ children: [, c] }: Union<ArrayProduct<Bsp>>): Promise<Bsp> =>
     c.children.reduce((a, b) => {
-      a = Bsp.clipTo(a, b);
-      b = Bsp.clipTo(b, a);
-      b = Bsp.invert(b);
-      b = Bsp.clipTo(b, a);
-      b = Bsp.invert(b);
+      a = Bsp.clipTo(a, b, ClipOptions.DropBack | ClipOptions.DropCoplanarBack);
+      b = Bsp.clipTo(b, a, ClipOptions.DropBack | ClipOptions.DropCoplanar);
       return Bsp.build(a, Bsp.allFaces(b)) ?? Bsp.null();
     }),
   weight: 1,
