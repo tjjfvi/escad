@@ -60,9 +60,10 @@ export const Plane = {
           f.push(v);
           b.push(v);
         })
-        f.slice(2).map((_, i) => front.push(Face.create([f[0], f[i + 1], f[i + 2]])));
-        b.slice(2).map((_, i) => back.push(Face.create([b[0], b[i + 1], b[i + 2]])));
-        break;
+        if(f.length > 2)
+          front.push(Face.create(f))
+        if(b.length > 2)
+          back.push(Face.create(b))
       }
     }
   }

@@ -16,11 +16,8 @@ export const Mesh = {
     type: meshId,
     faces,
   }),
-  fromVertsFaces: (verts: Vector3[], faces: number[][]): Mesh => Mesh.create(
-    faces
-      .flatMap(f => f.slice(2).map((_, i) => [f[0], f[i + 1], f[i + 2]]))
-      .map(is => Face.create(is.map(i => verts[i])))
-  ),
+  fromVertsFaces: (verts: Vector3[], faces: number[][]): Mesh =>
+    Mesh.create(faces.map(is => Face.create(is.map(i => verts[i])))),
   id: meshId,
   ...createProductTypeUtils<Mesh, "Mesh">(meshId, "Mesh")
 };

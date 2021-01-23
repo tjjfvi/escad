@@ -1,7 +1,7 @@
 
 import { registerViewerRegistration } from "@escad/client";
 import { viewer3d, colors, EdgesGeometry, Viewer3dInput } from "@escad/client-3d-viewer";
-import { Mesh } from "@escad/mesh";
+import { Face, Mesh } from "@escad/mesh";
 import * as t from "three";
 
 registerViewerRegistration<Mesh, Viewer3dInput>({
@@ -9,12 +9,13 @@ registerViewerRegistration<Mesh, Viewer3dInput>({
   context: viewer3d,
   map: product => {
     let arr = new Float32Array(function*(){
-      for(let face of product.faces)
-        for(let vertex of face.points) {
-          yield vertex.x;
-          yield vertex.y;
-          yield vertex.z;
-        }
+      for(const face of product.faces)
+        for(const triangle of Face.toTriangles(face))
+          for(const vertex of triangle.points) {
+            yield vertex.x;
+            yield vertex.y;
+            yield vertex.z;
+          }
     }());
     let attr = new t.BufferAttribute(arr, 3);
     let geo = new t.BufferGeometry();

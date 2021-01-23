@@ -8,14 +8,12 @@ export interface Face {
 }
 
 export const Face = {
-  create: (points: Array<Vector3>): Face => {
-    if(points.length !== 3)
-      throw new Error("Faces can only be triangles");
-    return {
-      points,
-      plane: Plane.create(points),
-    };
-  },
+  create: (points: Array<Vector3>): Face => ({
+    points,
+    plane: Plane.create(points),
+  }),
+  toTriangles: (face: Face): Face[] =>
+    face.points.slice(2).map((_, i) => Face.create([face.points[0], face.points[i + 1], face.points[i + 2]])),
   flip: (face: Face) =>
     Face.create([...face.points].reverse())
 }
