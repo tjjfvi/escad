@@ -38,7 +38,7 @@ export type ElementOut<T extends Product, Arg> =
 
 export interface Element<T extends Product> {
   (): Element<T>,
-  <A extends Product>(arg: A): ElementOut<T, A>,
+  <A>(arg: A): ElementOut<T, A>,
 }
 
 type _ElementBuiltins<T extends Product> = {
