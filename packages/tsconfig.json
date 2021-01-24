@@ -1,0 +1,56 @@
+{
+  "files": [],
+  "references": [
+    {
+      "path": "builtins"
+    },
+    {
+      "path": "cli"
+    },
+    {
+      "path": "client"
+    },
+    {
+      "path": "client-3d-viewer"
+    },
+    {
+      "path": "client-bundler"
+    },
+    {
+      "path": "client-mesh"
+    },
+    {
+      "path": "core"
+    },
+    {
+      "path": "csg"
+    },
+    {
+      "path": "mesh"
+    },
+    {
+      "path": "parameters"
+    },
+    {
+      "path": "register-client-plugin"
+    },
+    {
+      "path": "renderer"
+    },
+    {
+      "path": "server"
+    },
+    {
+      "path": "server-client-messages"
+    },
+    {
+      "path": "server-renderer-messages"
+    },
+    {
+      "path": "solids"
+    },
+    {
+      "path": "transform"
+    },
+  ]
+}

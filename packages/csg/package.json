@@ -6,11 +6,8 @@
   "types": "dist/index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "clean": "rm -rf dist",
-    "build": "npm run clean; tsc",
-    "hash": "find src/ -type f -print0 | sort -z | xargs -0 openssl dgst -sha256 | openssl dgst -sha256 > .hash",
-    "changed": "touch .hash; mv .hash old.hash; npm run hash; cmp old.hash .hash >/dev/null 2>&1",
-    "quick-build": "if npm run changed; then echo 'Skipping build'; else npm run build; fi; rm old.hash",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
+    "build": "npm run clean; tsc -b .",
     "prepack": "npm run build",
     "open-errors": "tsc | grep -p '^\\S' | sed -e 's/(.*//' | sort | uniq | xargs code"
   },

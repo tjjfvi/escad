@@ -27,6 +27,7 @@ import fs from "fs";
   const loadFile = path.resolve(file);
   const loadDir = path.dirname(path.resolve(watchDir || loadFile));
 
+  // eslint-disable-next-line @typescript-eslint/no-var-requires
   Object.assign(require("@escad/server/dist/config").default, { port: +port, loadFile, loadDir, artifactsDir });
 
   require("@escad/server");

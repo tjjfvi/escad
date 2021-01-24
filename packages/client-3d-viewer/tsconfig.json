@@ -1,7 +1,12 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../tsconfig.settings.json",
   "compilerOptions": {
-    "jsx": "react",
-    "outDir": "dist"
-  }
+    "outDir": "dist",
+    "rootDir": "src"
+  },
+  "references": [
+    {
+      "path": "../client/tsconfig.json"
+    }
+  ]
 }

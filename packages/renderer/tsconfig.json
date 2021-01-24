@@ -1,6 +1,21 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../tsconfig.settings.json",
   "compilerOptions": {
     "outDir": "dist",
-  }
+    "rootDir": "src"
+  },
+  "references": [
+    {
+      "path": "../core/tsconfig.json"
+    },
+    {
+      "path": "../parameters/tsconfig.json"
+    },
+    {
+      "path": "../register-client-plugin/tsconfig.json"
+    },
+    {
+      "path": "../server-renderer-messages/tsconfig.json"
+    }
+  ]
 }

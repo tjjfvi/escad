@@ -1,10 +1,15 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../tsconfig.settings.json",
   "compilerOptions": {
     "outDir": "dist",
+    "rootDir": "src"
   },
-  "exclude": [
-    "./register",
-    "./dist",
-  ],
+  "references": [
+    {
+      "path": "../core/tsconfig.json"
+    },
+    {
+      "path": "../register-client-plugin/tsconfig.json"
+    },
+  ]
 }

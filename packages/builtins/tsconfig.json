@@ -1,10 +1,25 @@
 {
-  "extends": "../../tsconfig.json",
+  "extends": "../tsconfig.settings.json",
   "compilerOptions": {
     "outDir": "dist",
+    "rootDir": "src"
   },
   "exclude": [
     "./register",
     "./dist",
   ],
+  "references": [
+    {
+      "path": "../mesh/tsconfig.json"
+    },
+    {
+      "path": "../csg/tsconfig.json"
+    },
+    {
+      "path": "../solids/tsconfig.json"
+    },
+    {
+      "path": "../transform/tsconfig.json"
+    },
+  ]
 }
