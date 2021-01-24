@@ -16,7 +16,7 @@ export async function load({ path }: ServerRendererMessage.Load){
     throw new Error("Expected export type of function or RenderFunction");
 
   const [func, paramDef] = exported instanceof RenderFunction ? [exported.func, exported.paramDef] : [exported, null];
-  const param = ObjectParam.create({ children: paramDef ?? {} });
+  const param = ObjectParam.create(paramDef ?? {});
   const { defaultValue: defaultParams } = param;
 
   if(paramDef)

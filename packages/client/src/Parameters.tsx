@@ -1,54 +1,38 @@
 import { IdView } from "./IdView";
-import { Observable, useFromProm, Writeable } from "rhobo";
+import { Observable, Writeable } from "rhobo";
 import React from "react";
-import { Id } from "@escad/core";
+import { HashMap, Id } from "@escad/core";
+import { Parameter } from "@escad/parameters";
+import { messenger } from "./Messenger";
 
-export interface Parameter {
-  type: Id,
-  buffer: Buffer,
-}
-
-export interface ParameterType {
-  id: Id,
+export interface ParameterRegistration<T, P extends Parameter<T>> {
+  id: P["type"],
   className?: string,
-  component: React.FunctionComponent<{ parameter: Parameter, input: Writeable<Buffer | null> }>,
+  component: (props: { parameter: Parameter<T>, value: Writeable<T> }) => JSX.Element,
 }
 
-export interface ParameterTypeInput {
-  id: Id | Promise<Id>,
-  className?: string,
-  component: React.FunctionComponent<{ parameter: Parameter, input: Writeable<Buffer | null> }>,
+const parameterRegistrations = new HashMap<Id, ParameterRegistration<any, any>>();
+
+export const registerParameter = async <T, P extends Parameter<T>>(registration: ParameterRegistration<T, P>) => {
+  if(parameterRegistrations.has(registration.id))
+    throw new Error(`Duplicate ParameterRegistration for id ${registration.id.full}`);
+  parameterRegistrations.set(registration.id, registration);
 }
 
-// eslint-disable-next-line func-call-spacing
-const parameterTypeResolveMap = new Map<Id, (value: ParameterType) => void>();
-const parameterTypeMap = new Map<Id, Promise<ParameterType>>();
-
-export const registerParameterType = async (type: ParameterTypeInput) => {
-  const id = await type.id;
-  if(!parameterTypeMap.has(id))
-    parameterTypeMap.set(id, Promise.resolve({ ...type, id }));
-  const resolve = parameterTypeResolveMap.get(id);
-  if(!resolve)
-    throw new Error(`Duplicate parameterType registration for id ${id.full}`);
-  parameterTypeResolveMap.delete(id);
-  resolve({ ...type, id });
-}
-
-export const getParameterType = (id: Id) => {
-  const existing = parameterTypeMap.get(id);
-  if(existing)
-    return existing;
-  const promise = new Promise<ParameterType>(resolve => parameterTypeResolveMap.set(id, resolve));
-  parameterTypeMap.set(id, promise);
-  return promise;
-}
-
-export const Parameter = ({ parameter, input }: { parameter: Parameter, input: Observable<Buffer | null> }) => {
-  const parameterType = useFromProm(() => getParameterType(parameter.type)).use()();
-  if(!parameterType)
+export const ParameterView = <T, >({ parameter, value }: { parameter: Parameter<T>, value: Observable<T> }) => {
+  value.off("update", messenger.paramsChangeHander)
+  value.on("update", messenger.paramsChangeHander)
+  const parameterRegistration = parameterRegistrations.get(parameter.type);
+  if(!parameterRegistration)
     return <div className="Parameter none"><IdView id={parameter.type}/></div>;
-  return <div className={"Parameter " + (parameterType.className ?? "")}>
-    <parameterType.component {...{ parameter, input }}/>
+  return <div className={"Parameter " + (parameterRegistration.className ?? "")}>
+    <parameterRegistration.component {...{ parameter, value }}/>
   </div>
 }
+
+export const NameDesc = ({ parameter }: {parameter: Parameter<unknown> }) => (
+  <div className="NameDesc">
+    <span className="name">{parameter.name}</span>
+    <span className="desc">{parameter.desc}</span>
+  </div>
+)

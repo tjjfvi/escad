@@ -5,6 +5,7 @@ import { ServerClientMessage, ClientServerMessage } from "@escad/server-client-m
 import { observable } from "rhobo";
 import { ArtifactManager, artifactManager, ArtifactStore, conversionRegistry, Hash, Product } from "@escad/core";
 import { v4 as uuidv4 } from "uuid";
+import { ObjectParam } from "@escad/parameters";
 
 export class Messenger extends EventEmitter<{
   message: (message: ServerClientMessage) => void,
@@ -16,6 +17,8 @@ export class Messenger extends EventEmitter<{
   serverId = observable<string>();
   shas = observable<Hash[]>([]);
   products = observable<Product[]>([]);
+  paramDef = observable<ObjectParam<any>>();
+  params = observable<Record<string, unknown>>({});
 
   disconnectTimeout: any;
 
@@ -35,6 +38,11 @@ export class Messenger extends EventEmitter<{
         this.products(await Promise.all(msg.products.map(async (sha): Promise<Product> =>
           await this.artifactManager.lookupRaw(sha) as Product
         )));
+        return;
+      }
+
+      if(msg.type === "paramDef") {
+        this.paramDef(msg.paramDef ? await this.artifactManager.lookupRaw(msg.paramDef) as ObjectParam<any> : null);
         return;
       }
 
@@ -136,6 +144,10 @@ export class Messenger extends EventEmitter<{
     this.connected(false);
     this.ws = null;
     setTimeout(() => this.initWs(), 5000);
+  }
+
+  paramsChangeHander = () => {
+    this.send({ type: "params", params: this.params.value })
   }
 
 }

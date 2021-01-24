@@ -21,7 +21,7 @@ export interface ObjectParam<O extends ObjectParamGeneric> extends Parameter<Obj
 export const ObjectParam = {
   create: <O extends ObjectParamGeneric>(children: O): ObjectParam<O> => ({
     type: objectParamId,
-    children,
+    children: mapObj(children, (v, k) => ({ name: nameFromKey(k as any), ...v })) as any,
     defaultValue: mapObj(children, v => v.defaultValue) as any
   })
 };
@@ -30,3 +30,8 @@ export const objectParam = ObjectParam.create;
 
 const mapObj = <O>(o: O, f: (v: O[keyof O], k: keyof O) => unknown): unknown =>
   Object.assign({}, ...Object.entries(o).map(([k, v]: any) => ({ [k]: f(v, k) })));
+
+const nameFromKey = (key: string) => {
+  let x = key.split(/([A-Z][A-Z]+)|(?=[A-Z])|(\d+)/).join(" ").replace(/ +/g, " ");
+  return x[0].toUpperCase() + x.slice(1);
+}

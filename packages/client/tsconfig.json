@@ -7,6 +7,12 @@
   },
   "references": [
     {
+      "path": "../parameters/tsconfig.json"
+    },
+    {
+      "path": "../core/tsconfig.json"
+    },
+    {
       "path": "../server-client-messages/tsconfig.json"
     }
   ]

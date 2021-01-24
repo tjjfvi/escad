@@ -5,7 +5,7 @@ import { useObservable } from "rhobo";
 export type PaneArgs = {
   name: string,
   className?: string,
-  children: React.ReactChildren,
+  children: React.ReactNode,
   left?: boolean,
   right?: boolean,
 }

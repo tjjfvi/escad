@@ -4,7 +4,7 @@ import { ClientServerMessage, ServerClientMessage } from "@escad/server-client-m
 import WebSocket = require("ws");
 import flatted from "flatted";
 import { Hash, ProductType } from "@escad/core";
-import { rendererMessenger } from "./rendererMessenger";
+import { RendererMessenger, rendererMessenger } from "./rendererMessenger";
 import { serverId } from "./serverId";
 import { v4 as uuidv4 } from "uuid";
 import { RendererServerMessage } from "@escad/server-renderer-messages";
@@ -139,6 +139,7 @@ export class ClientMessenger extends EventEmitter<{
   private run(){
     this.cancelRun();
     const id = uuidv4();
+    rendererMessenger.send({ type: "run", id, params: this.params  })
     const handler = (msg: RendererServerMessage) => {
       if(msg.type !== "runResponse" || msg.id !== id)
         return;
