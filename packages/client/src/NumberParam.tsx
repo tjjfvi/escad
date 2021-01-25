@@ -7,7 +7,13 @@ registerParameter<number, NumberParam>({
   id: NumberParam.id,
   className: "NumberParam",
   component: observer(({ parameter, value }) => {
-    const validate = (val: number) => !isNaN(val)
+    const validate = (val: number) =>
+      !(
+        (isNaN(val)) ||
+        (parameter.integer && Math.floor(val) !== val) ||
+        (parameter.min !== undefined && val < parameter.min) ||
+        (parameter.max !== undefined && val > parameter.max)
+      )
     const _fieldValue = useObservable(value() + "");
     const valid = useComputed(() => validate(+_fieldValue()));
     const fieldValue = useComputed(() => _fieldValue(), v => {
