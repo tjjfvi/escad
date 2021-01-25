@@ -1,8 +1,10 @@
 
 import "../packages/builtins/register";
 import { renderFunction } from "../packages/renderer";
-import { numberParam } from "../packages/parameters";
+import { booleanParam, numberParam } from "../packages/parameters";
 import { cube } from "../packages/solids/dist";
+import { sub } from "../packages/csg/dist";
+import escad from "../packages/core/dist";
 
 export default renderFunction(
   {
@@ -10,14 +12,15 @@ export default renderFunction(
       defaultValue: 1,
       min: 0,
     }),
+    hollow: booleanParam({ defaultValue: true, desc: "Should the cube be hollow?" }),
     innerSize: numberParam({
       defaultValue: .9,
       min: 0,
     }),
   },
-  ({ outerSize, innerSize }) => (
+  ({ outerSize, hollow, innerSize }) => (
     cube({ s: outerSize })
-      .sub(cube({ s: innerSize }))
+    (hollow ? sub(cube({ s: innerSize })) : escad())
       .sub(cube({ s: outerSize, c: false }))
   )
 );

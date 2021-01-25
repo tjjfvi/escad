@@ -24,7 +24,10 @@ export const ParameterView = <T, >({ parameter, value }: { parameter: Parameter<
   value.on("update", messenger.paramsChangeHander)
   const parameterRegistration = parameterRegistrations.get(parameter.type);
   if(!parameterRegistration)
-    return <div className="Parameter none"><IdView id={parameter.type}/></div>;
+    return <div className="Parameter none">
+      <span>Cannot display parameter</span>
+      <IdView id={parameter.type}/>
+    </div>;
   return <div className={"Parameter " + (parameterRegistration.className ?? "")}>
     <parameterRegistration.component {...{ parameter, value }}/>
   </div>

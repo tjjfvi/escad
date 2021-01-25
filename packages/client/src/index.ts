@@ -12,6 +12,7 @@ ReactDOM.render(
 // @create-index {"mode":"*"}
 
 export * from './App';
+export * from './BooleanParam';
 export * from './Disconnected';
 export * from './IdView';
 export * from './Messenger';
