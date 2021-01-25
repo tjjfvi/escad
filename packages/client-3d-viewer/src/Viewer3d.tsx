@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 
-import React from "react";
+import React, { useEffect } from "react";
 import { ViewerInput, Viewer } from "@escad/client";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 import * as t from "three";
@@ -31,8 +31,16 @@ const Viewer3d = ({ inputs }: { inputs: Promise<Viewer3dInput>[] }) => {
     orientRaycast,
   } = s;
 
+  let active = true;
+  useEffect(() => () => {
+    active = false;
+  });
+
   inputGroup.remove(...inputGroup.children);
-  inputs.map(async i => inputGroup.add((await i).group));
+  inputs.map(async i => {
+    const { group } = await i;
+    if(active) inputGroup.add(group);
+  });
 
   function render(){
     if(!el)
