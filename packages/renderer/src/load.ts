@@ -43,14 +43,14 @@ export async function load({ path }: ServerRendererMessage.Load){
       products: await render(params),
     });
 
-  console.time("Render")
+  console.time("Load")
 
   messenger.send({
     type: "products",
     products: await render(defaultParams)
   });
 
-  console.timeEnd("Render")
+  console.timeEnd("Load")
 
   async function render(params: unknown){
     let result;
