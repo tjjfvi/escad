@@ -1,6 +1,6 @@
 
 import { createProductTypeUtils, Id, LeafProduct, Stack } from "@escad/core";
-import { Face, Plane, Vector3 } from "@escad/mesh";
+import { Face, Plane } from "@escad/mesh";
 
 const bspId = Id.create(__filename, "@escad/csg", "0", "Bsp");
 
@@ -22,16 +22,16 @@ export interface Bsp extends LeafProduct {
   readonly front: Bsp | null,
   readonly back: Bsp | null,
   readonly faces: readonly Face[],
-  readonly plane: Plane,
+  readonly plane: Plane | null,
 }
 
 export const Bsp = {
-  create: (front: Bsp | null, back: Bsp | null, faces: readonly Face[], plane: Plane): Bsp => ({
+  create: (front: Bsp | null, back: Bsp | null, faces: readonly Face[], plane: Plane | null): Bsp => ({
     type: bspId,
     front,
     back,
     faces,
-    plane,
+    plane: plane ?? faces[0]?.plane ?? null,
   }),
   ...createProductTypeUtils<Bsp, "Bsp">(bspId, "Bsp"),
 
@@ -63,8 +63,7 @@ export const Bsp = {
       }
       buildStack.push(node);
     }
-    const node = buildStack.pop();
-    if(!node) throw new Error("Error in Bsp.map: final node was null/undefined");
+    const node = buildStack.pop() ?? Bsp.null();
     return node as Bsp;
   },
 
@@ -78,13 +77,13 @@ export const Bsp = {
         front: bsp.back,
         back: bsp.front,
         faces: bsp.faces.map(Face.flip),
-        plane: Plane.flip(bsp.plane),
+        plane: bsp.plane ? Plane.flip(bsp.plane) : null,
       } : null
     ),
 
   clipFaces: arrayify(function*(bsp: Bsp, faces: readonly Face[], options: ClipOptions){
     const stack = new Stack([[bsp, faces]] as const);
-    for(const [node, faces] of stack) {
+    for(const [node, faces] of stack) if(node.plane) {
       const frontFaces: Face[] = [];
       const backFaces: Face[] = [];
       const dropFront = !!(options & ClipOptions.DropFront);
@@ -118,10 +117,19 @@ export const Bsp = {
     }
   }),
 
-  null: () => Bsp.create(null, null, [], Plane.create(Vector3.create(0, 0, 1), 0)),
+  null: () => Bsp.create(null, null, [], null),
 
   build: (bsp: Bsp | null, allFaces: readonly Face[]): Bsp | null =>
     Bsp.mapExtra([bsp ?? Bsp.create(null, null, [], allFaces[0].plane), allFaces], (bsp, allFaces) => {
+      while(bsp && !bsp.faces.length) {
+        if(!(bsp.front && bsp.back)) {
+          bsp = bsp.front ?? bsp.back;
+        } else {
+          allFaces = allFaces.concat(Bsp.allFaces(bsp))
+          bsp = null;
+        }
+      }
+
       if(!allFaces.length)
         return [bsp, null];
       const plane = bsp?.plane ?? allFaces[0].plane;
