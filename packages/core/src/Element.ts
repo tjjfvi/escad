@@ -37,6 +37,7 @@ export type ElementOut<T extends Product, Arg> =
   never
 
 export interface Element<T extends Product> {
+  _: this,
   (): Element<T>,
   <A>(arg: A): ElementOut<T, A>,
 }
@@ -82,6 +83,8 @@ export class Element<T extends Product> extends __Element__<T> {
       throw new Error("Invalid argument to Element");
     }, {
       get: (target, prop) => {
+        if(prop === "_") return this;
+
         if(prop in target)
           return target[prop as keyof typeof target];
 

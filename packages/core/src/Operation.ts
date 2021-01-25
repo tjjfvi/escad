@@ -24,6 +24,7 @@ type OperationOut<I extends Product, O extends Product, Arg extends OperationIn<
   never : never
 
 export interface Operation<I extends Product, O extends Product> {
+  _: this,
   (...args: Elementish<I>[]): Element<O>,
   <T extends Product>(o: Operation<T, I>): Operation<T, O>,
   <A extends any[], T extends OperationIn<I, O>>(c: Component<A, T>): Component<A, OperationOut<I, O, T>>,
@@ -49,6 +50,8 @@ export class Operation<I extends Product, O extends Product> extends __Operation
       return new Element(func(Element.create(args)));
     }, {
       get: (target, prop) => {
+        if(prop === "_") return this;
+
         if(prop in target)
           return target[prop as keyof typeof target];
 
