@@ -30,6 +30,7 @@ export class Messenger extends EventEmitter<{
       if(msg.type === "init") {
         this.id(msg.clientId);
         this.serverId(msg.serverId);
+        this.paramsChangeHander();
         return;
       }
 
