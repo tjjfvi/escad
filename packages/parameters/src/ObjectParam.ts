@@ -23,7 +23,8 @@ export const ObjectParam = {
     type: objectParamId,
     children: mapObj(children, (v, k) => ({ name: nameFromKey(k as any), ...v })) as any,
     defaultValue: mapObj(children, v => v.defaultValue) as any
-  })
+  }),
+  id: objectParamId,
 };
 
 export const objectParam = ObjectParam.create;

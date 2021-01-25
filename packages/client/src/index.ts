@@ -17,6 +17,7 @@ export * from './Disconnected';
 export * from './IdView';
 export * from './Messenger';
 export * from './NumberParam';
+export * from './ObjectParam';
 export * from './Pane';
 export * from './Parameters';
 export * from './ParametersPane';

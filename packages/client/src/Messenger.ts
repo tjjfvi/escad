@@ -19,6 +19,7 @@ export class Messenger extends EventEmitter<{
   products = observable<Product[]>([]);
   paramDef = observable<ObjectParam<any>>();
   params = observable<Record<string, unknown>>({});
+  sendParams = false;
 
   disconnectTimeout: any;
 
@@ -30,7 +31,7 @@ export class Messenger extends EventEmitter<{
       if(msg.type === "init") {
         this.id(msg.clientId);
         this.serverId(msg.serverId);
-        this.paramsChangeHander();
+        if(this.sendParams) this.paramsChangeHander();
         return;
       }
 
@@ -148,6 +149,7 @@ export class Messenger extends EventEmitter<{
   }
 
   paramsChangeHander = () => {
+    this.sendParams = true;
     this.send({ type: "params", params: this.params.value })
   }
 

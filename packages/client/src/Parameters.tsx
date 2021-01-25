@@ -8,7 +8,7 @@ import { messenger } from "./Messenger";
 export interface ParameterRegistration<T, P extends Parameter<T>> {
   id: P["type"],
   className?: string,
-  component: (props: { parameter: Parameter<T>, value: Writeable<T> }) => JSX.Element,
+  component: (props: { parameter: P, value: Writeable<T> }) => JSX.Element,
 }
 
 const parameterRegistrations = new HashMap<Id, ParameterRegistration<any, any>>();
