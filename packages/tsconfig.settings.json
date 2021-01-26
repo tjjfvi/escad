@@ -8,7 +8,7 @@
     "declarationMap": true,
     "moduleResolution": "node",
     "module": "CommonJS",
-    "sourceMap": true,
+    "inlineSourceMap": true,
     "composite": true,
     "jsx": "react"
   },

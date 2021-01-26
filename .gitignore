@@ -6,3 +6,4 @@ test/index.js
 *.log
 **/bundle.*
 **/*.tsbuildinfo
+coverage
