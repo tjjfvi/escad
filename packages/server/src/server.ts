@@ -23,7 +23,7 @@ const bundler = new Bundler({
   watch: false,
 });
 
-rendererMessenger.on("clientPlugins", clientPlugins => bundler.updateClientPlugins(clientPlugins));
+rendererMessenger.on("loadInfo", ({ clientPlugins }) => bundler.updateClientPlugins(clientPlugins));
 
 app.ws("/ws", ws => new ClientMessenger(ws));
 

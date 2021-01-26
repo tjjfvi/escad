@@ -1,19 +1,15 @@
 
-import { ServerRendererMessage, RendererServerMessage } from "@escad/server-renderer-messages"
+import { ServerRendererMessage, RendererServerMessage, LoadInfo } from "@escad/server-renderer-messages"
 import { EventEmitter } from "tsee"
 import { fork, ChildProcess } from "child_process";
 import watch from "node-watch";
 import config from "./config";
-import { Hash, ProductType } from "@escad/core";
-import { PluginRegistration } from "@escad/register-client-plugin";
+import { Hash } from "@escad/core";
 import { v4 as uuidv4 } from "uuid";
 
 export class RendererMessenger extends EventEmitter<{
   message: (message: RendererServerMessage) => void,
-  products: (products: Hash[]) => void,
-  registeredConversions: (conversions: [ProductType, ProductType][]) => void,
-  clientPlugins: (clientPlugins: PluginRegistration[]) => void,
-  paramDef: (paramDef: Hash | null) => void,
+  loadInfo: (loadInfo: LoadInfo) => void,
 }> {
 
   childProcess: ChildProcess;
@@ -25,14 +21,8 @@ export class RendererMessenger extends EventEmitter<{
     this.startWatch();
 
     this.on("message", msg => {
-      if(msg.type === "products")
-        this.emit("products", msg.products);
-      if(msg.type === "registeredConversions")
-        this.emit("registeredConversions", msg.conversions);
-      if(msg.type === "clientPlugins")
-        this.emit("clientPlugins", msg.plugins);
-      if(msg.type === "paramDef")
-        this.emit("paramDef", msg.paramDef);
+      if(msg.type === "loadResponse")
+        this.emit("loadInfo", msg);
     })
   }
 

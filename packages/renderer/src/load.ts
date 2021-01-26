@@ -18,36 +18,27 @@ export async function load({ path }: ServerRendererMessage.Load){
   const [func, paramDef] = exported instanceof RenderFunction ? [exported.func, exported.paramDef] : [exported, null];
   const param = ObjectParam.create(paramDef ?? {});
   const { defaultValue: defaultParams } = param;
+  const paramHash = param ? hash(param) : null;
 
   if(paramDef)
-    artifactManager.storeRaw(param).then(() =>
-      messenger.send({ type: "paramDef", paramDef: hash(param) })
-    )
-  else
-    messenger.send({ type: "paramDef", paramDef: null });
-
-  messenger.send({
-    type: "clientPlugins",
-    plugins: registeredPlugins,
-  });
-
-  messenger.send({
-    type: "registeredConversions",
-    conversions: [...conversionRegistry.listAll()].map(x => [x.fromType, x.toType]),
-  });
+    artifactManager.storeRaw(param);
 
   run = async (id, params) =>
     messenger.send({
       type: "runResponse",
       id,
       products: await render(params),
+      paramDef: paramHash,
     });
 
   console.time("Load")
 
   messenger.send({
-    type: "products",
-    products: await render(defaultParams)
+    type: "loadResponse",
+    products: await render(defaultParams),
+    conversions: [...conversionRegistry.listAll()].map(x => [x.fromType, x.toType]),
+    paramDef: paramHash,
+    clientPlugins: registeredPlugins,
   });
 
   console.timeEnd("Load")

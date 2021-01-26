@@ -35,21 +35,18 @@ export class Messenger extends EventEmitter<{
         return;
       }
 
-      if(msg.type === "products") {
+      if(msg.type === "info") {
         this.shas(msg.products);
-        this.products(await Promise.all(msg.products.map(async (sha): Promise<Product> =>
+        Promise.all(msg.products.map(async (sha): Promise<Product> =>
           await this.artifactManager.lookupRaw(sha) as Product
-        )));
-        return;
-      }
+        )).then(x => this.products(x));
 
-      if(msg.type === "paramDef") {
-        this.paramDef(msg.paramDef ? await this.artifactManager.lookupRaw(msg.paramDef) as ObjectParam<any> : null);
-        return;
-      }
+        if(msg.paramDef)
+          this.artifactManager.lookupRaw(msg.paramDef).then(x => this.paramDef(x as ObjectParam<any>));
+        else
+          this.paramDef(null);
 
-      if(msg.type === "registeredConversions") {
-        for(const [fromType, toType] of msg.conversions)
+        for(const [fromType, toType] of msg.conversions ?? [])
           if(!conversionRegistry.has(fromType, toType))
             conversionRegistry.register({
               fromType,

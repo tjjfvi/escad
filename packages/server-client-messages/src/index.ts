@@ -5,9 +5,7 @@ export type ServerClientMessageTypes = ServerClientMessage["type"];
 export type ServerClientMessage<T extends ServerClientMessageTypes = any> = Extract<
   | ServerClientMessage.Ping
   | ServerClientMessage.Init
-  | ServerClientMessage.Products
-  | ServerClientMessage.RegisteredConversions
-  | ServerClientMessage.ParamDef
+  | ServerClientMessage.Info
   | ServerClientMessage.LookupRawResponse
   | ServerClientMessage.LookupRefResponse
 , { type: T }>
@@ -21,17 +19,11 @@ export namespace ServerClientMessage {
     serverId: string,
     clientId: string,
   }
-  export interface Products {
-    type: "products",
+  export interface Info {
+    type: "info",
     products: Hash[],
-  }
-  export interface RegisteredConversions {
-    type: "registeredConversions",
-    conversions: [ProductType, ProductType][],
-  }
-  export interface ParamDef {
-    type: "paramDef",
     paramDef: Hash | null,
+    conversions?: [ProductType, ProductType][],
   }
   export interface LookupRawResponse {
     type: "lookupRawResponse",

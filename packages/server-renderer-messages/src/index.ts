@@ -2,6 +2,16 @@
 import { Hash, ProductType } from "@escad/core";
 import { PluginRegistration } from "@escad/register-client-plugin";
 
+export interface RunInfo {
+  products: Hash[],
+  paramDef: Hash | null,
+}
+
+export interface LoadInfo extends RunInfo {
+  clientPlugins: PluginRegistration[],
+  conversions: [ProductType, ProductType][],
+}
+
 export type ServerRendererMessageTypes = ServerRendererMessage["type"]
 export type ServerRendererMessage<T extends ServerRendererMessageTypes = any> = Extract<
   | ServerRendererMessage.ArtifactsDir
@@ -33,35 +43,18 @@ export namespace ServerRendererMessage {
 
 export type RendererServerMessageTypes = RendererServerMessage["type"]
 export type RendererServerMessage<T extends ServerRendererMessageTypes = any> = Extract<
-  | RendererServerMessage.Products
-  | RendererServerMessage.RegisteredConversions
-  | RendererServerMessage.ClientPlugins
-  | RendererServerMessage.ParamDef
+  | RendererServerMessage.LoadResponse
   | RendererServerMessage.RunResponse
   | RendererServerMessage.LookupRefResponse
 , { type: T }>
 
 export namespace RendererServerMessage {
-  export interface Products {
-    type: "products",
-    products: Hash[],
-  }
-  export interface RegisteredConversions {
-    type: "registeredConversions",
-    conversions: [ProductType, ProductType][],
-  }
-  export interface ClientPlugins {
-    type: "clientPlugins",
-    plugins: PluginRegistration[],
-  }
-  export interface ParamDef {
-    type: "paramDef",
-    paramDef: Hash | null,
-  }
-  export interface RunResponse {
+  export interface RunResponse extends RunInfo {
     type: "runResponse",
     id: string,
-    products: Hash[],
+  }
+  export interface LoadResponse extends LoadInfo {
+    type: "loadResponse",
   }
   export interface LookupRefResponse {
     type: "lookupRefResponse",

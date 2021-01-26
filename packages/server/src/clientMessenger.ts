@@ -3,26 +3,14 @@ import { EventEmitter } from "tsee"
 import { ClientServerMessage, ServerClientMessage } from "@escad/server-client-messages"
 import WebSocket = require("ws");
 import flatted from "flatted";
-import { Hash, ProductType } from "@escad/core";
-import { RendererMessenger, rendererMessenger } from "./rendererMessenger";
+import { rendererMessenger } from "./rendererMessenger";
 import { serverId } from "./serverId";
 import { v4 as uuidv4 } from "uuid";
-import { RendererServerMessage } from "@escad/server-renderer-messages";
+import { LoadInfo, RendererServerMessage } from "@escad/server-renderer-messages";
 
-let curProducts: Hash[] | null = null;
-let curParamDef: Hash | null = null;
-let curConversions: [ProductType, ProductType][] | null = null;
-
-rendererMessenger.on("products", products => {
-  curProducts = products;
-})
-
-rendererMessenger.on("paramDef", paramDef => {
-  curParamDef = paramDef;
-})
-
-rendererMessenger.on("registeredConversions", conversions => {
-  curConversions = conversions;
+let curLoadInfo: LoadInfo | null = null;
+rendererMessenger.on("loadInfo", loadInfo => {
+  curLoadInfo = loadInfo;
 })
 
 export class ClientMessenger extends EventEmitter<{
@@ -83,19 +71,15 @@ export class ClientMessenger extends EventEmitter<{
     }
 
     this.send({ type: "init", clientId, serverId })
-    this.send({ type: "products", products: curProducts ?? [] });
-    this.send({ type: "paramDef", paramDef: curParamDef });
-    this.send({ type: "registeredConversions", conversions: curConversions ?? [] });
+    this.sendInfo(curLoadInfo);
 
-    const productsHandler = (products: Hash[]) => this.send({ type: "products", products });
-    rendererMessenger.on("products", productsHandler);
-
-    const paramDefHandler = (paramDef: Hash | null) => this.send({ type: "paramDef", paramDef });
-    rendererMessenger.on("paramDef", paramDefHandler);
-
-    const conversionsHandler = (conversions: [ProductType, ProductType][]) =>
-      this.send({ type: "registeredConversions", conversions });
-    rendererMessenger.on("registeredConversions", conversionsHandler);
+    const loadInfoHandler = (loadInfo: LoadInfo) => {
+      if(this.params)
+        this.run();
+      else
+        this.sendInfo(loadInfo);
+    };
+    rendererMessenger.on("loadInfo", loadInfoHandler);
 
     this.on("message", async msg => {
       if(msg.type === "params") {
@@ -104,16 +88,8 @@ export class ClientMessenger extends EventEmitter<{
         const oldParams = this.params;
         this.params = newParams;
 
-        if(!newParams && !oldParams)
-          return;
-
-        if(!newParams && oldParams) {
-          this.send({ type: "products", products: curProducts ?? [] });
-          rendererMessenger.on("products", productsHandler);
-        }
-
-        if(newParams && !oldParams)
-          rendererMessenger.removeListener("products", productsHandler);
+        if(!newParams && oldParams)
+          this.sendInfo(curLoadInfo);
 
         if(newParams)
           this.run();
@@ -126,14 +102,17 @@ export class ClientMessenger extends EventEmitter<{
     })
 
     this.on("close", () => {
-      rendererMessenger.removeListener("products", productsHandler);
-      rendererMessenger.removeListener("paramDef", paramDefHandler);
-      rendererMessenger.removeListener("registeredConversions", conversionsHandler);
+      rendererMessenger.removeListener("loadInfo", loadInfoHandler);
       console.log("Client detached, id:", clientId);
     })
 
     this.startPing();
 
+  }
+
+  private sendInfo(info: Omit<ServerClientMessage.Info, "type"> | null){
+    if(info)
+      this.send({ ...{ ...info, clientPlugins: undefined }, type: "info" });
   }
 
   private run(){
@@ -143,7 +122,7 @@ export class ClientMessenger extends EventEmitter<{
     const handler = (msg: RendererServerMessage) => {
       if(msg.type !== "runResponse" || msg.id !== id)
         return;
-      this.send({ type: "products", products: msg.products });
+      this.sendInfo(msg);
       rendererMessenger.removeListener("message", handler);
     }
     rendererMessenger.addListener("message", handler);
