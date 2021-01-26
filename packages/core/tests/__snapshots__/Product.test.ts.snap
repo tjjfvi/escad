@@ -1,0 +1,309 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[` 1`] = `
+Object {
+  "type": Object {
+    "full": "@escad-core-0-ProductA",
+    "isId": true,
+    "name": "ProductA",
+    "packageName": "@escad/core",
+    "version": "0",
+  },
+}
+`;
+
+exports[` 2`] = `
+Object {
+  "id": Object {
+    "full": "@escad-core-0-ProductA",
+    "isId": true,
+    "name": "ProductA",
+    "packageName": "@escad/core",
+    "version": "0",
+  },
+  "type": "LeafProductType",
+}
+`;
+
+exports[` 3`] = `
+Object {
+  "children": Array [],
+  "type": "TupleProduct",
+}
+`;
+
+exports[` 4`] = `
+Object {
+  "elementTypes": Array [],
+  "type": "TupleProductType",
+}
+`;
+
+exports[` 5`] = `
+Object {
+  "children": Array [
+    Object {
+      "type": Object {
+        "full": "@escad-core-0-ProductA",
+        "isId": true,
+        "name": "ProductA",
+        "packageName": "@escad/core",
+        "version": "0",
+      },
+    },
+    Object {
+      "type": Object {
+        "full": "@escad-core-0-ProductB",
+        "isId": true,
+        "name": "ProductB",
+        "packageName": "@escad/core",
+        "version": "0",
+      },
+    },
+  ],
+  "type": "TupleProduct",
+}
+`;
+
+exports[` 6`] = `
+Object {
+  "elementTypes": Array [
+    Object {
+      "id": Object {
+        "full": "@escad-core-0-ProductA",
+        "isId": true,
+        "name": "ProductA",
+        "packageName": "@escad/core",
+        "version": "0",
+      },
+      "type": "LeafProductType",
+    },
+    Object {
+      "id": Object {
+        "full": "@escad-core-0-ProductB",
+        "isId": true,
+        "name": "ProductB",
+        "packageName": "@escad/core",
+        "version": "0",
+      },
+      "type": "LeafProductType",
+    },
+  ],
+  "type": "TupleProductType",
+}
+`;
+
+exports[` 7`] = `
+Object {
+  "children": Array [
+    Object {
+      "type": Object {
+        "full": "@escad-core-0-ProductA",
+        "isId": true,
+        "name": "ProductA",
+        "packageName": "@escad/core",
+        "version": "0",
+      },
+    },
+    Object {
+      "type": Object {
+        "full": "@escad-core-0-ProductA",
+        "isId": true,
+        "name": "ProductA",
+        "packageName": "@escad/core",
+        "version": "0",
+      },
+    },
+  ],
+  "type": "ArrayProduct",
+}
+`;
+
+exports[` 8`] = `
+Object {
+  "elementType": Object {
+    "id": Object {
+      "full": "@escad-core-0-ProductA",
+      "isId": true,
+      "name": "ProductA",
+      "packageName": "@escad/core",
+      "version": "0",
+    },
+    "type": "LeafProductType",
+  },
+  "type": "ArrayProductType",
+}
+`;
+
+exports[` 9`] = `
+Object {
+  "children": Array [
+    Object {
+      "type": Object {
+        "full": "@escad-core-0-ProductA",
+        "isId": true,
+        "name": "ProductA",
+        "packageName": "@escad/core",
+        "version": "0",
+      },
+    },
+    Object {
+      "children": Array [],
+      "type": "TupleProduct",
+    },
+    Object {
+      "children": Array [
+        Object {
+          "type": Object {
+            "full": "@escad-core-0-ProductA",
+            "isId": true,
+            "name": "ProductA",
+            "packageName": "@escad/core",
+            "version": "0",
+          },
+        },
+        Object {
+          "type": Object {
+            "full": "@escad-core-0-ProductA",
+            "isId": true,
+            "name": "ProductA",
+            "packageName": "@escad/core",
+            "version": "0",
+          },
+        },
+      ],
+      "type": "ArrayProduct",
+    },
+    Object {
+      "children": Array [
+        Object {
+          "type": Object {
+            "full": "@escad-core-0-ProductA",
+            "isId": true,
+            "name": "ProductA",
+            "packageName": "@escad/core",
+            "version": "0",
+          },
+        },
+        Object {
+          "type": Object {
+            "full": "@escad-core-0-ProductB",
+            "isId": true,
+            "name": "ProductB",
+            "packageName": "@escad/core",
+            "version": "0",
+          },
+        },
+        Object {
+          "type": Object {
+            "full": "@escad-core-0-ProductC",
+            "isId": true,
+            "name": "ProductC",
+            "packageName": "@escad/core",
+            "version": "0",
+          },
+        },
+      ],
+      "type": "TupleProduct",
+    },
+  ],
+  "type": "TupleProduct",
+}
+`;
+
+exports[` 10`] = `
+Object {
+  "elementTypes": Array [
+    Object {
+      "id": Object {
+        "full": "@escad-core-0-ProductA",
+        "isId": true,
+        "name": "ProductA",
+        "packageName": "@escad/core",
+        "version": "0",
+      },
+      "type": "LeafProductType",
+    },
+    Object {
+      "elementTypes": Array [],
+      "type": "TupleProductType",
+    },
+    Object {
+      "elementType": Object {
+        "id": Object {
+          "full": "@escad-core-0-ProductA",
+          "isId": true,
+          "name": "ProductA",
+          "packageName": "@escad/core",
+          "version": "0",
+        },
+        "type": "LeafProductType",
+      },
+      "type": "ArrayProductType",
+    },
+    Object {
+      "elementTypes": Array [
+        Object {
+          "id": Object {
+            "full": "@escad-core-0-ProductA",
+            "isId": true,
+            "name": "ProductA",
+            "packageName": "@escad/core",
+            "version": "0",
+          },
+          "type": "LeafProductType",
+        },
+        Object {
+          "id": Object {
+            "full": "@escad-core-0-ProductB",
+            "isId": true,
+            "name": "ProductB",
+            "packageName": "@escad/core",
+            "version": "0",
+          },
+          "type": "LeafProductType",
+        },
+        Object {
+          "id": Object {
+            "full": "@escad-core-0-ProductC",
+            "isId": true,
+            "name": "ProductC",
+            "packageName": "@escad/core",
+            "version": "0",
+          },
+          "type": "LeafProductType",
+        },
+      ],
+      "type": "TupleProductType",
+    },
+  ],
+  "type": "TupleProductType",
+}
+`;
+
+exports[`ArrayProduct.create Throws on [] 1`] = `"ArrayProducts cannot be empty"`;
+
+exports[`Product.getProductType Throw on invalid product 1`] = `"Invalid product passed to Product.getProductType"`;
+
+exports[`createProductTypeUtils .productType 1`] = `
+Object {
+  "id": Object {
+    "full": "@escad-core-0-ProductA",
+    "isId": true,
+    "name": "ProductA",
+    "packageName": "@escad/core",
+    "version": "0",
+  },
+  "type": "LeafProductType",
+}
+`;
+
+exports[`createProductTypeUtils Consistent keys 1`] = `
+Array [
+  "create",
+  "id",
+  "productType",
+  "isProductA",
+  "convert",
+]
+`;
