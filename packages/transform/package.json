@@ -13,13 +13,12 @@
   },
   "author": "",
   "license": "ISC",
-  "devDependencies": {
-    "typescript": "^4.1.0-dev.20201015"
-  },
   "dependencies": {
     "@escad/core": "^0.0.0",
-    "@escad/mesh": "^0.0.0",
-    "tszer": "0.0.20"
+    "@escad/mesh": "^0.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.1.3"
   },
   "publishConfig": {
     "access": "public"

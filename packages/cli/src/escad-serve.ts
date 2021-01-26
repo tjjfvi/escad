@@ -17,7 +17,7 @@ import fs from "fs";
   if(commander.args.length !== 1)
     return commander.outputHelp();
 
-  let { port, watchDir, artifacts: artifactsDir, clean } = commander;
+  let { port, watchDir, artifacts: artifactsDir, clean } = commander.opts();
   artifactsDir = path.resolve(artifactsDir);
   let [file] = commander.args;
 
