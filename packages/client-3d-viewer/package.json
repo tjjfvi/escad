@@ -16,10 +16,10 @@
   "license": "ISC",
   "dependencies": {
     "@escad/client": "^0.0.0",
-    "rhobo": "^0.3.4",
-    "three": "^0.112.1",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "rhobo": "^0.3.6",
+    "three": "^0.112.1"
   },
   "devDependencies": {
     "@types/react": "^17.0.0",
