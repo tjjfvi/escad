@@ -13,7 +13,7 @@ export const ParametersPane = observer(() => {
   return <Pane name="Parameters" className="Parameters" left>
     {Object.entries(def.children as Record<string, Parameter<any>>).map(([key, paramDef]) => {
       const value = messenger.params.obs[key];
-      if(!value.value)
+      if(value.value === undefined)
         value(paramDef.defaultValue)
       return <ParameterView parameter={paramDef} value={value} key={key}/>;
     })}

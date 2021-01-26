@@ -12,7 +12,7 @@ registerParameter<Record<string, unknown>, ObjectParam<Record<string, Parameter<
       <div className="children">
         {Object.entries(parameter.children as Record<string, Parameter<any>>).map(([key, paramDef]) => {
           const value = obj.obs[key];
-          if(!value.value)
+          if(value.value === undefined)
             value(paramDef.defaultValue)
           return <ParameterView parameter={paramDef} value={value} key={key}/>;
         })}
