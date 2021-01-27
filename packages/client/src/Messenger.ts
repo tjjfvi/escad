@@ -3,7 +3,15 @@ import { EventEmitter } from "tsee";
 import * as flatted from "flatted";
 import { ServerClientMessage, ClientServerMessage } from "@escad/server-client-messages"
 import { observable } from "rhobo";
-import { ArtifactManager, artifactManager, ArtifactStore, conversionRegistry, Hash, Product } from "@escad/core";
+import {
+  ArtifactManager,
+  artifactManager,
+  ArtifactStore,
+  conversionRegistry,
+  Hash,
+  Hierarchy,
+  Product,
+} from "@escad/core";
 import { v4 as uuidv4 } from "uuid";
 import { ObjectParam } from "@escad/parameters";
 
@@ -19,6 +27,7 @@ export class Messenger extends EventEmitter<{
   products = observable<Product[]>([]);
   paramDef = observable<ObjectParam<any>>();
   params = observable<Record<string, unknown>>({});
+  hierarchy = observable<Hierarchy>();
   sendParams = false;
 
   disconnectTimeout: any;
@@ -45,6 +54,11 @@ export class Messenger extends EventEmitter<{
           this.artifactManager.lookupRaw(msg.paramDef).then(x => this.paramDef(x as ObjectParam<any>));
         else
           this.paramDef(null);
+
+        if(msg.hierarchy)
+          this.artifactManager.lookupRaw(msg.hierarchy).then(x => this.hierarchy(x as Hierarchy));
+        else
+          this.hierarchy(null)
 
         for(const [fromType, toType] of msg.conversions ?? [])
           if(!conversionRegistry.has(fromType, toType))

@@ -6,7 +6,12 @@ import { Product } from "./Product";
 
 
 export const mapOperation = (
- <I extends Product, O extends Product = I>(name: string, func: (i: ConvertibleTo<I>) => ConvertibleTo<O>) =>
+ <I extends Product, O extends Product = I>(
+    name: string,
+    func: (i: ConvertibleTo<I>) => ConvertibleTo<O>,
+    overrideHierarchy = true,
+    hierarchy?: Hierarchy,
+  ) =>
     new Operation<I, O>(name, arg => {
       const argArr = arg.toArray();
       const shouldFlatten = argArr.length === 1;
@@ -17,7 +22,7 @@ export const mapOperation = (
       const output = new Element(flattenedArg).map(func, (eish, old, isLeaf, isRoot) =>
         Hierarchy.create({
           name,
-          braceType: "(",
+          braceType: "|",
           children: isRoot && !isLeaf ? old.hierarchy.children : [old.hierarchy],
           input: old.hierarchy.fullOutput,
           isOutput: isLeaf,
@@ -27,5 +32,5 @@ export const mapOperation = (
       );
 
       return output;
-    })
+    }, overrideHierarchy, hierarchy)
 );

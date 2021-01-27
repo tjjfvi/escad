@@ -77,7 +77,7 @@ export class Element<T extends Product> extends __Element__<T> {
       if(arg instanceof Operation)
         return arg(this);
       if(arg instanceof Component)
-        return new Component<any, any>(arg.name + "'", (...args) => that(arg(...args)))
+        return new Component<any, any>(arg.name + "'", (...args) => that(arg(...args)), false)
       if(arg instanceof Element)
         return this.join(arg);
       throw new Error("Invalid argument to Element");

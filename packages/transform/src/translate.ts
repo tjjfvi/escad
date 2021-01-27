@@ -16,7 +16,10 @@ export const translate: Component<TranslateArgs, Operation<Mesh, Transformation<
 
     let matrix = Matrix4.translate(...arr);
 
-    return mapOperation<Mesh, Transformation<Mesh>>("translate", mesh => Transformation.create(matrix, mesh));
+    return mapOperation<Mesh, Transformation<Mesh>>(
+      "translate",
+      mesh => Transformation.create(matrix, mesh),
+    );
   });
 
 export const tX: Component<[number], Operation<Mesh, Transformation<Mesh>>> =

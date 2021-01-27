@@ -2,11 +2,9 @@
 import { Elementish, Element } from "./Element";
 import { Product } from "./Product";
 import { LeafProduct } from "./LeafProduct";
-import { TupleProduct } from "./TupleProduct";
-import { Id } from "./Id";
+import { checkTypeProperty } from "./checkTypeProperty";
 
-export type BraceType = "{" | "[" | "(" | ":" | "";
-export const isBraceType = (x: string): x is BraceType => ["{", "[", "(", ":", ""].includes(x);
+export type BraceType = "{" | "[" | "|" | "(" | ":" | "";
 
 export interface HierarchyArgs {
   readonly name?: string,
@@ -20,7 +18,7 @@ export interface HierarchyArgs {
 }
 
 export interface Hierarchy extends HierarchyArgs {
-  readonly isHierarchy: true,
+  readonly type: "Hierarchy",
   readonly name: string,
   readonly braceType: BraceType,
   readonly children: readonly Hierarchy[],
@@ -30,8 +28,6 @@ export interface Hierarchy extends HierarchyArgs {
   readonly isOutput: boolean,
   readonly isFullOutput: boolean,
 }
-
-const hierarchyManagerId = Id.create(__filename, "@escad/core", "0", "Hierarchy");
 
 export const Hierarchy = {
   create: ({
@@ -65,6 +61,9 @@ export const Hierarchy = {
         isFullOutput: true,
       })
 
+    output = null
+    fullOutput = null
+
     if(braceType === "" && children.length)
       throw new Error("braceType \"\" must be used without children")
 
@@ -74,7 +73,7 @@ export const Hierarchy = {
     if(braceType === ":" && children.length !== 1)
       throw new Error("braceType \":\" must be used with exactly one child");
     return {
-      isHierarchy: true,
+      type: "Hierarchy",
       name,
       braceType,
       children,
@@ -85,8 +84,7 @@ export const Hierarchy = {
       output,
     };
   },
-  isHierarchy: (arg: any): arg is Hierarchy =>
-    arg.isHierarchy === true,
+  isHierarchy: checkTypeProperty<Hierarchy>("Hierarchy"),
   fromElementish: (el: Elementish<Product>): Hierarchy => {
     if(typeof el !== "object" && typeof el !== "function")
       throw new Error("Invalid input to Hierarchy.fromElementish");
@@ -98,9 +96,9 @@ export const Hierarchy = {
       return Hierarchy.create({
         name: `<${el.type.full}>`,
       });
-    if(TupleProduct.isTupleProduct(el))
+    if(Product.isProduct(el))
       return Hierarchy.create({
-        name: `<TupleProduct>`,
+        name: `<${el.type}>`,
       });
     if(el instanceof Array)
       return Hierarchy.create({

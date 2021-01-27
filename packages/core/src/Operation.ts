@@ -5,6 +5,7 @@ import { Product } from "./Product";
 import { __Thing__ } from "./__Thing__";
 import { builtins, Builtins } from "./builtins";
 import { ConvertibleTo } from "./Conversions";
+import { Hierarchy } from "./Hierarchy";
 
 export class __Operation__<I extends Product, O extends Product> extends __Thing__ {
 
@@ -41,13 +42,28 @@ export interface Operation<I extends Product, O extends Product> extends _Operat
 
 export class Operation<I extends Product, O extends Product> extends __Operation__<I, O> {
 
-  constructor(name: string, func: (arg: ArrayElement<I>) => Elementish<O>){
+  constructor(
+    name: string,
+    func: (arg: ArrayElement<I>) => Elementish<O>,
+    overrideHierarchy = true,
+    public hierarchy?: Hierarchy,
+  ){
     super((...args) => {
       if(args[0] instanceof Operation)
-        return new Operation(name + "+" + args[0].name, (a: any) => that(args[0](...a.val)));
+        return new Operation(name + "+" + args[0].name, (a: any) => that(args[0](...a.val)), false);
       if(args[0] instanceof Component)
-        return new Component(args[0].name + "+" + name, (...a: any) => (that as any)((args[0](...a) as any)));
-      return new Element(func(Element.create(args)));
+        return new Component(args[0].name + "+" + name, (...a: any) => (that as any)((args[0](...a) as any)), false);
+      const result = new Element(func(Element.create(args)));
+      if(overrideHierarchy)
+        result.hierarchy = Hierarchy.create({
+          braceType: "|",
+          children: [
+            this.hierarchy ?? Hierarchy.create({ name }),
+            ...Hierarchy.fromElementish(args).children,
+          ],
+          output: result.hierarchy,
+        })
+      return result;
     }, {
       get: (target, prop) => {
         if(prop === "_") return this;

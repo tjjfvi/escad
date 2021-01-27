@@ -24,6 +24,7 @@ export namespace ServerClientMessage {
     products: Hash[],
     paramDef: Hash | null,
     conversions?: [ProductType, ProductType][],
+    hierarchy: Hash | null,
   }
   export interface LookupRawResponse {
     type: "lookupRawResponse",

@@ -27,18 +27,18 @@ export async function load({ path }: ServerRendererMessage.Load){
     messenger.send({
       type: "runResponse",
       id,
-      products: await render(params),
       paramDef: paramHash,
+      ...(await render(params)),
     });
 
   console.time("Load")
 
   messenger.send({
     type: "loadResponse",
-    products: await render(defaultParams),
     conversions: [...conversionRegistry.listAll()].map(x => [x.fromType, x.toType]),
     paramDef: paramHash,
     clientPlugins: registeredPlugins,
+    ...(await render(defaultParams)),
   });
 
   console.timeEnd("Load")
@@ -49,17 +49,18 @@ export async function load({ path }: ServerRendererMessage.Load){
       result = await func(params);
     } catch (e) {
       console.error(e);
-      return [];
+      return { products: [], hierarchy: null };
     }
     if(!result) {
       console.error(new Error("Invalid return type from exported function"));
-      return [];
+      return { products: [], hierarchy: null };
     }
     const el = new Element<Product>(result);
     const shas = await Promise.all(el.toArrayFlat().map(async product => {
       await artifactManager.storeRaw(product);
       return hash(product);
     }));
-    return shas;
+    await artifactManager.storeRaw(el.hierarchy);
+    return { products: shas, hierarchy: hash(el.hierarchy) };
   }
 }

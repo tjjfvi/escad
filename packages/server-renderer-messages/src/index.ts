@@ -3,6 +3,7 @@ import { Hash, ProductType } from "@escad/core";
 import { PluginRegistration } from "@escad/register-client-plugin";
 
 export interface RunInfo {
+  hierarchy: Hash | null,
   products: Hash[],
   paramDef: Hash | null,
 }

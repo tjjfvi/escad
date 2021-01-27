@@ -75,5 +75,5 @@ export const diff: Operation<Bsp, Bsp> = (
 );
 
 export const sub: Component<Elementish<Bsp>[], Operation<Bsp, Bsp>> = (
-  new Component("sub", (...el) => new Operation<Bsp, Bsp>("sub", el2 => diff(el2, el)))
+  new Component("sub", (...el) => new Operation<Bsp, Bsp>("sub", el2 => diff(el2, el), false), false)
 );
