@@ -39,7 +39,7 @@ const Tree = ({ tree }: { tree: Tree}) => {
   const [, update] = useState({});
   const expanded = useObservable.use(false);
 
-  const collapse = <div className="expand" onClick={() => {
+  const expandIcon = <div className="expand" onClick={() => {
     tree.forEach(x => "state" in x && (x.state.open = !expanded.value))
     expanded(!expanded.value);
   }}>
@@ -60,7 +60,7 @@ const Tree = ({ tree }: { tree: Tree}) => {
         return <div className="line" key={i}>
           {state ? <Arrow state="open" onClick={() => (state.open = false, update({}))}/> : <Arrow state="leaf"/>}
           <Text str={x.text}/>
-          {i === 0 ? collapse : null}
+          {i === 0 ? expandIcon : null}
         </div>
       })}
     </div>
@@ -77,6 +77,7 @@ const Tree = ({ tree }: { tree: Tree}) => {
         <Arrow state="leaf"/>
     }
     <Text str={collapsedTree[0].text}/>
+    {expandIcon}
   </div></div>
 }
 
