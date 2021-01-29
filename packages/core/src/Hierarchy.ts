@@ -3,6 +3,8 @@ import { Elementish, Element } from "./Element";
 import { Product } from "./Product";
 import { LeafProduct } from "./LeafProduct";
 import { checkTypeProperty } from "./checkTypeProperty";
+import { Component } from "./Component";
+import { Operation } from "./Operation";
 
 export type BraceType = "{" | "[" | "|" | "(" | ":" | "";
 
@@ -85,13 +87,21 @@ export const Hierarchy = {
     };
   },
   isHierarchy: checkTypeProperty<Hierarchy>("Hierarchy"),
-  fromElementish: (el: Elementish<Product>): Hierarchy => {
-    if(typeof el !== "object" && typeof el !== "function")
-      throw new Error("Invalid input to Hierarchy.fromElementish");
+  from: (el: unknown): Hierarchy => {
+    if(
+      typeof el === "string" ||
+      typeof el === "number" ||
+      typeof el === "bigint" ||
+      typeof el === "boolean" ||
+      typeof el === "symbol" ||
+      el === undefined ||
+      el === null
+    )
+      return Hierarchy.create({ name: el ? el.toString() : el + "" })
     if(Hierarchy.isHierarchy(el))
       return el;
-    if(el instanceof Element)
-      return el.hierarchy;
+    if(el instanceof Element || el instanceof Component || el instanceof Operation)
+      return el.hierarchy ?? Hierarchy.create({ name: el.name });
     if(LeafProduct.isLeafProduct(el))
       return Hierarchy.create({
         name: `<${el.type.full}>`,
@@ -103,15 +113,15 @@ export const Hierarchy = {
     if(el instanceof Array)
       return Hierarchy.create({
         braceType: "[",
-        children: el.map(e => Hierarchy.fromElementish(e)),
+        children: el.map(e => Hierarchy.from(e)),
       });
     return Hierarchy.create({
       braceType: "{",
-      children: Object.entries(el).map(([k, v]) =>
+      children: Object.entries(el as any).map(([k, v]) =>
         Hierarchy.create({
           name: k,
           braceType: ":",
-          children: [Hierarchy.fromElementish(v)]
+          children: [Hierarchy.from(v)]
         })
       )
     });

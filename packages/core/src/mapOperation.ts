@@ -26,8 +26,8 @@ export const mapOperation = (
           children: isRoot && !isLeaf ? old.hierarchy.children : [old.hierarchy],
           input: old.hierarchy.fullOutput,
           isOutput: isLeaf,
-          output: Hierarchy.fromElementish(eish).output,
-          fullOutput: isLeaf ? Hierarchy.fromElementish(eish).fullOutput : null,
+          output: Hierarchy.from(eish).output,
+          fullOutput: isLeaf ? Hierarchy.from(eish).fullOutput : null,
         })
       );
 

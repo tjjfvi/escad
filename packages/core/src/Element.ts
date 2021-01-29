@@ -70,7 +70,7 @@ export class Element<T extends Product> extends __Element__<T> {
     return new Element(c, h);
   }
 
-  constructor(c: Elementish<T>, h: Hierarchy = Hierarchy.fromElementish(c)){
+  constructor(c: Elementish<T>, h: Hierarchy = Hierarchy.from(c)){
     super(arg => {
       if(!arg)
         return that;
@@ -130,7 +130,7 @@ export class Element<T extends Product> extends __Element__<T> {
       old: Element<T>,
       isLeaf: boolean,
       isRoot: boolean,
-    ) => Hierarchy = Hierarchy.fromElementish,
+    ) => Hierarchy = Hierarchy.from,
     isRoot = true,
   ): Element<U>{
     let createElement = (e: Elementish<U>) => new Element(e, hierarchyGen(e, this, this.isLeaf(), isRoot));

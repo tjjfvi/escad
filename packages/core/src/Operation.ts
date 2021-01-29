@@ -59,7 +59,7 @@ export class Operation<I extends Product, O extends Product> extends __Operation
           braceType: "|",
           children: [
             this.hierarchy ?? Hierarchy.create({ name }),
-            ...Hierarchy.fromElementish(args).children,
+            ...Hierarchy.from(args).children,
           ],
           output: result.hierarchy,
         })
