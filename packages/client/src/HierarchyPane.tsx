@@ -11,7 +11,7 @@ const ellipsis = "···"
 
 const maxLength = 30;
 
-type TreeText = (string | { open: true } | { close: true, onClick: () => void })[]
+type TreeText = (string | { open: true } | { close: true, onClick: () => void, className?: string })[]
 
 type TreePart =
   | { readonly text: TreeText }
@@ -19,6 +19,7 @@ type TreePart =
     readonly state: { open: boolean },
     readonly children: readonly Tree[],
     readonly joiner?: string,
+    readonly forceOpenable?: boolean,
   }
 
 type Tree = TreePart[];
@@ -36,7 +37,8 @@ const Arrow = ({ state, onClick }: { state: "open" | "closed" | "leaf", onClick?
   <div className={ "arrow " + state } onClick={onClick}></div>;
 
 const Tree = ({ tree }: { tree: Tree}) => {
-  const [, update] = useState({});
+  const [, _update] = useState({});
+  const update = () => _update({});
   const expanded = useObservable.use(false);
 
   const expandIcon = <div className="expand" onClick={() => {
@@ -46,11 +48,16 @@ const Tree = ({ tree }: { tree: Tree}) => {
     <Icon path={expanded() ? mdiArrowCollapseVertical : mdiArrowExpandVertical}/>
   </div>;
 
-  const collapsedTree = joinTree(expanded() ? tree : fullyCollapseTree(tree, maxLength), () => update({}));
+  const collapsedTree = expanded() ? tree : fullyCollapseTree(tree, maxLength, update);
+  const joinedCollapsedTree = joinTree(collapsedTree, update);
 
-  if(collapsedTree.length !== 1 || "children" in collapsedTree[0])
+  if(
+    joinedCollapsedTree.length !== 1 ||
+    "children" in joinedCollapsedTree[0] ||
+    !collapsedTree.some(x => "children" in x)
+  )
     return <div className="Node">
-      {collapsedTree.map((x, i, a) => {
+      {joinedCollapsedTree.map((x, i, a) => {
         if("children" in x)
           return <div className="children" key={i}>
             {x.children.map((y, i) => <Tree tree={y} key={i}/>)}
@@ -58,41 +65,64 @@ const Tree = ({ tree }: { tree: Tree}) => {
         const next = a[i + 1];
         const state = !next || "text" in next ? null : next.state;
         return <div className="line" key={i}>
-          {state ? <Arrow state="open" onClick={() => (state.open = false, update({}))}/> : <Arrow state="leaf"/>}
-          <Text str={x.text}/>
+          {state ? <Arrow state="open" onClick={() => (state.open = false, update())}/> : <Arrow state="leaf"/>}
+          <TreeText str={x.text}/>
           {i === 0 ? expandIcon : null}
         </div>
       })}
     </div>
 
-  const sections = (expanded() ? tree : fullyCollapseTree(tree, maxLength, true)).filter(x => "children" in x);
+  const sections = (expanded() ? tree : fullyCollapseTree(tree, maxLength, update, true)).filter(x => "children" in x);
 
   return <div className="Node"><div className="line">
     {
       sections.length ?
         <Arrow state="closed" onClick={() => {
           sections.forEach(x => "children" in x && (x.state.open = true));
-          update({});
+          update();
         }}/> :
         <Arrow state="leaf"/>
     }
-    <Text str={collapsedTree[0].text}/>
+    <TreeText str={joinedCollapsedTree[0].text}/>
     {expandIcon}
   </div></div>
 }
 
-const Text = ({ str }: { str: TreeText}) =>
+type TreeTextPartProps = {
+  children: React.ReactNode,
+  onClick?: () => void,
+  className?: string,
+}
+
+const TreeTextPart = ({ children, className, onClick }:TreeTextPartProps) => {
+  const handleHover = (e: React.MouseEvent) => {
+    const value = e.type === "mousemove" && e.target === e.currentTarget;
+    if(hovered.value !== value) hovered(value);
+  }
+  const hovered = useObservable.use(false)
+  return <span {...{
+    className: (className ?? "") + (hovered() ? " hover" : ""),
+    onClick: e => e.target === e.currentTarget && onClick?.(),
+    onMouseMove: handleHover,
+    onMouseLeave: handleHover,
+  }}>
+    {children}
+  </span>
+}
+
+const TreeText = ({ str }: { str: TreeText}) =>
   <span>{
     str.reduce(([a, b, ...c], d, i) =>
       typeof d === "string" ?
         [[...a, d], b, ...c] :
         "close" in d ?
-          [[...b, <span key={i} onClick={d.onClick}>{a}</span>], ...c] :
+          [[...b, <TreeTextPart key={i} onClick={d.onClick} className={d.className}>{a}</TreeTextPart>], ...c] :
           [[], a, b, ...c]
     , [[]] as (string | React.ReactElement)[][])
   }</span>
 
 function hierarchyTree(hierarchy: Hierarchy): Tree{
+  const origHierarchy = hierarchy;
   if(hierarchy.braceType === "")
     return [{ text: [hierarchy.name] }];
   if(hierarchy.braceType === ":")
@@ -120,28 +150,52 @@ function hierarchyTree(hierarchy: Hierarchy): Tree{
       operands = [hierarchy]
     }
     return [
-      ...(operators.length === 1 ? hierarchyTree(operators[0]) : [
+      ...(origHierarchy.braceType === "(" ? hierarchyTree(operators[0]) : [
         { text: ["("] },
-        { children: operators.map(hierarchyTree), joiner: "∘", state: { open: false } },
+        { children: operators.map(hierarchyTree), joiner: "∘", state: { open: false }, forceOpenable: true },
         { text: [")"] },
       ]),
       { text: ["("] },
-      { children: operands.map(hierarchyTree), joiner: ", ", state: { open: false } },
+      {
+        children: operands.map(hierarchyTree),
+        joiner: ", ",
+        state: { open: false },
+        forceOpenable: (
+          origHierarchy.braceType === "|" &&
+          operands.length === 1 &&
+          operands[0].braceType !== "[" &&
+          operands[0].braceType !== "{"
+        ),
+      },
       { text: [")"] },
     ]
   }
   assertNever(hierarchy.braceType);
 }
 
-function collapseTree(tree: Tree, noSingle = false): Tree{
-  return tree.flatMap(x => {
-    if("text" in x)
-      return [x];
-    if(x.children.length === 1)
-      return x.children[0];
-    if(!x.state.open && !noSingle)
-      return [...interleave(x.children, { text: [x.joiner ?? ""] })].flat();
-    return [x];
+function collapseTree(tree: Tree, onUpdate?: () => void, noSingle = false): Tree{
+  const wrapMaybeForceOpenable = (part: Extract<TreePart, { children: unknown }>, inner: Tree): Tree =>
+    part.forceOpenable ?
+      [
+        { text: [{ open: true }] },
+        ...inner,
+        {
+          text: [{
+            close: true,
+            onClick: () => (part.state.open = true, onUpdate?.()),
+            className: "openable",
+          }]
+        }
+      ] :
+      inner
+  return tree.flatMap(part => {
+    if("text" in part || part.state.open)
+      return [part];
+    if(part.children.length === 1 && !(noSingle && part.forceOpenable))
+      return wrapMaybeForceOpenable(part, part.children[0]);
+    if(!noSingle)
+      return wrapMaybeForceOpenable(part, [...interleave(part.children, { text: [part.joiner ?? ""] })].flat());
+    return [part];
   })
 }
 
@@ -151,21 +205,28 @@ function joinTree(tree: Tree, onUpdate?: () => void){
       [a, [...b, ...c.text]] :
       c.state.open ?
         [[...a, { text: b }, c], []] :
-        [a, [...b, { open: true }, ellipsis, { close: true, onClick: () => (c.state.open = true, onUpdate?.()) }]]
+        [a, [...b, { open: true }, ellipsis, {
+          close: true,
+          onClick: () => (c.state.open = true, onUpdate?.()),
+          className: "openable"
+        }]]
   , [[], []]);
-  return [...r, { text: s }]
+  const t = [...r, { text: s }]
+  return t.map(x => !("text" in x) ? x : {
+    text: t.flatMap(y => "text" in y ? x === y ? y.text : y.text.filter(x => typeof x === "object") : [])
+  })
 }
 
 function validTree(tree: Tree, maxLength: number){
   return joinTree(tree).every(x => "text" in x ? length(x.text) <= maxLength : true);
 }
 
-function fullyCollapseTree(tree: Tree, maxLength: number, noSingle = false){
+function fullyCollapseTree(tree: Tree, maxLength: number, onUpdate?: () => void, noSingle = false){
   let last = tree;
-  let cur = collapseTree(tree, noSingle);
+  let cur = collapseTree(tree, onUpdate, noSingle);
   while(hash(cur) !== hash(last) && validTree(cur, maxLength)) {
     last = cur;
-    cur = collapseTree(cur, noSingle)
+    cur = collapseTree(cur, onUpdate, noSingle)
   }
   return last;
 }

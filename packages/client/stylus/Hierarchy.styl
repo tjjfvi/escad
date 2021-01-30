@@ -27,8 +27,18 @@
       height 25px
       font-size 20px
       color $lightgrey
-      &.important
-        color $white
+
+      .openable
+        position relative
+        opacity .5
+        .openable
+          opacity 1
+        &.hover
+          text-decoration underline
+          text-decoration-style dotted
+          text-decoration-thickness 1px
+          text-decoration-color $white
+          text-underline-position from-font
 
       &:hover
         background-color $darkgrey
