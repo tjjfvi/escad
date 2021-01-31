@@ -96,13 +96,17 @@ type TreeTextPartProps = {
 
 const TreeTextPart = ({ children, className, onClick }:TreeTextPartProps) => {
   const handleHover = (e: React.MouseEvent) => {
-    const value = e.type === "mousemove" && e.target === e.currentTarget;
+    e.stopPropagation();
+    const value = e.type === "mousemove";
     if(hovered.value !== value) hovered(value);
   }
   const hovered = useObservable.use(false)
   return <span {...{
     className: (className ?? "") + (hovered() ? " hover" : ""),
-    onClick: e => e.target === e.currentTarget && onClick?.(),
+    onClick: e => {
+      e.stopPropagation();
+      onClick?.();
+    },
     onMouseMove: handleHover,
     onMouseLeave: handleHover,
   }}>
@@ -114,7 +118,7 @@ const TreeText = ({ str }: { str: TreeText}) =>
   <span>{
     str.reduce(([a, b, ...c], d, i) =>
       typeof d === "string" ?
-        [[...a, d], b, ...c] :
+        [[...a, d === ellipsis ? <span className="ellipsis" key={i}>{d}</span> : d], b, ...c] :
         "close" in d ?
           [[...b, <TreeTextPart key={i} onClick={d.onClick} className={d.className}>{a}</TreeTextPart>], ...c] :
           [[], a, b, ...c]
