@@ -18,7 +18,7 @@ export async function load({ path }: ServerRendererMessage.Load){
   const [func, paramDef] = exported instanceof RenderFunction ? [exported.func, exported.paramDef] : [exported, null];
   const param = ObjectParam.create(paramDef ?? {});
   const { defaultValue: defaultParams } = param;
-  const paramHash = param ? hash(param) : null;
+  const paramHash = paramDef ? hash(param) : null;
 
   if(paramDef)
     artifactManager.storeRaw(param);
