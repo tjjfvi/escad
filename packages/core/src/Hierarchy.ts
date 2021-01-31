@@ -8,27 +8,11 @@ import { Operation } from "./Operation";
 
 export type BraceType = "{" | "[" | "|" | "(" | ":" | "";
 
-export interface HierarchyArgs {
-  readonly name?: string,
-  readonly braceType?: BraceType,
-  readonly children?: readonly Hierarchy[],
-  readonly output?: Hierarchy | null,
-  readonly input?: Hierarchy | null,
-  readonly fullOutput?: Hierarchy | null,
-  readonly isOutput?: boolean,
-  readonly isFullOutput?: boolean,
-}
-
-export interface Hierarchy extends HierarchyArgs {
+export interface Hierarchy {
   readonly type: "Hierarchy",
   readonly name: string,
   readonly braceType: BraceType,
   readonly children: readonly Hierarchy[],
-  readonly output: Hierarchy | null,
-  readonly input: Hierarchy | null,
-  readonly fullOutput: Hierarchy | null,
-  readonly isOutput: boolean,
-  readonly isFullOutput: boolean,
 }
 
 export const Hierarchy = {
@@ -36,54 +20,27 @@ export const Hierarchy = {
     name = "",
     braceType = "",
     children = [],
-    output = null,
-    input = null,
-    fullOutput = null,
-    isOutput = false,
-    isFullOutput = false,
-  }: HierarchyArgs): Hierarchy => {
-    if(isOutput || isFullOutput)
-      output = null;
-    if(isFullOutput)
-      fullOutput = null;
-    if(!output && !isOutput && !isFullOutput)
-      output = Hierarchy.create({
-        name,
-        braceType,
-        input,
-        children: children.map(c => c.output ?? c),
-        isOutput: true,
-      })
-    if(!fullOutput && !isFullOutput)
-      fullOutput = output?.fullOutput ?? Hierarchy.create({
-        name,
-        braceType,
-        input,
-        children: children.map(c => c.fullOutput ?? c),
-        isFullOutput: true,
-      })
-
-    output = null
-    fullOutput = null
-
+  }: Partial<Hierarchy>): Hierarchy => {
     if(braceType === "" && children.length)
-      throw new Error("braceType \"\" must be used without children")
+      throw new Error(`braceType "${braceType}" must be used without children`)
 
-    if((braceType === "{" || braceType === "[") && name !== "")
+    if((braceType === "" || braceType === ":") && !name)
+      throw new Error(`braceType "${braceType}" must be used with a name`)
+
+    if((braceType !== "" && braceType !== ":") && name !== "")
       throw new Error(`braceType "${braceType}" cannot be used with a name`);
+
+    if((braceType === "(" || braceType === "|") && !children.length)
+      throw new Error(`braceType "${braceType}" must be used with at least one child`);
 
     if(braceType === ":" && children.length !== 1)
       throw new Error("braceType \":\" must be used with exactly one child");
+
     return {
       type: "Hierarchy",
       name,
       braceType,
       children,
-      fullOutput,
-      input,
-      isFullOutput,
-      isOutput,
-      output,
     };
   },
   isHierarchy: checkTypeProperty<Hierarchy>("Hierarchy"),

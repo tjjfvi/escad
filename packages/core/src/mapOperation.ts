@@ -21,13 +21,8 @@ export const mapOperation = (
 
       const output = new Element(flattenedArg).map(func, (eish, old, isLeaf, isRoot) =>
         Hierarchy.create({
-          name,
           braceType: "|",
-          children: isRoot && !isLeaf ? old.hierarchy.children : [old.hierarchy],
-          input: old.hierarchy.fullOutput,
-          isOutput: isLeaf,
-          output: Hierarchy.from(eish).output,
-          fullOutput: isLeaf ? Hierarchy.from(eish).fullOutput : null,
+          children: [Hierarchy.create({ name }), ...(isRoot && !isLeaf ? old.hierarchy.children : [old.hierarchy])],
         })
       );
 

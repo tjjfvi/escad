@@ -25,7 +25,6 @@ export class Component<I extends any[], T extends __Thing__> extends __Component
             this.hierarchy ?? Hierarchy.create({ name }),
             ...args.map(Hierarchy.from),
           ],
-          output: x.hierarchy,
         })
       return x;
     }, {}, name);
