@@ -15,12 +15,14 @@ import {
 import { v4 as uuidv4 } from "uuid";
 import { ObjectParam } from "@escad/parameters";
 
+type Status = "connected" | "disconnected";
+
 export class Messenger extends EventEmitter<{
   message: (message: ServerClientMessage) => void,
 }> implements ArtifactStore {
 
   ws: WebSocket | null;
-  connected = observable<boolean>(false);
+  status = observable<Status>("disconnected");
   id = observable<string>();
   serverId = observable<string>();
   shas = observable<Hash[]>([]);
@@ -90,7 +92,7 @@ export class Messenger extends EventEmitter<{
     this.ws.addEventListener("open", () => {
       if(this.ws !== ws)
         return ws.close();
-      this.connected(true);
+      this.status("connected");
       this.send({
         type: "init",
         clientId: this.id(),
@@ -154,7 +156,7 @@ export class Messenger extends EventEmitter<{
     ws.close();
     if(this.ws !== ws)
       return;
-    this.connected(false);
+    this.status("disconnected");
     this.ws = null;
     setTimeout(() => this.initWs(), 5000);
   }

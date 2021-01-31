@@ -13,7 +13,6 @@ ReactDOM.render(
 
 export * from './App';
 export * from './BooleanParam';
-export * from './Disconnected';
 export * from './IdView';
 export * from './Messenger';
 export * from './NumberParam';
@@ -23,6 +22,7 @@ export * from './Parameters';
 export * from './ParametersPane';
 export * from './Preview';
 export * from './ProductTypeView';
+export * from './Status';
 export * from './Viewer';
 export * from './ViewerRegistration';
 

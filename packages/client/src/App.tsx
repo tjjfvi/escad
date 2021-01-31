@@ -1,6 +1,6 @@
 
 import React from "react";
-import { Disconnected } from "./Disconnected";
+import { Status } from "./Status";
 import { HierarchyPane } from "./HierarchyPane";
 import { ParametersPane } from "./ParametersPane";
 import { Preview } from "./Preview";
@@ -8,6 +8,6 @@ import { Preview } from "./Preview";
 export const App = () => <>
   <ParametersPane/>
   <Preview/>
-  <Disconnected/>
+  <Status/>
   <HierarchyPane/>
 </>

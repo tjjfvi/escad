@@ -1,0 +1,34 @@
+
+.Status
+  display inline-flex
+  height 50px
+  border-style solid
+  border-width 5px 0 0 5px
+  border-radius 10px 0 0 0
+  background-color $black
+  position absolute
+  right 0px
+  bottom 0px
+  font-size 25px
+  transition transform .4s
+  transform translate(100%, 0) translate(-50px, 0)
+
+  span
+    align-self center
+    padding-right 7.5px
+    margin-left 45px
+
+  svg
+    position absolute
+    height 100%
+
+  &:hover
+    transform none
+
+  &.disconnected
+    color $red
+    border-color $red
+
+  &.connected
+    color $green
+    border-color $green
