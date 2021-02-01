@@ -1,6 +1,6 @@
 /* eslint-disable array-element-newline */
 
-import { createProductTypeUtils, Id, LeafProduct } from "@escad/core";
+import { createLeafProductUtils, Id, LeafProduct } from "@escad/core";
 import { Vector3 } from "@escad/mesh";
 
 const c = Math.cos;
@@ -26,7 +26,7 @@ export const Matrix4 = {
     type: Matrix4.id,
     vs,
   }),
-  ...createProductTypeUtils<Matrix4, "Matrix4">(matrix4Id, "Matrix4"),
+  ...createLeafProductUtils<Matrix4, "Matrix4">(matrix4Id, "Matrix4"),
 
   id: matrix4Id,
 

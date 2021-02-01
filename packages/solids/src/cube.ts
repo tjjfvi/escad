@@ -5,7 +5,7 @@ import {
   Element,
   Id,
   Conversion,
-  createProductTypeUtils,
+  createLeafProductUtils,
   LeafElement,
   LeafProduct,
   conversionRegistry,
@@ -25,7 +25,7 @@ export const Cube = {
     center,
     size,
   }),
-  ...createProductTypeUtils<Cube, "Cube">(cubeId, "Cube"),
+  ...createLeafProductUtils<Cube, "Cube">(cubeId, "Cube"),
   id: cubeId,
 };
 

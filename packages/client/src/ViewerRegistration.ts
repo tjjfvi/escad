@@ -34,11 +34,10 @@ export const mapProduct = async <T extends ViewerInput>(context: Viewer<T>, prod
 
 export function* getViewersForAll(types: Iterable<ProductType>){
   const displayss = [...types].map(t => new Set(findViewers(t)));
-  for(const set of displayss)
-    main: for(const display of set) {
-      for(const set of displayss)
-        if(!set.has(display))
-          continue main;
-      yield display;
-    }
+  main: for(const display of displayss.shift() ?? []) {
+    for(const set of displayss)
+      if(!set.has(display))
+        continue main;
+    yield display;
+  }
 }

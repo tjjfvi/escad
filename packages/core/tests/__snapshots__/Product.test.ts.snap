@@ -285,7 +285,7 @@ exports[`ArrayProduct.create Throws on [] 1`] = `"ArrayProducts cannot be empty"
 
 exports[`Product.getProductType Throw on invalid product 1`] = `"Invalid product passed to Product.getProductType"`;
 
-exports[`createProductTypeUtils .productType 1`] = `
+exports[`createLeafProductUtils .productType 1`] = `
 Object {
   "id": Object {
     "full": "@escad-core-0-ProductA",
@@ -298,7 +298,7 @@ Object {
 }
 `;
 
-exports[`createProductTypeUtils Consistent keys 1`] = `
+exports[`createLeafProductUtils Consistent keys 1`] = `
 Array [
   "create",
   "id",

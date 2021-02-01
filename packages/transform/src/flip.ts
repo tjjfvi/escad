@@ -2,7 +2,7 @@
 import {
   Id,
   LeafProduct,
-  createProductTypeUtils,
+  createLeafProductUtils,
   Product,
   TupleProduct,
   Conversion,
@@ -21,7 +21,7 @@ export interface FlipFacesProduct extends LeafProduct {
 
 export const FlipFacesProduct = {
   create: () => ({ type: flipFacesProductId }),
-  ...createProductTypeUtils<FlipFacesProduct, "FlipFacesProduct">(flipFacesProductId, "FlipFacesProduct"),
+  ...createLeafProductUtils<FlipFacesProduct, "FlipFacesProduct">(flipFacesProductId, "FlipFacesProduct"),
   id: flipFacesProductId,
 };
 

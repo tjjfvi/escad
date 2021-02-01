@@ -1,5 +1,5 @@
 
-import { artifactManager, hash, Product, Element, conversionRegistry } from "@escad/core";
+import { artifactManager, hash, Product, Element, conversionRegistry, timers } from "@escad/core";
 import { ObjectParam } from "@escad/parameters";
 import { registeredPlugins } from "@escad/register-client-plugin";
 import { ServerRendererMessage } from "@escad/server-renderer-messages";
@@ -56,11 +56,9 @@ export async function load({ path }: ServerRendererMessage.Load){
       return { products: [], hierarchy: null };
     }
     const el = new Element<Product>(result);
-    const shas = await Promise.all(el.toArrayFlat().map(async product => {
-      await artifactManager.storeRaw(product);
-      return hash(product);
-    }));
-    await artifactManager.storeRaw(el.hierarchy);
-    return { products: shas, hierarchy: hash(el.hierarchy) };
+    const shas = await Promise.all(el.toArrayFlat().map(p => artifactManager.storeRaw(p)));
+    const r = { products: shas, hierarchy: await artifactManager.storeRaw(el.hierarchy) };
+    console.log(timers)
+    return r;
   }
 }

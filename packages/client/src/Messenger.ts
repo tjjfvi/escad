@@ -11,6 +11,7 @@ import {
   Hash,
   Hierarchy,
   Product,
+  ProductType,
 } from "@escad/core";
 import { v4 as uuidv4 } from "uuid";
 import { ObjectParam } from "@escad/parameters";
@@ -25,7 +26,6 @@ export class Messenger extends EventEmitter<{
   status = observable<Status>("disconnected");
   id = observable<string>();
   serverId = observable<string>();
-  shas = observable<Hash[]>([]);
   products = observable<Product[]>([]);
   paramDef = observable<ObjectParam<any>>();
   params = observable<Record<string, unknown>>({});
@@ -47,33 +47,39 @@ export class Messenger extends EventEmitter<{
       }
 
       if(msg.type === "info") {
-        this.shas(msg.products);
-        Promise.all(msg.products.map(async (sha): Promise<Product> =>
-          await this.artifactManager.lookupRaw(sha) as Product
-        )).then(x => this.products(x));
-
-        if(msg.paramDef)
-          this.artifactManager.lookupRaw(msg.paramDef).then(x => this.paramDef(x as ObjectParam<any>));
-        else
-          this.paramDef(null);
-
-        if(msg.hierarchy)
-          this.artifactManager.lookupRaw(msg.hierarchy).then(x => this.hierarchy(x as Hierarchy));
-        else
-          this.hierarchy(null)
-
-        for(const [fromType, toType] of msg.conversions ?? [])
-          if(!conversionRegistry.has(fromType, toType))
-            conversionRegistry.register({
-              fromType,
-              toType,
-              convert: () => {
-                throw new Error("Stub conversion erroneously called")
-              },
-              weight: Infinity,
-            })
+        this.handleProducts(msg.products);
+        this.handleParamDef(msg.paramDef);
+        this.handleHierarchy(msg.hierarchy);
+        this.handleConversions(msg.conversions);
       }
     })
+  }
+
+  private async handleProducts(productHashes: Hash[]){
+    this.products(await Promise.all(productHashes.map(async (sha): Promise<Product> =>
+      await this.artifactManager.lookupRaw(sha) as Product
+    )));
+  }
+
+  private async handleParamDef(paramDefHash: Hash | null){
+    this.paramDef(paramDefHash ? await this.artifactManager.lookupRaw(paramDefHash) as ObjectParam<any> : null)
+  }
+
+  private async handleHierarchy(hierarchyHash: Hash | null){
+    this.hierarchy(hierarchyHash ? await this.artifactManager.lookupRaw(hierarchyHash) as Hierarchy : null)
+  }
+
+  private async handleConversions(conversions?: [ProductType, ProductType][]){
+    for(const [fromType, toType] of conversions ?? [])
+      if(!conversionRegistry.has(fromType, toType))
+        conversionRegistry.register({
+          fromType,
+          toType,
+          convert: () => {
+            throw new Error("Stub conversion erroneously called")
+          },
+          weight: Infinity,
+        })
   }
 
   send(message: ClientServerMessage){

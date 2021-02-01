@@ -2,7 +2,7 @@
 import { Mesh, Face, Vector3 } from "@escad/mesh";
 import {
   Conversion,
-  createProductTypeUtils,
+  createLeafProductUtils,
   Element,
   Id,
   LeafProduct,
@@ -31,7 +31,7 @@ export const Cylinder = {
     type: cylinderId,
     ...args,
   }),
-  ...createProductTypeUtils<Cylinder, "Cylinder">(cylinderId, "Cylinder"),
+  ...createLeafProductUtils<Cylinder, "Cylinder">(cylinderId, "Cylinder"),
   id: cylinderId,
 };
 
@@ -115,7 +115,7 @@ export interface CylArgs {
 }
 
 export const cylinder: Component<[CylArgs], Element<Mesh>> =
-  new Component<[CylArgs], Element<Mesh>>("sphere", (args: CylArgs) => {
+  new Component<[CylArgs], Element<Mesh>>("cyl", (args: CylArgs) => {
     const rsP: Pair<number> =
       args.r ??
       args.rs ??

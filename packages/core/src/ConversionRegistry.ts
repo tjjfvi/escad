@@ -37,7 +37,7 @@ export class ConversionRegistry {
 
   register<F extends Product, T extends Product>(
     conversion: ConversionImpl<F, T>,
-  ): void {
+  ): void{
     this.initialComposed.clear();
     this.composed.clear();
     this.registered.add(conversion)

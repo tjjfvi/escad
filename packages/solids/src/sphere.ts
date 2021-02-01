@@ -5,7 +5,7 @@ import {
   Id,
   Component,
   LeafProduct,
-  createProductTypeUtils,
+  createLeafProductUtils,
   Conversion,
   conversionRegistry,
 } from "@escad/core";
@@ -29,7 +29,7 @@ export const Sphere = {
     slices,
     stacks,
   }),
-  ...createProductTypeUtils<Sphere, "Sphere">(sphereId, "Sphere"),
+  ...createLeafProductUtils<Sphere, "Sphere">(sphereId, "Sphere"),
   id: sphereId,
 };
 

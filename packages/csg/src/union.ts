@@ -2,7 +2,7 @@
 import {
   TupleProduct,
   Conversion,
-  createProductTypeUtils,
+  createLeafProductUtils,
   Elementish,
   Id,
   LeafProduct,
@@ -24,7 +24,7 @@ export interface UnionMarker extends LeafProduct {
 
 export const UnionMarker = {
   create: (): UnionMarker => ({ type: unionMarkerId }),
-  ...createProductTypeUtils<UnionMarker, "UnionMarker">(unionMarkerId, "UnionMarker"),
+  ...createLeafProductUtils<UnionMarker, "UnionMarker">(unionMarkerId, "UnionMarker"),
   id: unionMarkerId,
 };
 

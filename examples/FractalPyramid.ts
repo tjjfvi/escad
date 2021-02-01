@@ -1,69 +1,70 @@
-// @ts-nocheck
+import escad, { Element } from "../packages/core";
+import "../packages/builtins/register";
+import { renderFunction } from "../packages/renderer";
+import { numberParam } from "../packages/renderer/node_modules/@escad/parameters/dist";
+import { Mesh } from "../packages/csg/node_modules/@escad/mesh/dist";
 
-export default (escad, p) => {
-
-  let parameters = p([
-    {
-      key: "order",
-      type: "number",
+export default renderFunction(
+  {
+    order: numberParam({
       min: 1,
       max: 10,
-      default: 1,
-    }, {
-      key: "sideLength",
-      type: "number",
+      defaultValue: 1,
+    }),
+    sideLength: numberParam({
       min: 0,
       max: 1000,
-      step: 1,
-      default: 2,
-    }, {
-      key: "adjustment",
-      type: "number",
+      // step: 1,
+      defaultValue: 2,
+    }),
+    adjustment: numberParam({
       min: 0,
       max: 100,
-      step: .1,
-      default: .3,
-    },
-  ]);
+      // step: .1,
+      defaultValue: .3,
+    }),
+  },
+  parameters => {
 
-  let calcHeight = s => Math.sqrt(s ** 2 - (Math.sqrt(2) / 2 * s) ** 2);
+    let calcHeight = (s: number) => Math.sqrt(s ** 2 - (Math.sqrt(2) / 2 * s) ** 2);
 
-  let pyramid = (sideLength, adjustment) => {
-    let h = calcHeight(sideLength);
+    let pyramid = (sideLength: number, adjustment: number) => {
+      let h = calcHeight(sideLength);
 
-    adjustment = calcHeight(adjustment);
+      adjustment = calcHeight(adjustment);
 
-    return escad({
-      pyramid: escad.cyl({
-        r1: Math.sqrt(2) * sideLength / 2,
-        r2: adjustment / h * Math.sqrt(2) * sideLength / 2,
-        h: h - adjustment,
-        sides: 4
-      }).rotate(45).translate(0, 0, (h - adjustment) / 2),
-    });
-  }
+      return escad<Mesh>({
+        pyramid: escad.cyl({
+          r1: Math.sqrt(2) * sideLength / 2,
+          r2: adjustment / h * Math.sqrt(2) * sideLength / 2,
+          i: .00001,
+          h: h - adjustment,
+          sides: 4
+        }).rotateZ(45).translate(0, 0, (h - adjustment) / 2),
+      });
+    }
 
-  let fractal = (sideLength, adjustment, order) => {
-    order--;
-    let sideCount = 2 ** (order - 1);
-    let adjustedSideLength = sideLength - adjustment;
-    return escad(order === 0 ?
-      pyramid(sideLength, adjustment) :
-      {
+    let fractal = (sideLength: number, adjustment: number, order: number): Element<Mesh> => {
+      order--;
+      let sideCount = 2 ** (order - 1);
+      let adjustedSideLength = sideLength - adjustment;
+      if(order === 0)
+        return pyramid(sideLength, adjustment);
+      const sub = fractal(sideLength, adjustment, order);
+      return escad<Mesh>({
         fractal: escad.union([
           ...[[1, 1], [1, -1], [-1, 1], [-1, -1]].map(([x, y]) =>
-            t => t.translate([x, y].map(n => n * adjustedSideLength * sideCount / 2))
+            sub.translate(...[x, y, 0].map(n => n * adjustedSideLength * sideCount / 2) as any)
           ),
           ...[0, 180].map(r =>
-            t => t.rotate(0, r, 0).translate(0, 0, calcHeight(adjustedSideLength * sideCount))
+            sub.rotate(0, r, 0).translate(0, 0, calcHeight(adjustedSideLength * sideCount))
           ),
-        ].map(m => m(fractal(sideLength, adjustment, order))))
-      }
-    );
-  };
+        ])
+      });
+    };
 
-  console.log(parameters);
-  return fractal(parameters.sideLength, parameters.adjustment, parameters.order);
-  // return pyramid(parameters.sideLength, parameters.adjustment);
+    console.log(parameters);
+    return fractal(parameters.sideLength, parameters.adjustment, parameters.order);
+    // return escad.cyl({ r: 1, i: .00001, h: 20, sides: 12 })
 
-}
+  });

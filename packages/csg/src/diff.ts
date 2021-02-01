@@ -2,7 +2,7 @@
 import {
   TupleProduct,
   Conversion,
-  createProductTypeUtils,
+  createLeafProductUtils,
   Elementish,
   Id,
   LeafProduct,
@@ -24,7 +24,7 @@ export interface DiffMarker extends LeafProduct {
 
 export const DiffMarker = {
   create: (): DiffMarker => ({ type: diffMarkerId }),
-  ...createProductTypeUtils<DiffMarker, "DiffMarker">(diffMarkerId, "DiffMarker"),
+  ...createLeafProductUtils<DiffMarker, "DiffMarker">(diffMarkerId, "DiffMarker"),
   id: diffMarkerId,
 };
 

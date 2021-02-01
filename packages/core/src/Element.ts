@@ -55,7 +55,6 @@ export interface Element<T extends Product> extends _ExcludeNevers<_ElementBuilt
 export class Element<T extends Product> extends __Element__<T> {
 
   val: ElementishFlat<Element<T>> | ConvertibleTo<T>;
-  hierarchy: Hierarchy;
 
   static create<T extends Product>(c: Array<Elementish<T>>, h?: Hierarchy): ArrayElement<T>;
   static create<T extends Product>(c: ObjMap<Elementish<T>>, h?: Hierarchy): ObjMapElement<T>;
@@ -70,14 +69,14 @@ export class Element<T extends Product> extends __Element__<T> {
     return new Element(c, h);
   }
 
-  constructor(c: Elementish<T>, h: Hierarchy = Hierarchy.from(c)){
+  constructor(elementish: Elementish<T>, public hierarchy: Hierarchy = Hierarchy.from(elementish)){
     super(arg => {
       if(!arg)
-        return that;
+        return this;
       if(arg instanceof Operation)
         return arg(this);
       if(arg instanceof Component)
-        return new Component<any, any>(arg.name + "'", (...args) => that(arg(...args)), false)
+        return new Component<any, any>(arg.name + "'", (...args) => this(arg(...args)), false)
       if(arg instanceof Element)
         return this.join(arg);
       throw new Error("Invalid argument to Element");
@@ -95,16 +94,17 @@ export class Element<T extends Product> extends __Element__<T> {
         return this(val);
       }
     })
-    let that = this;
-    if(c instanceof Array)
-      this.val = c.map(x => new Element(x));
-    else if(isObjMap(c))
-      this.val = Object.assign(Object.create(null), ...Object.entries(c).map(([k, v]) => ({ [k]: new Element(v) })));
-    else if(c instanceof Element)
-      this.val = c.val;
+    if(elementish instanceof Array)
+      this.val = elementish.map(x => new Element(x));
+    else if(isObjMap(elementish))
+      this.val = Object.assign(
+        Object.create(null),
+        ...Object.entries(elementish).map(([k, v]) => ({ [k]: new Element(v) }))
+      );
+    else if(elementish instanceof Element)
+      this.val = elementish.val;
     else
-      this.val = c as ConvertibleTo<T>;
-    this.hierarchy = h;
+      this.val = elementish as ConvertibleTo<T>;
   }
 
   isArray(): this is ArrayElement<T>{

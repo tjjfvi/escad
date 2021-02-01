@@ -2,6 +2,7 @@
 import { WeakCache } from "./WeakCache";
 import { Hash, hash } from "./hash";
 import { ArtifactStore, BufferLike } from "./ArtifactStore";
+import { timers } from "./Timer";
 
 export type SerializeFunc<T> = (artifact: T) => BufferLike;
 export type DeserializeFunc<T> = (buffer: Buffer) => T;
@@ -13,7 +14,9 @@ export class ArtifactManager {
   artifactStores: ArtifactStore[] = [];
 
   private serialize(artifact: unknown): Buffer{
-    return artifact instanceof Buffer ? artifact : Buffer.from(JSON.stringify(artifact));
+    return artifact instanceof Buffer ?
+      artifact :
+      Buffer.from(timers.stringifySerialize.time(JSON.stringify)(artifact))
   }
 
   private deserialize(buffer: unknown): unknown{
@@ -39,7 +42,7 @@ export class ArtifactManager {
       !excludeStores?.has(s) && s.storeRaw?.(artifactHash, serialized ??= this.serialize(artifact), this)
     ));
 
-    return artifact;
+    return artifactHash;
   }
 
   async storeRef<T>(
@@ -60,7 +63,7 @@ export class ArtifactManager {
       ),
     ]);
 
-    return artifact;
+    return artifactHash;
   }
 
   async lookupRaw(

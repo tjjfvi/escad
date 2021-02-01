@@ -1,5 +1,5 @@
 
-import { createProductTypeUtils, Id, LeafProduct, Stack } from "@escad/core";
+import { createLeafProductUtils, Id, LeafProduct, Stack } from "@escad/core";
 import { Face, Plane } from "@escad/mesh";
 
 const bspId = Id.create(__filename, "@escad/csg", "0", "Bsp");
@@ -33,7 +33,7 @@ export const Bsp = {
     faces,
     plane: plane ?? faces[0]?.plane ?? null,
   }),
-  ...createProductTypeUtils<Bsp, "Bsp">(bspId, "Bsp"),
+  ...createLeafProductUtils<Bsp, "Bsp">(bspId, "Bsp"),
 
   id: bspId,
 

@@ -10,6 +10,7 @@ import {
   TransitivityOverride,
 } from "./Conversions";
 import { hash } from "./hash";
+import { timers } from "./Timer";
 
 export interface _Product {
   readonly [__convertibleToTransitivityOverride]?: TransitivityOverride.A,
@@ -30,7 +31,7 @@ export type Product = LeafProduct | TupleProduct | ArrayProduct;
 
 export const Product = {
   isProduct,
-  getProductType: <P extends Product>(product: P): ProductType<P> => {
+  getProductType: timers.getProductType.time(<P extends Product>(product: P): ProductType<P> => {
     if(LeafProduct.isLeafProduct(product))
       return LeafProduct.getLeafProductType(product)
     if(TupleProduct.isTupleProduct(product))
@@ -38,12 +39,12 @@ export const Product = {
     if(ArrayProduct.isArrayProduct(product))
       return ArrayProduct.getArrayProductType(product);
     throw new Error("Invalid product passed to Product.getProductType");
-  }
+  })
 }
 
 function isProduct(arg: any): arg is Product
 function isProduct<P extends Product>(arg: any, productType: ProductType<P>): arg is P
-function isProduct(arg: any, productType: ProductType | null = null){
+function isProduct(arg: any, productType?: ProductType){
   return (
     (LeafProduct.isLeafProduct(arg) || TupleProduct.isTupleProduct(arg) || ArrayProduct.isArrayProduct(arg)) &&
     (!productType || hash(Product.getProductType(arg)) === hash(productType))
@@ -54,11 +55,3 @@ export type ProductType<U extends Product = Product> =
   | LeafProductType<Extract<U, LeafProduct>>
   | TupleProductType<Extract<U, TupleProduct>>
   | ArrayProductType<Extract<U, ArrayProduct>>
-
-// Extract<
-//   Product extends U ?
-//     _ProductType :
-//     U extends LeafProduct ?
-//       LeafProductType<U> :
-//         TupleProductType<Extract<U, TupleProduct<any>>>
-// , _ProductType>

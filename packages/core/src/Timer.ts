@@ -41,10 +41,8 @@ export class Timer {
 }
 
 export const timers = {
-  workSha: new Timer(),
-  workSerialize: new Timer(),
-  workProcess: new Timer(),
-  productSha: new Timer(),
-  productSerialize: new Timer(),
-  sha: new Timer(),
+  stringifySerialize: new Timer(),
+  stringifyHash: new Timer(),
+  hash: new Timer(),
+  getProductType: new Timer(),
 }

@@ -2,7 +2,7 @@
 import {
   ArrayProduct,
   ArrayProductType,
-  createProductTypeUtils,
+  createLeafProductUtils,
   Id,
   LeafProduct,
   Product,
@@ -19,20 +19,20 @@ interface ProductC extends LeafProduct { readonly type: typeof productCId }
 const ProductA = {
   create: (): ProductA => ({ type: productAId }),
   id: productAId,
-  ...createProductTypeUtils<ProductA, "ProductA">(productAId, "ProductA")
+  ...createLeafProductUtils<ProductA, "ProductA">(productAId, "ProductA")
 }
 const ProductB = {
   create: (): ProductB => ({ type: productBId }),
   id: productBId,
-  ...createProductTypeUtils<ProductB, "ProductB">(productBId, "ProductB")
+  ...createLeafProductUtils<ProductB, "ProductB">(productBId, "ProductB")
 }
 const ProductC = {
   create: (): ProductC => ({ type: productCId }),
   id: productCId,
-  ...createProductTypeUtils<ProductC, "ProductC">(productCId, "ProductC")
+  ...createLeafProductUtils<ProductC, "ProductC">(productCId, "ProductC")
 }
 
-describe("createProductTypeUtils", () => {
+describe("createLeafProductUtils", () => {
   test("Consistent keys", () => {
     expect(Object.keys(ProductA)).toMatchSnapshot();
   })

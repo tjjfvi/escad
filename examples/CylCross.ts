@@ -1,4 +1,5 @@
-import escad from "../src/core";
+import escad from "../packages/core";
+import "../packages/builtins/register";
 
 export default () => {
   let c = escad.udMeld([

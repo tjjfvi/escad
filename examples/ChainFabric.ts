@@ -15,7 +15,7 @@ function range(...args: [number] | [number, number] | [number, number, number]):
 }
 
 export default () => {
-  console.log(global.timers);
+  // console.log(global.timers);
 
   type ConnectorStyle = "all" | "none" | "edge";
 
@@ -25,8 +25,8 @@ export default () => {
     thickness = .9,
     connectorHeight = .6,
     // barAngle = 20,
-    width = 20,
-    height = 20,
+    width = 100,
+    height = 100,
     translateMultiplier = 1.1,
     connectorHoleMultiplier = .25,
     connectorStyle = "edge" as ConnectorStyle;

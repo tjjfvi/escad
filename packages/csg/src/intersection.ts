@@ -2,7 +2,7 @@
 import {
   TupleProduct,
   Conversion,
-  createProductTypeUtils,
+  createLeafProductUtils,
   Elementish,
   Id,
   LeafProduct,
@@ -24,7 +24,7 @@ export interface IntersectionMarker extends LeafProduct {
 
 export const IntersectionMarker = {
   create: (): IntersectionMarker => ({ type: intersectionMarkerId }),
-  ...createProductTypeUtils<IntersectionMarker, "IntersectionMarker">(intersectionMarkerId, "IntersectionMarker"),
+  ...createLeafProductUtils<IntersectionMarker, "IntersectionMarker">(intersectionMarkerId, "IntersectionMarker"),
   id: intersectionMarkerId,
 };
 

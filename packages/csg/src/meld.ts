@@ -2,7 +2,7 @@
 import {
   TupleProduct,
   Conversion,
-  createProductTypeUtils,
+  createLeafProductUtils,
   Id,
   LeafProduct,
   Operation,
@@ -22,7 +22,7 @@ export interface MeldMarker extends LeafProduct {
 export const MeldMarker = {
   id: meldMarkerId,
   create: (): MeldMarker => ({ type: meldMarkerId }),
-  ...createProductTypeUtils<MeldMarker, "MeldMarker">(meldMarkerId, "MeldMarker"),
+  ...createLeafProductUtils<MeldMarker, "MeldMarker">(meldMarkerId, "MeldMarker"),
 };
 
 export type Meld<T extends ArrayProduct | TupleProduct> = TupleProduct<[MeldMarker, T]>;
