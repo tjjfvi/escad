@@ -1,7 +1,7 @@
 
 import "../packages/builtins/register";
-import { renderFunction } from "../packages/renderer";
-import { booleanParam, numberParam, objectParam } from "../packages/parameters";
+import { renderFunction } from "../packages/renderer/dist";
+import { booleanParam, numberParam, objectParam } from "../packages/parameters/dist";
 import { cube } from "../packages/solids/dist";
 import { sub } from "../packages/csg/dist";
 import escad from "../packages/core/dist";
@@ -25,5 +25,4 @@ export default renderFunction(
       ._(hollow ? sub(cube({ s: innerSize })) : escad())
       .sub(cube({ s: outerSize }).translate(outerSize / 2, outerSize / 2, outerSize / 2).translate(0, 0, 0))
   )
-
 );
