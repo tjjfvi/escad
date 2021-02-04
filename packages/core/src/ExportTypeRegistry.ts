@@ -1,22 +1,46 @@
 
 import { ExportType } from "./ExportType"
 import { artifactManager, ArtifactManager } from "./ArtifactManager";
+import { Id } from "./Id";
+import { ArtifactStore } from "./ArtifactStore";
+import { Product } from "./Product";
+import { conversionRegistry, ConversionRegistry } from "./ConversionRegistry";
+import { HashMap } from "./HashMap";
+import { hash } from "./hash";
 
 export class ExportTypeRegistry {
 
-  private registered = new Set<ExportType<any>>();
+  constructor(public artifactManager: ArtifactManager, public conversionRegistry: ConversionRegistry){
+    this.artifactManager.artifactStores.push(this.artifactStore);
+  }
 
-  constructor(public artifactManager: ArtifactManager){}
+  private registered = new HashMap<Id, ExportType<any>>();
 
-  register(exportType: ExportType<any>){
-    this.registered.add(exportType);
-    this.artifactManager.artifactStores.push(exportType.store);
+  static readonly artifactStoreId = Id.create(__filename, "@escad/core", "0", "ExportTypeRegistryArtifactStore");
+  readonly artifactStore: ArtifactStore = {
+    lookupRef: async ([id, exportTypeId, products], artifactManager) => {
+      if(!Id.isId(id) || !Id.equal(id, ExportTypeRegistry.artifactStoreId)) return null;
+      if(!Id.isId(exportTypeId)) return null;
+      const exportType = this.registered.get(exportTypeId);
+      if(!exportType) return null;
+      if(!(products instanceof Array) || !products.every(Product.isProduct)) return null;
+      const convertedProducts = await Promise.all(products.map(p =>
+        this.conversionRegistry.convertProduct(exportType.productType, p)
+      ))
+      const exported = await exportType.export(convertedProducts);
+      await artifactManager.storeRef([id, exportTypeId, products], exported);
+      return exported;
+    }
+  }
+
+  register<T extends Product>(exportType: ExportType<T>){
+    this.registered.set(exportType.id, exportType);
   }
 
   listRegistered(): Iterable<ExportType<any>>{
-    return this.registered;
+    return this.registered.values();
   }
 
 }
 
-export const exportTypeRegistry = new ExportTypeRegistry(artifactManager);
+export const exportTypeRegistry = new ExportTypeRegistry(artifactManager, conversionRegistry);

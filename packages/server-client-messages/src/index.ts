@@ -1,5 +1,5 @@
 
-import { Hash, ProductType } from "@escad/core";
+import { ExportTypeInfo, Hash, ProductType } from "@escad/core";
 
 export type ServerClientMessageTypes = ServerClientMessage["type"];
 export type ServerClientMessage<T extends ServerClientMessageTypes = any> = Extract<
@@ -24,6 +24,7 @@ export namespace ServerClientMessage {
     products: Hash[],
     paramDef: Hash | null,
     conversions?: [ProductType, ProductType][],
+    exportTypes?: ExportTypeInfo[],
     hierarchy: Hash | null,
   }
   export interface LookupRawResponse {

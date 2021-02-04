@@ -1,0 +1,104 @@
+
+.Export
+  display flex
+  flex-direction column
+
+  position absolute
+  left 0px
+  top 0px
+
+  transform translate(0, -100%) translate(0, 50px)
+  transition transform .5s
+
+  &:hover
+    transform none
+
+  span
+    display inline-flex
+    align-items center
+    justify-content center
+    width 150px
+    height 50px
+    color $lightgrey
+    background $black
+    border 5px solid $darkgrey
+    border-width 0 5px 5px 0
+    font-size 20px
+    cursor pointer
+
+    &:last-child
+      border-radius 0 0 10px 0
+
+.Exportxxx
+  display inline-block
+  width 125px
+  height 50px
+
+  border-radius 10px
+  font-size 20px
+  cursor pointer
+
+  position absolute
+  left 10px
+  top 10px
+
+  opacity 1
+
+  transition opacity .2s, border-radius .2s
+
+  &:hover
+    border-radius 10px 10px 0 0
+
+  &:before
+    content "Export"
+    margin-bottom 17.5px
+
+  &
+  & a
+    &:before
+      position relative
+      left 50%
+      top 50%
+      transform translate(-50%, -50%)
+      display inline-block
+      transition color .2s
+
+    &:hover
+      color white
+
+  &.hide
+    opacity 0
+
+  & a
+    display inline-block
+    font-size 17.5px
+    height 10px
+
+    width 125px
+    height 50px
+
+    color $white
+    background $black
+    border 4px solid $darkgrey
+    border-width 2px 4px
+    font-size 17.5px
+    cursor pointer
+
+    margin-left -4px
+
+    opacity 0
+
+    transition opacity .2s
+
+    ~/:hover a
+      opacity 1
+
+    &:before
+      content attr(data-content)
+
+    &:first-child
+      border-top-width 4px
+
+    &:last-child
+      border-bottom-width 4px
+      border-radius 0 0 10px 10px

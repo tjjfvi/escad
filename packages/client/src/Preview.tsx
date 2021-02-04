@@ -1,10 +1,10 @@
 
 import React from "react";
 import { messenger } from "./Messenger";
-import { getViewersForAll, mapProduct } from "./ViewerRegistration";
+import { viewerRegistry } from "./ViewerRegistry";
 import { observer } from "rhobo";
 import { Product } from "@escad/core";
-import { ProductTypeView } from "./ProductTypeView";
+import { Export } from "./Export";
 
 export const Preview = observer(() => {
   const products = messenger.products();
@@ -15,7 +15,7 @@ export const Preview = observer(() => {
     </div>
 
   const productTypes = products.map(Product.getProductType);
-  const [viewer] = getViewersForAll(productTypes);
+  const [viewer] = viewerRegistry.getConsumersForAll(productTypes);
 
   if(!viewer)
     return <div className="Preview none">
@@ -23,6 +23,7 @@ export const Preview = observer(() => {
     </div>
 
   return <div className={"Preview " + (viewer.className ?? "")}>
-    <viewer.component inputs={products.map(product => mapProduct(viewer, product))}/>
+    <viewer.component inputs={products.map(product => viewerRegistry.mapProduct(viewer, product))}/>
+    <Export/>
   </div>
 });

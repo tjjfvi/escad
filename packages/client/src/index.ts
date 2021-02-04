@@ -13,6 +13,8 @@ ReactDOM.render(
 
 export * from './App';
 export * from './BooleanParam';
+export * from './Export';
+export * from './HierarchyPane';
 export * from './IdView';
 export * from './Messenger';
 export * from './NumberParam';
@@ -21,8 +23,9 @@ export * from './Pane';
 export * from './Parameters';
 export * from './ParametersPane';
 export * from './Preview';
+export * from './ProductConsumerRegistry';
 export * from './ProductTypeView';
 export * from './Status';
 export * from './Viewer';
-export * from './ViewerRegistration';
+export * from './ViewerRegistry';
 

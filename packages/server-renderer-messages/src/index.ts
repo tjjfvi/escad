@@ -1,5 +1,5 @@
 
-import { Hash, ProductType } from "@escad/core";
+import { ExportTypeInfo, Hash, ProductType } from "@escad/core";
 import { PluginRegistration } from "@escad/register-client-plugin";
 
 export interface RunInfo {
@@ -11,6 +11,7 @@ export interface RunInfo {
 export interface LoadInfo extends RunInfo {
   clientPlugins: PluginRegistration[],
   conversions: [ProductType, ProductType][],
+  exportTypes: ExportTypeInfo[],
 }
 
 export type ServerRendererMessageTypes = ServerRendererMessage["type"]

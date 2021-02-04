@@ -1,5 +1,5 @@
 
-import { artifactManager, conversionRegistry, hash, Id } from "@escad/core";
+import { artifactManager, ConversionRegistry, conversionRegistry, ExportTypeRegistry, hash, Id } from "@escad/core";
 import { messenger } from "./messenger";
 import { ServerRendererMessage, ServerRendererMessageTypes } from "@escad/server-renderer-messages";
 import { load, run } from "./load";
@@ -23,6 +23,7 @@ const messageHandlers: MessageHandlers = {
     const timerName = type ? type + " " + id : undefined;
     if(type) console.time(timerName);
     const artifact = await artifactManager.lookupRef(loc);
+    await artifactManager.storeRaw(artifact);
     messenger.send({
       type: "lookupRefResponse",
       id,
@@ -36,8 +37,10 @@ const messageHandlers: MessageHandlers = {
 }
 
 const refType = (loc: readonly unknown[]): string | undefined => {
-  if(Id.isId(loc[0]) && Id.equal(loc[0], conversionRegistry.artifactStoreId))
+  if(Id.isId(loc[0]) && Id.equal(loc[0], ConversionRegistry.artifactStoreId))
     return "Convert";
+  if(Id.isId(loc[0]) && Id.equal(loc[0], ExportTypeRegistry.artifactStoreId))
+    return "Export";
 }
 
 export * from "./renderFunction";

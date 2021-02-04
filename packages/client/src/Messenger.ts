@@ -8,6 +8,7 @@ import {
   artifactManager,
   ArtifactStore,
   conversionRegistry,
+  ExportTypeInfo,
   Hash,
   Hierarchy,
   Product,
@@ -27,6 +28,7 @@ export class Messenger extends EventEmitter<{
   id = observable<string>();
   serverId = observable<string>();
   products = observable<Product[]>([]);
+  exportTypes = observable<ExportTypeInfo[]>([]);
   paramDef = observable<ObjectParam<any>>();
   params = observable<Record<string, unknown>>({});
   hierarchy = observable<Hierarchy>();
@@ -51,6 +53,7 @@ export class Messenger extends EventEmitter<{
         this.handleParamDef(msg.paramDef);
         this.handleHierarchy(msg.hierarchy);
         this.handleConversions(msg.conversions);
+        this.handleExportTypes(msg.exportTypes);
       }
     })
   }
@@ -59,6 +62,11 @@ export class Messenger extends EventEmitter<{
     this.products(await Promise.all(productHashes.map(async (sha): Promise<Product> =>
       await this.artifactManager.lookupRaw(sha) as Product
     )));
+  }
+
+  private async handleExportTypes(exportTypes?: ExportTypeInfo[]){
+    if(exportTypes)
+      this.exportTypes(exportTypes);
   }
 
   private async handleParamDef(paramDefHash: Hash | null){
@@ -130,32 +138,42 @@ export class Messenger extends EventEmitter<{
     return this.ws;
   }
 
-  lookupRaw(hash: Hash){
-    return new Promise<Buffer>(resolve => {
+  lookupRawUrl(hash: Hash): Promise<string>{
+    return new Promise(resolve => {
       const id = uuidv4();
       this.send({ type: "lookupRaw", id, hash })
       const handler = (message: ServerClientMessage) => {
         if(message.type !== "lookupRawResponse" || message.id !== id)
           return;
-        resolve(fetch(message.url).then(async r => Buffer.from(await r.arrayBuffer())));
+        resolve(message.url);
         this.removeListener("message", handler);
       }
       this.on("message", handler);
     })
   }
 
-  lookupRef(loc: readonly unknown[]){
-    return new Promise<Buffer>(resolve => {
+  async lookupRaw(hash: Hash){
+    const response = await fetch(await this.lookupRawUrl(hash));
+    return Buffer.from(await response.arrayBuffer())
+  }
+
+  lookupRefUrl(loc: readonly unknown[]): Promise<string>{
+    return new Promise(resolve => {
       const id = uuidv4();
       this.send({ type: "lookupRef", id, loc })
       const handler = (message: ServerClientMessage) => {
         if(message.type !== "lookupRefResponse" || message.id !== id)
           return;
-        resolve(fetch(message.url).then(async r => Buffer.from(await r.arrayBuffer())));
+        resolve(message.url);
         this.removeListener("message", handler);
       }
       this.on("message", handler);
     })
+  }
+
+  async lookupRef(loc: readonly unknown[]){
+    const response = await fetch(await this.lookupRefUrl(loc));
+    return Buffer.from(await response.arrayBuffer())
   }
 
   private disconnect(ws: WebSocket){

@@ -1,10 +1,10 @@
 
-import { registerViewerRegistration } from "@escad/client";
+import { viewerRegistry } from "@escad/client";
 import { viewer3d, colors, EdgesGeometry, Viewer3dInput } from "@escad/client-3d-viewer";
 import { Face, Mesh } from "@escad/mesh";
 import * as t from "three";
 
-registerViewerRegistration<Mesh, Viewer3dInput>({
+viewerRegistry.register<Mesh, Viewer3dInput>({
   type: Mesh.productType,
   context: viewer3d,
   map: product => {

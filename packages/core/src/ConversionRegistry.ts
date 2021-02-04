@@ -20,10 +20,10 @@ export class ConversionRegistry {
     this.artifactManager.artifactStores.push(this.artifactStore)
   }
 
-  readonly artifactStoreId = Id.create(__filename, "@escad/core", "0", "ConversionRegistryArifactStore");
+  static readonly artifactStoreId = Id.create(__filename, "@escad/core", "0", "ConversionRegistryArifactStore");
   readonly artifactStore: ArtifactStore = {
     lookupRef: async ([id, toType, product]) => {
-      if(!Id.isId(id) || !Id.equal(id, this.artifactStoreId)) return null;
+      if(!Id.isId(id) || !Id.equal(id, ConversionRegistry.artifactStoreId)) return null;
       if(!Product.isProduct(product)) return null;
       return this.convertProduct(toType as ProductType, product);
     }
@@ -194,7 +194,7 @@ export class ConversionRegistry {
       for(let j = conversions.length - 1; j >= i; j--) {
         const { toType } = conversions[j]
         const result = await this.artifactManager.lookupRef(
-          [this.artifactStoreId, toType, currentProduct],
+          [ConversionRegistry.artifactStoreId, toType, currentProduct],
           this.excludeStores
         );
         if(!result || !Product.isProduct(result)) continue;
@@ -209,7 +209,7 @@ export class ConversionRegistry {
         const { toType } = conversions[i];
         const fromProduct = prevProducts[k];
         if(!fromProduct) continue;
-        await this.artifactManager.storeRef([this.artifactStoreId, toType, fromProduct], currentProduct);
+        await this.artifactManager.storeRef([ConversionRegistry.artifactStoreId, toType, fromProduct], currentProduct);
       }
     }
 

@@ -1,5 +1,5 @@
 
-import { artifactManager, hash, Product, Element, conversionRegistry, timers } from "@escad/core";
+import { artifactManager, hash, Product, Element, conversionRegistry, timers, exportTypeRegistry } from "@escad/core";
 import { ObjectParam } from "@escad/parameters";
 import { registeredPlugins } from "@escad/register-client-plugin";
 import { ServerRendererMessage } from "@escad/server-renderer-messages";
@@ -38,6 +38,7 @@ export async function load({ path }: ServerRendererMessage.Load){
     conversions: [...conversionRegistry.listAll()].map(x => [x.fromType, x.toType]),
     paramDef: paramHash,
     clientPlugins: registeredPlugins,
+    exportTypes: [...exportTypeRegistry.listRegistered()],
     ...(await render(defaultParams)),
   });
 
