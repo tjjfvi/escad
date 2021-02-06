@@ -10,6 +10,7 @@ import { depthFirst } from "./depthFirst";
 import { HashMap } from "./HashMap";
 import { TupleProduct, TupleProductType } from "./TupleProduct";
 import { ArrayProduct, ArrayProductType } from "./ArrayProduct";
+import { UnknownProduct, UnknownProductType } from "./UnknownProduct";
 // import { formatConversion, log } from "./logging";
 
 type ConversionPath = ConversionImpl<any, any>[]
@@ -102,6 +103,8 @@ export class ConversionRegistry {
     ) || (
       TupleProductType.isTupleProductType(a) &&
       ArrayProductType.isArrayProductType(b)
+    ) || (
+      UnknownProductType.isUnknownProductType(b)
     );
   }
 
@@ -117,6 +120,18 @@ export class ConversionRegistry {
 
       if(hash(fromType) === hash(toType))
         continue;
+
+      if(UnknownProductType.isUnknownProductType(toType)) {
+        path.splice(i, 0, {
+          fromType,
+          toType,
+          convert: async (product: Product) =>
+            UnknownProduct.create(product),
+          weight: 0,
+        })
+        i++
+        continue;
+      }
 
       if(TupleProductType.isTupleProductType(fromType) && ArrayProductType.isArrayProductType(toType)) {
         path.splice(i, 0, {
@@ -171,7 +186,7 @@ export class ConversionRegistry {
     return path.reduce((a, b) => a + b.weight, 0)
   }
 
-  async convertProduct<T extends Product, F extends ConvertibleTo<T> & Product>(
+  async convertProduct<T extends Product, F extends ConvertibleTo<T>>(
     toType: ProductType<T>,
     from: F,
   ): Promise<T>{

@@ -18,7 +18,7 @@ export const Export = observer(() => {
   const exportTypes = [...consumerRegistry.getConsumersForAll(productTypes)];
   if(exportTypes.length)
     return (
-      <div className="Export">
+      <div>
         {
           exportTypes.map(exportType =>
             <span key={exportType.id.full} onClick={() => exportProducts(exportType)}>{exportType.name}</span>

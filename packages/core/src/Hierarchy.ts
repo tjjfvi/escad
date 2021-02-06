@@ -44,7 +44,7 @@ export const Hierarchy = {
     };
   },
   isHierarchy: checkTypeProperty<Hierarchy>("Hierarchy"),
-  from: (el: unknown): Hierarchy => {
+  from: (el: unknown, raw = false): Hierarchy => {
     if(
       typeof el === "string" ||
       typeof el === "number" ||
@@ -55,22 +55,24 @@ export const Hierarchy = {
       el === null
     )
       return Hierarchy.create({ name: el ? el.toString() : el + "" })
-    if(Hierarchy.isHierarchy(el))
-      return el;
-    if(el instanceof Element || el instanceof Component || el instanceof Operation)
-      return el.hierarchy ?? Hierarchy.create({ name: el.name });
-    if(LeafProduct.isLeafProduct(el))
-      return Hierarchy.create({
-        name: `<${el.type.full}>`,
-      });
-    if(Product.isProduct(el))
-      return Hierarchy.create({
-        name: `<${el.type}>`,
-      });
+    if(!raw) {
+      if(Hierarchy.isHierarchy(el))
+        return el;
+      if(el instanceof Element || el instanceof Component || el instanceof Operation)
+        return el.hierarchy ?? Hierarchy.create({ name: el.name });
+      if(LeafProduct.isLeafProduct(el))
+        return Hierarchy.create({
+          name: `<${el.type.full}>`,
+        });
+      if(Product.isProduct(el))
+        return Hierarchy.create({
+          name: `<${el.type}>`,
+        });
+    }
     if(el instanceof Array)
       return Hierarchy.create({
         braceType: "[",
-        children: el.map(e => Hierarchy.from(e)),
+        children: el.map(e => Hierarchy.from(e, raw)),
       });
     return Hierarchy.create({
       braceType: "{",
@@ -78,7 +80,7 @@ export const Hierarchy = {
         Hierarchy.create({
           name: k,
           braceType: ":",
-          children: [Hierarchy.from(v)]
+          children: [Hierarchy.from(v, raw)]
         })
       )
     });

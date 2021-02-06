@@ -138,4 +138,5 @@ export const viewer3d: Viewer<Viewer3dInput> = {
   name: "3D",
   className: "3d",
   component: Viewer3d,
+  weight: 1,
 }

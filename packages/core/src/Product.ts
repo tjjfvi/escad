@@ -11,6 +11,7 @@ import {
 } from "./Conversions";
 import { hash } from "./hash";
 import { timers } from "./Timer";
+import { UnknownProduct, UnknownProductType } from "./UnknownProduct";
 
 export interface _Product {
   readonly [__convertibleToTransitivityOverride]?: TransitivityOverride.A,
@@ -23,11 +24,13 @@ export interface _Product {
           ? unknown
           : ArrayProduct extends this
             ? unknown
-            : _ConvertibleTo<this>
+            : UnknownProduct extends this
+              ? unknown
+              : _ConvertibleTo<this>
   ),
 }
 
-export type Product = LeafProduct | TupleProduct | ArrayProduct;
+export type Product = LeafProduct | TupleProduct | ArrayProduct | UnknownProduct;
 
 export const Product = {
   isProduct,
@@ -38,6 +41,8 @@ export const Product = {
       return TupleProduct.getTupleProductType(product);
     if(ArrayProduct.isArrayProduct(product))
       return ArrayProduct.getArrayProductType(product);
+    if(UnknownProduct.isUnknownProduct(product))
+      return UnknownProductType.create() as ProductType<P>;
     throw new Error("Invalid product passed to Product.getProductType");
   })
 }
@@ -46,7 +51,12 @@ function isProduct(arg: any): arg is Product
 function isProduct<P extends Product>(arg: any, productType: ProductType<P>): arg is P
 function isProduct(arg: any, productType?: ProductType){
   return (
-    (LeafProduct.isLeafProduct(arg) || TupleProduct.isTupleProduct(arg) || ArrayProduct.isArrayProduct(arg)) &&
+    (
+      LeafProduct.isLeafProduct(arg) ||
+      TupleProduct.isTupleProduct(arg) ||
+      ArrayProduct.isArrayProduct(arg) ||
+      UnknownProduct.isUnknownProduct(arg)
+    ) &&
     (!productType || hash(Product.getProductType(arg)) === hash(productType))
   );
 }
@@ -55,3 +65,4 @@ export type ProductType<U extends Product = Product> =
   | LeafProductType<Extract<U, LeafProduct>>
   | TupleProductType<Extract<U, TupleProduct>>
   | ArrayProductType<Extract<U, ArrayProduct>>
+  | (U extends UnknownProduct ? UnknownProductType : never)

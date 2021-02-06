@@ -130,7 +130,7 @@ export class Element<T extends Product> extends __Element__<T> {
       old: Element<T>,
       isLeaf: boolean,
       isRoot: boolean,
-    ) => Hierarchy = Hierarchy.from,
+    ) => Hierarchy = x => Hierarchy.from(x),
     isRoot = true,
   ): Element<U>{
     let createElement = (e: Elementish<U>) => new Element(e, hierarchyGen(e, this, this.isLeaf(), isRoot));

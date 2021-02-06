@@ -51,5 +51,5 @@ viewerRegistry.register<Mesh, Viewer3dInput>({
       product,
       group,
     };
-  }
+  },
 })

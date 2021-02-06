@@ -36,6 +36,7 @@ export * from './Operation';
 export * from './Product';
 export * from './Timer';
 export * from './TupleProduct';
+export * from './UnknownProduct';
 export * from './WeakCache';
 export * from './builtins';
 export * from './checkTypeProperty';
