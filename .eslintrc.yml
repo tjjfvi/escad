@@ -31,6 +31,8 @@ rules:
     - off
   '@typescript-eslint/no-empty-interface':
     - off
+  '@typescript-eslint/ban-ts-comment':
+    - off
   '@typescript-eslint/ban-ts-ignore':
     - off
   '@typescript-eslint/no-use-before-define':
@@ -62,8 +64,6 @@ rules:
 # # quotes:
 # #   - warn
 # #   - double
-  no-unused-vars:
-    - warn
   # no-magic-numbers:
   #   - warn
   #   - ignoreArrayIndexes: true

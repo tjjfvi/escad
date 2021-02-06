@@ -121,7 +121,6 @@ export class Bundler extends EventEmitter<{
       ).join("\n"),
       {
         filename: "_.styl",
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
         // @ts-ignore
         sourcemap: {
           comment: false,

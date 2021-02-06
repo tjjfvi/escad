@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/ban-types */
-/* eslint-disable @typescript-eslint/ban-ts-comment */
 
 type F<K, V> = (k: K) => V;
 type FA<K, V> = (k: K) => Promise<V>;

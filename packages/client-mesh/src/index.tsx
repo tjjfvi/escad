@@ -34,7 +34,6 @@ viewerRegistry.register<Mesh, Viewer3dInput>({
       polygonOffsetFactor: 1,
       polygonOffsetUnits: 1,
     })
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     let lines = new t.LineSegments(new EdgesGeometry(geo), new t.LineBasicMaterial({ color: colors.white }))
     let mesh = new t.Mesh(geo, mat);

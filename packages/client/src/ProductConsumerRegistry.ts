@@ -1,4 +1,4 @@
-import { ConversionRegistry, Id, Product, ProductType } from "@escad/core";
+import { ConversionRegistry, Product, ProductType } from "@escad/core";
 
 export interface ProductConsumer<P extends Product, T, C> {
   context: C,

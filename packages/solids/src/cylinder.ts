@@ -166,7 +166,6 @@ export const cylinder: Component<[CylArgs], Element<Mesh>> =
         ),
       ];
 
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
     const osXYs: [XY<number>, XY<number>] =
       osPXY instanceof Array ?
@@ -191,7 +190,6 @@ export const cylinder: Component<[CylArgs], Element<Mesh>> =
         ),
       ];
 
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
     const iosXYs: [XY<number>, XY<number>] =
       iosPXY instanceof Array ?
