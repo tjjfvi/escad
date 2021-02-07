@@ -8,6 +8,7 @@ import {
   Product,
   TupleProduct,
   TupleProductType,
+  UnknownProduct,
 } from "..";
 
 const productAId = Id.create(__filename, "@escad/core", "0", "ProductA");
@@ -59,6 +60,7 @@ const createProduct = () => TupleProduct.create([
   TupleProduct.create([]),
   ArrayProduct.create([ProductA.create(), ProductA.create()]),
   TupleProduct.create([ProductA.create(), ProductB.create(), ProductC.create()]),
+  UnknownProduct.create(ProductB.create()),
 ])
 
 // eslint-disable-next-line func-call-spacing
@@ -67,18 +69,19 @@ describe.each<readonly [string, () => Product]>([
   ["TupleProduct<[]>", () => TupleProduct.create([])],
   ["TupleProduct<[ProductA, ProductB]>", () => TupleProduct.create([ProductA.create(), ProductB.create()])],
   ["ArrayProduct<ProductA>", () => ArrayProduct.create([ProductA.create(), ProductA.create()])],
+  ["UnknownProduct", () => UnknownProduct.create(ProductB.create())],
   ["Complex", () => createProduct()]
 ] as const)("%s", (_, createProduct) => {
-  describe(".create", () => {
+  test(".create", () => {
     expect(createProduct()).toMatchSnapshot();
   })
-  describe("Product.isProduct", () => {
+  test("Product.isProduct", () => {
     expect(Product.isProduct(createProduct())).toBe(true);
   })
-  describe("Product.getProductType", () => {
+  test("Product.getProductType", () => {
     expect(Product.getProductType(createProduct())).toMatchSnapshot();
   })
-  describe("Product.isProduct with correct ProductType", () => {
+  test("Product.isProduct with correct ProductType", () => {
     expect(Product.isProduct(createProduct(), Product.getProductType(createProduct()))).toBe(true);
   })
   describe("Product.isProduct with wrong ProductType", () => {

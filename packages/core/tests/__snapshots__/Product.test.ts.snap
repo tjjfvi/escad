@@ -1,99 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[` 1`] = `
-Object {
-  "type": Object {
-    "full": "@escad-core-0-ProductA",
-    "isId": true,
-    "name": "ProductA",
-    "packageName": "@escad/core",
-    "version": "0",
-  },
-}
-`;
+exports[`ArrayProduct.create Throws on [] 1`] = `"ArrayProducts cannot be empty"`;
 
-exports[` 2`] = `
-Object {
-  "id": Object {
-    "full": "@escad-core-0-ProductA",
-    "isId": true,
-    "name": "ProductA",
-    "packageName": "@escad/core",
-    "version": "0",
-  },
-  "type": "LeafProductType",
-}
-`;
-
-exports[` 3`] = `
-Object {
-  "children": Array [],
-  "type": "TupleProduct",
-}
-`;
-
-exports[` 4`] = `
-Object {
-  "elementTypes": Array [],
-  "type": "TupleProductType",
-}
-`;
-
-exports[` 5`] = `
-Object {
-  "children": Array [
-    Object {
-      "type": Object {
-        "full": "@escad-core-0-ProductA",
-        "isId": true,
-        "name": "ProductA",
-        "packageName": "@escad/core",
-        "version": "0",
-      },
-    },
-    Object {
-      "type": Object {
-        "full": "@escad-core-0-ProductB",
-        "isId": true,
-        "name": "ProductB",
-        "packageName": "@escad/core",
-        "version": "0",
-      },
-    },
-  ],
-  "type": "TupleProduct",
-}
-`;
-
-exports[` 6`] = `
-Object {
-  "elementTypes": Array [
-    Object {
-      "id": Object {
-        "full": "@escad-core-0-ProductA",
-        "isId": true,
-        "name": "ProductA",
-        "packageName": "@escad/core",
-        "version": "0",
-      },
-      "type": "LeafProductType",
-    },
-    Object {
-      "id": Object {
-        "full": "@escad-core-0-ProductB",
-        "isId": true,
-        "name": "ProductB",
-        "packageName": "@escad/core",
-        "version": "0",
-      },
-      "type": "LeafProductType",
-    },
-  ],
-  "type": "TupleProductType",
-}
-`;
-
-exports[` 7`] = `
+exports[`ArrayProduct<ProductA> .create 1`] = `
 Object {
   "children": Array [
     Object {
@@ -119,7 +28,7 @@ Object {
 }
 `;
 
-exports[` 8`] = `
+exports[`ArrayProduct<ProductA> Product.getProductType 1`] = `
 Object {
   "elementType": Object {
     "id": Object {
@@ -135,7 +44,7 @@ Object {
 }
 `;
 
-exports[` 9`] = `
+exports[`Complex .create 1`] = `
 Object {
   "children": Array [
     Object {
@@ -206,12 +115,24 @@ Object {
       ],
       "type": "TupleProduct",
     },
+    Object {
+      "product": Object {
+        "type": Object {
+          "full": "@escad-core-0-ProductB",
+          "isId": true,
+          "name": "ProductB",
+          "packageName": "@escad/core",
+          "version": "0",
+        },
+      },
+      "type": "UnknownProduct",
+    },
   ],
   "type": "TupleProduct",
 }
 `;
 
-exports[` 10`] = `
+exports[`Complex Product.getProductType 1`] = `
 Object {
   "elementTypes": Array [
     Object {
@@ -276,14 +197,129 @@ Object {
       ],
       "type": "TupleProductType",
     },
+    Object {
+      "type": "UnknownProductType",
+    },
   ],
   "type": "TupleProductType",
 }
 `;
 
-exports[`ArrayProduct.create Throws on [] 1`] = `"ArrayProducts cannot be empty"`;
-
 exports[`Product.getProductType Throw on invalid product 1`] = `"Invalid product passed to Product.getProductType"`;
+
+exports[`ProductA .create 1`] = `
+Object {
+  "type": Object {
+    "full": "@escad-core-0-ProductA",
+    "isId": true,
+    "name": "ProductA",
+    "packageName": "@escad/core",
+    "version": "0",
+  },
+}
+`;
+
+exports[`ProductA Product.getProductType 1`] = `
+Object {
+  "id": Object {
+    "full": "@escad-core-0-ProductA",
+    "isId": true,
+    "name": "ProductA",
+    "packageName": "@escad/core",
+    "version": "0",
+  },
+  "type": "LeafProductType",
+}
+`;
+
+exports[`TupleProduct<[]> .create 1`] = `
+Object {
+  "children": Array [],
+  "type": "TupleProduct",
+}
+`;
+
+exports[`TupleProduct<[]> Product.getProductType 1`] = `
+Object {
+  "elementTypes": Array [],
+  "type": "TupleProductType",
+}
+`;
+
+exports[`TupleProduct<[ProductA, ProductB]> .create 1`] = `
+Object {
+  "children": Array [
+    Object {
+      "type": Object {
+        "full": "@escad-core-0-ProductA",
+        "isId": true,
+        "name": "ProductA",
+        "packageName": "@escad/core",
+        "version": "0",
+      },
+    },
+    Object {
+      "type": Object {
+        "full": "@escad-core-0-ProductB",
+        "isId": true,
+        "name": "ProductB",
+        "packageName": "@escad/core",
+        "version": "0",
+      },
+    },
+  ],
+  "type": "TupleProduct",
+}
+`;
+
+exports[`TupleProduct<[ProductA, ProductB]> Product.getProductType 1`] = `
+Object {
+  "elementTypes": Array [
+    Object {
+      "id": Object {
+        "full": "@escad-core-0-ProductA",
+        "isId": true,
+        "name": "ProductA",
+        "packageName": "@escad/core",
+        "version": "0",
+      },
+      "type": "LeafProductType",
+    },
+    Object {
+      "id": Object {
+        "full": "@escad-core-0-ProductB",
+        "isId": true,
+        "name": "ProductB",
+        "packageName": "@escad/core",
+        "version": "0",
+      },
+      "type": "LeafProductType",
+    },
+  ],
+  "type": "TupleProductType",
+}
+`;
+
+exports[`UnknownProduct .create 1`] = `
+Object {
+  "product": Object {
+    "type": Object {
+      "full": "@escad-core-0-ProductB",
+      "isId": true,
+      "name": "ProductB",
+      "packageName": "@escad/core",
+      "version": "0",
+    },
+  },
+  "type": "UnknownProduct",
+}
+`;
+
+exports[`UnknownProduct Product.getProductType 1`] = `
+Object {
+  "type": "UnknownProductType",
+}
+`;
 
 exports[`createLeafProductUtils .productType 1`] = `
 Object {
