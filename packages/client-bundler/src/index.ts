@@ -22,7 +22,7 @@ export class Bundler extends EventEmitter<{
   stylusBundle: (css: string) => void,
 }> {
 
-  private watcher?: Compiler.Watching;
+  private watcher?: ReturnType<Compiler["watch"]>;
   private compiler?: Compiler;
   private closeStylusWatch = () => {};
 
@@ -85,7 +85,7 @@ export class Bundler extends EventEmitter<{
       mode: "development",
     })
 
-    const handler = (err: Error | null) => {
+    const handler = (err: Error | undefined) => {
       if(err)
         return console.error(err);
       if(this.options.log)

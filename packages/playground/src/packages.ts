@@ -1,0 +1,20 @@
+
+export const packages = [
+  "escad-builtins.tgz",
+  // "escad-cli.tgz",
+  "escad-client.tgz",
+  "escad-client-3d-viewer.tgz",
+  // "escad-client-bundler.tgz",
+  "escad-client-mesh.tgz",
+  "escad-core.tgz",
+  "escad-csg.tgz",
+  "escad-mesh.tgz",
+  "escad-parameters.tgz",
+  "escad-register-client-plugin.tgz",
+  "escad-renderer.tgz",
+  // "escad-server.tgz",
+  "escad-server-client-messages.tgz",
+  "escad-server-renderer-messages.tgz",
+  "escad-solids.tgz",
+  "escad-transform.tgz",
+]

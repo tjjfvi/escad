@@ -3,9 +3,10 @@
   "version": "0.0.0",
   "description": "",
   "scripts": {
-    "bootstrap": "lerna bootstrap --hoist",
+    "bootstrap": "lerna bootstrap --hoist; patch-package",
     "test": "jest",
     "quick-build": "tsc -b packages",
+    "build-playground": "lerna run build-playground",
     "build": "npm run bootstrap; npm run index; npm run quick-build",
     "force-build": "lerna run clean; npm run build",
     "index": "create-index -X ts -x ts -x tsx -Sui packages/ -c {}",
@@ -23,6 +24,7 @@
     "eslint-plugin-react": "^7.22.0",
     "jest": "^26.6.3",
     "lerna": "^3.22.1",
+    "patch-package": "^6.2.2",
     "ts-jest": "^26.4.4",
     "ts-node": "^9.1.1",
     "typescript": "^4.1.3"

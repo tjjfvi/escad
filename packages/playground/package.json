@@ -1,0 +1,41 @@
+{
+  "name": "@escad/playground",
+  "version": "0.0.0",
+  "description": "",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "clean": "rm -rf dist tsconfig.tsbuildinfo",
+    "build": "npm run clean; tsc -b .",
+    "prepack": "npm run build",
+    "open-errors": "tsc | grep -p '^\\S' | sed -e 's/(.*//' | sort | uniq | xargs code"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@npmcli/arborist": "^2.2.1",
+    "@typescript/vfs": "^1.3.2",
+    "browserfs": "^1.4.3",
+    "cors-anywhere": "^0.4.3",
+    "css-loader": "^5.0.2",
+    "file-loader": "^6.2.0",
+    "fs-constants": "^1.0.0",
+    "lz-string": "^1.4.4",
+    "monaco-editor": "^0.22.3",
+    "node-fetch": "^2.6.1",
+    "resolve": "^1.19.0",
+    "style-loader": "^2.0.0",
+    "typescript": "^4.1.3",
+    "webpack": "^5.21.2"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "devDependencies": {
+    "@types/lz-string": "^1.3.34",
+    "@types/node-fetch": "^2.5.8",
+    "@types/resolve": "^1.19.0",
+    "monaco-editor-webpack-plugin": "^3.0.0"
+  }
+}

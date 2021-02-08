@@ -5,6 +5,8 @@ test/index.js
 **/dist
 *.log
 **/bundle.*
+**/bundled/*
 **/*.tsbuildinfo
 coverage
 .DS_Store
+**/*.tgz
