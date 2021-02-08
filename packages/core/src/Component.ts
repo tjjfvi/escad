@@ -17,16 +17,17 @@ export class Component<I extends any[], T extends __Thing__> extends __Component
 
   constructor(name: string, func: (...args: I) => T, overrideHierarchy = true, public hierarchy?: Hierarchy){
     super((...args) => {
-      let x = func(...(args as I));
+      let result = func(...(args as I));
       if(overrideHierarchy)
-        x.hierarchy = Hierarchy.create({
+        result.hierarchy = Hierarchy.create({
           braceType: "(",
           children: [
             this.hierarchy ?? Hierarchy.create({ name }),
             ...args.map(x => Hierarchy.from(x)),
           ],
+          linkedProducts: result.hierarchy?.linkedProducts,
         })
-      return x;
+      return result;
     }, {}, name);
   }
 

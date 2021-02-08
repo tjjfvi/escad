@@ -5,6 +5,7 @@ import { LeafProduct } from "./LeafProduct";
 import { checkTypeProperty } from "./checkTypeProperty";
 import { Component } from "./Component";
 import { Operation } from "./Operation";
+import { hash, Hash } from "./hash";
 
 export type BraceType = "{" | "[" | "|" | "(" | ":" | "";
 
@@ -13,6 +14,7 @@ export interface Hierarchy {
   readonly name: string,
   readonly braceType: BraceType,
   readonly children: readonly Hierarchy[],
+  readonly linkedProducts: readonly Hash[],
 }
 
 export const Hierarchy = {
@@ -20,6 +22,7 @@ export const Hierarchy = {
     name = "",
     braceType = "",
     children = [],
+    linkedProducts = children.flatMap(c => c.linkedProducts),
   }: Partial<Hierarchy>): Hierarchy => {
     if(braceType === "" && children.length)
       throw new Error(`braceType "${braceType}" must be used without children`)
@@ -41,6 +44,7 @@ export const Hierarchy = {
       name,
       braceType,
       children,
+      linkedProducts,
     };
   },
   isHierarchy: checkTypeProperty<Hierarchy>("Hierarchy"),
@@ -63,10 +67,12 @@ export const Hierarchy = {
       if(LeafProduct.isLeafProduct(el))
         return Hierarchy.create({
           name: `<${el.type.full}>`,
+          linkedProducts: [hash(el)],
         });
       if(Product.isProduct(el))
         return Hierarchy.create({
           name: `<${el.type}>`,
+          linkedProducts: [hash(el)],
         });
     }
     if(el instanceof Array)

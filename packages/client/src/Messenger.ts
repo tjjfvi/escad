@@ -58,7 +58,7 @@ export class Messenger extends EventEmitter<{
     })
   }
 
-  private async handleProducts(productHashes: Hash[]){
+  public async handleProducts(productHashes: readonly Hash[]){
     this.products(await Promise.all(productHashes.map(async (sha): Promise<Product> =>
       await this.artifactManager.lookupRaw(sha) as Product
     )));

@@ -61,6 +61,7 @@ export class Operation<I extends Product, O extends Product> extends __Operation
             this.hierarchy ?? Hierarchy.create({ name }),
             ...Hierarchy.from(args).children,
           ],
+          linkedProducts: result.hierarchy?.linkedProducts,
         })
       return result;
     }, {

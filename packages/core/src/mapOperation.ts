@@ -19,10 +19,11 @@ export const mapOperation = (
 
       const flattenedArg = shouldFlatten ? flatten(arg) : arg;
 
-      const output = new Element(flattenedArg).map(func, (eish, old, isLeaf, isRoot) =>
+      const output = new Element(flattenedArg).map(func).map(x => x, (eish, old, isLeaf, isRoot) =>
         Hierarchy.create({
           braceType: "|",
           children: [Hierarchy.create({ name }), ...(isRoot && !isLeaf ? old.hierarchy.children : [old.hierarchy])],
+          linkedProducts: old.hierarchy.linkedProducts,
         })
       );
 

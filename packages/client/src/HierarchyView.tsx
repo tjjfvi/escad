@@ -1,9 +1,10 @@
 
-import { Hierarchy, hash } from "@escad/core";
+import { Hierarchy } from "@escad/core";
 import { mdiArrowCollapseVertical, mdiArrowExpandVertical } from "@mdi/js";
 import Icon from "@mdi/react";
 import React, { useState } from "react";
 import { useObservable } from "rhobo";
+import { messenger } from "./Messenger";
 
 export const HierarchyView = ({ hierarchy, maxLength }: { hierarchy: Hierarchy, maxLength: number }) =>
   <Tree maxLength={maxLength} tree={hierarchyToTree(hierarchy)}/>
@@ -65,16 +66,18 @@ const Tree = ({ tree, maxLength }: { tree: Tree, maxLength: number }) => {
 
 const TreeTextPart = ({ children, className, onClick }:TreeTextPartProps) => {
   const handleHover = (e: React.MouseEvent) => {
-    e.stopPropagation();
-    const value = e.type === "mousemove";
+    if(!onClick) return
+    const value = e.type === "mousemove" && !e.defaultPrevented;
     if(hovered.value !== value) hovered(value);
+    e.preventDefault();
   }
   const hovered = useObservable.use(false)
   return <span {...{
     className: (className ?? "") + (hovered() ? " hover" : ""),
     onClick: e => {
+      if(!onClick) return
       e.stopPropagation();
-      onClick?.();
+      onClick();
     },
     onMouseMove: handleHover,
     onMouseLeave: handleHover,
@@ -96,7 +99,7 @@ const TreeText = ({ str }: { str: TreeText}) =>
 
 const ellipsis = "···"
 
-type TreeText = (string | { open: true } | { close: true, onClick: () => void, className?: string })[]
+type TreeText = (string | { open: true } | { close: true, onClick?: () => void, className?: string })[]
 
 type TreePart =
   | { readonly text: TreeText }
@@ -115,7 +118,21 @@ type TreeTextPartProps = {
   className?: string,
 }
 
+function wrapLinkedProducts(hierarchy: Hierarchy, tree: Tree): Tree{
+  if(!hierarchy.linkedProducts.length)
+    return tree;
+  return [
+    { text: [{ open: true }] },
+    ...tree,
+    { text: [{ close: true, onClick: () => messenger.handleProducts(hierarchy.linkedProducts), className: "link" }] },
+  ]
+}
+
 function hierarchyToTree(hierarchy: Hierarchy): Tree{
+  return wrapLinkedProducts(hierarchy, _hierarchyToTree(hierarchy));
+}
+
+function _hierarchyToTree(hierarchy: Hierarchy): Tree{
   const origHierarchy = hierarchy;
   if(hierarchy.braceType === "")
     return [{ text: [hierarchy.name] }];
@@ -131,14 +148,21 @@ function hierarchyToTree(hierarchy: Hierarchy): Tree{
       { text: [hierarchy.braceType === "[" ? "]" : "}"] },
     ]
   if(hierarchy.braceType === "|" || hierarchy.braceType === "(") {
-    const operators = [];
+    const operators: Hierarchy[] = [];
     while(hierarchy.braceType === "|" && hierarchy.children.length === 2) {
-      operators.push(hierarchy.children[0]);
+      operators.push({ ...hierarchy.children[0], linkedProducts: hierarchy.linkedProducts });
       hierarchy = hierarchy.children[1];
     }
     let operands: readonly Hierarchy[];
     if(hierarchy.braceType === "|" || (hierarchy.braceType === "(" && !operators.length)) {
-      operators.push(hierarchy.children[0])
+      operators.push({
+        ...hierarchy.children[0],
+        linkedProducts: (
+          hierarchy.braceType === "|" ?
+            hierarchy.linkedProducts :
+            hierarchy.children[0].linkedProducts
+        )
+      })
       operands = hierarchy.children.slice(1)
     } else {
       operands = [hierarchy]
@@ -149,19 +173,21 @@ function hierarchyToTree(hierarchy: Hierarchy): Tree{
         { children: operators.map(hierarchyToTree), joiner: "∘", state: { open: false }, forceOpenable: true },
         { text: [")"] },
       ]),
-      { text: ["("] },
-      {
-        children: operands.map(hierarchyToTree),
-        joiner: ", ",
-        state: { open: false },
-        forceOpenable: (
-          origHierarchy.braceType === "|" &&
-          operands.length === 1 &&
-          operands[0].braceType !== "[" &&
-          operands[0].braceType !== "{"
-        ),
-      },
-      { text: [")"] },
+      ...wrapLinkedProducts(Hierarchy.create({ braceType: "[", children: operands }), [
+        { text: ["("] },
+        {
+          children: operands.map(hierarchyToTree),
+          joiner: ", ",
+          state: { open: false },
+          forceOpenable: (
+            origHierarchy.braceType === "|" &&
+            operands.length === 1 &&
+            operands[0].braceType !== "[" &&
+            operands[0].braceType !== "{"
+          ),
+        },
+        { text: [")"] },
+      ]),
     ]
   }
   assertNever(hierarchy.braceType);
@@ -172,7 +198,13 @@ function collapseTree(tree: Tree, onUpdate?: () => void, noSingle = false): Tree
     part.forceOpenable ?
       [
         { text: [{ open: true }] },
-        ...inner,
+        ...inner.map(x => "text" in x ? {
+          text: x.text.map(x =>
+            typeof x === "object" && "close" in x && x.className !== "openable" ?
+              { ...x, onClick: undefined } :
+              x
+          )
+        } : x),
         {
           text: [{
             close: true,
@@ -181,7 +213,7 @@ function collapseTree(tree: Tree, onUpdate?: () => void, noSingle = false): Tree
           }]
         }
       ] :
-      inner
+      [...inner, { text: [] }]
   return tree.flatMap(part => {
     if("text" in part || part.state.open)
       return [part];
@@ -218,7 +250,7 @@ function validTree(tree: Tree, maxLength: number){
 function fullyCollapseTree(tree: Tree, maxLength: number, onUpdate?: () => void, noSingle = false){
   let last = tree;
   let cur = collapseTree(tree, onUpdate, noSingle);
-  while(hash(cur) !== hash(last) && validTree(cur, maxLength)) {
+  while(cur.length !== last.length && validTree(cur, maxLength)) {
     last = cur;
     cur = collapseTree(cur, onUpdate, noSingle)
   }
