@@ -1,0 +1,458 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[` 1`] = `[Error: The value was \`-1\`]`;
+
+exports[` 2`] = `
+Array [
+  Array [
+    "b->a",
+    Array [
+      "call",
+      1,
+      "promiseResolve",
+      0,
+    ],
+  ],
+  Array [
+    "a->b",
+    Array [
+      "resolve",
+      1,
+      null,
+      0,
+    ],
+  ],
+  Array [
+    "b->a",
+    Array [
+      "call",
+      2,
+      "promiseReject",
+      1,
+    ],
+  ],
+  Array [
+    "b->a",
+    Array [
+      "call",
+      3,
+      "promiseResolve",
+      2,
+    ],
+  ],
+  Array [
+    "a->b",
+    Array [
+      "reject",
+      2,
+      null,
+      1,
+    ],
+  ],
+  Array [
+    "a->b",
+    Array [
+      "resolve",
+      3,
+      null,
+      2,
+    ],
+  ],
+  Array [
+    "b->a",
+    Array [
+      "call",
+      4,
+      "asyncIterable",
+      Array [
+        3,
+        4,
+        5,
+      ],
+    ],
+  ],
+  Array [
+    "b->a",
+    Array [
+      "next",
+      4,
+      5,
+    ],
+  ],
+  Array [
+    "a->b",
+    Array [
+      "resolve",
+      5,
+      null,
+      Object {
+        "done": false,
+        "value": 3,
+      },
+    ],
+  ],
+  Array [
+    3,
+  ],
+  Array [
+    "b->a",
+    Array [
+      "next",
+      4,
+      6,
+    ],
+  ],
+  Array [
+    "a->b",
+    Array [
+      "resolve",
+      6,
+      null,
+      Object {
+        "done": false,
+        "value": 4,
+      },
+    ],
+  ],
+  Array [
+    4,
+  ],
+  Array [
+    "b->a",
+    Array [
+      "next",
+      4,
+      7,
+    ],
+  ],
+  Array [
+    "a->b",
+    Array [
+      "resolve",
+      7,
+      null,
+      Object {
+        "done": false,
+        "value": 5,
+      },
+    ],
+  ],
+  Array [
+    5,
+  ],
+  Array [
+    "b->a",
+    Array [
+      "next",
+      4,
+      8,
+    ],
+  ],
+  Array [
+    "a->b",
+    Array [
+      "resolve",
+      8,
+      null,
+      Object {
+        "done": true,
+        "value": undefined,
+      },
+    ],
+  ],
+  Array [
+    "b->a",
+    Array [
+      "call",
+      9,
+      "asyncIterable",
+      Array [
+        6,
+        -1,
+        -2,
+      ],
+    ],
+  ],
+  Array [
+    "b->a",
+    Array [
+      "next",
+      9,
+      10,
+    ],
+  ],
+  Array [
+    "a->b",
+    Array [
+      "resolve",
+      10,
+      null,
+      Object {
+        "done": false,
+        "value": 6,
+      },
+    ],
+  ],
+  Array [
+    6,
+  ],
+  Array [
+    "b->a",
+    Array [
+      "next",
+      9,
+      11,
+    ],
+  ],
+  Array [
+    "a->b",
+    Array [
+      "reject",
+      11,
+      null,
+      [Error: The value was \`-1\`],
+    ],
+  ],
+  Array [
+    "b->a",
+    Array [
+      "call",
+      12,
+      "reallyDumbPromiseResolve",
+      6,
+      9,
+    ],
+  ],
+  Array [
+    "b->a",
+    Array [
+      "call",
+      13,
+      "reallyDumbPromiseResolve",
+      6,
+      8,
+    ],
+  ],
+  Array [
+    "b->a",
+    Array [
+      "call",
+      14,
+      "reallyDumbPromiseResolve",
+      6,
+      7,
+    ],
+  ],
+  Array [
+    "b->a",
+    Array [
+      "call",
+      15,
+      "reallyDumbPromiseResolve",
+      6,
+      6,
+    ],
+  ],
+  Array [
+    "b->a",
+    Array [
+      "call",
+      16,
+      "reallyDumbPromiseResolve",
+      6,
+      5,
+    ],
+  ],
+  Array [
+    "b->a",
+    Array [
+      "call",
+      17,
+      "reallyDumbPromiseResolve",
+      6,
+      4,
+    ],
+  ],
+  Array [
+    "b->a",
+    Array [
+      "call",
+      18,
+      "reallyDumbPromiseResolve",
+      6,
+      3,
+    ],
+  ],
+  Array [
+    "b->a",
+    Array [
+      "call",
+      19,
+      "reallyDumbPromiseResolve",
+      6,
+      2,
+    ],
+  ],
+  Array [
+    "b->a",
+    Array [
+      "call",
+      20,
+      "reallyDumbPromiseResolve",
+      6,
+      1,
+    ],
+  ],
+  Array [
+    "b->a",
+    Array [
+      "call",
+      21,
+      "reallyDumbPromiseResolve",
+      6,
+      0,
+    ],
+  ],
+  Array [
+    "a->b",
+    Array [
+      "resolve",
+      21,
+      null,
+      6,
+    ],
+  ],
+  Array [
+    "a->b",
+    Array [
+      "resolve",
+      20,
+      null,
+      6,
+    ],
+  ],
+  Array [
+    "a->b",
+    Array [
+      "resolve",
+      19,
+      null,
+      6,
+    ],
+  ],
+  Array [
+    "a->b",
+    Array [
+      "resolve",
+      18,
+      null,
+      6,
+    ],
+  ],
+  Array [
+    "a->b",
+    Array [
+      "resolve",
+      17,
+      null,
+      6,
+    ],
+  ],
+  Array [
+    "a->b",
+    Array [
+      "resolve",
+      16,
+      null,
+      6,
+    ],
+  ],
+  Array [
+    "a->b",
+    Array [
+      "resolve",
+      15,
+      null,
+      6,
+    ],
+  ],
+  Array [
+    "a->b",
+    Array [
+      "resolve",
+      14,
+      null,
+      6,
+    ],
+  ],
+  Array [
+    "a->b",
+    Array [
+      "resolve",
+      13,
+      null,
+      6,
+    ],
+  ],
+  Array [
+    "a->b",
+    Array [
+      "resolve",
+      12,
+      null,
+      6,
+    ],
+  ],
+  Array [
+    "b->a",
+    1234,
+  ],
+  Array [
+    "b->a",
+    null,
+  ],
+  Array [
+    "b->a",
+    Object {},
+  ],
+  Array [
+    "b->a",
+    Array [],
+  ],
+  Array [
+    "b->a",
+    Array [
+      "missingno",
+      1,
+      2,
+      3,
+    ],
+  ],
+  Array [
+    "b->a",
+    Array [
+      "call",
+      null,
+      1,
+      1,
+    ],
+  ],
+  Array [
+    "b->a",
+    Array [
+      "call",
+      1,
+      Object {},
+      1,
+    ],
+  ],
+  Array [
+    "b->a",
+    Array [
+      "call",
+      404,
+      "missingno",
+    ],
+  ],
+]
+`;
