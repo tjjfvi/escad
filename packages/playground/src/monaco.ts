@@ -11,6 +11,8 @@ import path from "path";
 monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
   ...monaco.languages.typescript.typescriptDefaults.getCompilerOptions(),
   moduleResolution: ModuleResolutionKind.NodeJs,
+  allowSyntheticDefaultImports: true,
+  module: monaco.languages.typescript.ModuleKind.CommonJS,
 })
 
 // eslint-disable-next-line @typescript-eslint/no-non-null-assertion

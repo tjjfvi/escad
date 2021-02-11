@@ -25,7 +25,7 @@ const compiler = webpack({
 compiler.inputFileSystem.join = fs.join;
 
 export const compile = () => {
-  // compiler.run((e, x) => {
-  //   console.log(e ?? x);
-  // })
+  compiler.run((e, x) => {
+    console.log(e ?? x);
+  })
 }
