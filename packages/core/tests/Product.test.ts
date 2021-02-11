@@ -9,7 +9,7 @@ import {
   TupleProduct,
   TupleProductType,
   UnknownProduct,
-} from "..";
+} from "../src";
 
 const productAId = Id.create(__filename, "@escad/core", "0", "ProductA");
 const productBId = Id.create(__filename, "@escad/core", "0", "ProductB");

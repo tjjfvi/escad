@@ -1,5 +1,5 @@
 
-import { MultiHashMap } from "../dist";
+import { MultiHashMap } from "../src";
 
 test("MultiHashMap", () => {
   const map = new MultiHashMap()

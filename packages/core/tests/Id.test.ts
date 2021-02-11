@@ -1,4 +1,4 @@
-import { Id } from ".."
+import { Id } from "../src"
 
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 const version = require("../package.json").version;

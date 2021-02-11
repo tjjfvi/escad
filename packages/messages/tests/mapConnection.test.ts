@@ -1,5 +1,5 @@
 
-import { mapConnection, noopConnection } from ".."
+import { mapConnection, noopConnection } from "../src"
 
 test("mapConnection", () => {
   const [_a, b] = noopConnection<string>();

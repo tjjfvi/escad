@@ -1,5 +1,5 @@
 
-import { ArtifactManager, ArtifactStore, hash, Id } from "..";
+import { ArtifactManager, ArtifactStore, hash, Id } from "../src";
 
 const createArtifactStoreMock = (name: string, output: unknown[], returnValues: unknown[]): ArtifactStore => ({
   lookupRaw: async hash => {

@@ -1,5 +1,5 @@
 
-import { brandConnection, noopConnection } from "..";
+import { brandConnection, noopConnection } from "../src";
 
 test("", () => {
   const [_a, b] = noopConnection<unknown>();

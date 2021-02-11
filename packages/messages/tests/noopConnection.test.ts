@@ -1,5 +1,5 @@
 
-import { noopConnection } from "../dist";
+import { noopConnection } from "../src";
 
 test("", () => {
   const [a, b] = noopConnection<number>();

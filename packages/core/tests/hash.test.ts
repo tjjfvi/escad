@@ -1,5 +1,5 @@
 
-import { hash } from "..";
+import { hash } from "../src";
 
 test("", () => {
   expect([

@@ -1,5 +1,5 @@
 
-import { HashMap } from "../dist";
+import { HashMap } from "../src";
 
 test("HashMap", () => {
   const map = new HashMap()

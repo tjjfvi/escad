@@ -1,5 +1,5 @@
 
-import { filterConnection, noopConnection } from ".."
+import { filterConnection, noopConnection } from "../src"
 
 test("filterConnection", () => {
   const [_a, b] = noopConnection<unknown>();

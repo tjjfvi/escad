@@ -1,4 +1,4 @@
-import { checkTypeProperty } from "../dist"
+import { checkTypeProperty } from "../src"
 
 const checkTypePropertyTest = checkTypeProperty("test");
 
