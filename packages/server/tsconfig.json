@@ -9,13 +9,10 @@
   ],
   "references": [
     {
-      "path": "../client/tsconfig.json"
+      "path": "../messages/tsconfig.json"
     },
     {
       "path": "../core/tsconfig.json"
-    },
-    {
-      "path": "../renderer/tsconfig.json"
     },
     {
       "path": "../server-renderer-messages/tsconfig.json"
@@ -24,7 +21,7 @@
       "path": "../server-client-messages/tsconfig.json"
     },
     {
-      "path": "../client-bundler/tsconfig.json"
+      "path": "../register-client-plugin/tsconfig.json"
     }
   ]
 }

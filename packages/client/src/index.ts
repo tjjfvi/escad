@@ -1,23 +1,15 @@
 
-import React from "react";
-import ReactDOM from "react-dom";
-
-import { App } from "./App";
-
-ReactDOM.render(
-  React.createElement(App),
-  document.getElementById("root")
-);
+import "../stylus/index.styl";
 
 // @create-index {"mode":"*"}
 
 export * from './App';
 export * from './BooleanParam';
+export * from './ClientState';
 export * from './Export';
 export * from './HierarchyPane';
 export * from './HierarchyView';
 export * from './IdView';
-export * from './Messenger';
 export * from './NumberParam';
 export * from './ObjectParam';
 export * from './Pane';

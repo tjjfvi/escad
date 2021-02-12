@@ -1,9 +1,9 @@
 import { IdView } from "./IdView";
 import { Observable, Writeable } from "rhobo";
-import React from "react";
+import React, { useContext } from "react";
 import { HashMap, Id } from "@escad/core";
 import { Parameter } from "@escad/parameters";
-import { messenger } from "./Messenger";
+import { ClientState } from "./ClientState";
 
 export interface ParameterRegistration<T, P extends Parameter<T>> {
   id: P["type"],
@@ -20,8 +20,9 @@ export const registerParameter = async <T, P extends Parameter<T>>(registration:
 }
 
 export const ParameterView = <T, >({ parameter, value }: { parameter: Parameter<T>, value: Observable<T> }) => {
-  value.off("update", messenger.paramsChangeHander)
-  value.on("update", messenger.paramsChangeHander)
+  const state = useContext(ClientState.Context);
+  value.off("update", state.triggerParamUpdate);
+  value.on("update", state.triggerParamUpdate);
   const parameterRegistration = parameterRegistrations.get(parameter.type);
   if(!parameterRegistration)
     return <div className="Parameter none">

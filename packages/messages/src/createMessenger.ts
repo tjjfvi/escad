@@ -5,28 +5,31 @@ import { Messenger, MessengerImpl, MessengerShape } from "./Messenger";
 export const createMessenger = (
   <F extends MessengerShape, T extends MessengerShape>(
     impl: MessengerImpl<F, T>,
-    socket: Connection<unknown>,
+    connection: Connection<unknown>,
   ): Messenger<F, T> => {
     let idN = 0;
-    const resolveMap = Object.create(null)
-    const rejectMap = Object.create(null)
-    const iteratorMap = Object.create(null)
+    let resolveMap = Object.create(null)
+    let rejectMap = Object.create(null)
+    let iteratorMap = Object.create(null)
+    let destroyed = false;
     const other = new Proxy(Object.create(null), {
       get: (target, prop) => {
+        if(destroyed)
+          throw new Error("Attempted to make request on destroyed messenger")
         if(prop in target)
           return target[prop];
         if(typeof prop === "symbol")
           return;
         return target[prop] = (...args: any[]) => {
           const id = ++idN
-          socket.send(["call", id, prop, ...args]);
+          connection.send(["call", id, prop, ...args]);
           return Object.assign(
             recvPromise(id),
             {
               [Symbol.asyncIterator]: () => ({
                 next: () => {
                   const id2 = ++idN
-                  socket.send(["next", id, id2]);
+                  connection.send(["next", id, id2]);
                   return recvPromise(id2);
                 },
               })
@@ -36,7 +39,15 @@ export const createMessenger = (
       }
     });
     (impl as any).req = other;
-    socket.onMsg(msg => {
+    (impl as any).destroy = () => {
+      destroyed = true;
+      resolveMap = Object.create(null);
+      rejectMap = Object.create(null);
+      iteratorMap = Object.create(null);
+      connection.offMsg(handler);
+      connection.destroy?.();
+    };
+    const handler = (msg: unknown) => {
       if(!msg || !(msg instanceof Array))
         return;
       const [kind, id, key, ...args] = msg;
@@ -68,7 +79,8 @@ export const createMessenger = (
           return;
         }
       }
-    })
+    }
+    connection.onMsg(handler);
     return impl as any;
 
     function recvPromise(id: number){
@@ -81,9 +93,9 @@ export const createMessenger = (
     function sendPromise(id: number, promise: Promise<unknown>){
       promise.then(
         value =>
-          socket.send(["resolve", id, null, value]),
+          !destroyed && connection.send(["resolve", id, null, value]),
         value =>
-          socket.send(["reject", id, null, value]),
+          !destroyed && connection.send(["reject", id, null, value]),
       )
     }
   }

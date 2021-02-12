@@ -1,14 +1,15 @@
 
-import React from "react";
-import { messenger } from "./Messenger";
+import React, { useContext } from "react";
 import { viewerRegistry } from "./ViewerRegistry";
 import { observer, useObservable } from "rhobo";
 import { Product } from "@escad/core";
 import { Export } from "./Export";
 import { Viewer } from "./Viewer";
+import { ClientState } from "./ClientState";
 
 export const Preview = observer(() => {
-  const products = messenger.products();
+  const state = useContext(ClientState.Context);
+  const products = state.products();
   const viewerObs = useObservable.use<Viewer<any>>();
 
   if(!products.length)

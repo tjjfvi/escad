@@ -1,0 +1,97 @@
+
+import { artifactManager, conversionRegistry, exportTypeRegistry, Product, Element } from "@escad/core";
+import { RunInfo, RendererServerMessenger, LoadInfo } from "@escad/server-renderer-messages";
+import { Connection, createMessenger, eeToAsyncIterable } from "@escad/messages";
+import { ObjectParam } from "@escad/parameters";
+import { registeredPlugins } from "@escad/register-client-plugin";
+import { lookupRef } from "./lookupRef";
+import { FsArtifactStore } from "./FsArtifactStore";
+import { RenderFunction } from "./renderFunction";
+import { EventEmitter } from "tsee";
+
+export const createRendererServerMessenger = (
+  connection: Connection<unknown>,
+  requireFile: (path: string) => unknown = x => require(x),
+) => {
+  const ee = new EventEmitter<{ load:(loadInfo: LoadInfo) => void }>();
+
+  let run: (params: unknown) => Promise<RunInfo>;
+
+  const messenger: RendererServerMessenger = createMessenger({
+    onLoad: () => eeToAsyncIterable(ee, "load"),
+    load,
+    lookupRef,
+    run: params => run(params),
+  }, connection);
+
+  const aritfactDirPromise = messenger.req.getArtifactsDir().then(artifactsDir => {
+    artifactManager.artifactStores.unshift(new FsArtifactStore(artifactsDir));
+  });
+
+  return messenger;
+
+  async function load(path: string){
+    await aritfactDirPromise;
+
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const fullExported = requireFile(path);
+
+    if(typeof fullExported !== "object" || !fullExported || !("default" in fullExported))
+      throw new Error(`"${path}" has no default export`);
+
+    const exported = fullExported["default" as never] as unknown;
+
+    if(typeof exported !== "function" && !(exported instanceof RenderFunction))
+      throw new Error("Expected export type of function or RenderFunction");
+
+    const [func, paramDef] = exported instanceof RenderFunction ? [exported.func, exported.paramDef] : [exported, null];
+    const param = ObjectParam.create(paramDef ?? {});
+    const { defaultValue: defaultParams } = param;
+    const paramHash = paramDef ? artifactManager.storeRaw(param) : null;
+
+    run = async params => {
+      const { products, hierarchy } = await render(params);
+      return {
+        paramDef: await paramHash,
+        products,
+        hierarchy,
+      }
+    }
+
+    const conversions = [...conversionRegistry.listAll()].map(x => [x.fromType, x.toType] as const);
+    const { products, hierarchy } = await render(defaultParams);
+    const exportTypes = [...exportTypeRegistry.listRegistered()];
+
+    const loadInfo = {
+      conversions,
+      paramDef: await paramHash,
+      clientPlugins: registeredPlugins,
+      exportTypes,
+      products,
+      hierarchy,
+    };
+
+    ee.emit("load", loadInfo);
+
+    return loadInfo;
+
+    async function render(params: unknown){
+      let result;
+      try {
+        result = await func(params as never);
+      } catch (e) {
+        console.error(e);
+        return { products: [], hierarchy: null };
+      }
+      if(!result) {
+        console.error(new Error("Invalid return type from exported function"));
+        return { products: [], hierarchy: null };
+      }
+      const el = new Element<Product>(result);
+      const products = await Promise.all(el.toArrayFlat().map(p => artifactManager.storeRaw(p)));
+      const hierarchy = await artifactManager.storeRaw(el.hierarchy)
+      return { products, hierarchy };
+    }
+  }
+
+}

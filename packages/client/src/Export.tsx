@@ -1,27 +1,28 @@
 
 import { conversionRegistry, ExportTypeInfo, ExportTypeRegistry, Product } from "@escad/core";
-import React from "react";
+import React, { useContext } from "react";
 import { observer } from "rhobo";
-import { messenger } from "./Messenger";
+import { ClientState } from "./ClientState";
 import { ProductConsumer, ProductConsumerRegistry } from "./ProductConsumerRegistry";
 
 type ExportTypeProductConsumer<P extends Product> = ProductConsumer<P, P, ExportTypeInfo>;
 
 export const Export = observer(() => {
+  const state = useContext(ClientState.Context);
   const consumerRegistry = new ProductConsumerRegistry<ExportTypeProductConsumer<any>>(conversionRegistry);
-  consumerRegistry.registrations = new Set(messenger.exportTypes().map(e => ({
+  consumerRegistry.registrations = new Set(state.exportTypes().map(e => ({
     type: e.productType,
     context: e,
     map: x => x,
   })))
-  const productTypes = messenger.products().map(Product.getProductType);
+  const productTypes = state.products().map(Product.getProductType);
   const exportTypes = [...consumerRegistry.getConsumersForAll(productTypes)];
   if(exportTypes.length)
     return (
       <div>
         {
           exportTypes.map(exportType =>
-            <span key={exportType.id.full} onClick={() => exportProducts(exportType)}>{exportType.name}</span>
+            <span key={exportType.id.full} onClick={() => exportProducts(state, exportType)}>{exportType.name}</span>
           )
         }
         <span>Export</span>
@@ -30,11 +31,11 @@ export const Export = observer(() => {
   return null;
 })
 
-async function exportProducts(exportType: ExportTypeInfo){
-  const url = await messenger.lookupRefUrl([
+async function exportProducts(state: ClientState, exportType: ExportTypeInfo){
+  const url = await state.lookupRefUrl([
     ExportTypeRegistry.artifactStoreId,
     exportType.id,
-    messenger.products.value,
+    state.products.value,
   ]);
   console.log(url);
   download(url, "export" + exportType.extension)

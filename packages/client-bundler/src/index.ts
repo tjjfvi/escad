@@ -1,14 +1,12 @@
 
 /* eslint-disable no-console */
 
-import fs from "fs-extra";
-import stylus from "stylus";
-import watchDir from "node-watch";
 import path from "path";
 import webpack, { Compiler } from "webpack"
 import { EventEmitter } from "tsee";
 import readPkgUp from "read-pkg-up";
 import { PluginRegistration } from "@escad/register-client-plugin";
+import NodePolyfillPlugin from "node-polyfill-webpack-plugin"
 
 export interface BundlerOptions {
   outDir: string,
@@ -19,12 +17,10 @@ export interface BundlerOptions {
 
 export class Bundler extends EventEmitter<{
   tsBundle: () => void,
-  stylusBundle: (css: string) => void,
 }> {
 
   private watcher?: ReturnType<Compiler["watch"]>;
   private compiler?: Compiler;
-  private closeStylusWatch = () => {};
 
   clientPlugins: PluginRegistration[] = []
 
@@ -42,9 +38,6 @@ export class Bundler extends EventEmitter<{
 
   forceRefresh(){
     this.createCompiler();
-    this.bundleStylus();
-    if(this.options.watch)
-      this.createStylusWatchers();
   }
 
   private getTsPaths(){
@@ -78,11 +71,37 @@ export class Bundler extends EventEmitter<{
       },
       resolve: {
         alias: {
-          "fs": require.resolve("./fs-mock")
+          "fs": require.resolve("./fs-mock"),
         }
+      },
+      module: {
+        rules: [
+          {
+            test: /^.*\.styl$/,
+            use: [
+              { loader: "style-loader" },
+              {
+                loader: "css-loader",
+                options: {
+                  sourceMap: true
+                },
+              },
+              {
+                loader: "stylus-loader",
+                options: {
+                  sourceMap: true,
+                  webpackImporter: false,
+                },
+              },
+            ]
+          }
+        ]
       },
       devtool: "source-map",
       mode: "development",
+      plugins: [
+        new NodePolyfillPlugin(),
+      ]
     })
 
     const handler = (err: Error | undefined) => {
@@ -99,46 +118,6 @@ export class Bundler extends EventEmitter<{
       this.compiler.run(handler);
 
     return this.compiler;
-  }
-
-  private createStylusWatchers(){
-    this.closeStylusWatch();
-
-    const watchers = this.getStylusPaths().map(p => watchDir(p, {
-      persistent: false,
-      recursive: true,
-    }, () => this.bundleStylus()));
-
-    this.closeStylusWatch = () => watchers.map(w => w.close());
-  }
-
-  private async bundleStylus(){
-    if(this.options.log)
-      console.log("Bundling stylus...");
-    const css = await new Promise<string | undefined>(r => stylus.render(
-      this.getStylusPaths().map(dir =>
-        `@import '${path.join(dir, "*")}'`
-      ).join("\n"),
-      {
-        filename: "_.styl",
-        // @ts-ignore
-        sourcemap: {
-          comment: false,
-          inline: true,
-        },
-      },
-      (error: Error, css: string) => {
-        if(error)
-          return r(void console.error(error));
-        return r(css);
-      }
-    ));
-    if(!css)
-      return;
-    await fs.writeFile(path.join(this.options.outDir, "bundle.css"), css);
-    if(this.options.log)
-      console.log("Bundled stylus");
-    this.emit("stylusBundle", css);
   }
 
 }

@@ -1,9 +1,9 @@
 
 import { mdiCheck, mdiClose } from "@mdi/js";
 import Icon from "@mdi/react";
-import React from "react";
+import React, { useContext } from "react";
 import { observer } from "rhobo";
-import { messenger } from "./Messenger";
+import { ClientState } from "./ClientState";
 
 export type Status = "connected" | "disconnected";
 
@@ -19,7 +19,8 @@ const statusData: Record<Status, { name: string, icon: string }> = {
 }
 
 export const Status = observer(() => {
-  const status = messenger.status();
+  const state = useContext(ClientState.Context);
+  const status = state.status();
   return <div className={"Status " + status}>
     <Icon path={statusData[status].icon}/>
     <span>{statusData[status].name}</span>

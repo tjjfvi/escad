@@ -1,5 +1,7 @@
 /* eslint-disable react/prop-types */
 
+import "../stylus/Viewer3d.styl";
+
 import React, { useEffect } from "react";
 import { ViewerInput, Viewer } from "@escad/client";
 // eslint-disable-next-line @typescript-eslint/no-var-requires

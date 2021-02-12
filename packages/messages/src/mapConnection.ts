@@ -17,6 +17,7 @@ export const mapConnection =
         if(cb)
           connection.offMsg(cb);
       },
+      destroy: connection.destroy,
     })
   }
 

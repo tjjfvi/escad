@@ -4,7 +4,6 @@
   "description": "",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
-  "stylus": "stylus",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -rf dist tsconfig.tsbuildinfo",
@@ -16,6 +15,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@escad/messages": "^0.0.0",
     "@escad/core": "^0.0.0",
     "@escad/parameters": "^0.0.0",
     "@escad/server-client-messages": "^0.0.0",

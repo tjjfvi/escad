@@ -4,6 +4,7 @@ import commander from "commander";
 import path from "path";
 import os from "os";
 import fs from "fs";
+import { createServer } from "../server";
 
 (() => {
   commander
@@ -27,8 +28,5 @@ import fs from "fs";
   const loadFile = path.resolve(file);
   const loadDir = path.dirname(path.resolve(watchDir || loadFile));
 
-  // eslint-disable-next-line @typescript-eslint/no-var-requires
-  Object.assign(require("@escad/server/dist/config").default, { port: +port, loadFile, loadDir, artifactsDir });
-
-  require("@escad/server");
+  createServer(artifactsDir, +port, loadFile, loadDir);
 })();

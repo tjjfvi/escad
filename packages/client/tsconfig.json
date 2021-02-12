@@ -10,6 +10,9 @@
   ],
   "references": [
     {
+      "path": "../messages/tsconfig.json"
+    },
+    {
       "path": "../parameters/tsconfig.json"
     },
     {

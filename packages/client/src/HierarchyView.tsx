@@ -2,9 +2,9 @@
 import { Hierarchy } from "@escad/core";
 import { mdiArrowCollapseVertical, mdiArrowExpandVertical } from "@mdi/js";
 import Icon from "@mdi/react";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { useObservable } from "rhobo";
-import { messenger } from "./Messenger";
+import { ClientState } from "./ClientState";
 
 export const HierarchyView = ({ hierarchy, maxLength }: { hierarchy: Hierarchy, maxLength: number }) =>
   <Tree maxLength={maxLength} tree={hierarchyToTree(hierarchy)}/>
@@ -86,20 +86,28 @@ const TreeTextPart = ({ children, className, onClick }:TreeTextPartProps) => {
   </span>
 }
 
-const TreeText = ({ str }: { str: TreeText}) =>
-  <span>{
+const TreeText = ({ str }: { str: TreeText}) => {
+  const state = useContext(ClientState.Context);
+  return <span>{
     str.reduce(([a, b, ...c], d, i) =>
       typeof d === "string" ?
         [[...a, d === ellipsis ? <span className="ellipsis" key={i}>{d}</span> : d], b, ...c] :
         "close" in d ?
-          [[...b, <TreeTextPart key={i} onClick={d.onClick} className={d.className}>{a}</TreeTextPart>], ...c] :
+          [[...b, (
+            <TreeTextPart key={i} onClick={() => d.onClick?.(state)} className={d.className}>{a}</TreeTextPart>
+          )], ...c] :
           [[], a, b, ...c]
     , [[]] as (string | React.ReactElement)[][])
   }</span>
+}
 
 const ellipsis = "···"
 
-type TreeText = (string | { open: true } | { close: true, onClick?: () => void, className?: string })[]
+type TreeTextPart =
+  | string
+  | { open: true }
+  | { close: true, onClick?: (state: ClientState) => void, className?: string }
+type TreeText = TreeTextPart[];
 
 type TreePart =
   | { readonly text: TreeText }
@@ -124,7 +132,7 @@ function wrapLinkedProducts(hierarchy: Hierarchy, tree: Tree): Tree{
   return [
     { text: [{ open: true }] },
     ...tree,
-    { text: [{ close: true, onClick: () => messenger.handleProducts(hierarchy.linkedProducts), className: "link" }] },
+    { text: [{ close: true, onClick: state => state.handleProducts(hierarchy.linkedProducts), className: "link" }] },
   ]
 }
 

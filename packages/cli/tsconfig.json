@@ -9,7 +9,22 @@
   ],
   "references": [
     {
+      "path": "../core/tsconfig.json"
+    },
+    {
       "path": "../server/tsconfig.json"
+    },
+    {
+      "path": "../client/tsconfig.json"
+    },
+    {
+      "path": "../renderer/tsconfig.json"
+    },
+    {
+      "path": "../client-bundler/tsconfig.json"
+    },
+    {
+      "path": "../messages/tsconfig.json"
     }
   ]
 }

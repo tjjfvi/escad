@@ -16,6 +16,7 @@ export const filterConnection =
         if(cb)
           connection.offMsg(cb);
       },
+      destroy: connection.destroy,
     })
   }
 

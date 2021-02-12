@@ -1,5 +1,6 @@
 
 import { ExportTypeInfo, Hash, ProductType } from "@escad/core";
+import { Messenger } from "@escad/messages";
 import { PluginRegistration } from "@escad/register-client-plugin";
 
 export interface RunInfo {
@@ -10,57 +11,20 @@ export interface RunInfo {
 
 export interface LoadInfo extends RunInfo {
   clientPlugins: PluginRegistration[],
-  conversions: [ProductType, ProductType][],
+  conversions: readonly (readonly [ProductType, ProductType])[],
   exportTypes: ExportTypeInfo[],
 }
 
-export type ServerRendererMessageTypes = ServerRendererMessage["type"]
-export type ServerRendererMessage<T extends ServerRendererMessageTypes = any> = Extract<
-  | ServerRendererMessage.ArtifactsDir
-  | ServerRendererMessage.Load
-  | ServerRendererMessage.Run
-  | ServerRendererMessage.LookupRef
-, { type: T }>
-
-export namespace ServerRendererMessage {
-  export interface ArtifactsDir {
-    type: "artifactsDir",
-    artifactsDir: string,
-  }
-  export interface Load {
-    type: "load",
-    path: string,
-  }
-  export interface Run {
-    type: "run",
-    id: string,
-    params: unknown,
-  }
-  export interface LookupRef {
-    type: "lookupRef",
-    id: string,
-    loc: readonly unknown[],
-  }
+export type RendererServerMessengerShape = {
+  onLoad(): AsyncIterable<LoadInfo>,
+  load(path: string): Promise<LoadInfo>,
+  run(params: unknown): Promise<RunInfo>,
+  lookupRef(loc: readonly unknown[]): Promise<Hash>,
 }
 
-export type RendererServerMessageTypes = RendererServerMessage["type"]
-export type RendererServerMessage<T extends ServerRendererMessageTypes = any> = Extract<
-  | RendererServerMessage.LoadResponse
-  | RendererServerMessage.RunResponse
-  | RendererServerMessage.LookupRefResponse
-, { type: T }>
-
-export namespace RendererServerMessage {
-  export interface RunResponse extends RunInfo {
-    type: "runResponse",
-    id: string,
-  }
-  export interface LoadResponse extends LoadInfo {
-    type: "loadResponse",
-  }
-  export interface LookupRefResponse {
-    type: "lookupRefResponse",
-    id: string,
-    hash: Hash,
-  }
+export type ServerRendererMessengerShape = {
+  getArtifactsDir(): Promise<string>,
 }
+
+export type ServerRendererMessenger = Messenger<ServerRendererMessengerShape, RendererServerMessengerShape>;
+export type RendererServerMessenger = Messenger<RendererServerMessengerShape, ServerRendererMessengerShape>;

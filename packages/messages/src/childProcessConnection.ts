@@ -7,4 +7,5 @@ export const childProcessConnection = (childProcess: ChildProcess): Connection<S
   send: value => childProcess.send(value),
   onMsg: cb => childProcess.on("message", cb),
   offMsg: cb => childProcess.off("message", cb),
+  destroy: () => childProcess.kill(),
 })
