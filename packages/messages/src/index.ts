@@ -13,6 +13,7 @@ export * from './eeToAsyncIterable';
 export * from './filterConnection';
 export * from './mapConnection';
 export * from './noopConnection';
+export * from './parentProcessConnection';
 export * from './workerConnection';
 export * from './wsConnection';
 export * from './zipAsyncIterables';
