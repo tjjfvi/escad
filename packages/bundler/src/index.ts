@@ -48,15 +48,15 @@ export const createBundlerServerMessenger = (connection: Connection<unknown>): B
           {
             test: /^.*\.styl$/,
             use: [
-              { loader: "style-loader" },
+              { loader: require.resolve("style-loader") },
               {
-                loader: "css-loader",
+                loader: require.resolve("css-loader"),
                 options: {
                   sourceMap: true
                 },
               },
               {
-                loader: "stylus-loader",
+                loader: require.resolve("stylus-loader"),
                 options: {
                   sourceMap: true,
                   webpackImporter: false,
