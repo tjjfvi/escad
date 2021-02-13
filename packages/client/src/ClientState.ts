@@ -59,8 +59,8 @@ export class ClientState implements ArtifactStore {
 
   async listenForBundle(){
     for await (const newBundleHash of this.clientServerMessenger.req.onBundle())
-      if(newBundleHash !== await this.bundleHash)
-        this.status("reload");
+      if(this.status.value !== "disconnected")
+        this.status(newBundleHash !== await this.bundleHash ? "reload" : "connected")
   }
 
   async listenForInfo(){
