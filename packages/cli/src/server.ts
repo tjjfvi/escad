@@ -66,8 +66,9 @@ export const createServer = async (artifactsDir: string, port: number, loadFile:
         onMsg: cb => ws.on("message", cb),
         offMsg: cb => ws.off("message", cb),
       })),
-      rendererMessenger,
       hash => `/artifacts/raw/${hash}`,
+      rendererMessenger,
+      bundlerMessenger,
     );
     ws.on("close", () => messenger.destroy());
     ws.on("error", () => messenger.destroy());

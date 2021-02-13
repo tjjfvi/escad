@@ -1,4 +1,5 @@
 
+import { Hash } from "@escad/core";
 import { Messenger } from "@escad/messages";
 import { PluginRegistration } from "@escad/register-client-plugin";
 
@@ -13,7 +14,7 @@ export type ServerBundlerMessengerShape = { /**/ };
 
 export type BundlerServerMessengerShape = {
   bundle(options: BundleOptions): Promise<void>,
-  onBundle(): AsyncIterable<void>,
+  onBundle(): AsyncIterable<Hash>,
 }
 
 export type ServerBundlerMessenger = Messenger<ServerBundlerMessengerShape, BundlerServerMessengerShape>;

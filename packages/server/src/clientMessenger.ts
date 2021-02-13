@@ -1,12 +1,13 @@
 import { Hash } from "@escad/core";
 import { Connection, createMessenger, dedupeAsyncIterable, zipAsyncIterables } from "@escad/messages";
-import { ServerClientMessenger } from "@escad/protocol";
+import { ServerBundlerMessenger, ServerClientMessenger } from "@escad/protocol";
 import { ServerRendererMessenger } from "@escad/protocol";
 
 export const createServerClientMessenger = (
   connection: Connection<unknown>,
-  rendererMessenger: ServerRendererMessenger,
   hashToUrl: (hash: Hash) => string,
+  rendererMessenger: ServerRendererMessenger,
+  bundlerMessenger?: ServerBundlerMessenger,
 ) => {
   const messenger: ServerClientMessenger = createMessenger({
     async *ping(period){
@@ -24,6 +25,7 @@ export const createServerClientMessenger = (
       return hashToUrl(hash);
     },
     info: dedupeAsyncIterable(info),
+    onBundle: dedupeAsyncIterable(bundlerMessenger?.req.onBundle ?? async function*(){})
   }, connection)
 
   return messenger;

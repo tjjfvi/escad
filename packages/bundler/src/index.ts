@@ -1,12 +1,14 @@
 
-import webpack, { Compiler } from "webpack"
+import webpack, { Compiler, Stats } from "webpack"
 import { Connection, createEmittableAsyncIterable, createMessenger } from "@escad/messages";
 import { BundleOptions, BundlerServerMessenger } from "@escad/protocol";
 import { hash, Hash } from "@escad/core";
 import NodePolyfillPlugin from "node-polyfill-webpack-plugin"
+import { writeFile } from "fs-extra";
+import path from "path";
 
 export const createBundlerServerMessenger = (connection: Connection<unknown>): BundlerServerMessenger => {
-  const [emitBundle, onBundle] = createEmittableAsyncIterable<void>();
+  const [emitBundle, onBundle] = createEmittableAsyncIterable<Hash>();
 
   let watcher: ReturnType<Compiler["watch"]> | undefined;
 
@@ -73,19 +75,16 @@ export const createBundlerServerMessenger = (connection: Connection<unknown>): B
       ]
     })
 
-    if(options.watch ?? false) {
-      watcher = compiler.watch({}, err => {
-        if(err) console.error(err);
-        emitBundle();
-      });
-    } else {
-      await new Promise<void>(res =>
-        compiler.run(err => {
-          if(err) console.error(err);
-          res();
-        })
-      );
-      emitBundle();
+    const handler = (err: Error | undefined, result: Stats | undefined) => {
+      if(err) console.error(err);
+      const bundleHash = hash(result?.compilation.fullHash ?? Math.random());
+      writeFile(path.join(options.outDir, "bundle.hash"), bundleHash);
+      emitBundle(bundleHash);
     }
+
+    if(options.watch ?? false)
+      watcher = compiler.watch({}, handler);
+    else
+      compiler.run(handler);
   }
 }

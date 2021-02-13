@@ -21,8 +21,7 @@ import {
   filterConnection,
   mapConnection,
 } from "@escad/messages";
-
-type Status = "connected" | "disconnected";
+import { Status } from "./Status";
 
 const _ClientStateContext = createContext<ClientState>(null as never);
 
@@ -30,6 +29,7 @@ export class ClientState implements ArtifactStore {
 
   static Context = _ClientStateContext;
 
+  bundleHash = fetch("/bundle.hash").then(r => r.text()).catch(() => null);
   status = observable<Status>("disconnected");
   products = observable<Product[]>([]);
   exportTypes = observable<ExportTypeInfo[]>([]);
@@ -55,6 +55,12 @@ export class ClientState implements ArtifactStore {
     }, this.connection)
     this.artifactManager.artifactStores.unshift(this);
     [this.triggerParamUpdate, this.onParamUpdate] = createEmittableAsyncIterable<void>()
+  }
+
+  async listenForBundle(){
+    for await (const newBundleHash of this.clientServerMessenger.req.onBundle())
+      if(newBundleHash !== await this.bundleHash)
+        this.status("reload");
   }
 
   async listenForInfo(){
@@ -153,6 +159,7 @@ export class WebSocketClientState extends ClientState {
         return ws.close();
       this.status("connected");
       this.listenForInfo();
+      this.listenForBundle();
     });
 
     ws.addEventListener("close", () => this.disconnect(ws));

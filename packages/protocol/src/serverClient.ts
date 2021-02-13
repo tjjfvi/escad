@@ -15,6 +15,7 @@ export type ServerClientMessengerShape = {
   info(): AsyncIterable<Info>,
   lookupRaw(hash: Hash): Promise<string>,
   lookupRef(loc: readonly unknown[]): Promise<string>,
+  onBundle(): AsyncIterable<Hash>,
 }
 
 export type ClientServerMessengerShape = {
