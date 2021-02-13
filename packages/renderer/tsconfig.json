@@ -21,7 +21,7 @@
       "path": "../register-client-plugin/tsconfig.json"
     },
     {
-      "path": "../server-renderer-messages/tsconfig.json"
+      "path": "../protocol/tsconfig.json"
     }
   ]
 }

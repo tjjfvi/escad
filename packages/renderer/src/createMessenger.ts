@@ -1,24 +1,23 @@
 
 import { artifactManager, conversionRegistry, exportTypeRegistry, Product, Element } from "@escad/core";
-import { RunInfo, RendererServerMessenger, LoadInfo } from "@escad/server-renderer-messages";
-import { Connection, createMessenger, eeToAsyncIterable } from "@escad/messages";
+import { RunInfo, RendererServerMessenger, LoadInfo } from "@escad/protocol";
+import { Connection, createEmittableAsyncIterable, createMessenger } from "@escad/messages";
 import { ObjectParam } from "@escad/parameters";
 import { registeredPlugins } from "@escad/register-client-plugin";
 import { lookupRef } from "./lookupRef";
 import { FsArtifactStore } from "./FsArtifactStore";
 import { RenderFunction } from "./renderFunction";
-import { EventEmitter } from "tsee";
 
 export const createRendererServerMessenger = (
   connection: Connection<unknown>,
   requireFile: (path: string) => unknown = x => require(x),
 ) => {
-  const ee = new EventEmitter<{ load:(loadInfo: LoadInfo) => void }>();
+  const [triggerLoad, onLoad] = createEmittableAsyncIterable<LoadInfo>()
 
   let run: (params: unknown) => Promise<RunInfo>;
 
   const messenger: RendererServerMessenger = createMessenger({
-    onLoad: () => eeToAsyncIterable(ee, "load"),
+    onLoad,
     load,
     lookupRef,
     run: params => run(params),
@@ -71,7 +70,7 @@ export const createRendererServerMessenger = (
       hierarchy,
     };
 
-    ee.emit("load", loadInfo);
+    triggerLoad(loadInfo);
 
     return loadInfo;
 

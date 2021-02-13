@@ -4,7 +4,7 @@ import {
   RendererServerMessengerShape,
   ServerRendererMessenger,
   ServerRendererMessengerShape
-} from "@escad/server-renderer-messages";
+} from "@escad/protocol";
 import { createServerRendererMessenger } from "./rendererMessenger";
 
 export const createRendererDispatcher = (

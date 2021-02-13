@@ -15,10 +15,7 @@
       "path": "../core/tsconfig.json"
     },
     {
-      "path": "../server-renderer-messages/tsconfig.json"
-    },
-    {
-      "path": "../server-client-messages/tsconfig.json"
+      "path": "../protocol/tsconfig.json"
     },
     {
       "path": "../register-client-plugin/tsconfig.json"

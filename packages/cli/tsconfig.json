@@ -21,7 +21,7 @@
       "path": "../renderer/tsconfig.json"
     },
     {
-      "path": "../client-bundler/tsconfig.json"
+      "path": "../bundler/tsconfig.json"
     },
     {
       "path": "../messages/tsconfig.json"

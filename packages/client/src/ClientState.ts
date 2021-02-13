@@ -1,5 +1,5 @@
 
-import { ClientServerMessenger } from "@escad/server-client-messages"
+import { ClientServerMessenger } from "@escad/protocol"
 import { observable } from "rhobo";
 import {
   ArtifactManager,

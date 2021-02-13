@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "description": "",
   "scripts": {
-    "bootstrap": "lerna bootstrap --hoist; patch-package",
+    "bootstrap": "lerna exec 'rm -rf node_modules package-lock.json'; lerna bootstrap --hoist; patch-package",
     "test": "npm run quick-build && jest -u",
     "quick-build": "tsc -b packages",
     "build-playground": "lerna run build-playground",

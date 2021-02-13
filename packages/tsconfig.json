@@ -20,7 +20,7 @@
       "path": "client-3d-viewer"
     },
     {
-      "path": "client-bundler"
+      "path": "bundler"
     },
     {
       "path": "client-mesh"
@@ -47,10 +47,10 @@
       "path": "server"
     },
     {
-      "path": "server-client-messages"
+      "path": "protocol"
     },
     {
-      "path": "server-renderer-messages"
+      "path": "protocol"
     },
     {
       "path": "solids"

@@ -19,7 +19,7 @@
       "path": "../core/tsconfig.json"
     },
     {
-      "path": "../server-client-messages/tsconfig.json"
+      "path": "../protocol/tsconfig.json"
     }
   ]
 }

@@ -1,13 +1,18 @@
 
 import express from "express";
 import expressWs from "express-ws";
-import { createRendererDispatcher, createServerClientMessenger, createServerRendererMessenger } from "@escad/server";
-import { Bundler } from "@escad/client-bundler";
+import {
+  createRendererDispatcher,
+  createServerBundlerMessenger,
+  createServerClientMessenger,
+  createServerRendererMessenger
+} from "@escad/server";
 import path from "path";
-import { childProcessConnection, createMessenger, filterConnection, mapConnection } from "@escad/messages";
+import { childProcessConnection, filterConnection, mapConnection } from "@escad/messages";
 import { writeFile, mkdirp } from "fs-extra";
 import { fork } from "child_process";
 import watch from "node-watch";
+import { BundleOptions } from "../../client/node_modules/@escad/protocol/src";
 
 export const createServer = async (artifactsDir: string, port: number, loadFile: string, loadDir: string) => {
   const { app } = expressWs(express());
@@ -18,12 +23,18 @@ export const createServer = async (artifactsDir: string, port: number, loadFile:
   app.use(express.static(staticDir));
   app.use("/artifacts", express.static(artifactsDir + "/"));
 
-  const bundler = new Bundler({
-    coreClientPath: require.resolve("./client"),
+  const baseBundleOptions: BundleOptions = {
     outDir: staticDir,
-    log: true,
-    watch: false,
-  });
+    coreClientPath: require.resolve("./client"),
+    clientPlugins: [],
+  };
+
+  const bundlerProcess = fork(require.resolve("./bundler"));
+  const bundlerMessenger = createServerBundlerMessenger(
+    mapConnection.flatted(filterConnection.string(childProcessConnection(bundlerProcess)))
+  );
+
+  bundlerMessenger.req.bundle(baseBundleOptions);
 
   const rendererMessenger = createRendererDispatcher(artifactsDir, 3, () => {
     const child = fork(require.resolve("./renderer"));
@@ -42,7 +53,10 @@ export const createServer = async (artifactsDir: string, port: number, loadFile:
 
   (async function(){
     for await (const { clientPlugins } of rendererMessenger.req.onLoad())
-      bundler.updateClientPlugins(clientPlugins);
+      bundlerMessenger.req.bundle({
+        ...baseBundleOptions,
+        clientPlugins,
+      })
   })()
 
   app.ws("/ws", ws => {

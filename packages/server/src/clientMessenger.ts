@@ -1,7 +1,7 @@
 import { Hash } from "@escad/core";
 import { Connection, createMessenger, dedupeAsyncIterable, zipAsyncIterables } from "@escad/messages";
-import { ServerClientMessenger } from "@escad/server-client-messages";
-import { ServerRendererMessenger } from "@escad/server-renderer-messages";
+import { ServerClientMessenger } from "@escad/protocol";
+import { ServerRendererMessenger } from "@escad/protocol";
 
 export const createServerClientMessenger = (
   connection: Connection<unknown>,

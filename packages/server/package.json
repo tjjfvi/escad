@@ -17,8 +17,7 @@
   "dependencies": {
     "@escad/messages": "^0.0.0",
     "@escad/core": "^0.0.0",
-    "@escad/server-renderer-messages": "^0.0.0",
-    "@escad/server-client-messages": "^0.0.0",
+    "@escad/protocol": "^0.0.0",
     "@escad/register-client-plugin": "^0.0.0",
     "uuid": "^8.3.2"
   },
