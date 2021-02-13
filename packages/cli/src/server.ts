@@ -52,6 +52,11 @@ export const createServer = async (artifactsDir: string, port: number, loadFile:
   });
 
   (async function(){
+    for await (const hash of bundlerMessenger.req.onBundle())
+      console.log(`Bundled client (${hash.slice(0, 32)}...)`);
+  })();
+
+  (async function(){
     for await (const { clientPlugins } of rendererMessenger.req.onLoad())
       bundlerMessenger.req.bundle({
         ...baseBundleOptions,
