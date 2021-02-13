@@ -8,6 +8,8 @@ import {
   createLeafProductUtils,
   Conversion,
   conversionRegistry,
+  ConvertibleElement,
+  ConvertibleTo,
 } from "@escad/core";
 import { Diff } from "@escad/csg";
 
@@ -90,8 +92,8 @@ type SphereArgs = {
   ud?: boolean,
 };
 
-export const sphere: Component<[SphereArgs], Element<Mesh>> =
-  new Component<[SphereArgs], Element<Mesh>>("sphere", ({
+export const sphere: Component<[SphereArgs], ConvertibleElement<Mesh>> =
+  new Component("sphere", ({
     r = 1,
     slices = 16,
     stacks = 8,
@@ -103,7 +105,7 @@ export const sphere: Component<[SphereArgs], Element<Mesh>> =
     if(!ir)
       return new Element(os);
     let is = Sphere.create(ir, slices, stacks);
-    return new Element(ud ? [os, is] : Diff.create(os, is));
+    return new Element<ConvertibleTo<Mesh>>(ud ? [os, is] : Diff.create(os, is));
   })
 
 export const hollowSphere = sphere;

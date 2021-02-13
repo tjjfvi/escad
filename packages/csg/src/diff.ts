@@ -3,7 +3,6 @@ import {
   TupleProduct,
   Conversion,
   createLeafProductUtils,
-  Elementish,
   Id,
   LeafProduct,
   Product,
@@ -12,6 +11,9 @@ import {
   Operation,
   conversionRegistry,
   TupleProductType,
+  ConvertibleOperation,
+  ConvertibleElementish,
+  ConvertibleTo,
 } from "@escad/core";
 import { Bsp, ClipOptions } from "./Bsp";
 import { Union } from "./union";
@@ -56,9 +58,9 @@ conversionRegistry.register({
   weight: 1,
 })
 
-export const diff: Operation<Bsp, Bsp> = (
-  new Operation<Bsp, Bsp>("diff", el => {
-    let originalArgs: Elementish<Bsp> = el.toArrayDeep();
+export const diff: ConvertibleOperation<Bsp, Bsp> = (
+  new Operation("diff", el => {
+    let originalArgs: ConvertibleElementish<Bsp> = el.toArrayDeep();
     if(!(originalArgs instanceof Array))
       return originalArgs;
     if(originalArgs.length === 0)
@@ -68,12 +70,12 @@ export const diff: Operation<Bsp, Bsp> = (
     const args = Element.create(originalArgs).toArrayDeep();
     if(Product.isProduct(args))
       return args;
-    const positive = Union.create(TupleProduct.create(new Element<Bsp>(args[0]).toArrayFlat()));
-    const negative = Union.create(TupleProduct.create(new Element<Bsp>(args.slice(1)).toArrayFlat()));
+    const positive = Union.create(TupleProduct.create(new Element<ConvertibleTo<Bsp>>(args[0]).toArrayFlat()));
+    const negative = Union.create(TupleProduct.create(new Element<ConvertibleTo<Bsp>>(args.slice(1)).toArrayFlat()));
     return Diff.create(positive, negative);
   })
 );
 
-export const sub: Component<Elementish<Bsp>[], Operation<Bsp, Bsp>> = (
-  new Component("sub", (...el) => new Operation<Bsp, Bsp>("sub", el2 => diff(el2, el), false), false)
+export const sub: Component<ConvertibleElementish<Bsp>[], ConvertibleOperation<Bsp, Bsp>> = (
+  new Component("sub", (...el) => new Operation("sub", el2 => diff(el2, el), false), false)
 );

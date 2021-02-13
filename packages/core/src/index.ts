@@ -2,9 +2,9 @@
 export * from "./builtins";
 import { builtins } from "./builtins";
 import { Element, Elementish } from "./Element";
-import { LeafProduct } from "./LeafProduct";
+import { Product } from "./Product";
 
-const escadFunc = <T extends LeafProduct>(...a: Elementish<T>[]) => new Element(a.length === 1 ? a[0] : a)
+const escadFunc = <T extends Product>(...a: Elementish<T>[]) => new Element(a.length === 1 ? a[0] : a)
 
 const escad = new Proxy(escadFunc, {
   get: (target, key) =>
@@ -34,6 +34,7 @@ export * from './LeafProduct';
 export * from './MultiHashMap';
 export * from './Operation';
 export * from './Product';
+export * from './Thing';
 export * from './Timer';
 export * from './TupleProduct';
 export * from './UnknownProduct';

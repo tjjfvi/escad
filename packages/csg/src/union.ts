@@ -3,7 +3,6 @@ import {
   TupleProduct,
   Conversion,
   createLeafProductUtils,
-  Elementish,
   Id,
   LeafProduct,
   Product,
@@ -13,6 +12,8 @@ import {
   ArrayProduct,
   TupleProductType,
   ArrayProductType,
+  ConvertibleElement,
+  ConvertibleOperation,
 } from "@escad/core";
 import { Bsp, ClipOptions } from "./Bsp";
 
@@ -56,12 +57,12 @@ conversionRegistry.register({
   weight: 1,
 })
 
-export const union: Operation<Bsp, Bsp> = (
-  new Operation<Bsp, Bsp>("union", el =>
+export const union: ConvertibleOperation<Bsp, Bsp> = (
+  new Operation("union", el =>
     Union.create(TupleProduct.create(el.toArrayFlat()))
   )
 );
 
-export const add: Component<Elementish<Bsp>[], Operation<Bsp, Bsp>> = (
-  new Component("add", (...el) => new Operation<Bsp, Bsp>("add", el2 => union(el2, el)))
+export const add: Component<ConvertibleElement<Bsp>[], ConvertibleOperation<Bsp, Bsp>> = (
+  new Component("add", (...el) => new Operation("add", el2 => union(el2, el)))
 );

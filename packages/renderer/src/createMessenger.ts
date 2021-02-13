@@ -1,5 +1,5 @@
 
-import { artifactManager, conversionRegistry, exportTypeRegistry, Product, Element } from "@escad/core";
+import { artifactManager, conversionRegistry, exportTypeRegistry, Product, Element, Hierarchy } from "@escad/core";
 import { RunInfo, RendererServerMessenger, LoadInfo } from "@escad/protocol";
 import { Connection, createEmittableAsyncIterable, createMessenger } from "@escad/messages";
 import { ObjectParam } from "@escad/parameters";
@@ -88,7 +88,7 @@ export const createRendererServerMessenger = (
       }
       const el = new Element<Product>(result);
       const products = await Promise.all(el.toArrayFlat().map(p => artifactManager.storeRaw(p)));
-      const hierarchy = await artifactManager.storeRaw(el.hierarchy)
+      const hierarchy = await artifactManager.storeRaw(Hierarchy.from(el))
       return { products, hierarchy };
     }
   }

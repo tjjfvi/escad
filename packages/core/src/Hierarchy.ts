@@ -62,7 +62,9 @@ export const Hierarchy = {
     if(!raw) {
       if(Hierarchy.isHierarchy(el))
         return el;
-      if(el instanceof Element || el instanceof Component || el instanceof Operation)
+      if(el instanceof Element)
+        return el.hierarchy ?? Hierarchy.from(el.value);
+      if(el instanceof Component || el instanceof Operation)
         return el.hierarchy ?? Hierarchy.create({ name: el.name });
       if(LeafProduct.isLeafProduct(el))
         return Hierarchy.create({

@@ -100,8 +100,8 @@ export type _ConvertibleTo<T, E=never> =
     : never
 
 // Preserves type info but does not affect assignability
-interface Phantom<T> { _: Phantom<T> }
-type Unphantom<T> = T extends Phantom<infer U> ? U : never;
+export interface Phantom<T> { _: Phantom<T> }
+export type Unphantom<T> = T extends Phantom<infer U> ? U : never;
 
 export type ConvertibleTo<T extends Product> = Product & {
   [__convertibleToTransitivityOverride]?: TransitivityOverride.B,

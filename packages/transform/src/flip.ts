@@ -6,10 +6,10 @@ import {
   Product,
   TupleProduct,
   Conversion,
-  Operation,
   mapOperation,
   conversionRegistry,
   TupleProductType,
+  ConvertibleOperation,
 } from "@escad/core";
 import { Mesh, Face } from "@escad/mesh";
 
@@ -51,4 +51,4 @@ conversionRegistry.register<FlipFaces<Mesh>, Mesh>({
   weight: 1,
 })
 
-export const flip: Operation<Mesh, FlipFaces<Mesh>> = mapOperation<Mesh, FlipFaces<Mesh>>("flip", FlipFaces.create);
+export const flip: ConvertibleOperation<Mesh, FlipFaces<Mesh>> = mapOperation("flip", FlipFaces.create);

@@ -1,7 +1,7 @@
 
 import { Matrix4 } from "./Matrix4"
 import { Mesh } from "@escad/mesh";
-import { Component, Operation, mapOperation } from "@escad/core";
+import { Component, mapOperation, ConvertibleOperation } from "@escad/core";
 import { Transformation } from "./Transformation";
 import { FlipFaces } from ".";
 
@@ -10,8 +10,8 @@ type ScaleArgs =
   | [number, number, number]
   | [{ x?: number, y?: number, z?: number }]
   | [[number, number, number]]
-export const scale: Component<ScaleArgs, Operation<Mesh, Mesh>> =
-  new Component<ScaleArgs, Operation<Mesh, Mesh>>("scale", (...args: ScaleArgs) => {
+export const scale: Component<ScaleArgs, ConvertibleOperation<Mesh, Mesh>> =
+  new Component("scale", (...args: ScaleArgs) => {
     let triple =
       args.length === 3 ?
         args :
@@ -25,17 +25,17 @@ export const scale: Component<ScaleArgs, Operation<Mesh, Mesh>> =
     let sign = Math.sign(arr[0] * arr[1] * arr[2]);
     let shouldFlip = sign === -1;
 
-    return mapOperation<Mesh, Mesh>("scale", leaf => {
+    return mapOperation("scale", leaf => {
       let transformed = Transformation.create(matrix, leaf);
       return shouldFlip ?  FlipFaces.create(transformed) : transformed;
     });
   });
 
-export const sX: Component<[number], Operation<Mesh, Mesh>> =
+export const sX: Component<[number], ConvertibleOperation<Mesh, Mesh>> =
   new Component("sX", (n: number) => scale({ x: n }));
-export const sY: Component<[number], Operation<Mesh, Mesh>> =
+export const sY: Component<[number], ConvertibleOperation<Mesh, Mesh>> =
   new Component("sY", (n: number) => scale({ y: n }));
-export const sZ: Component<[number], Operation<Mesh, Mesh>> =
+export const sZ: Component<[number], ConvertibleOperation<Mesh, Mesh>> =
   new Component("sZ", (n: number) => scale({ z: n }));
 
 export const scaleX = sX;

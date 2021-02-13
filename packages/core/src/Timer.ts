@@ -31,9 +31,11 @@ export class Timer {
       let result;
       try {
         result = f(...args);
-      } finally {
+      } catch (e) {
         this.end();
+        throw e;
       }
+      this.end();
       return result;
     }) as F
   }

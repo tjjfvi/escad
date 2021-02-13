@@ -10,6 +10,7 @@ import {
   ArrayProduct,
   TupleProductType,
   ArrayProductType,
+  ConvertibleOperation,
 } from "@escad/core";
 import { Mesh } from "@escad/mesh";
 
@@ -49,8 +50,8 @@ conversionRegistry.register({
   weight: 1,
 })
 
-export const meld: Operation<Mesh, Mesh> = (
-  new Operation<Mesh, Mesh>("meld", el =>
+export const meld: ConvertibleOperation<Mesh, Mesh> = (
+  new Operation("meld", el =>
     Meld.create(TupleProduct.create(el.toArrayFlat()))
   )
 );

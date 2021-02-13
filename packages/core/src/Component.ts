@@ -1,34 +1,61 @@
 
+import { checkTypeProperty } from "./checkTypeProperty";
+import { ExtensibleFunction } from "./ExtensibleFunction";
 import { Hierarchy } from "./Hierarchy";
-import { __Thing__ } from "./__Thing__";
+import { Thing, ThingConstraint, ThingFromConstraint } from "./Thing";
 
-export class __Component__<I extends any[], T extends __Thing__> extends __Thing__ {
-
-  declare protected __i__: I;
-  declare protected __t__: T;
-
+export interface ComponentConstraint<I extends any[], T extends ThingConstraint> {
+  readonly type: "Component",
+  readonly func: (...input: I) => T,
+  readonly name: string,
+  readonly hierarchy?: Hierarchy,
+  readonly overrideHierarchy?: boolean,
 }
 
-export interface Component<I extends any[], T extends __Thing__> {
-  (...args: I): T,
+export const ComponentConstraint = {
+  isComponentConstraint: checkTypeProperty<ComponentConstraint<any, any>>("Component"),
 }
 
-export class Component<I extends any[], T extends __Thing__> extends __Component__<I, T> {
+export interface Component<I extends any[], T extends ThingConstraint> {
+  (...args: I): ThingFromConstraint<T>,
+}
 
-  constructor(name: string, func: (...args: I) => T, overrideHierarchy = true, public hierarchy?: Hierarchy){
+export class Component<I extends any[], T extends ThingConstraint>
+  extends ExtensibleFunction implements ComponentConstraint<I, T> {
+
+  readonly type = "Component";
+
+  constructor(
+    name: string,
+    public readonly func: (...args: I) => T,
+    public readonly overrideHierarchy = true,
+    public readonly hierarchy?: Hierarchy
+  ){
     super((...args) => {
-      let result = func(...(args as I));
+      let result = Thing.fromThingConstraint(func(...(args as I)));
       if(overrideHierarchy)
-        result.hierarchy = Hierarchy.create({
+        result = result.applyHierarchy(Hierarchy.create({
           braceType: "(",
           children: [
             this.hierarchy ?? Hierarchy.create({ name }),
             ...args.map(x => Hierarchy.from(x)),
           ],
           linkedProducts: result.hierarchy?.linkedProducts,
-        })
+        })) as ThingFromConstraint<T>;
       return result;
     }, {}, name);
+  }
+
+  applyHierarchy(hierarchy: Hierarchy){
+    return new Component(this.name, this.func, this.overrideHierarchy, hierarchy);
+  }
+
+  static isComponent(value: unknown){
+    return ComponentConstraint.isComponentConstraint(value) && value instanceof Component;
+  }
+
+  static fromComponentConstraint<I extends any[], T extends ThingConstraint>(component: ComponentConstraint<I, T>){
+    return new Component(component.name, component.func, component.overrideHierarchy, component.hierarchy);
   }
 
 }

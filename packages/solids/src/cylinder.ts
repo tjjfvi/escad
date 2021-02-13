@@ -8,6 +8,8 @@ import {
   LeafProduct,
   conversionRegistry,
   Component,
+  ConvertibleElement,
+  ConvertibleTo,
 } from "@escad/core";
 import { Diff } from "@escad/csg";
 
@@ -114,8 +116,8 @@ export interface CylArgs {
   sides?: number,
 }
 
-export const cylinder: Component<[CylArgs], Element<Mesh>> =
-  new Component<[CylArgs], Element<Mesh>>("cyl", (args: CylArgs) => {
+export const cylinder: Component<[CylArgs], ConvertibleElement<Mesh>> =
+  new Component("cyl", (args: CylArgs) => {
     const rsP: Pair<number> =
       args.r ??
       args.rs ??
@@ -221,7 +223,7 @@ export const cylinder: Component<[CylArgs], Element<Mesh>> =
       o2: io2,
       c: center
     });
-    return new Element(unionDiff ? [oc, ic] : Diff.create(oc, ic))
+    return new Element<ConvertibleTo<Mesh>>(unionDiff ? [oc, ic] : Diff.create(oc, ic))
   });
 
 export const cyl = cylinder;
