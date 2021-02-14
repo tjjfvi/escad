@@ -1,8 +1,9 @@
+import "../stylus/Parameters.styl"
 import { Parameter } from "@escad/parameters";
 import React, { useContext } from "react";
 import { observer } from "rhobo";
 import { ClientState } from "./ClientState";
-import Pane from "./Pane";
+import { Pane } from "./Pane";
 import { ParameterView } from "./Parameters";
 
 export const ParametersPane = observer(() => {

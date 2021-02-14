@@ -1,5 +1,5 @@
 
-import { artifactManager, conversionRegistry, exportTypeRegistry, Product, Element, Hierarchy } from "@escad/core";
+import { artifactManager, conversionRegistry, exportTypeRegistry, Product, Element, Hierarchy, ExportTypeInfo } from "@escad/core";
 import { RunInfo, RendererServerMessenger, LoadInfo } from "@escad/protocol";
 import { Connection, createEmittableAsyncIterable, createMessenger } from "@escad/messages";
 import { ObjectParam } from "@escad/parameters";
@@ -59,7 +59,7 @@ export const createRendererServerMessenger = (
 
     const conversions = [...conversionRegistry.listAll()].map(x => [x.fromType, x.toType] as const);
     const { products, hierarchy } = await render(defaultParams);
-    const exportTypes = [...exportTypeRegistry.listRegistered()];
+    const exportTypes = [...exportTypeRegistry.listRegistered()].map(x => ({ ...x, export: undefined }));
 
     const loadInfo = {
       conversions,

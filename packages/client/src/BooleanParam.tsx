@@ -1,3 +1,5 @@
+
+import "../stylus/BooleanParam.styl";
 import { BooleanParam } from "@escad/parameters";
 import React from "react";
 import { observer } from "rhobo";

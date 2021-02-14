@@ -1,4 +1,5 @@
 
+import "../stylus/Status.styl"
 import { mdiCheck, mdiClose, mdiRefresh } from "@mdi/js";
 import Icon from "@mdi/react";
 import React, { useContext } from "react";
@@ -32,5 +33,4 @@ export const Status = observer(() => {
     <Icon path={statusData.icon}/>
     <span>{statusData.name}</span>
   </div>
-}
-);
+});

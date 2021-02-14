@@ -1,3 +1,4 @@
+import "../stylus/NumberParam.styl"
 import { NumberParam } from "@escad/parameters";
 import React from "react";
 import { observer, useObservable, useComputed } from "rhobo";

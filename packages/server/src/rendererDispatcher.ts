@@ -10,33 +10,31 @@ import { createServerRendererMessenger } from "./rendererMessenger";
 export const createRendererDispatcher = (
   artifactsDir: string,
   maxRenderers: number,
-  createRenderer: () => ServerRendererMessenger,
+  createRenderer: () => ServerRendererMessenger | Promise<ServerRendererMessenger>,
 ): ServerRendererMessenger => {
   const [a, b] = noopConnection();
   const publicMessenger = createServerRendererMessenger(a, artifactsDir);
 
-  let idleRenderers: ServerRendererMessenger[] | undefined;
-  let renderers: ServerRendererMessenger[] = [];
-  resetRenderers();
+  let renderers: Promise<ServerRendererMessenger>[] = createRenderers();
 
   const [triggerLoad, onLoad] = createEmittableAsyncIterable<LoadInfo>();
   let curLoadInfo: LoadInfo | undefined;
   createMessenger<RendererServerMessengerShape, ServerRendererMessengerShape>({
-    run(params){
-      return getRenderer(renderer =>
-        renderer.req.run(params)
-      )
+    async run(params){
+      const renderer = await getRenderer();
+      return await renderer.req.run(params)
     },
-    lookupRef(loc){
-      return getRenderer(renderer =>
-        renderer.req.lookupRef(loc)
-      );
+    async lookupRef(loc){
+      const renderer = await getRenderer();
+      return await renderer.req.lookupRef(loc);
     },
     async load(path){
       resetRenderers();
-      const loadInfo = await Promise.race(renderers.map(renderer =>
-        renderer.req.load(path)
-      ));
+      const loadInfo = await Promise.race(
+        renderers.map(async renderer =>
+          (await renderer).req.load(path)
+        )
+      );
       curLoadInfo = loadInfo;
       triggerLoad(loadInfo);
       return loadInfo;
@@ -49,20 +47,18 @@ export const createRendererDispatcher = (
 
   return publicMessenger;
 
-  async function getRenderer<T>(cb: (renderer: ServerRendererMessenger) => Promise<T>): Promise<T>{
-    const renderer = renderers.pop() ?? createRenderer();
-    renderers.unshift(renderer)
-    const result = await cb(renderer);
-    return result;
+  async function getRenderer(): Promise<ServerRendererMessenger>{
+    const renderer = renderers.pop() ?? (async () => createRenderer())();
+    renderers.unshift(renderer);
+    return await renderer;
   }
 
   function resetRenderers(){
-    renderers.forEach(renderer => renderer.destroy());
-    renderers = idleRenderers ?? createRenderers();
-    // idleRenderers = createRenderers();
+    renderers.forEach(async renderer => (await renderer).destroy());
+    renderers = createRenderers();
   }
 
   function createRenderers(){
-    return Array(maxRenderers).fill(0).map(() => createRenderer());
+    return Array(maxRenderers).fill(0).map(async () => createRenderer());
   }
 }

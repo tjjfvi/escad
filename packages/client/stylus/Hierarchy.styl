@@ -67,12 +67,12 @@
         border 0px solid $lightgrey
         border-right-width 1px
         border-bottom-width 1px
-        transform rotate(45deg) translate(-2.5px, -2.5px)
+        transform unquote("rotate(45deg) translate(-2.5px, -2.5px)")
       &.closed:before
-        transform rotate(-45deg) translate(-2.5px, -2.5px)
+        transform unquote("rotate(-45deg) translate(-2.5px, -2.5px)")
       &.leaf:before
         border-right-width 0px
-        transform translate(0, -5px)
+        transform unquote("translate(0, -5px)")
 
     span
       flex 1 0 auto

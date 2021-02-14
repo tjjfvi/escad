@@ -1,9 +1,10 @@
 
+import "../stylus/Hierarchy.styl";
 import React, { useContext } from "react";
 import { observer } from "rhobo";
 import { ClientState } from "./ClientState";
 import { HierarchyView } from "./HierarchyView";
-import Pane from "./Pane";
+import { Pane } from "./Pane";
 
 const maxLength = 30;
 

@@ -1,13 +1,17 @@
 
-import webpack, { Compiler, Stats } from "webpack"
+import { Compiler, Stats } from "webpack"
 import { Connection, createEmittableAsyncIterable, createMessenger } from "@escad/messages";
 import { BundleOptions, BundlerServerMessenger } from "@escad/protocol";
 import { hash, Hash } from "@escad/core";
-import NodePolyfillPlugin from "node-polyfill-webpack-plugin"
 import { writeFile } from "fs-extra";
+import stylus from "stylus";
 import path from "path";
+import fs from "fs";
 
-export const createBundlerServerMessenger = (connection: Connection<unknown>): BundlerServerMessenger => {
+export const createBundlerServerMessenger = (
+  connection: Connection<unknown>,
+  createCompiler: (options: BundleOptions, entryPaths: string[]) => Compiler,
+): BundlerServerMessenger => {
   const [emitBundle, onBundle] = createEmittableAsyncIterable<Hash>();
 
   let watcher: ReturnType<Compiler["watch"]> | undefined;
@@ -30,50 +34,10 @@ export const createBundlerServerMessenger = (connection: Connection<unknown>): B
     watcher?.close(() => {});
     watcher = undefined;
 
-    const compiler = webpack({
-      entry: entryPaths,
-      output: {
-        path: options.outDir,
-        filename: "bundle.js",
-        sourceMapFilename: "bundle.js.map",
-      },
-      optimization: {
-        minimize: false,
-      },
-      resolve: {
-        alias: {
-          "fs": require.resolve("./fs-mock"),
-        }
-      },
-      module: {
-        rules: [
-          {
-            test: /^.*\.styl$/,
-            use: [
-              { loader: require.resolve("style-loader") },
-              {
-                loader: require.resolve("css-loader"),
-                options: {
-                  sourceMap: true
-                },
-              },
-              {
-                loader: require.resolve("stylus-loader"),
-                options: {
-                  sourceMap: true,
-                  webpackImporter: false,
-                },
-              },
-            ]
-          }
-        ]
-      },
-      devtool: "source-map",
-      mode: "development",
-      plugins: [
-        new NodePolyfillPlugin(),
-      ]
-    })
+    const compiler = createCompiler(options, entryPaths);
+
+    // @ts-ignore: fix for running in browser
+    compiler.inputFileSystem.join = fs.join;
 
     const handler = (err: Error | undefined, result: Stats | undefined) => {
       if(err) console.error(err);
@@ -88,3 +52,23 @@ export const createBundlerServerMessenger = (connection: Connection<unknown>): B
       compiler.run(handler);
   }
 }
+
+const literal = (value: string) => {
+  const literal = new stylus.nodes.Literal(value);
+  literal.filename = "globals.styl";
+  return literal;
+}
+
+export const stylusGlobals: unknown = {
+  $black: literal("#151820"),
+  $darkgrey: literal("#252830"),
+  $grey: literal("#454850"),
+  $lightgrey: literal("#656870"),
+  $white: literal("#bdc3c7"),
+  $red: literal("#c0392b"),
+  $orange: literal("#d35400"),
+  $yellow: literal("#f1c40f"),
+  $green: literal("#2ecc71"),
+  $blue: literal("#0984e3"),
+  $purple: literal("#8e44ad"),
+};

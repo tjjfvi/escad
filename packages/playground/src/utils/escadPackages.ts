@@ -1,5 +1,5 @@
 
-export const packages = [
+export const escadPackages = [
   "escad-builtins.tgz",
   // "escad-cli.tgz",
   "escad-client.tgz",
@@ -17,4 +17,5 @@ export const packages = [
   "escad-protocol.tgz",
   "escad-solids.tgz",
   "escad-transform.tgz",
+  "escad-messages.tgz",
 ]

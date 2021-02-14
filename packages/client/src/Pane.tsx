@@ -1,4 +1,5 @@
 
+import "../stylus/Pane.styl"
 import React from "react";
 import { useObservable } from "rhobo";
 
@@ -15,7 +16,7 @@ export type PaneArgs = {
 }
 
 // eslint-disable-next-line react/prop-types
-const Pane = ({
+export const Pane = ({
   name,
   className = name,
   children,
@@ -62,5 +63,3 @@ const Pane = ({
     <div className="content" style={{ minWidth: Math.max(width(), minWidth) - 50 }}>{children}</div>
   </div>
 }
-
-export default Pane;

@@ -23,19 +23,19 @@
     flex-direction row
     align-items flex-end
 
-    transform translate(0, -100%)
+    transform unquote("translate(0, -100%)")
 
     > div
       display flex
       flex-direction column
 
-      transform translate(0, 50px)
+      transform unquote("translate(0, 50px)")
       transition transform .5s
 
       margin-left -5px
 
       &:hover
-        transform translate(0, 100%)
+        transform unquote("translate(0, 100%)")
 
       span
         display inline-flex

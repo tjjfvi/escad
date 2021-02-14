@@ -2,10 +2,10 @@
 // @ts-ignore
 import Arborist = require("@npmcli/arborist");
 import fs from "fs";
-import { packages } from "./packages";
+import { escadPackages } from "../utils/escadPackages";
 
 let deps: string[] = [];
-let currentOperation: Promise<unknown> = Promise.all(packages.map(async p => {
+let currentOperation: Promise<unknown> = Promise.all(escadPackages.map(async p => {
   const arrayBuffer = await fetch(`/packages/${p}`).then(r => r.arrayBuffer());
   fs.writeFileSync(`/packages/${p}`, Buffer.from(arrayBuffer));
 }))
@@ -32,7 +32,20 @@ export function install(newDeps: string[]){
   })();
 }
 
-const defaultDeps = packages.map(p => `/packages/${p}`)
+const defaultDeps = [
+  ...escadPackages.map(p => `/packages/${p}`),
+  "path-browserify",
+  "process",
+  "util",
+  "buffer",
+  "assert",
+  "events",
+  "crypto-browserify",
+  "readable-stream",
+  "stream-browserify",
+  "constants-browserify",
+  "prop-types",
+];
 
 const depRegex = /^\/\/ @dep(?:endency)?s? (.+)$/;
 export function autoInstall(source: string){

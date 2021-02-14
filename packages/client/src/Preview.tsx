@@ -1,4 +1,5 @@
 
+import "../stylus/Preview.styl"
 import React, { useContext } from "react";
 import { viewerRegistry } from "./ViewerRegistry";
 import { observer, useObservable } from "rhobo";

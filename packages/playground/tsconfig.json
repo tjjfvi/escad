@@ -7,5 +7,27 @@
   "include": [
     "src/**/*"
   ],
-  "references": []
+  "references": [
+    {
+      "path": "../core/tsconfig.json",
+    },
+    {
+      "path": "../renderer/tsconfig.json",
+    },
+    {
+      "path": "../client/tsconfig.json",
+    },
+    {
+      "path": "../bundler/tsconfig.json",
+    },
+    {
+      "path": "../protocol/tsconfig.json",
+    },
+    {
+      "path": "../messages/tsconfig.json",
+    },
+    {
+      "path": "../server/tsconfig.json",
+    }
+  ]
 }

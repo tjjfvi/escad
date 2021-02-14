@@ -26,3 +26,16 @@ mapConnection.json = (connection: Connection<string>): Connection<unknown> =>
 
 mapConnection.flatted = (connection: Connection<string>): Connection<unknown> =>
   mapConnection(connection, flatted.stringify, flatted.parse);
+
+mapConnection.log = <T>(connection: Connection<T>): Connection<T> =>
+  mapConnection(
+    connection,
+    value => {
+      console.log("send", value);
+      return value
+    },
+    value => {
+      console.log("recv", value);
+      return value
+    },
+  )

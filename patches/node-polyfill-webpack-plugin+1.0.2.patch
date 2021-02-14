@@ -1,0 +1,13 @@
+diff --git a/node_modules/node-polyfill-webpack-plugin/index.js b/node_modules/node-polyfill-webpack-plugin/index.js
+index f251f27..1250cf9 100644
+--- a/node_modules/node-polyfill-webpack-plugin/index.js
++++ b/node_modules/node-polyfill-webpack-plugin/index.js
+@@ -5,7 +5,7 @@ module.exports = class NodePolyfillPlugin {
+ 	apply(compiler) {
+ 		compiler.options.plugins.push(new ProvidePlugin({
+ 			Buffer: ["buffer", "Buffer"],
+-			console: "console-browserify",
++			// console: "console-browserify",
+ 			process: "process/browser"
+ 		}))
+ 
