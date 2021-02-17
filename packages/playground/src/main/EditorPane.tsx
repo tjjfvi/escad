@@ -110,25 +110,21 @@ export const augmentMonacoEditor = (editor: monaco.editor.IStandaloneCodeEditor)
 
   function syncFile(file: string){
     files.add(file);
-    const uri = monaco.Uri.parse(file);
-    let realContent: string | undefined;
+    const uri = monaco.Uri.file(`file://${file}`);
+    let content: string | undefined;
     try {
-      realContent = fs.readFileSync(file, "utf8");
+      content = fs.readFileSync(file, "utf8");
     } catch (e) {
       e;
     }
-    if(realContent === undefined) {
+    if(content === undefined) {
       monaco.editor.getModel(uri)?.dispose();
       files.delete(file);
       return
     }
-    let augmentedContent = syncDeps(file, realContent);
-    if(file.endsWith("/package.json"))
-      // eslint-disable-next-line max-len
-      augmentedContent = `import _ = require("${getModuleFileName(getTypesField(file, augmentedContent))}");\nexport = _;`
-    augmentedContent = `declare module "${getModuleFileName(file)}" {\n${augmentedContent}\n}`;
-    (monaco.editor.getModel(uri) ?? monaco.editor.createModel("", "typescript", uri)).setValue(augmentedContent);
-    monaco.languages.typescript.typescriptDefaults.addExtraLib(augmentedContent, file)
+    (monaco.editor.getModel(uri) ?? monaco.editor.createModel("", "typescript", uri)).setValue(content);
+    monaco.languages.typescript.typescriptDefaults.addExtraLib(content, `file://${file}`);
+    syncDeps(file, content);
   }
 
   function getTypesField(file: string, content: string){
@@ -151,28 +147,26 @@ export const augmentMonacoEditor = (editor: monaco.editor.IStandaloneCodeEditor)
     return moduleFileName.split("/").slice(0, moduleFileName[0] === "@" ? 2 : 1).join("/");
   }
 
-  function syncDeps(file: string, content: string): string{
+  function syncDeps(file: string, content: string){
     const regex = /((?:from|import)\s+(["']))(.+?)\2|((?:import|require)\s*\(\s*(["']))(.+?)(\5\s*\))/g
 
-    if(file.endsWith("/package.json")) {
-      syncFile(getTypesField(file, content));
-      return content;
-    }
+    if(file.endsWith("/package.json"))
+      return syncFile(getTypesField(file, content));
 
-    return content.replace(regex, (...m) => {
+    let m: RegExpExecArray | null;
+
+    while((m = regex.exec(content))) {
       let specifier = m[3] ?? m[6];
-      let filter = specifier;
       if(specifier.startsWith("."))
-        filter = specifier = path.resolve(path.dirname(file), specifier);
+        specifier = path.resolve(path.dirname(file), specifier);
       else if(specifier === getModuleName(specifier))
-        filter = `node_modules/${specifier}/package.json`
+        specifier = `node_modules/${specifier}/package.json`
       else
-        filter = "node_modules/" + specifier;
+        specifier = "node_modules/" + specifier;
       for(const dep of allFiles)
-        if(dep.includes(filter) && !files.has(dep) && dep !== file)
+        if(dep.includes(specifier) && !files.has(dep) && dep !== file)
           syncFile(dep);
-      return (m[1] ?? m[4]) + getModuleFileName(specifier) + (m[7] ?? m[2]);
-    })
+    }
   }
 
   return editor;
