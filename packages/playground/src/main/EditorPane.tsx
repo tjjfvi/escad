@@ -10,6 +10,7 @@ import { reloadRenderer } from "./server";
 import React from "react";
 import Editor from "@monaco-editor/react";
 import { Pane } from "@escad/client";
+import lzstring from "lz-string";
 
 export const EditorPane = () =>
   <Pane name="Editor" left defaultWidth={750} minWidth={200} defaultOpen={true}>
@@ -54,7 +55,9 @@ export const augmentMonacoEditor = (editor: monaco.editor.IStandaloneCodeEditor)
 // Hello World!
 `;
 
-  const code = localStorage.code ?? defaultCode;
+  let code = localStorage.code ?? defaultCode;
+  if(location.hash.startsWith("#code="))
+    code = lzstring.decompressFromEncodedURIComponent(location.hash.slice("#code=".length))
 
   const mainModel = monaco.editor.createModel("", "typescript", monaco.Uri.parse("/project/index.ts"));
 
@@ -63,6 +66,7 @@ export const augmentMonacoEditor = (editor: monaco.editor.IStandaloneCodeEditor)
   mainModel.onDidChangeContent(debounce(async () => {
     const content = mainModel.getValue()
     localStorage.code = content;
+    history.replaceState({}, "Playground", "#code=" + lzstring.compressToEncodedURIComponent(content))
     fs.writeFileSync("/project/index.ts", content);
     await autoInstall(content);
     syncChangedFiles();
