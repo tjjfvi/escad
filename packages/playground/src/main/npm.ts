@@ -1,14 +1,10 @@
 
 // @ts-ignore
 import Arborist = require("@npmcli/arborist");
-import fs from "fs";
 import { escadPackages } from "../utils/escadPackages";
 
 let deps: string[] = [];
-let currentOperation: Promise<unknown> = Promise.all(escadPackages.map(async p => {
-  const arrayBuffer = await fetch(`/packages/${p}`).then(r => r.arrayBuffer());
-  fs.writeFileSync(`/packages/${p}`, Buffer.from(arrayBuffer));
-}))
+let currentOperation: Promise<unknown> = Promise.resolve();
 
 const arborist = new Arborist({
   registry: window.location.origin + "/registry/",
@@ -59,5 +55,3 @@ export function autoInstall(source: string){
   }
   return install(deps);
 }
-
-fs.mkdirSync("/packages")

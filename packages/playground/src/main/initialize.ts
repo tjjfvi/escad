@@ -12,6 +12,7 @@ import EventEmitter = require("events");
 import url = require("url");
 import { promisify } from "util";
 import stylusStdLib from "!!raw-loader!stylus/lib/functions/index.styl";
+import { escadPackages } from "../utils/escadPackages";
 
 declare const BrowserFS: any;
 
@@ -19,13 +20,34 @@ url.URL = URL;
 
 if(self.document)
   BrowserFS.configure({
-    fs: "InMemory",
-  }, () => {});
+    fs: "MountableFileSystem",
+    options: {
+      "/packages": {
+        fs: "OverlayFS",
+        options: {
+          readable: {
+            fs: "XmlHttpRequest",
+            options: {
+              baseUrl: "/packages",
+              index: Object.fromEntries(escadPackages.map(x => [x, null]))
+            }
+          },
+          writable: {
+            fs: "InMemory"
+          },
+        },
+      },
+    },
+  }, err => {
+    if(err) throw err;
+  });
 else
   BrowserFS.configure({
     fs: "WorkerFS",
     options: { worker: self }
-  }, () => {});
+  }, err => {
+    if(err) throw err;
+  });
 
 self.fs = fs;
 
