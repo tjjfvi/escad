@@ -9,6 +9,7 @@ let currentOperation: Promise<unknown> = Promise.resolve();
 const arborist = new Arborist({
   registry: window.location.origin + "/registry/",
   path: "/project/",
+  audit: false,
 });
 
 export function install(newDeps: string[]){
@@ -24,6 +25,7 @@ export function install(newDeps: string[]){
     await arborist.reify({
       add,
       rm,
+      audit: false,
     });
   })();
 }
