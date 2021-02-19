@@ -21,8 +21,8 @@ export default renderFunction(
     })
   },
   ({ outerSize, hollow: { enabled: hollow, innerSize } }) => (
-    cube({ s: outerSize })
-      ._(hollow ? sub(cube({ s: innerSize })) : escad())
-      .sub(cube({ s: outerSize }).translate(outerSize / 2, outerSize / 2, outerSize / 2).translate(0, 0, 0))
+    cube({ size: outerSize })
+      ._(hollow ? sub(cube({ size: innerSize })) : escad())
+      .sub(cube({ size: outerSize, center: false }))
   )
 );

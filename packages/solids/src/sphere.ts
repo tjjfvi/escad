@@ -1,5 +1,5 @@
 
-import { Mesh, Vector3 } from "@escad/mesh";
+import { Face, Mesh, Vector3 } from "@escad/mesh";
 import {
   Element,
   Id,
@@ -8,10 +8,9 @@ import {
   createLeafProductUtils,
   Conversion,
   conversionRegistry,
-  ConvertibleElement,
-  ConvertibleTo,
+  LeafElement,
 } from "@escad/core";
-import { Diff } from "@escad/csg";
+import { interpretTriplet, Triplet } from "./helpers";
 
 const tau = Math.PI * 2;
 
@@ -20,16 +19,16 @@ const sphereId = Id.create(__filename, "@escad/solids", "0", "Sphere");
 export interface Sphere extends LeafProduct {
   readonly type: typeof sphereId,
   readonly radius: number,
-  readonly slices: number,
-  readonly stacks: number,
+  readonly smooth: number,
+  readonly centering: Vector3,
 }
 
 export const Sphere = {
-  create: (radius: number, slices: number, stacks: number): Sphere => ({
+  create: (radius: number, smooth: number, centering: Vector3): Sphere => ({
     type: sphereId,
     radius,
-    slices,
-    stacks,
+    smooth,
+    centering,
   }),
   ...createLeafProductUtils<Sphere, "Sphere">(sphereId, "Sphere"),
   id: sphereId,
@@ -50,62 +49,51 @@ conversionRegistry.register({
   fromType: Sphere.productType,
   toType: Mesh.productType,
   convert: async (sphere: Sphere): Promise<Mesh> => {
-    const { radius, slices, stacks } = sphere;
+    const { radius, smooth, centering } = sphere;
+    const center = Vector3.multiplyScalar(centering, radius);
+    const slices = 2 * smooth;
+    const stacks = smooth;
 
-    const v = (theta: number, phi: number) => {
-      theta *= tau / slices;
-      phi *= tau / stacks;
-      phi /= 2;
+    const vertex = (i: number, j: number) => {
+      const theta = i * tau / slices;
+      const phi = j * tau / 2 / stacks;
       return Vector3.create(
-        Math.sin(theta) * Math.sin(phi) * radius,
-        Math.cos(theta) * Math.sin(phi) * radius,
-        Math.cos(phi) * radius,
+        center.x + Math.sin(theta) * Math.sin(phi) * radius,
+        center.y + Math.cos(theta) * Math.sin(phi) * radius,
+        center.z + Math.cos(phi) * radius,
       )
     }
 
-    return Mesh.create([...Array(slices)].flatMap((_, i) =>
-      [...Array(stacks)].flatMap((_, j) => {
-        let vs = [];
+    return Mesh.create(
+      [...Array(slices)].flatMap((_, i) =>
+        [...Array(stacks)].flatMap((_, j) => {
+          let vertices = [];
 
-        vs.push(v(i, j));
-        if(j > 0)
-          vs.push(v(i + 1, j));
-        if(j < stacks - 1)
-          vs.push(v(i + 1, j + 1));
-        vs.push(v(i, j + 1));
+          vertices.push(vertex(i, j));
+          if(j > 0)
+            vertices.push(vertex(i + 1, j));
+          if(j < stacks - 1)
+            vertices.push(vertex(i + 1, j + 1));
+          vertices.push(vertex(i, j + 1));
 
-        return Mesh.fromVertsFaces(vs, [[...Array(vs.length)].map((_, i) => i)]).faces;
-      })
-    ));
+          return Face.create(vertices)
+        })
+      )
+    );
   },
   weight: 1,
 })
 
-type SphereArgs = {
-  r: number,
-  slices?: number,
-  stacks?: number,
-  t?: number,
-  i?: number,
-  ir?: number,
-  unionDiff?: boolean,
-  ud?: boolean,
+type SphereArgs = number | {
+  radius: number,
+  smooth?: number,
+  center?: Triplet<number | boolean>,
 };
 
-export const sphere: Component<[SphereArgs], ConvertibleElement<Mesh>> =
-  new Component("sphere", ({
-    r = 1,
-    slices = 16,
-    stacks = 8,
-    t = r,
-    i = r - t, ir = i,
-    unionDiff = false, ud = unionDiff,
-  }) => {
-    let os = Sphere.create(r, slices, stacks);
-    if(!ir)
-      return new Element(os);
-    let is = Sphere.create(ir, slices, stacks);
-    return new Element<ConvertibleTo<Mesh>>(ud ? [os, is] : Diff.create(os, is));
+export const sphere: Component<[SphereArgs], LeafElement<Sphere>> =
+  new Component("sphere", args => {
+    if(typeof args === "number")
+      args = { radius: args };
+    args.smooth ??= 16;
+    return Element.create(Sphere.create(args.radius, args.smooth * 2, interpretTriplet(args.center, 0)));
   })
-
-export const hollowSphere = sphere;

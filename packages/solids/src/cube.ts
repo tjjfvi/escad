@@ -10,20 +10,21 @@ import {
   LeafProduct,
   conversionRegistry,
 } from "@escad/core";
+import { TripletObj, Triplet, interpretTriplet } from "./helpers";
 
 const cubeId = Id.create(__filename, "@escad/solids", "0", "Cube");
 
 export interface Cube extends LeafProduct {
   readonly type: typeof cubeId,
-  readonly center: Vector3,
   readonly size: Vector3,
+  readonly centering: Vector3,
 }
 
 export const Cube = {
-  create: (center: Vector3, size: Vector3): Cube => ({
+  create: (size: Vector3, centering: Vector3): Cube => ({
     type: cubeId,
-    center,
     size,
+    centering,
   }),
   ...createLeafProductUtils<Cube, "Cube">(cubeId, "Cube"),
   id: cubeId,
@@ -43,7 +44,8 @@ conversionRegistry.register({
   fromType: Cube.productType,
   toType: Mesh.productType,
   convert: async (cube: Cube): Promise<Mesh> => {
-    const { center, size } = cube;
+    const { centering, size } = cube;
+    const center = Vector3.multiplyComponents(centering, Vector3.multiplyScalar(size, .5));
 
     const nx = center.x - size.x / 2;
     const ny = center.y - size.y / 2;
@@ -82,50 +84,16 @@ conversionRegistry.register({
   weight: 1,
 })
 
-type TripletObj<T> = { x?: T, y?: T, z?: T, 0?: T, 1?: T, 2?: T };
-type Triplet<T> = T | [T, T, T] | TripletObj<T>;
 export interface CubeArgs extends TripletObj<number> {
-  sideLength?: number,
-  s?: number,
-  dimensions?: Triplet<number>,
-  d?: Triplet<number>,
-  center?: Triplet<boolean>,
-  c?: Triplet<boolean>,
-  cx?: boolean,
-  cy?: boolean,
-  cz?: boolean,
+  size?: Triplet<number>,
+  center?: Triplet<number | boolean>,
 }
 
 export const cube: Component<[CubeArgs], LeafElement<Cube>> =
-  new Component<[CubeArgs], LeafElement<Cube>>("cube", (n): LeafElement<Cube> => {
-    let xyzT: Triplet<number> =
-      n.sideLength ??
-      n.s ??
-      n.dimensions ??
-      n.d ??
-      [n.x ?? 1, n.y ?? 1, n.z ?? 1]
+  new Component<[CubeArgs], LeafElement<Cube>>("cube", (args): LeafElement<Cube> => {
+    const size = interpretTriplet(args.size ?? args, 1);
+    const center = interpretTriplet(args.center, 0);
 
-    const xyzA: [number, number, number] =
-      typeof xyzT === "number" ?
-        [xyzT, xyzT, xyzT] :
-        [xyzT[0] ?? xyzT.x ?? 0, xyzT[1] ?? xyzT.y ?? 0, xyzT[2] ?? xyzT.z ?? 0]
-
-    const cT: Triplet<boolean> =
-      n.center ??
-      n.c ??
-      [n.cx ?? true, n.cy ?? true, n.cz ?? true]
-
-    const cA: [boolean, boolean, boolean] =
-      typeof cT === "boolean" ?
-        [cT, cT, cT] :
-        [cT[0] ?? cT.x ?? true, cT[1] ?? cT.y ?? true, cT[2] ?? cT.z ?? true]
-
-    const cP: [number, number, number] = [
-      cA[0] ? 0 : xyzA[0] / 2,
-      cA[1] ? 0 : xyzA[1] / 2,
-      cA[2] ? 0 : xyzA[2] / 2,
-    ]
-
-    return Element.create(Cube.create(Vector3.create(cP), Vector3.create(xyzA)));
+    return Element.create(Cube.create(size, center));
   })
 
