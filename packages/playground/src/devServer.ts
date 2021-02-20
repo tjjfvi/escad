@@ -121,7 +121,10 @@ const handler = (err: Error | undefined) => {
   console.log("Bundled TS");
 }
 
-compiler.watch({}, handler);
+// compiler.run(handler)
+compiler.watch({
+  ignored: /node_modules/,
+}, handler);
 
 import express = require("express");
 

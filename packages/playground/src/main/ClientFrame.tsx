@@ -1,4 +1,5 @@
 
+import "../../stylus/ClientFrame.styl"
 import { brandConnection, Connection, filterConnection, mapConnection } from "@escad/messages";
 import { createServerClientMessenger } from "@escad/server";
 import React, { useState } from "react";
@@ -6,13 +7,20 @@ import { createBlob } from "../utils/createBlob";
 import { bundlerMessenger, rendererMessenger } from "./server";
 import fs from "fs";
 import { getClientURL } from "../utils/getClientURL";
+import { observer } from "rhobo";
+import { loadingStatuses } from "./initialize";
 
-export const ClientFrame = () => {
+export const ClientFrame = observer(() => {
   const [, setState] = useState({});
   const src = getClientURL();
   if(!src) {
     bundlerMessenger.req.onBundle()[Symbol.asyncIterator]().next().then(() => setState({}))
-    return <div>Loading...</div>;
+    return <div className="ClientFrame loading">
+      Loading...
+      {loadingStatuses().map(({ text }, i) =>
+        <span key={i}>{text}</span>
+      )}
+    </div>;
   }
   return <iframe
     src={src}
@@ -20,11 +28,7 @@ export const ClientFrame = () => {
       if(e.currentTarget.src !== src)
         e.currentTarget.src = src;
     }}
-    style={{
-      flex: "1 0",
-      height: "100%",
-      border: "none",
-    }}
+    className="ClientFrame"
     ref={iframe => {
       if(!iframe) return;
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
@@ -58,4 +62,4 @@ export const ClientFrame = () => {
       // })
     }}
   />
-}
+})

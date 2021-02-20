@@ -13,6 +13,7 @@ import url = require("url");
 import { promisify } from "util";
 import stylusStdLib from "!!raw-loader!stylus/lib/functions/index.styl";
 import { escadPackages } from "../utils/escadPackages";
+import JSZip from "jszip";
 
 declare const BrowserFS: any;
 
@@ -179,6 +180,7 @@ self.setImmediate = (fn, ...args) => setTimeout(fn, 0, ...args);
 import fsMockSource from "!!raw-loader!@escad/bundler/dist/fs-mock.js"
 import rendererSource from "!!raw-loader!../workers/renderer.js";
 import { createResourceFile } from "../utils/resourceFiles";
+import { observable } from "rhobo";
 
 if(self.document) {
   fs.mkdirSync("/resourceFiles");
@@ -187,3 +189,31 @@ if(self.document) {
   createResourceFile("module.exports=self.fs"),
   createResourceFile("module.exports=self.process")
 }
+
+export const loadingStatuses = observable<{ text: string }[]>([]);
+
+export const addLoadingStatus = async <T, >(text: string, fn: () => Promise<T>): Promise<T> => {
+  const status = { text };
+  loadingStatuses([...loadingStatuses.value, status])
+  const result = await fn();
+  loadingStatuses(loadingStatuses.value.filter(x => x !== status))
+  return result;
+}
+
+export const installProjectPromise = (async () => {
+  if(!self.document)
+    return;
+  const zip = new JSZip();
+  await addLoadingStatus("Downloading project zip", async () => {
+    const zipContent = await fetch("/bundled/project.zip").then(r => r.arrayBuffer());
+    await zip.loadAsync(zipContent)
+  })
+  await addLoadingStatus("Unpacking project", () =>
+    Promise.all(Object.keys(zip.files).map(async path => {
+      mkdirpSync("/" + dirname(path))
+      const file = zip.file(path);
+      if(!file) return;
+      fs.writeFileSync("/" + path, await file.async("nodebuffer"))
+    }))
+  )
+})();

@@ -23,33 +23,40 @@ export const createBundlerServerMessenger = (
     onBundle,
   }, connection);
 
-  async function bundle(options: BundleOptions){
-    const optionsHash = hash(options);
-    if(optionsHash === lastOptionsHash)
-      return;
-    lastOptionsHash = optionsHash;
+  function bundle(options: BundleOptions){
+    return new Promise<void>((resolve, reject) => {
+      const optionsHash = hash(options);
+      if(optionsHash === lastOptionsHash)
+        return;
+      lastOptionsHash = optionsHash;
 
-    const entryPaths = [options.coreClientPath, ...options.clientPlugins.map(reg => reg.path)];
+      const entryPaths = [options.coreClientPath, ...options.clientPlugins.map(reg => reg.path)];
 
-    watcher?.close(() => {});
-    watcher = undefined;
+      watcher?.close(() => {});
+      watcher = undefined;
 
-    const compiler = createCompiler(options, entryPaths);
+      const compiler = createCompiler(options, entryPaths);
 
     // @ts-ignore: fix for running in browser
-    compiler.inputFileSystem.join = fs.join;
+      compiler.inputFileSystem.join = fs.join;
 
-    const handler = (err: Error | undefined, result: Stats | undefined) => {
-      if(err) console.error(err);
-      const bundleHash = hash(result?.compilation.fullHash ?? Math.random());
-      writeFile(path.join(options.outDir, "bundle.hash"), bundleHash);
-      emitBundle(bundleHash);
-    }
+      const handler = (err: Error | undefined, result: Stats | undefined) => {
+        if(err) {
+          console.error(err);
+          reject(err);
+          return;
+        }
+        const bundleHash = hash(result?.compilation.fullHash ?? Math.random());
+        writeFile(path.join(options.outDir, "bundle.hash"), bundleHash);
+        emitBundle(bundleHash);
+        resolve();
+      }
 
-    if(options.watch ?? false)
-      watcher = compiler.watch({}, handler);
-    else
-      compiler.run(handler);
+      if(options.watch ?? false)
+        watcher = compiler.watch({}, handler);
+      else
+        compiler.run(handler);
+    })
   }
 }
 

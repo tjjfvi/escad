@@ -8,6 +8,7 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -rf dist tsconfig.tsbuildinfo",
     "build": "npm run clean; tsc -b .",
+    "build-playground": "./buildProject.sh",
     "prepack": "npm run build",
     "open-errors": "tsc | grep -p '^\\S' | sed -e 's/(.*//' | sort | uniq | xargs code"
   },
@@ -42,7 +43,8 @@
     "stylus-loader": "^5.0.0",
     "@monaco-editor/react": "^4.0.9",
     "react": "^17.0.1",
-    "react-dom": "^17.0.1"
+    "react-dom": "^17.0.1",
+    "jszip": "^3.6.0"
   },
   "publishConfig": {
     "access": "public"

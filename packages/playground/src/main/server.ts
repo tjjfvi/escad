@@ -8,6 +8,7 @@ import clientSource from "!!raw-loader!../workers/client.js";
 import { createResourceFile } from "../utils/resourceFiles";
 import BundlerWorker from "worker-loader?filename=bundler.worker.js!../workers/bundler.js";
 import { attachWorkerFs } from "../utils/attachWorkerFs";
+import { addLoadingStatus } from "./initialize";
 
 const staticDir = "/static"
 fs.mkdirSync(staticDir);
@@ -28,12 +29,16 @@ export const rendererMessenger = createRendererDispatcher("/artifacts", 1, creat
 
 (async function(){
   for await (const { clientPlugins } of rendererMessenger.req.onLoad())
-    bundlerMessenger.req.bundle({
-      ...baseBundleOptions,
-      clientPlugins,
-    })
+    addLoadingStatus("Bundling client", () =>
+      bundlerMessenger.req.bundle({
+        ...baseBundleOptions,
+        clientPlugins,
+      })
+    )
 })()
 
 export const reloadRenderer = () => {
-  rendererMessenger.req.load("/project/index")
+  addLoadingStatus("Rendering", () =>
+    rendererMessenger.req.load("/project/index")
+  )
 }
