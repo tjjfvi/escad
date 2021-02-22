@@ -11,7 +11,9 @@
     "force-build": "lerna run clean; npm run build",
     "index": "create-index -X ts -x ts -x tsx -Sui packages/ -c {}",
     "lint": "eslint '**/*.{ts,tsx}' --quiet --fix",
-    "open-coverage": "open coverage/lcov-report/index.html"
+    "open-coverage": "open coverage/lcov-report/index.html",
+    "escad": "npm run quick-build && node packages/cli/dist/bin/escad.js",
+    "playground": "node packages/playground/dist/devServer.js"
   },
   "author": "",
   "license": "ISC",
