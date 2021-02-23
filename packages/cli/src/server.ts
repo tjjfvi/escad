@@ -30,16 +30,14 @@ export const createServer = async (artifactsDir: string, port: number, loadFile:
   };
 
   const bundlerProcess = fork(require.resolve("./bundler"));
-  const bundlerMessenger = createServerBundlerMessenger(
-    mapConnection.flatted(filterConnection.string(childProcessConnection(bundlerProcess)))
-  );
+  const bundlerMessenger = createServerBundlerMessenger(childProcessConnection(bundlerProcess));
 
   bundlerMessenger.req.bundle(baseBundleOptions);
 
   const rendererMessenger = createRendererDispatcher(artifactsDir, 3, () => {
     const child = fork(require.resolve("./renderer"));
     return createServerRendererMessenger(
-      mapConnection.flatted(filterConnection.string(childProcessConnection(child))),
+      childProcessConnection(child),
       artifactsDir,
     );
   });

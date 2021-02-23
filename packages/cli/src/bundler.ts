@@ -1,11 +1,11 @@
 
 import { createBundlerServerMessenger, stylusGlobals } from "@escad/bundler";
-import { mapConnection, filterConnection, parentProcessConnection } from "@escad/messages";
+import { parentProcessConnection } from "@escad/messages";
 import webpack from "webpack";
 import NodePolyfillPlugin from "node-polyfill-webpack-plugin";
 
 createBundlerServerMessenger(
-  mapConnection.flatted(filterConnection.string(parentProcessConnection())),
+  parentProcessConnection(),
   (options, entryPaths) =>
     webpack({
       entry: entryPaths,
