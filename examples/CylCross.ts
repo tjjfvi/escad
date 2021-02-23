@@ -1,15 +1,25 @@
-import escad from "../packages/core";
+import escad, { ConvertibleTo } from "../packages/core";
 import "../packages/builtins/register";
+import { Mesh } from "../packages/csg/node_modules/@escad/mesh/dist";
+import { smoothContext } from "../packages/builtins/node_modules/@escad/solids/dist/smoothContext";
 
 export default () => {
-  let c = escad.udMeld([
-    escad.cyl({ r: 1, i: .8, h: 20, sides: 12, ud: true }),
-    escad.sphere({ r: 2, i: 1.8, ud: true, slices: 24, stacks: 12 }).translate([0, 0, 5]),
-    escad.sphere({ r: 2, i: 1.8, ud: true, slices: 24, stacks: 12 }).translate([0, 0, -5]),
+  smoothContext.set({ sides: 12 })
+  const c = escad<ConvertibleTo<Mesh>>([
+    [
+      escad.cyl({ radius: 1, height: 20 }),
+      escad.sphere({ radius: 2 }).translate([0, 0, 5]),
+      escad.sphere({ radius: 2 }).translate([0, 0, -5]),
+    ],
+    [
+      escad.cyl({ radius: .8, height: 20 }),
+      escad.sphere({ radius: 1.8 }).translate([0, 0, 5]),
+      escad.sphere({ radius: 1.8 }).translate([0, 0, -5])
+    ]
   ]);
   return escad.unionDiff({
-    x: escad(c).rotate(0, 90, 0),
-    y: escad(c).rotate(90, 0, 0),
+    x: c.rotate(0, 90, 0),
+    y: c.rotate(90, 0, 0),
     z: c,
   })
 }
