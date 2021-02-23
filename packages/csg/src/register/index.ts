@@ -5,9 +5,9 @@ import { diff, sub } from "../diff";
 import { intersect, intersection } from "../intersection";
 import { meld } from "../meld";
 import { udMeld, unionDiff, unionDiffMeld } from "../unionDifference";
-import { extendBuiltins } from "@escad/core";
+import { extendChainables } from "@escad/core";
 
-const csgBuiltins = {
+const csgChainables = {
   union,
   diff,
   intersect,
@@ -20,12 +20,12 @@ const csgBuiltins = {
   unionDiffMeld,
 };
 
-type CsgBuiltins = typeof csgBuiltins;
+type CsgChainables = typeof csgChainables;
 
 declare global {
   export namespace escad {
-    export interface Builtins extends CsgBuiltins { }
+    export interface Chainables extends CsgChainables { }
   }
 }
 
-extendBuiltins(csgBuiltins);
+extendChainables(csgChainables);

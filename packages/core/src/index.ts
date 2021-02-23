@@ -1,6 +1,6 @@
 
-export * from "./builtins";
-import { builtins } from "./builtins";
+export * from "./chainables";
+import { chainables } from "./chainables";
 import { Element, Elementish } from "./Element";
 import { Product } from "./Product";
 
@@ -10,8 +10,8 @@ const escad = new Proxy(escadFunc, {
   get: (target, key) =>
     key in target ?
       target[key as keyof typeof target] :
-      builtins[key as keyof typeof builtins]
-}) as typeof escadFunc & typeof builtins;
+      chainables[key as keyof typeof chainables]
+}) as typeof escadFunc & typeof chainables;
 
 export default escad;
 
@@ -41,7 +41,7 @@ export * from './Timer';
 export * from './TupleProduct';
 export * from './UnknownProduct';
 export * from './WeakCache';
-export * from './builtins';
+export * from './chainables';
 export * from './checkTypeProperty';
 export * from './depthFirst';
 export * from './hash';

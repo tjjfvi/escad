@@ -2,7 +2,7 @@
 import { Component, ComponentConstraint } from "./Component";
 import { Element, Elementish, ElementConstraint, ArrayElement } from "./Element";
 import { Product } from "./Product";
-import { builtins, Builtins } from "./builtins";
+import { chainables, Chainables } from "./chainables";
 import { Hierarchy } from "./Hierarchy";
 import { ExtensibleFunction } from "./ExtensibleFunction";
 import { checkTypeProperty } from "./checkTypeProperty";
@@ -48,11 +48,11 @@ export interface Operation<I extends Product, O extends Product> {
   <A>(o: A): OperationOut<I, O, A>,
 }
 
-export type _OperationBuiltins<I extends Product, O extends Product> = {
-  [K in keyof Builtins]: OperationOut<I, O, Builtins[K]>;
+export type _OperationChainables<I extends Product, O extends Product> = {
+  [K in keyof Chainables]: OperationOut<I, O, Chainables[K]>;
 }
 
-export interface Operation<I extends Product, O extends Product> extends _OperationBuiltins<I, O> { }
+export interface Operation<I extends Product, O extends Product> extends _OperationChainables<I, O> { }
 
 export class Operation<I extends Product, O extends Product>
   extends ExtensibleFunction implements OperationConstraint<I, O> {
@@ -88,10 +88,10 @@ export class Operation<I extends Product, O extends Product>
         if(prop in target)
           return target[prop as keyof typeof target];
 
-        if(!(prop in builtins) || typeof prop === "symbol")
+        if(!(prop in chainables) || typeof prop === "symbol")
           return;
 
-        const val = builtins[prop as keyof typeof builtins];
+        const val = chainables[prop as keyof typeof chainables];
         return this(val);
       }
     }, name)

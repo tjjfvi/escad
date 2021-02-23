@@ -3,7 +3,7 @@ import { Hierarchy } from "./Hierarchy";
 import { Operation, OperationConstraint } from "./Operation";
 import { Component, ComponentConstraint } from "./Component";
 import { Product } from "./Product";
-import { builtins, Builtins } from "./builtins";
+import { chainables, Chainables } from "./chainables";
 import { ConvertibleTo } from "./Conversions";
 import { checkTypeProperty } from "./checkTypeProperty";
 import { ExtensibleFunction } from "./ExtensibleFunction";
@@ -52,11 +52,11 @@ export interface Element<T extends Product> {
   <A>(arg: A): ElementOut<T, A>,
 }
 
-type _ElementBuiltins<T extends Product> = {
-  [K in keyof Builtins]: ElementOut<T, Builtins[K]>
+type _ElementChainables<T extends Product> = {
+  [K in keyof Chainables]: ElementOut<T, Chainables[K]>
 }
 
-export interface Element<T extends Product> extends _ElementBuiltins<T> { }
+export interface Element<T extends Product> extends _ElementChainables<T> { }
 
 export class Element<T extends Product> extends ExtensibleFunction implements ElementConstraint<T> {
 
@@ -94,10 +94,10 @@ export class Element<T extends Product> extends ExtensibleFunction implements El
         if(prop in target)
           return target[prop as keyof typeof target];
 
-        if(!(prop in builtins) || typeof prop === "symbol")
+        if(!(prop in chainables) || typeof prop === "symbol")
           return;
 
-        const val = builtins[prop as keyof typeof builtins];
+        const val = chainables[prop as keyof typeof chainables];
         return this(val);
       }
     })

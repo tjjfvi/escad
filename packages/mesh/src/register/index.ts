@@ -1,17 +1,17 @@
 
 import { polyhedron } from "../polyhedron";
-import { extendBuiltins } from "@escad/core";
+import { extendChainables } from "@escad/core";
 
-const meshBuiltins = {
+const meshChainables = {
   polyhedron,
 }
 
-type MeshBuiltins = typeof meshBuiltins;
+type MeshChainables = typeof meshChainables;
 
 declare global {
   export namespace escad {
-    export interface Builtins extends MeshBuiltins { }
+    export interface Chainables extends MeshChainables { }
   }
 }
 
-extendBuiltins(meshBuiltins);
+extendChainables(meshChainables);

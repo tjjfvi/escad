@@ -3,9 +3,9 @@ import { tX, tY, tZ, translate, translateX, translateY, translateZ } from "../tr
 import { rX, rY, rZ, rotate, rotateX, rotateY, rotateZ } from "../rotate";
 import { sX, sY, sZ, scale, scaleX, scaleY, scaleZ } from "../scale";
 import { flip } from "../flip";
-import { extendBuiltins } from "@escad/core";
+import { extendChainables } from "@escad/core";
 
-const transformBuiltins = {
+const transformChainables = {
   tX,
   tY,
   tZ,
@@ -30,12 +30,12 @@ const transformBuiltins = {
   flip,
 }
 
-type TransformBuiltins = typeof transformBuiltins;
+type TransformChainables = typeof transformChainables;
 
 declare global {
   export namespace escad {
-    export interface Builtins extends TransformBuiltins { }
+    export interface Chainables extends TransformChainables { }
   }
 }
 
-extendBuiltins(transformBuiltins);
+extendChainables(transformChainables);

@@ -2,21 +2,21 @@
 import { cylinder, cyl } from "../cylinder";
 import { cube } from "../cube";
 import { sphere } from "../sphere";
-import { extendBuiltins } from "@escad/core";
+import { extendChainables } from "@escad/core";
 
-const cylBuiltins = {
+const cylChainables = {
   cylinder,
   cyl,
   cube,
   sphere,
 }
 
-type CylBuiltins = typeof cylBuiltins;
+type CylChainables = typeof cylChainables;
 
 declare global {
   export namespace escad {
-    export interface Builtins extends CylBuiltins { }
+    export interface Chainables extends CylChainables { }
   }
 }
 
-extendBuiltins(cylBuiltins);
+extendChainables(cylChainables);
