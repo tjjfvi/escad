@@ -1,5 +1,6 @@
 
 import { checkTypeProperty } from "./checkTypeProperty";
+import { contextStack } from "./ContextStack";
 import { ExtensibleFunction } from "./ExtensibleFunction";
 import { Hierarchy } from "./Hierarchy";
 import { Thing, ThingConstraint, ThingFromConstraint } from "./Thing";
@@ -32,7 +33,7 @@ export class Component<I extends any[], T extends ThingConstraint>
     public readonly hierarchy?: Hierarchy
   ){
     super((...args) => {
-      let result = Thing.fromThingConstraint(func(...(args as I)));
+      let result = Thing.fromThingConstraint(contextStack.wrap(() => func(...(args as I))));
       if(overrideHierarchy)
         result = result.applyHierarchy(Hierarchy.create({
           braceType: "(",

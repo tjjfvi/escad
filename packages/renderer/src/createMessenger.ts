@@ -1,5 +1,13 @@
 
-import { artifactManager, conversionRegistry, exportTypeRegistry, Product, Element, Hierarchy, ExportTypeInfo } from "@escad/core";
+import {
+  artifactManager,
+  conversionRegistry,
+  exportTypeRegistry,
+  Product,
+  Element,
+  Hierarchy,
+  contextStack,
+} from "@escad/core";
 import { RunInfo, RendererServerMessenger, LoadInfo } from "@escad/protocol";
 import { Connection, createEmittableAsyncIterable, createMessenger } from "@escad/messages";
 import { ObjectParam } from "@escad/parameters";
@@ -77,7 +85,7 @@ export const createRendererServerMessenger = (
     async function render(params: unknown){
       let result;
       try {
-        result = await func(params as never);
+        result = await contextStack.wrap(() => func(params as never));
       } catch (e) {
         console.error(e);
         return { products: [], hierarchy: null };

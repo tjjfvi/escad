@@ -7,6 +7,7 @@ import { Hierarchy } from "./Hierarchy";
 import { ExtensibleFunction } from "./ExtensibleFunction";
 import { checkTypeProperty } from "./checkTypeProperty";
 import { ConvertibleTo } from "./Conversions";
+import { contextStack } from "./ContextStack";
 
 export type ConvertibleOperation<I extends Product, O extends Product> = Operation<ConvertibleTo<I>, ConvertibleTo<O>>;
 export type ConvertibleOperationConstraint<I extends Product, O extends Product> =
@@ -69,7 +70,7 @@ export class Operation<I extends Product, O extends Product>
         return new Operation(name + "+" + args[0].name, (a: any) => that(args[0](...a.val)) as any, false);
       if(args[0] instanceof Component)
         return new Component(args[0].name + "+" + name, (...a: any) => (that as any)((args[0](...a) as any)), false);
-      let result = new Element(func(Element.create(args)));
+      let result = new Element(contextStack.wrap(() => func(Element.create(args))));
       if(overrideHierarchy)
         result = result.applyHierarchy(Hierarchy.create({
           braceType: "|",

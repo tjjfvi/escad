@@ -21,6 +21,8 @@ export * from './ArrayProduct';
 export * from './ArtifactManager';
 export * from './ArtifactStore';
 export * from './Component';
+export * from './Context';
+export * from './ContextStack';
 export * from './ConversionRegistry';
 export * from './Conversions';
 export * from './Element';
