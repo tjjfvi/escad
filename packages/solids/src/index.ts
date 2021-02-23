@@ -3,5 +3,6 @@
 
 export * from './cube';
 export * from './cylinder';
+export * from './smoothContext';
 export * from './sphere';
 

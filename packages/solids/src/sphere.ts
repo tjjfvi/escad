@@ -11,6 +11,7 @@ import {
   LeafElement,
 } from "@escad/core";
 import { interpretTriplet, Triplet } from "./helpers";
+import { Smooth, smoothContext } from "./smoothContext";
 
 const tau = Math.PI * 2;
 
@@ -19,12 +20,12 @@ const sphereId = Id.create(__filename, "@escad/solids", "0", "Sphere");
 export interface Sphere extends LeafProduct {
   readonly type: typeof sphereId,
   readonly radius: number,
-  readonly smooth: number,
+  readonly smooth: Smooth,
   readonly centering: Vector3,
 }
 
 export const Sphere = {
-  create: (radius: number, smooth: number, centering: Vector3): Sphere => ({
+  create: (radius: number, smooth: Smooth, centering: Vector3): Sphere => ({
     type: sphereId,
     radius,
     smooth,
@@ -50,9 +51,15 @@ conversionRegistry.register({
   toType: Mesh.productType,
   convert: async (sphere: Sphere): Promise<Mesh> => {
     const { radius, smooth, centering } = sphere;
+    const sides = Math.max(
+      2,
+      smooth.sides ?? 0,
+      Math.ceil(radius * tau / 2 / (smooth.size ?? Infinity)),
+      360 / 2 / (smooth.angle ?? Infinity),
+    );
     const center = Vector3.multiplyScalar(centering, radius);
-    const slices = 2 * smooth;
-    const stacks = smooth;
+    const slices = 2 * sides;
+    const stacks = sides;
 
     const vertex = (i: number, j: number) => {
       const theta = i * tau / slices;
@@ -86,7 +93,7 @@ conversionRegistry.register({
 
 type SphereArgs = number | {
   radius: number,
-  smooth?: number,
+  smooth?: Smooth,
   center?: Triplet<number | boolean>,
 };
 
@@ -94,6 +101,6 @@ export const sphere: Component<[SphereArgs], LeafElement<Sphere>> =
   new Component("sphere", args => {
     if(typeof args === "number")
       args = { radius: args };
-    args.smooth ??= 16;
-    return Element.create(Sphere.create(args.radius, args.smooth * 2, interpretTriplet(args.center, 0)));
+    args.smooth ??= smoothContext.get();
+    return Element.create(Sphere.create(args.radius, args.smooth, interpretTriplet(args.center, 0)));
   })
