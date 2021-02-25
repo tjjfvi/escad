@@ -3,7 +3,7 @@ export * from "./defaultChainables";
 import { defaultChainables } from "./defaultChainables";
 import { Realm } from "./Realm";
 
-export const escad = Realm.create(defaultChainables);
+export const escad = Realm.create(() => defaultChainables);
 export default escad;
 
 // @create-index {"mode":"*"}

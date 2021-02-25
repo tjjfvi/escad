@@ -20,7 +20,8 @@ export type Realm<C> =
   }
 
 export const Realm = {
-  create: <C>(chainables: C) => {
+  create: <C>(chainablesFn: () => C) => {
+    let chainables: C | undefined;
     const that = Object.assign(
       new ExtensibleFunction(
         (...args) => {
@@ -37,6 +38,11 @@ export const Realm = {
             if(prop in target)
               return target[prop as never];
 
+            chainables ??= chainablesFn();
+
+            if(prop === "chainables")
+              return chainables;
+
             if(!(prop in chainables) || typeof prop === "symbol")
               return;
 
@@ -47,7 +53,6 @@ export const Realm = {
       ),
       {
         type: "Realm" as const,
-        chainables,
       }
     ) as Realm<C>;
     return that;
