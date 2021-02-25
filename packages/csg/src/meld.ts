@@ -5,12 +5,13 @@ import {
   createLeafProductUtils,
   Id,
   LeafProduct,
-  Operation,
+  Element,
   conversionRegistry,
   ArrayProduct,
   TupleProductType,
   ArrayProductType,
   ConvertibleOperation,
+  Operation,
 } from "@escad/core";
 import { Mesh } from "@escad/mesh";
 
@@ -51,7 +52,7 @@ conversionRegistry.register({
 })
 
 export const meld: ConvertibleOperation<Mesh, Mesh> = (
-  new Operation("meld", el =>
-    Meld.create(TupleProduct.create(el.toArrayFlat()))
+  Operation.create("meld", el =>
+    Meld.create(TupleProduct.create(Element.toArrayFlat(el)))
   )
 );

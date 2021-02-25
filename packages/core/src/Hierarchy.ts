@@ -1,11 +1,11 @@
 
-import { Elementish, Element } from "./Element";
 import { Product } from "./Product";
 import { LeafProduct } from "./LeafProduct";
 import { checkTypeProperty } from "./checkTypeProperty";
 import { Component } from "./Component";
-import { Operation } from "./Operation";
+import { Element } from "./Element";
 import { hash, Hash } from "./hash";
+import { Operation } from "./Operation";
 
 export type BraceType = "{" | "[" | "|" | "(" | ":" | "";
 
@@ -48,43 +48,43 @@ export const Hierarchy = {
     };
   },
   isHierarchy: checkTypeProperty<Hierarchy>("Hierarchy"),
-  from: (el: unknown, raw = false): Hierarchy => {
+  from: (val: unknown, raw = false): Hierarchy => {
     if(
-      typeof el === "string" ||
-      typeof el === "number" ||
-      typeof el === "bigint" ||
-      typeof el === "boolean" ||
-      typeof el === "symbol" ||
-      el === undefined ||
-      el === null
+      typeof val === "string" ||
+      typeof val === "number" ||
+      typeof val === "bigint" ||
+      typeof val === "boolean" ||
+      typeof val === "symbol" ||
+      val === undefined ||
+      val === null
     )
-      return Hierarchy.create({ name: el ? el.toString() : el + "" })
+      return Hierarchy.create({ name: val ? val.toString() : val + "" })
     if(!raw) {
-      if(Hierarchy.isHierarchy(el))
-        return el;
-      if(el instanceof Element)
-        return el.hierarchy ?? Hierarchy.from(el.value);
-      if(el instanceof Component || el instanceof Operation)
-        return el.hierarchy ?? Hierarchy.create({ name: el.name });
-      if(LeafProduct.isLeafProduct(el))
+      if(Hierarchy.isHierarchy(val))
+        return val;
+      if(Element.isElement(val))
+        return val.hierarchy ?? Hierarchy.from(val.value);
+      if(Component.isComponent(val) || Operation.isOperation(val))
+        return val.hierarchy ?? Hierarchy.create({ name: val.name });
+      if(LeafProduct.isLeafProduct(val))
         return Hierarchy.create({
-          name: `<${el.type.full}>`,
-          linkedProducts: [hash(el)],
+          name: `<${val.type.full}>`,
+          linkedProducts: [hash(val)],
         });
-      if(Product.isProduct(el))
+      if(Product.isProduct(val))
         return Hierarchy.create({
-          name: `<${el.type}>`,
-          linkedProducts: [hash(el)],
+          name: `<${val.type}>`,
+          linkedProducts: [hash(val)],
         });
     }
-    if(el instanceof Array)
+    if(val instanceof Array)
       return Hierarchy.create({
         braceType: "[",
-        children: el.map(e => Hierarchy.from(e, raw)),
+        children: val.map(e => Hierarchy.from(e, raw)),
       });
     return Hierarchy.create({
       braceType: "{",
-      children: Object.entries(el as any).map(([k, v]) =>
+      children: Object.entries(val as any).map(([k, v]) =>
         Hierarchy.create({
           name: k,
           braceType: ":",
@@ -93,6 +93,5 @@ export const Hierarchy = {
       )
     });
   },
-  apply: <T extends Product>(hierarchy: Hierarchy, el: Elementish<T>) => new Element(el, hierarchy),
 };
 

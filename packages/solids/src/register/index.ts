@@ -15,7 +15,7 @@ type CylChainables = typeof cylChainables;
 
 declare global {
   export namespace escad {
-    export interface Chainables extends CylChainables { }
+    export interface DefaultChainables extends CylChainables { }
   }
 }
 

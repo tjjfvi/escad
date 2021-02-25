@@ -7,13 +7,14 @@ import {
   LeafProduct,
   Product,
   Component,
-  Operation,
+  Element,
   conversionRegistry,
   ArrayProduct,
   TupleProductType,
   ArrayProductType,
   ConvertibleOperation,
   ConvertibleElementish,
+  Operation,
 } from "@escad/core";
 import { Bsp, ClipOptions } from "./Bsp";
 
@@ -57,12 +58,10 @@ conversionRegistry.register({
   weight: 1,
 })
 
-export const intersection: ConvertibleOperation<Bsp, Bsp> = (
-  new Operation("intersection", el =>
-    Intersection.create(TupleProduct.create(el.toArrayFlat()))
+export const intersection: ConvertibleOperation<Bsp, Bsp> =
+  Operation.create("intersection", el =>
+    Intersection.create(TupleProduct.create(Element.toArrayFlat(el)))
   )
-);
 
-export const intersect: Component<ConvertibleElementish<Bsp>[], ConvertibleOperation<Bsp, Bsp>> = (
-  new Component("intersect", (...el) => new Operation("intersect", el2 => intersection(el2, el)))
-);
+export const intersect: Component<ConvertibleElementish<Bsp>[], ConvertibleOperation<Bsp, Bsp>> =
+  Component.create("intersect", (...el) => Operation.create("intersect", el2 => intersection(el2, el)));

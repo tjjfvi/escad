@@ -1,7 +1,7 @@
-import { Operation } from "./Operation";
 import { Hierarchy } from "./Hierarchy";
-import { Element, ArrayElement } from "./Element";
+import { Operation } from "./Operation";
 import { Product } from "./Product";
+import { Element } from "./Element";
 
 
 export const mapOperation = (
@@ -11,14 +11,11 @@ export const mapOperation = (
     overrideHierarchy = true,
     hierarchy?: Hierarchy,
   ) =>
-    new Operation<I, O>(name, arg => {
-      const argArr = arg.toArray();
-      const shouldFlatten = argArr.length === 1;
-      const flatten = (el: ArrayElement<I>) => el.toArray()[0]
+    Operation.create<I, O>(name, arg => {
+      const argArr = Element.toArray(arg);
+      const flattenedArg = argArr.length === 1 ? argArr[0] : arg;
 
-      const flattenedArg = shouldFlatten ? flatten(arg) : arg;
-
-      const output = new Element(flattenedArg).map(func).map(x => x, (eish, old, isLeaf, isRoot) => {
+      const output = Element.map(Element.map(flattenedArg, func), x => x, (eish, old, isLeaf, isRoot) => {
         const oldHierarchy = Hierarchy.from(old);
         return Hierarchy.create({
           braceType: "|",

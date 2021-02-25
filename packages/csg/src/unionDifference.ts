@@ -1,13 +1,12 @@
 
 import { Mesh } from "@escad/mesh";
-import { Operation, ConvertibleOperation, ConvertibleElementish } from "@escad/core";
+import { Element, ConvertibleOperation, ConvertibleElementish, Operation } from "@escad/core";
 import { Bsp } from "./Bsp";
 import { diff } from "./diff";
 
-export const udMeld: ConvertibleOperation<Bsp, Bsp> = (
-  new Operation("udMeld", el => {
-    let oargs = el.toArrayDeep();
-    let args = oargs.length === 1 ? oargs[0] : oargs;
+export const udMeld: ConvertibleOperation<Bsp, Bsp> =
+  Operation.create("udMeld", el => {
+    let args = Element.toArrayDeep(el);
     if(!(args instanceof Array))
       return [[args], []];
     let dargs: [ConvertibleElementish<Mesh>[], ConvertibleElementish<Mesh>[]] = [[], []];
@@ -17,11 +16,10 @@ export const udMeld: ConvertibleOperation<Bsp, Bsp> = (
         dargs[1].push(...arg.slice(1));
       } else dargs[0].push(arg);
     return dargs;
-  })
-);
+  });
 
-export const unionDiff: ConvertibleOperation<Bsp, Bsp> = (
-  new Operation("unionDiff", el => diff(udMeld(...el.toArray())))
-)
+export const unionDiff: ConvertibleOperation<Bsp, Bsp> =
+  Operation.create("unionDiff", el => diff(udMeld(...Element.toArray(el))))
+
 
 export const unionDiffMeld = udMeld;

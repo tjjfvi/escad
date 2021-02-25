@@ -10,7 +10,7 @@ type MeshChainables = typeof meshChainables;
 
 declare global {
   export namespace escad {
-    export interface Chainables extends MeshChainables { }
+    export interface DefaultChainables extends MeshChainables { }
   }
 }
 

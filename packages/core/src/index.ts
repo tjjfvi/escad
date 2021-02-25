@@ -1,18 +1,9 @@
 
-export * from "./chainables";
-import { chainables } from "./chainables";
-import { Element, Elementish } from "./Element";
-import { Product } from "./Product";
+export * from "./defaultChainables";
+import { defaultChainables } from "./defaultChainables";
+import { Realm } from "./Realm";
 
-const escadFunc = <T extends Product>(...a: Elementish<T>[]) => new Element(a.length === 1 ? a[0] : a)
-
-const escad = new Proxy(escadFunc, {
-  get: (target, key) =>
-    key in target ?
-      target[key as keyof typeof target] :
-      chainables[key as keyof typeof chainables]
-}) as typeof escadFunc & typeof chainables;
-
+export const escad = Realm.create(defaultChainables);
 export default escad;
 
 // @create-index {"mode":"*"}
@@ -36,13 +27,18 @@ export * from './LeafProduct';
 export * from './MultiHashMap';
 export * from './Operation';
 export * from './Product';
+export * from './Realm';
+export * from './RealmComponent';
+export * from './RealmElement';
+export * from './RealmOperation';
+export * from './RealmThing';
 export * from './Thing';
 export * from './Timer';
 export * from './TupleProduct';
 export * from './UnknownProduct';
 export * from './WeakCache';
-export * from './chainables';
 export * from './checkTypeProperty';
+export * from './defaultChainables';
 export * from './depthFirst';
 export * from './hash';
 export * from './logging';

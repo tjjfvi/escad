@@ -11,7 +11,7 @@ type ScaleArgs =
   | [{ x?: number, y?: number, z?: number }]
   | [[number, number, number]]
 export const scale: Component<ScaleArgs, ConvertibleOperation<Mesh, Mesh>> =
-  new Component("scale", (...args: ScaleArgs) => {
+  Component.create("scale", (...args: ScaleArgs) => {
     let triple =
       args.length === 3 ?
         args :
@@ -32,11 +32,11 @@ export const scale: Component<ScaleArgs, ConvertibleOperation<Mesh, Mesh>> =
   });
 
 export const sX: Component<[number], ConvertibleOperation<Mesh, Mesh>> =
-  new Component("sX", (n: number) => scale({ x: n }));
+  Component.create("sX", (n: number) => scale({ x: n }));
 export const sY: Component<[number], ConvertibleOperation<Mesh, Mesh>> =
-  new Component("sY", (n: number) => scale({ y: n }));
+  Component.create("sY", (n: number) => scale({ y: n }));
 export const sZ: Component<[number], ConvertibleOperation<Mesh, Mesh>> =
-  new Component("sZ", (n: number) => scale({ z: n }));
+  Component.create("sZ", (n: number) => scale({ z: n }));
 
 export const scaleX = sX;
 export const scaleY = sY;

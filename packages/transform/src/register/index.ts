@@ -34,7 +34,7 @@ type TransformChainables = typeof transformChainables;
 
 declare global {
   export namespace escad {
-    export interface Chainables extends TransformChainables { }
+    export interface DefaultChainables extends TransformChainables { }
   }
 }
 

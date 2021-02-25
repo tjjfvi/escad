@@ -14,7 +14,7 @@ type RotateArgs =
   | [[number, number, number], RotateOpts?]
 
 export const rotate: Component<RotateArgs, ConvertibleOperation<Mesh, Transformation<Mesh>>> =
-  new Component("rotate", (...args: RotateArgs) => {
+  Component.create("rotate", (...args: RotateArgs) => {
     let [first] = args;
     let triple =
     args.length === 3 ?
@@ -50,11 +50,11 @@ export const rotate: Component<RotateArgs, ConvertibleOperation<Mesh, Transforma
   });
 
 export const rX: Component<[number], ConvertibleOperation<Mesh, Transformation<Mesh>>> =
-  new Component("rX", (n: number) => rotate({ x: n }));
+  Component.create("rX", (n: number) => rotate({ x: n }));
 export const rY: Component<[number], ConvertibleOperation<Mesh, Transformation<Mesh>>> =
-  new Component("rY", (n: number) => rotate({ y: n }));
+  Component.create("rY", (n: number) => rotate({ y: n }));
 export const rZ: Component<[number], ConvertibleOperation<Mesh, Transformation<Mesh>>> =
-  new Component("rZ", (n: number) => rotate({ z: n }));
+  Component.create("rZ", (n: number) => rotate({ z: n }));
 
 export const rotateX = rX;
 export const rotateY = rY;

@@ -3,12 +3,11 @@ import { Mesh, Face, Vector3 } from "@escad/mesh";
 import {
   Conversion,
   createLeafProductUtils,
-  Element,
   Id,
   LeafProduct,
   conversionRegistry,
   Component,
-  LeafElement,
+  Element,
 } from "@escad/core";
 import { interpretTriplet, Triplet } from "./helpers";
 import { Smooth, smoothContext } from "./smoothContext";
@@ -91,8 +90,8 @@ export interface CylArgs {
   smooth?: Smooth,
 }
 
-export const cylinder: Component<[CylArgs], LeafElement<Cylinder>> =
-  new Component("cyl", (args: CylArgs) => {
+export const cylinder: Component<[CylArgs], Element<Cylinder>> =
+  Component.create("cyl", (args: CylArgs) => {
     args.smooth ??= smoothContext.get()
     return Element.create(Cylinder.create(args.radius, args.height, args.smooth, interpretTriplet(args.center, 0)))
   });

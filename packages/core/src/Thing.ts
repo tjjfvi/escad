@@ -1,39 +1,28 @@
 
-import { Component, ComponentConstraint } from "./Component";
-import { Operation, OperationConstraint } from "./Operation";
-import { Element, ElementConstraint } from "./Element";
+import { Component } from "./Component";
+import { Operation } from "./Operation";
+import { Element } from "./Element";
+import { Hierarchy } from "./Hierarchy";
 
 export type Thing = Element<any> | Component<any[], any> | Operation<any, any>;
-export type ThingConstraint = ElementConstraint<any> | ComponentConstraint<any[], any> | OperationConstraint<any, any>;
-export type ThingFromConstraint<T extends ThingConstraint> =
-  T extends ElementConstraint<infer P>
-    ? Element<P>
-    : T extends ComponentConstraint<infer I, infer P>
-      ? Component<I, P>
-      : T extends OperationConstraint<infer I, infer O>
-        ? Operation<I, O>
-        : never
+export type StripRealm<T extends Thing> =
+  | (T extends Element<infer P> ? Element<P> : never)
+  | (T extends Component<any, any> ? T : never)
+  | (T extends Operation<infer I, infer O> ? Operation<I, O> : never)
 
 export const Thing = {
   isThing: (value: unknown): value is Thing =>
     Element.isElement(value) ||
     Component.isComponent(value) ||
     Operation.isOperation(value),
-  fromThingConstraint: <T extends ThingConstraint>(value: T): ThingFromConstraint<T> => {
-    if(ElementConstraint.isElementConstraint(value))
-      return Element.fromElementConstraint(value) as never;
-    if(ComponentConstraint.isComponentConstraint(value))
-      return Component.fromComponentConstraint(value) as never;
-    if(OperationConstraint.isOperationConstraint(value))
-      return Operation.fromOperationConstraint(value) as never;
-    else
-      throw new Error("Invalid value passed to Thing.fromThingConstraint");
-  }
-}
-
-export const ThingConstraint = {
-  isThingConstraint: (value: unknown): value is ThingConstraint =>
-    ElementConstraint.isElementConstraint(value) ||
-    ComponentConstraint.isComponentConstraint(value) ||
-    OperationConstraint.isOperationConstraint(value)
+  applyHierarchy: <T extends Thing>(thing: T, hierarchy: Hierarchy): T => {
+    if(Element.isElement(thing))
+      return Element.applyHierarchy(thing, hierarchy) as T
+    if(Operation.isOperation(thing))
+      return Operation.applyHierarchy(thing, hierarchy) as T
+    if(Component.isComponent(thing))
+      return Component.applyHierarchy(thing, hierarchy) as T
+    throw new Error("Invalid thing passed to RealmThing.create");
+  },
+  stripRealm: <T extends Thing>(thing: T): StripRealm<T> => thing as never
 }

@@ -12,11 +12,11 @@ type PolyhedronArgs =
     faces: PolyhedronFaces,
   }]
 
-export const polyhedron: Component<PolyhedronArgs, Element<Mesh>> = new Component("polyhedron", (...args) =>
-  new Element(
-    args.length === 2 ?
-      Mesh.fromVertsFaces(...args) :
-      Mesh.fromVertsFaces(args[0].verts, args[0].faces)
-  )
-);
-
+export const polyhedron: Component<PolyhedronArgs, Element<Mesh>> =
+  Component.create("polyhedron", (...args) =>
+    Element.create(
+      args.length === 2 ?
+        Mesh.fromVertsFaces(...args) :
+        Mesh.fromVertsFaces(args[0].verts, args[0].faces)
+    )
+  );

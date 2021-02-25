@@ -24,7 +24,7 @@ type CsgChainables = typeof csgChainables;
 
 declare global {
   export namespace escad {
-    export interface Chainables extends CsgChainables { }
+    export interface DefaultChainables extends CsgChainables { }
   }
 }
 

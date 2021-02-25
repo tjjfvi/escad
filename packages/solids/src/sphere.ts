@@ -8,7 +8,6 @@ import {
   createLeafProductUtils,
   Conversion,
   conversionRegistry,
-  LeafElement,
 } from "@escad/core";
 import { interpretTriplet, Triplet } from "./helpers";
 import { Smooth, smoothContext } from "./smoothContext";
@@ -97,8 +96,8 @@ type SphereArgs = number | {
   center?: Triplet<number | boolean>,
 };
 
-export const sphere: Component<[SphereArgs], LeafElement<Sphere>> =
-  new Component("sphere", args => {
+export const sphere: Component<[SphereArgs], Element<Sphere>> =
+  Component.create("sphere", args => {
     if(typeof args === "number")
       args = { radius: args };
     args.smooth ??= smoothContext.get();

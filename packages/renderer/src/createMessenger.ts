@@ -94,8 +94,8 @@ export const createRendererServerMessenger = (
         console.error(new Error("Invalid return type from exported function"));
         return { products: [], hierarchy: null };
       }
-      const el = new Element<Product>(result);
-      const products = await Promise.all(el.toArrayFlat().map(p => artifactManager.storeRaw(p)));
+      const el = Element.create<Product>(result);
+      const products = await Promise.all(Element.toArrayFlat(el).map(p => artifactManager.storeRaw(p)));
       const hierarchy = await artifactManager.storeRaw(Hierarchy.from(el))
       return { products, hierarchy };
     }

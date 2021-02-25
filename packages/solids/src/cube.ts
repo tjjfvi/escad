@@ -2,11 +2,10 @@
 import { Mesh, Vector3 } from "@escad/mesh";
 import {
   Component,
-  Element,
   Id,
   Conversion,
   createLeafProductUtils,
-  LeafElement,
+  Element,
   LeafProduct,
   conversionRegistry,
 } from "@escad/core";
@@ -89,8 +88,8 @@ export interface CubeArgs extends TripletObj<number> {
   center?: Triplet<number | boolean>,
 }
 
-export const cube: Component<[CubeArgs], LeafElement<Cube>> =
-  new Component<[CubeArgs], LeafElement<Cube>>("cube", (args): LeafElement<Cube> => {
+export const cube: Component<[CubeArgs], Element<Cube>> =
+  Component.create("cube", args => {
     const size = interpretTriplet(args.size ?? args, 1);
     const center = interpretTriplet(args.center, 0);
 

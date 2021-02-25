@@ -3,60 +3,52 @@ import { checkTypeProperty } from "./checkTypeProperty";
 import { contextStack } from "./ContextStack";
 import { ExtensibleFunction } from "./ExtensibleFunction";
 import { Hierarchy } from "./Hierarchy";
-import { Thing, ThingConstraint, ThingFromConstraint } from "./Thing";
+import { Thing, StripRealm } from "./Thing";
 
-export interface ComponentConstraint<I extends any[], T extends ThingConstraint> {
+export interface Component<I extends any[], T extends Thing> {
   readonly type: "Component",
   readonly func: (...input: I) => T,
   readonly name: string,
   readonly hierarchy?: Hierarchy,
   readonly overrideHierarchy?: boolean,
+  (...args: I): StripRealm<T>,
 }
 
-export const ComponentConstraint = {
-  isComponentConstraint: checkTypeProperty<ComponentConstraint<any, any>>("Component"),
-}
-
-export interface Component<I extends any[], T extends ThingConstraint> {
-  (...args: I): ThingFromConstraint<T>,
-}
-
-export class Component<I extends any[], T extends ThingConstraint>
-  extends ExtensibleFunction implements ComponentConstraint<I, T> {
-
-  readonly type = "Component";
-
-  constructor(
+export const Component = {
+  isComponent: checkTypeProperty<Component<any, any>>("Component"),
+  create: <I extends any[], T extends Thing>(
     name: string,
-    public readonly func: (...args: I) => T,
-    public readonly overrideHierarchy = true,
-    public readonly hierarchy?: Hierarchy
-  ){
-    super((...args) => {
-      let result = Thing.fromThingConstraint(contextStack.wrap(() => func(...(args as I))));
-      if(overrideHierarchy)
-        result = result.applyHierarchy(Hierarchy.create({
-          braceType: "(",
-          children: [
-            this.hierarchy ?? Hierarchy.create({ name }),
-            ...args.map(x => Hierarchy.from(x)),
-          ],
-          linkedProducts: result.hierarchy?.linkedProducts,
-        })) as ThingFromConstraint<T>;
-      return result;
-    }, {}, name);
-  }
-
-  applyHierarchy(hierarchy: Hierarchy){
-    return new Component(this.name, this.func, this.overrideHierarchy, hierarchy);
-  }
-
-  static isComponent(value: unknown){
-    return ComponentConstraint.isComponentConstraint(value) && value instanceof Component;
-  }
-
-  static fromComponentConstraint<I extends any[], T extends ThingConstraint>(component: ComponentConstraint<I, T>){
-    return new Component(component.name, component.func, component.overrideHierarchy, component.hierarchy);
-  }
-
+    func: (...args: I) => T,
+    overrideHierarchy = true,
+    hierarchy?: Hierarchy
+  ): Component<I, T> => {
+    const that = Object.assign(
+      new ExtensibleFunction(
+        (...args: I) => {
+          let result = Thing.stripRealm(contextStack.wrap(() => func(...args)));
+          if(overrideHierarchy)
+            result = Thing.applyHierarchy(result, Hierarchy.create({
+              braceType: "(",
+              children: [
+                that.hierarchy ?? Hierarchy.create({ name }),
+                ...args.map(x => Hierarchy.from(x)),
+              ],
+              linkedProducts: result.hierarchy?.linkedProducts,
+            }));
+          return result;
+        },
+        {},
+        name,
+      ),
+      {
+        type: "Component" as const,
+        func,
+        overrideHierarchy,
+        hierarchy,
+      }
+    ) as Component<I, T>;
+    return that
+  },
+  applyHierarchy: <I extends any[], T extends Thing>(component: Component<I, T>, hierarchy: Hierarchy) =>
+    Component.create(component.name, component.func, component.overrideHierarchy, hierarchy)
 }
