@@ -16,6 +16,7 @@ npm i ../packages/*.tgz \
   prop-types \
   sha.js
 cd ..
+mkdir bundled
 rm bundled/project.zip
 zip -r bundled/project.zip project
 rm -rf project
