@@ -1,22 +1,14 @@
 
-import { cylinder, cyl } from "../cylinder";
-import { cube } from "../cube";
-import { sphere } from "../sphere";
+import "..";
 import { extendChainables } from "@escad/core";
+import solidsChainables from "../chainables";
 
-const cylChainables = {
-  cylinder,
-  cyl,
-  cube,
-  sphere,
-}
-
-type CylChainables = typeof cylChainables;
+type SolidsChainables = typeof solidsChainables;
 
 declare global {
   export namespace escad {
-    export interface DefaultChainables extends CylChainables { }
+    export interface DefaultChainables extends SolidsChainables { }
   }
 }
 
-extendChainables(cylChainables);
+extendChainables(solidsChainables);

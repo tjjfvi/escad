@@ -1,10 +1,7 @@
 
-import { polyhedron } from "../polyhedron";
+import ".."
 import { extendChainables } from "@escad/core";
-
-const meshChainables = {
-  polyhedron,
-}
+import meshChainables from "../chainables";
 
 type MeshChainables = typeof meshChainables;
 
