@@ -6,7 +6,7 @@ import { conversionRegistry } from "./ConversionRegistry";
 import { checkTypeProperty } from "./checkTypeProperty";
 
 export interface LeafProduct extends _Product {
-  readonly type: Id,
+  readonly type: Id<string, string, `LeafProduct/${string}`>,
 }
 
 export const LeafProduct = {
@@ -33,7 +33,7 @@ export interface LeafProductType<T extends LeafProduct = LeafProduct> {
 }
 
 export const LeafProductType = {
-  create: (id: Id): LeafProductType => ({
+  create: (id: Id<string, string, `LeafProduct/${string}`>): LeafProductType => ({
     type: "LeafProductType",
     id,
   }),

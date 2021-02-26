@@ -15,7 +15,7 @@ import {
 } from "@escad/core";
 import { Mesh } from "@escad/mesh";
 
-const meldMarkerId = Id.create(__filename, "@escad/csg", "0", "MeldMarker");
+const meldMarkerId = Id.create(__filename, "@escad/csg", "0", "LeafProduct/MeldMarker");
 
 export interface MeldMarker extends LeafProduct {
   readonly type: typeof meldMarkerId,

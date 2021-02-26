@@ -14,7 +14,7 @@ import { Smooth, smoothContext } from "./smoothContext";
 
 const tau = Math.PI * 2;
 
-const cylinderId = Id.create(__filename, "@escad/solids", "0", "Cylinder");
+const cylinderId = Id.create(__filename, "@escad/solids", "0", "LeafProduct/Cylinder");
 
 export interface Cylinder extends LeafProduct {
   readonly type: typeof cylinderId,

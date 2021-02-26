@@ -2,7 +2,7 @@ import { Id } from "./Id";
 import { Product, ProductType } from "./Product";
 
 export interface ExportType<P extends Product> {
-  readonly id: Id,
+  readonly id: Id<string, string, `ExportType/${string}`>,
   readonly productType: ProductType<P>,
   readonly extension: "" | `.${string}`,
   readonly name: string,

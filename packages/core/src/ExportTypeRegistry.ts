@@ -6,7 +6,6 @@ import { ArtifactStore } from "./ArtifactStore";
 import { Product } from "./Product";
 import { conversionRegistry, ConversionRegistry } from "./ConversionRegistry";
 import { HashMap } from "./HashMap";
-import { hash } from "./hash";
 
 export class ExportTypeRegistry {
 

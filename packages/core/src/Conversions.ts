@@ -6,10 +6,10 @@ export interface Conversion<A, B> {
 }
 
 export interface ConversionImpl<A extends Product, B extends Product> {
-  convert: (value: A) => Promise<B>,
-  fromType: ProductType<A>,
-  toType: ProductType<B>,
-  weight: number,
+  readonly convert: (value: A) => Promise<B>,
+  readonly fromType: ProductType<A>,
+  readonly toType: ProductType<B>,
+  readonly weight: number,
 }
 
 type Values<T> = T[keyof T];

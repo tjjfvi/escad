@@ -1,5 +1,5 @@
 import { checkTypeProperty } from "./checkTypeProperty";
-import { Element } from "./Element";
+import { Element, Elementish } from "./Element";
 import { ExtensibleFunction } from "./ExtensibleFunction";
 import { Product } from "./Product";
 import { RealmElement } from "./RealmElement";
@@ -16,7 +16,7 @@ export type Realm<C> =
     _: Realm<C>,
     (): Realm<C>,
     <A extends Thing>(a: A): RealmThing<A, C>,
-    <T extends Product>(...args: Element<T>[]): RealmElement<T, C>,
+    <T extends Product>(...args: Elementish<T>[]): RealmElement<T, C>,
   }
 
 export const Realm = {
@@ -26,10 +26,10 @@ export const Realm = {
       new ExtensibleFunction(
         (...args) => {
           if(args.length > 1)
-            return Element.create(args);
+            return RealmElement.create(that, Element.create(args));
           if(Thing.isThing(args[0]))
             return RealmThing.create(that, args[0]);
-          return Element.create(args[0]);
+          return RealmElement.create(that, Element.create(args[0]));
         },
         {
           get: (target, prop) => {

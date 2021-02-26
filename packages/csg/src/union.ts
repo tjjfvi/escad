@@ -18,7 +18,7 @@ import {
 } from "@escad/core";
 import { Bsp, ClipOptions } from "./Bsp";
 
-const unionMarkerId = Id.create(__filename, "@escad/csg", "0", "UnionMarker");
+const unionMarkerId = Id.create(__filename, "@escad/csg", "0", "LeafProduct/UnionMarker");
 
 export interface UnionMarker extends LeafProduct {
   readonly type: typeof unionMarkerId,

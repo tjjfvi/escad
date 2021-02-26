@@ -52,7 +52,7 @@ export class FsArtifactStore implements ArtifactStore {
   }
 
   private async getPathRef(loc: readonly unknown[]){
-    const path = join(this.rootDir, ...loc.map(x => Id.isId(x) ? x.full : hash(x)));
+    const path = join(this.rootDir, ...loc.map(x => Id.isId(x) ? x.full.replace(/\//g, "-") : hash(x)));
     await mkdir(dirname(path), { recursive: true });
     return path;
   }

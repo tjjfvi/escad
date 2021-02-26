@@ -2,7 +2,7 @@
 import { createLeafProductUtils, Id, LeafProduct, Stack } from "@escad/core";
 import { Face, Plane } from "@escad/mesh";
 
-const bspId = Id.create(__filename, "@escad/csg", "0", "Bsp");
+const bspId = Id.create(__filename, "@escad/csg", "0", "LeafProduct/Bsp");
 
 type Mutable<T> = { -readonly [K in keyof T]: T[K] }
 type PartialBsp =

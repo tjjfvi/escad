@@ -11,7 +11,6 @@ import { HashMap } from "./HashMap";
 import { TupleProduct, TupleProductType } from "./TupleProduct";
 import { ArrayProduct, ArrayProductType } from "./ArrayProduct";
 import { UnknownProduct, UnknownProductType } from "./UnknownProduct";
-// import { formatConversion, log } from "./logging";
 
 type ConversionPath = ConversionImpl<any, any>[]
 

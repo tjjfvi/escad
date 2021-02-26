@@ -66,3 +66,11 @@ export type ProductType<U extends Product = Product> =
   | TupleProductType<Extract<U, TupleProduct>>
   | ArrayProductType<Extract<U, ArrayProduct>>
   | (U extends UnknownProduct ? UnknownProductType : never)
+
+export const ProductType = {
+  isProductType: (value: unknown): value is ProductType =>
+    LeafProductType.isLeafProductType(value) ||
+    TupleProductType.isTupleProductType(value) ||
+    ArrayProductType.isArrayProductType(value) ||
+    UnknownProductType.isUnknownProductType(value)
+}

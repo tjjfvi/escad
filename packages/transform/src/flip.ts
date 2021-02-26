@@ -13,22 +13,22 @@ import {
 } from "@escad/core";
 import { Mesh, Face } from "@escad/mesh";
 
-const flipFacesProductId = Id.create(__filename, "@escad/transform", "0", "FlipFacesProduct");
+const flipFacesMarkerId = Id.create(__filename, "@escad/transform", "0", "LeafProduct/FlipFacesProduct");
 
-export interface FlipFacesProduct extends LeafProduct {
-  readonly type: typeof flipFacesProductId,
+export interface FlipFacesMarker extends LeafProduct {
+  readonly type: typeof flipFacesMarkerId,
 }
 
-export const FlipFacesProduct = {
-  create: () => ({ type: flipFacesProductId }),
-  ...createLeafProductUtils<FlipFacesProduct, "FlipFacesProduct">(flipFacesProductId, "FlipFacesProduct"),
-  id: flipFacesProductId,
+export const FlipFacesMarker = {
+  create: () => ({ type: flipFacesMarkerId }),
+  ...createLeafProductUtils<FlipFacesMarker, "FlipFacesProduct">(flipFacesMarkerId, "FlipFacesProduct"),
+  id: flipFacesMarkerId,
 };
 
-export type FlipFaces<T extends Product> = TupleProduct<readonly [FlipFacesProduct, T]>;
+export type FlipFaces<T extends Product> = TupleProduct<readonly [FlipFacesMarker, T]>;
 export const FlipFaces = {
   create: <T extends Product>(p: T): FlipFaces<T> =>
-    TupleProduct.create([FlipFacesProduct.create(), p])
+    TupleProduct.create([FlipFacesMarker.create(), p])
 };
 
 declare global {
@@ -46,7 +46,7 @@ conversionRegistry.register<FlipFaces<Mesh>, Mesh>({
     Mesh.create(mesh.faces.map(face =>
       Face.create(face.points.slice().reverse())
     )),
-  fromType: TupleProductType.create([FlipFacesProduct.productType, Mesh.productType]),
+  fromType: TupleProductType.create([FlipFacesMarker.productType, Mesh.productType]),
   toType: Mesh.productType,
   weight: 1,
 })

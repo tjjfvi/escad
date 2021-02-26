@@ -2,17 +2,16 @@
 import fs from "fs";
 import { posix as path } from "path";
 import readPkgUp from "read-pkg-up";
+import { checkTypeProperty } from "./checkTypeProperty";
 
 const ids = new Map<string, Id>();
 
 export interface Id<P extends string = string, V extends string = string, N extends string = string> {
-  packageName: P,
-  version: V,
-  name: N,
-
-  full: string,
-
-  isId: true,
+  readonly type: "Id",
+  readonly packageName: P,
+  readonly version: V,
+  readonly name: N,
+  readonly full: `${P}/${V}/${N}`,
 }
 
 export const Id = {
@@ -36,28 +35,19 @@ export const Id = {
           `Id.create: version mismatch; ${packageName}@${packageJsonVersion} attempted to create an id under ${version}`
         );
     }
-    const full = `${packageName}/${version}/${name}`.replace(/\//g, "-");
+    const full = `${packageName}/${version}/${name}` as `${P}/${V}/${N}`;
     if(ids.has(full))
       throw new Error(`Duplicate ids created under ${full}`);
     const id: Id<P, V, N> = {
+      type: "Id",
       packageName,
       name,
       version,
       full,
-      isId: true,
     };
     ids.set(full, id);
     return id;
   },
-  get: getId,
-  isId: (arg: any): arg is Id =>
-    typeof arg === "object" && arg.isId === true,
+  isId: checkTypeProperty<Id>("Id"),
   equal: (a: Id, b: Id) => a.full === b.full
 };
-
-function getId(id: Id): Id
-function getId(full: string): Id
-function getId(id: string | Id){
-  return ids.get(typeof id === "string" ? id : id.full);
-}
-

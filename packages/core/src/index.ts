@@ -41,6 +41,5 @@ export * from './checkTypeProperty';
 export * from './defaultChainables';
 export * from './depthFirst';
 export * from './hash';
-export * from './logging';
 export * from './mapOperation';
 
