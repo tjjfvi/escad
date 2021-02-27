@@ -1,7 +1,5 @@
 
 import { Hierarchy } from "@escad/core";
-import { mdiArrowCollapseVertical, mdiArrowExpandVertical } from "@mdi/js";
-import Icon from "@mdi/react";
 import React, { useContext, useState } from "react";
 import { useObservable } from "rhobo";
 import { ClientState } from "./ClientState";
@@ -15,16 +13,8 @@ const Arrow = ({ state, onClick }: { state: "open" | "closed" | "leaf", onClick?
 const Tree = ({ tree, maxLength }: { tree: Tree, maxLength: number }) => {
   const [, _update] = useState({});
   const update = () => _update({});
-  const expanded = useObservable.use(false);
 
-  const expandIcon = <div className="expand" onClick={() => {
-    tree.forEach(x => "state" in x && (x.state.open = !expanded.value))
-    expanded(!expanded.value);
-  }}>
-    <Icon path={expanded() ? mdiArrowCollapseVertical : mdiArrowExpandVertical}/>
-  </div>;
-
-  const collapsedTree = expanded() ? tree : fullyCollapseTree(tree, maxLength, update);
+  const collapsedTree = fullyCollapseTree(tree, maxLength, update);
   const joinedCollapsedTree = joinTree(collapsedTree, update);
 
   if(
@@ -43,12 +33,11 @@ const Tree = ({ tree, maxLength }: { tree: Tree, maxLength: number }) => {
         return <div className="line" key={i}>
           {state ? <Arrow state="open" onClick={() => (state.open = false, update())}/> : <Arrow state="leaf"/>}
           <TreeText str={x.text}/>
-          {i === 0 ? expandIcon : null}
         </div>
       })}
     </div>
 
-  const sections = (expanded() ? tree : fullyCollapseTree(tree, maxLength, update, true)).filter(x => "children" in x);
+  const sections = fullyCollapseTree(tree, maxLength, update, true).filter(x => "children" in x);
 
   return <div className="TreeNode"><div className="line">
     {
@@ -60,7 +49,6 @@ const Tree = ({ tree, maxLength }: { tree: Tree, maxLength: number }) => {
         <Arrow state="leaf"/>
     }
     <TreeText str={joinedCollapsedTree[0].text}/>
-    {expandIcon}
   </div></div>
 }
 
