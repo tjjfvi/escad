@@ -102,4 +102,4 @@ export const sphere: Component<[SphereArgs], Element<Sphere>> =
       args = { radius: args };
     args.smooth ??= smoothContext.get();
     return Element.create(Sphere.create(args.radius, args.smooth, interpretTriplet(args.center, 0)));
-  })
+  }, { showOutputInHierarchy: false })

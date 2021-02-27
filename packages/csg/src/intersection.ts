@@ -61,7 +61,9 @@ conversionRegistry.register({
 export const intersection: ConvertibleOperation<Bsp, Bsp> =
   Operation.create("intersection", el =>
     Intersection.create(TupleProduct.create(Element.toArrayFlat(el)))
-  )
+  , { showOutputInHierarchy: false })
 
 export const intersect: Component<ConvertibleElementish<Bsp>[], ConvertibleOperation<Bsp, Bsp>> =
-  Component.create("intersect", (...el) => Operation.create("intersect", el2 => intersection(el2, el)));
+  Component.create("intersect", (...el) =>
+    Operation.create("intersect", el2 => intersection(el2, el), { overrideHierarchy: false })
+  , { showOutputInHierarchy: false });

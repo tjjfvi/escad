@@ -43,7 +43,7 @@ export const RealmElement = {
             return RealmComponent.create(realm, Component.create(
               arg.name + "'",
               (...args) => that(arg(...args)),
-              false,
+              { overrideHierarchy: false },
             ));
           if(Element.isElement(arg))
             return RealmElement.create(realm, Element.concat(that, arg));

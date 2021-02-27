@@ -7,7 +7,7 @@ import { Element } from "./Element";
 import { hash, Hash } from "./hash";
 import { Operation } from "./Operation";
 
-export type BraceType = "{" | "[" | "|" | "(" | ":" | "";
+export type BraceType = "{" | "[" | "|" | "(" | ":" | "=" | "";
 
 export interface Hierarchy {
   readonly type: "Hierarchy",
@@ -38,6 +38,9 @@ export const Hierarchy = {
 
     if(braceType === ":" && children.length !== 1)
       throw new Error("braceType \":\" must be used with exactly one child");
+
+    if(braceType === "=" && children.length !== 2)
+      throw new Error(`braceType "=" must be used with exactly two children`);
 
     return {
       type: "Hierarchy",

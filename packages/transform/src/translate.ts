@@ -19,15 +19,16 @@ export const translate: Component<TranslateArgs, ConvertibleOperation<Mesh, Tran
     return mapOperation(
       "translate",
       mesh => Transformation.create(matrix, mesh),
+      { showOutputInHierarchy: false }
     );
-  });
+  }, { showOutputInHierarchy: false });
 
 export const tX: Component<[number], ConvertibleOperation<Mesh, Transformation<Mesh>>> =
-  Component.create("tX", (n: number) => translate({ x: n }));
+  Component.create("tX", (n: number) => translate({ x: n }), { showOutputInHierarchy: false });
 export const tY: Component<[number], ConvertibleOperation<Mesh, Transformation<Mesh>>> =
-  Component.create("tY", (n: number) => translate({ y: n }));
+  Component.create("tY", (n: number) => translate({ y: n }), { showOutputInHierarchy: false });
 export const tZ: Component<[number], ConvertibleOperation<Mesh, Transformation<Mesh>>> =
-  Component.create("tZ", (n: number) => translate({ z: n }));
+  Component.create("tZ", (n: number) => translate({ z: n }), { showOutputInHierarchy: false });
 
 export const translateX = tX;
 export const translateY = tY;

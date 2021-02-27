@@ -11,7 +11,14 @@ export interface Component<I extends any[], T extends Thing> {
   readonly name: string,
   readonly hierarchy?: Hierarchy,
   readonly overrideHierarchy?: boolean,
+  readonly showOutputInHierarchy?: boolean,
   (...args: I): StripRealm<T>,
+}
+
+export interface ComponentOpts {
+  readonly hierarchy?: Hierarchy,
+  readonly overrideHierarchy?: boolean,
+  readonly showOutputInHierarchy?: boolean,
 }
 
 export const Component = {
@@ -19,23 +26,33 @@ export const Component = {
   create: <I extends any[], T extends Thing>(
     name: string,
     func: (...args: I) => T,
-    overrideHierarchy = true,
-    hierarchy?: Hierarchy
+    { hierarchy, overrideHierarchy = true, showOutputInHierarchy = true }: ComponentOpts = {},
   ): Component<I, T> => {
     const that = Object.assign(
       new ExtensibleFunction(
         (...args: I) => {
-          let result = Thing.stripRealm(contextStack.wrap(() => func(...args)));
+          const result = contextStack.wrap(() => func(...args));
+          const origHierarchy = Hierarchy.from(result);
+          let hierarchy = origHierarchy;
           if(overrideHierarchy)
-            result = Thing.applyHierarchy(result, Hierarchy.create({
+            hierarchy = Hierarchy.create({
               braceType: "(",
               children: [
                 that.hierarchy ?? Hierarchy.create({ name }),
                 ...args.map(x => Hierarchy.from(x)),
               ],
               linkedProducts: result.hierarchy?.linkedProducts,
-            }));
-          return result;
+            });
+          if(overrideHierarchy && showOutputInHierarchy && hierarchy && origHierarchy)
+            hierarchy = Hierarchy.create({
+              braceType: "=",
+              children: [
+                hierarchy,
+                origHierarchy,
+              ],
+              linkedProducts: origHierarchy.linkedProducts,
+            })
+          return Thing.applyHierarchy(result, hierarchy);
         },
         {},
         name,
@@ -49,6 +66,9 @@ export const Component = {
     ) as Component<I, T>;
     return that
   },
-  applyHierarchy: <I extends any[], T extends Thing>(component: Component<I, T>, hierarchy: Hierarchy) =>
-    Component.create(component.name, component.func, component.overrideHierarchy, hierarchy)
+  applyHierarchy: <I extends any[], T extends Thing>(component: Component<I, T>, hierarchy?: Hierarchy) =>
+    Component.create(component.name, component.func, {
+      ...component,
+      hierarchy,
+    })
 }

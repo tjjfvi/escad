@@ -94,5 +94,5 @@ export const cube: Component<[CubeArgs], Element<Cube>> =
     const center = interpretTriplet(args.center, 0);
 
     return Element.create(Cube.create(size, center));
-  })
+  }, { showOutputInHierarchy: false })
 

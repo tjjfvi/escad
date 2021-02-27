@@ -94,6 +94,6 @@ export const cylinder: Component<[CylArgs], Element<Cylinder>> =
   Component.create("cyl", (args: CylArgs) => {
     args.smooth ??= smoothContext.get()
     return Element.create(Cylinder.create(args.radius, args.height, args.smooth, interpretTriplet(args.center, 0)))
-  });
+  }, { showOutputInHierarchy: false });
 
 export const cyl = cylinder;

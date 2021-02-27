@@ -15,14 +15,15 @@ export const Thing = {
     Element.isElement(value) ||
     Component.isComponent(value) ||
     Operation.isOperation(value),
-  applyHierarchy: <T extends Thing>(thing: T, hierarchy: Hierarchy): T => {
+  applyHierarchy: <T extends Thing>(thing: T, hierarchy?: Hierarchy): StripRealm<T> => {
     if(Element.isElement(thing))
-      return Element.applyHierarchy(thing, hierarchy) as T
+      return Element.applyHierarchy(thing, hierarchy) as never
     if(Operation.isOperation(thing))
-      return Operation.applyHierarchy(thing, hierarchy) as T
+      return Operation.applyHierarchy(thing, hierarchy) as never
     if(Component.isComponent(thing))
-      return Component.applyHierarchy(thing, hierarchy) as T
-    throw new Error("Invalid thing passed to RealmThing.create");
+      return Component.applyHierarchy(thing, hierarchy) as never
+    throw new Error("Invalid thing passed to RealmThing.create")
   },
-  stripRealm: <T extends Thing>(thing: T): StripRealm<T> => thing as never
+  stripRealm: <T extends Thing>(thing: T): StripRealm<T> =>
+    Thing.applyHierarchy(thing, thing.hierarchy)
 }

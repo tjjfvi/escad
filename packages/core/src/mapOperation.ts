@@ -1,5 +1,5 @@
 import { Hierarchy } from "./Hierarchy";
-import { Operation } from "./Operation";
+import { Operation, OperationOptions } from "./Operation";
 import { Product } from "./Product";
 import { Element } from "./Element";
 
@@ -8,8 +8,7 @@ export const mapOperation = (
  <I extends Product, O extends Product = I>(
     name: string,
     func: (i: I) => O,
-    overrideHierarchy = true,
-    hierarchy?: Hierarchy,
+    opts: OperationOptions = {},
   ) =>
     Operation.create<I, O>(name, arg => {
       const argArr = Element.toArray(arg);
@@ -25,5 +24,5 @@ export const mapOperation = (
       });
 
       return output;
-    }, overrideHierarchy, hierarchy)
+    }, opts)
 );

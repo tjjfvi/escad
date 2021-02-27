@@ -72,7 +72,9 @@ export const diff: ConvertibleOperation<Bsp, Bsp> =
     const positive = Union.create(TupleProduct.create(Element.toArrayFlat(args[0])));
     const negative = Union.create(TupleProduct.create(Element.toArrayFlat(args.slice(1))));
     return Diff.create(positive, negative);
-  });
+  }, { showOutputInHierarchy: false });
 
 export const sub: Component<ConvertibleElementish<Bsp>[], ConvertibleOperation<Bsp, Bsp>> =
-  Component.create("sub", (...el) => Operation.create("sub", el2 => diff(el2, el), false), false)
+  Component.create("sub", (...el) =>
+    Operation.create("sub", el2 => diff(el2, el), { overrideHierarchy: false })
+  , { showOutputInHierarchy: false })

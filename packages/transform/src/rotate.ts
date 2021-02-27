@@ -46,15 +46,15 @@ export const rotate: Component<RotateArgs, ConvertibleOperation<Mesh, Transforma
 
     let m = Matrix4.multiply(Matrix4.multiply(Matrix4.rotateX(x), Matrix4.rotateY(y)), Matrix4.rotateZ(z));
 
-    return mapOperation("rotate", leaf => Transformation.create(m, leaf));
-  });
+    return mapOperation("rotate", leaf => Transformation.create(m, leaf), { showOutputInHierarchy: false });
+  }, { showOutputInHierarchy: false });
 
 export const rX: Component<[number], ConvertibleOperation<Mesh, Transformation<Mesh>>> =
-  Component.create("rX", (n: number) => rotate({ x: n }));
+  Component.create("rX", (n: number) => rotate({ x: n }), { showOutputInHierarchy: false });
 export const rY: Component<[number], ConvertibleOperation<Mesh, Transformation<Mesh>>> =
-  Component.create("rY", (n: number) => rotate({ y: n }));
+  Component.create("rY", (n: number) => rotate({ y: n }), { showOutputInHierarchy: false });
 export const rZ: Component<[number], ConvertibleOperation<Mesh, Transformation<Mesh>>> =
-  Component.create("rZ", (n: number) => rotate({ z: n }));
+  Component.create("rZ", (n: number) => rotate({ z: n }), { showOutputInHierarchy: false });
 
 export const rotateX = rX;
 export const rotateY = rY;

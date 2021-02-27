@@ -15,30 +15,47 @@ export interface Operation<I extends Product, O extends Product> {
   readonly name: string,
   readonly hierarchy?: Hierarchy,
   readonly overrideHierarchy?: boolean,
+  readonly showOutputInHierarchy?: boolean,
   (...args: Elementish<I>[]): Element<O>,
+}
+
+export interface OperationOptions {
+  readonly hierarchy?: Hierarchy,
+  readonly overrideHierarchy?: boolean,
+  readonly showOutputInHierarchy?: boolean,
 }
 
 export const Operation = {
   create: <I extends Product, O extends Product>(
     name: string,
     func: (arg: Element<I>) => Elementish<O>,
-    overrideHierarchy = true,
-    hierarchy?: Hierarchy,
+    { hierarchy, overrideHierarchy = true, showOutputInHierarchy = true }: OperationOptions = {},
   ): Operation<I, O> => {
     const that = Object.assign(
       new ExtensibleFunction(
         (...args: any[]) => {
-          let result = Element.create(contextStack.wrap(() => func(Element.create(args))));
+          const result = Element.create(contextStack.wrap(() => func(Element.create(args))));
+          const origHierarchy = Hierarchy.from(result);
+          let resultHierarchy = origHierarchy;
           if(overrideHierarchy)
-            result = Element.applyHierarchy(result, Hierarchy.create({
+            resultHierarchy = Hierarchy.create({
               braceType: "|",
               children: [
                 hierarchy ?? Hierarchy.create({ name }),
                 ...Hierarchy.from(args).children,
               ],
-              linkedProducts: result.hierarchy?.linkedProducts,
-            }));
-          return result;
+              linkedProducts: origHierarchy.linkedProducts,
+            });
+          if(overrideHierarchy && showOutputInHierarchy)
+            resultHierarchy = Hierarchy.create({
+              braceType: "=",
+              children: [
+                resultHierarchy,
+                origHierarchy,
+              ],
+              linkedProducts: origHierarchy.linkedProducts,
+            })
+          return Element.applyHierarchy(result, resultHierarchy);
         },
         {},
         name,
@@ -48,11 +65,15 @@ export const Operation = {
         func,
         hierarchy,
         overrideHierarchy,
+        showOutputInHierarchy,
       }
     ) as Operation<I, O>;
     return that;
   },
-  applyHierarchy: <I extends Product, O extends Product>(operation: Operation<I, O>, hierarchy: Hierarchy) =>
-    Operation.create(operation.name, operation.func, operation.overrideHierarchy, hierarchy),
+  applyHierarchy: <I extends Product, O extends Product>(operation: Operation<I, O>, hierarchy?: Hierarchy) =>
+    Operation.create(operation.name, operation.func, {
+      ...operation,
+      hierarchy,
+    }),
   isOperation: checkTypeProperty<Operation<any, any>>("Operation"),
 }

@@ -51,4 +51,5 @@ conversionRegistry.register<FlipFaces<Mesh>, Mesh>({
   weight: 1,
 })
 
-export const flip: ConvertibleOperation<Mesh, FlipFaces<Mesh>> = mapOperation("flip", FlipFaces.create);
+export const flip: ConvertibleOperation<Mesh, FlipFaces<Mesh>> =
+  mapOperation("flip", FlipFaces.create, { showOutputInHierarchy: false });

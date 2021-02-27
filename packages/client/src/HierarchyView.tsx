@@ -116,6 +116,7 @@ type TreePart =
     readonly children: readonly Tree[],
     readonly joiner?: string,
     readonly forceOpenable?: boolean,
+    readonly forceEllipsis?: boolean,
   }
 
 type Tree = TreePart[];
@@ -198,6 +199,17 @@ function _hierarchyToTree(hierarchy: Hierarchy): Tree{
       ]),
     ]
   }
+  if(hierarchy.braceType === "=") {
+    return [
+      ...hierarchyToTree(hierarchy.children[0]),
+      { text: [" = "] },
+      {
+        state: { open: false },
+        children: [hierarchyToTree(hierarchy.children[1])],
+        forceEllipsis: true,
+      }
+    ]
+  }
   assertNever(hierarchy.braceType);
 }
 
@@ -223,7 +235,7 @@ function collapseTree(tree: Tree, onUpdate?: () => void, noSingle = false): Tree
       ] :
       [...inner, { text: [] }]
   return tree.flatMap(part => {
-    if("text" in part || part.state.open)
+    if("text" in part || part.state.open || part.forceEllipsis)
       return [part];
     if(part.children.length === 1 && !(noSingle && part.forceOpenable))
       return wrapMaybeForceOpenable(part, part.children[0]);

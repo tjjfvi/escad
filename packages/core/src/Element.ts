@@ -34,10 +34,12 @@ export interface Element<T extends Product> {
 }
 
 export const Element = {
-  create: <T extends Product>(elementish: Elementish<T>, hierarchy = Hierarchy.from(elementish)): Element<T> => {
+  create: <T extends Product>(elementish: Elementish<T>, hierarchy?: Hierarchy): Element<T> => {
     let value: T | Arrayish<Element<T>>;
-    while(Element.isElement(elementish))
+    if(Element.isElement(elementish)) {
+      hierarchy ??= elementish.hierarchy;
       elementish = elementish.value;
+    }
     if(elementish instanceof Array)
       value = elementish.map(x => Element.create(x));
     else if(ObjMap.isObjMap(elementish))
@@ -83,7 +85,7 @@ export const Element = {
       (Array.isArray(el) ? el.value : [el]) as never;
       return Element.create([...toArr(a), ...toArr(b)]);
     },
-  applyHierarchy: <T extends Product>(element: Element<T>, hierarchy: Hierarchy): Element<T> =>
+  applyHierarchy: <T extends Product>(element: Element<T>, hierarchy?: Hierarchy): Element<T> =>
     Element.create(element.value, hierarchy),
   isElement: checkTypeProperty<Element<Product>>("Element"),
   map: <T extends Product, U extends Product>(

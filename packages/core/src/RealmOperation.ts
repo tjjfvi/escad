@@ -40,13 +40,13 @@ export const RealmOperation = {
               return RealmOperation.create(realm, Operation.create(
                 operation.name + "+" + args[0].name,
                 (a: any) => that(args[0](...a.val)) as any,
-                false,
+                { overrideHierarchy: false },
               ));
             if(Component.isComponent(args[0]))
               return RealmComponent.create(realm, Component.create(
                 args[0].name + "+" + operation.name,
                 (...a: any) => (that as any)((args[0](...a) as any)),
-                false
+                { overrideHierarchy: false },
               ));
             return RealmThing.create(realm, operation(...args));
           },
