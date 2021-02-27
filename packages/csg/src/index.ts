@@ -5,6 +5,7 @@ export { default } from "./chainables";
 
 export * from './Bsp';
 export * from './bspMeshConversion';
+export * from './chainables';
 export * from './diff';
 export * from './intersection';
 export * from './meld';

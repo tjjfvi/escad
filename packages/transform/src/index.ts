@@ -5,6 +5,7 @@ export { default } from "./chainables";
 
 export * from './Matrix4';
 export * from './Transformation';
+export * from './chainables';
 export * from './flip';
 export * from './rotate';
 export * from './scale';

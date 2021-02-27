@@ -1,6 +1,4 @@
 
-/* eslint-disable no-console */
-
 import webpack, { NormalModule } from "webpack"
 // @ts-ignore
 import CachedConstDependency = require("webpack/lib/dependencies/CachedConstDependency");
@@ -9,13 +7,13 @@ import NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 import { stylusGlobals } from "@escad/bundler";
 import path from "path";
 
-const staticDir = __dirname + "/../static/";
+export const staticDir = __dirname + "/../../static/";
 const bundledDir = staticDir + "bundled/";
 
 const prefix = "/bundled/";
 
-const compiler = webpack({
-  entry: [require.resolve("./main/index")],
+export const compiler = webpack({
+  entry: [require.resolve("../main/index")],
   output: {
     path: bundledDir,
     filename: "bundle.js",
@@ -26,14 +24,14 @@ const compiler = webpack({
   },
   resolve: {
     alias: {
-      child_process: require.resolve("./stubs/child_process"),
+      child_process: require.resolve("../stubs/child_process"),
       fs: "browserfs/dist/shims/fs.js",
       buffer: "browserfs/dist/shims/buffer.js",
       path: "browserfs/dist/shims/path.js",
       processGlobal: "browserfs/dist/shims/process.js",
       bufferGlobal: "browserfs/dist/shims/bufferGlobal.js",
       bfsGlobal: require.resolve("browserfs"),
-      process: require.resolve("./stubs/process"),
+      process: require.resolve("../stubs/process"),
     }
   },
   devtool: "source-map",
@@ -114,22 +112,3 @@ const compiler = webpack({
     }
   ],
 })
-
-const handler = (err: Error | undefined) => {
-  if(err)
-    return console.error(err);
-  console.log("Bundled TS");
-}
-
-// compiler.run(handler)
-compiler.watch({
-  ignored: /node_modules/,
-}, handler);
-
-import express = require("express");
-
-const app = express();
-
-app.use(express.static(staticDir));
-
-app.listen(8000)

@@ -13,8 +13,10 @@
     "lint": "eslint '**/*.{ts,tsx}' --quiet --fix",
     "open-coverage": "open coverage/lcov-report/index.html",
     "escad": "npm run quick-build && node packages/cli/dist/bin/escad.js",
-    "playground": "node packages/playground/dist/devServer.js",
-    "open-errors": "npm run quick-build | grep packages/ | sed -e 's/(.*//' | sort | uniq | xargs code"
+    "playground": "node packages/playground/dist/server/devServer.js",
+    "open-errors": "npm run quick-build | grep packages/ | sed -e 's/(.*//' | sort | uniq | xargs code",
+    "postinstall": "git checkout -- package-lock.json package.json; npm run bootstrap",
+    "build-playground-prod": "npm run force-build && npm run build-playground && node packages/playground/dist/server/buildProduction.js"
   },
   "author": "",
   "license": "ISC",
