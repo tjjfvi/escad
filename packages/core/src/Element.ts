@@ -3,6 +3,7 @@ import { Hierarchy } from "./Hierarchy";
 import { Product } from "./Product";
 import { ConvertibleTo } from "./Conversions";
 import { checkTypeProperty } from "./checkTypeProperty";
+import { artifactManager } from "./ArtifactManager";
 
 interface ObjMap<T> {
   readonly [name: string]: T,
@@ -47,9 +48,10 @@ export const Element = {
         Object.create(null),
         ...Object.entries(elementish).map(([k, v]) => ({ [k]: Element.create(v) }))
       );
-    else if(Product.isProduct(elementish))
+    else if(Product.isProduct(elementish)) {
       value = elementish;
-    else
+      artifactManager.storeRaw(value);
+    } else
       throw new Error("Invalid elementish passed to Element");
     return {
       type: "Element",

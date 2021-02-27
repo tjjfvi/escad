@@ -41,9 +41,9 @@ export const Component = {
                 that.hierarchy ?? Hierarchy.create({ name }),
                 ...args.map(x => Hierarchy.from(x)),
               ],
-              linkedProducts: result.hierarchy?.linkedProducts,
+              linkedProducts: origHierarchy.linkedProducts,
             });
-          if(overrideHierarchy && showOutputInHierarchy && hierarchy && origHierarchy)
+          if(overrideHierarchy && showOutputInHierarchy)
             hierarchy = Hierarchy.create({
               braceType: "=",
               children: [
