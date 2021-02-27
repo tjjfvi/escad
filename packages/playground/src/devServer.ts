@@ -132,18 +132,4 @@ const app = express();
 
 app.use(express.static(staticDir));
 
-// @ts-ignore
-import corsAnywhere = require("cors-anywhere");
-
-const proxy = corsAnywhere.createServer({
-  originWhitelist: [], // Allow all origins
-  requireHeaders: [], // Do not require any headers.
-  removeHeaders: [] // Do not remove any headers.
-});
-
-app.get('/registry/:proxyUrl*', (req, res) => {
-  req.url = req.url.replace('/registry/', '/https://registry.npmjs.org/');
-  proxy.emit('request', req, res);
-});
-
 app.listen(8000)

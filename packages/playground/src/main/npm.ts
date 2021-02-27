@@ -8,7 +8,7 @@ let deps: string[] = [];
 let currentOperation: Promise<unknown> = installProjectPromise
 
 const arborist = new Arborist({
-  registry: window.location.origin + "/registry/",
+  registry: "https://registry.npmjs.cf/",
   path: "/project/",
   audit: false,
 });
