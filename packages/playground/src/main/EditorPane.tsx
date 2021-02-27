@@ -52,7 +52,14 @@ export const augmentMonacoEditor = (editor: monaco.editor.IStandaloneCodeEditor)
   fs.mkdirSync("/project");
 
   const defaultCode = `
-// Hello World!
+import escad from "@escad/core";
+import "@escad/builtins/register";
+
+export default () =>
+    escad
+        .cube({ size: 1 })
+        .sub(escad.cube({ size: .9 }))
+        .sub(escad.cube({ size: 1, center: false }))
 `;
 
   let code = localStorage.code ?? defaultCode;
