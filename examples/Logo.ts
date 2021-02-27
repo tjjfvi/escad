@@ -20,12 +20,9 @@ export default renderFunction(
       }),
     })
   },
-  ({ outerSize, hollow: { enabled: hollow, innerSize } }) => {
-    const x = escad.cube({ size: outerSize });
-    console.log(escad.cube, x);
-    const y = x._(hollow ? sub(cube({ size: innerSize })) : escad)
-    console.log(y)
-    return y
+  ({ outerSize, hollow: { enabled: hollow, innerSize } }) =>
+    escad
+      .cube({ size: outerSize })
+      ._(hollow ? sub(cube({ size: innerSize })) : escad)
       .sub(cube({ size: outerSize, center: false }))
-  }
 );
