@@ -8,6 +8,7 @@ import rendererSource from "!!raw-loader!./renderer.js";
 import { getResourceFilePath } from "../utils/resourceFiles";
 import { brandConnection, createMessenger, workerConnection } from "@escad/messages";
 import { promisify } from "util";
+import { ModuleKind, ModuleResolutionKind, ScriptTarget, transpileModule } from "typescript"
 
 export type RendererBundlerMessengerShape = {
   bundle: () => Promise<void>,
@@ -49,7 +50,21 @@ const compiler = webpack({
 compiler.inputFileSystem.join = fs.join;
 
 const run = promisify(compiler.run.bind(compiler))
+const writeFile = promisify(fs.writeFile);
+const readFile = promisify(fs.readFile);
 
 createMessenger<RendererBundlerMessengerShape, {/**/}>({
-  bundle: async () => void await run()
+  bundle: async () => {
+    await writeFile("/project/index.js", transpileModule(await readFile("/project/index.ts", "utf8"), {
+      compilerOptions: {
+        strict: true,
+        esModuleInterop: true,
+        target: ScriptTarget.ES2019,
+        downlevelIteration: true,
+        moduleResolution: ModuleResolutionKind.NodeJs,
+        module: ModuleKind.CommonJS,
+      }
+    }).outputText)
+    void await run();
+  }
 }, brandConnection(workerConnection(self as any), "rendererBundler"));

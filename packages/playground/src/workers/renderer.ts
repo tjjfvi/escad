@@ -6,5 +6,5 @@ import { createRendererServerMessenger } from "@escad/renderer"
 
 createRendererServerMessenger(
   brandConnection(workerConnection(self as any), "renderer"),
-  () => require("/project/index.ts"),
+  () => require("/project/index.js"),
 );
