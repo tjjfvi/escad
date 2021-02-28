@@ -24,7 +24,9 @@ export const EditorPane = () =>
         },
         scrollbar: {
           useShadows: false,
-        }
+        },
+        renderIndentGuides: false,
+        tabSize: 2,
       }}
       defaultLanguage="typescript"
       theme={"escad"}
@@ -56,10 +58,10 @@ import escad from "@escad/core";
 import "@escad/builtins/register";
 
 export default () =>
-    escad
-        .cube({ size: 1 })
-        .sub(escad.cube({ size: .9 }))
-        .sub(escad.cube({ size: 1, center: false }))
+  escad
+    .cube({ size: 1 })
+    .sub(escad.cube({ size: .9 }))
+    .sub(escad.cube({ size: 1, center: false }))
 `;
 
   let code = localStorage.code ?? defaultCode;
