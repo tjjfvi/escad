@@ -75,5 +75,5 @@ export const Operation = {
       ...operation,
       hierarchy,
     }),
-  isOperation: checkTypeProperty<Operation<any, any>>("Operation"),
+  isOperation: checkTypeProperty.string<Operation<any, any>>("Operation"),
 }

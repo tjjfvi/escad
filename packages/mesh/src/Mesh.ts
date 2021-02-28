@@ -4,7 +4,7 @@ import { Vector3 } from "./Vector3";
 import { createLeafProductUtils, Id, LeafProduct } from "@escad/core";
 import { registerPlugin } from "@escad/register-client-plugin"
 
-const meshId = Id.create(__filename, "@escad/mesh", "0", "LeafProduct/Mesh");
+const meshId = Id.create(__filename, "@escad/mesh", "LeafProduct", "Mesh", "0");
 
 export interface Mesh extends LeafProduct {
   readonly type: typeof meshId,

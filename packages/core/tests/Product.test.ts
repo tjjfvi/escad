@@ -11,9 +11,9 @@ import {
   UnknownProduct,
 } from "../src";
 
-const productAId = Id.create(__filename, "@escad/core", "0", "ProductA");
-const productBId = Id.create(__filename, "@escad/core", "0", "ProductB");
-const productCId = Id.create(__filename, "@escad/core", "0", "ProductC");
+const productAId = Id.create(__filename, "@escad/core", "LeafProduct", "ProductA", "0");
+const productBId = Id.create(__filename, "@escad/core", "LeafProduct", "ProductB", "0");
+const productCId = Id.create(__filename, "@escad/core", "LeafProduct", "ProductC", "0");
 interface ProductA extends LeafProduct { readonly type: typeof productAId }
 interface ProductB extends LeafProduct { readonly type: typeof productBId }
 interface ProductC extends LeafProduct { readonly type: typeof productCId }

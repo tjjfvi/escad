@@ -1,17 +1,16 @@
 
-import { Id } from "./Id";
+import { ScopedId } from "./Id";
 import { ConvertibleTo } from "./Conversions";
 import { Product, _Product } from "./Product";
 import { conversionRegistry } from "./ConversionRegistry";
 import { checkTypeProperty } from "./checkTypeProperty";
 
 export interface LeafProduct extends _Product {
-  readonly type: Id<string, string, `LeafProduct/${string}`>,
+  readonly type: ScopedId<"LeafProduct">,
 }
 
 export const LeafProduct = {
-  isLeafProduct: (arg: unknown): arg is LeafProduct =>
-    typeof arg === "object" && arg !== null && "type" in arg && Id.isId(arg["type" as keyof typeof arg]),
+  isLeafProduct: checkTypeProperty.idScope<LeafProduct>("LeafProduct"),
   getLeafProductType: <T extends LeafProduct>(product: T): LeafProductType<T> =>
     LeafProductType.create(product.type) as any,
 };
@@ -33,9 +32,9 @@ export interface LeafProductType<T extends LeafProduct = LeafProduct> {
 }
 
 export const LeafProductType = {
-  create: (id: Id<string, string, `LeafProduct/${string}`>): LeafProductType => ({
+  create: (id: ScopedId<"LeafProduct">): LeafProductType => ({
     type: "LeafProductType",
     id,
   }),
-  isLeafProductType: checkTypeProperty<LeafProductType>("LeafProductType"),
+  isLeafProductType: checkTypeProperty.string<LeafProductType>("LeafProductType"),
 }

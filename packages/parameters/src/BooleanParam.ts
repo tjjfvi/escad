@@ -8,7 +8,7 @@ export interface BooleanParamArgs {
   readonly desc?: string,
 }
 
-const booleanParamId = Id.create(__filename, "@escad/parameters", "0", "Parameter/BooleanParam");
+const booleanParamId = Id.create(__filename, "@escad/parameters", "Parameter", "BooleanParam", "0");
 
 export interface BooleanParam extends Parameter<boolean>, BooleanParamArgs {
   readonly type: typeof booleanParamId,

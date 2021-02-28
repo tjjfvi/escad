@@ -17,7 +17,7 @@ import {
 import { Bsp, ClipOptions } from "./Bsp";
 import { Union } from "./union";
 
-const diffMarkerId = Id.create(__filename, "@escad/csg", "0", "LeafProduct/DiffMarker");
+const diffMarkerId = Id.create(__filename, "@escad/csg", "LeafProduct", "DiffMarker", "0");
 
 export interface DiffMarker extends LeafProduct {
   readonly type: typeof diffMarkerId,

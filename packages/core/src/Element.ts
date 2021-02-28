@@ -89,7 +89,7 @@ export const Element = {
     },
   applyHierarchy: <T extends Product>(element: Element<T>, hierarchy?: Hierarchy): Element<T> =>
     Element.create(element.value, hierarchy),
-  isElement: checkTypeProperty<Element<Product>>("Element"),
+  isElement: checkTypeProperty.string<Element<Product>>("Element"),
   map: <T extends Product, U extends Product>(
     element: Element<T>,
     fn: (value: T) => Elementish<U>,

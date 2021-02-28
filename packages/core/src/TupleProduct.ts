@@ -12,7 +12,7 @@ export const TupleProduct = {
     type: "TupleProduct",
     children,
   }),
-  isTupleProduct: checkTypeProperty<TupleProduct>("TupleProduct"),
+  isTupleProduct: checkTypeProperty.string<TupleProduct>("TupleProduct"),
   getTupleProductType: <T extends TupleProduct>(product: T): TupleProductType<T> =>
     TupleProductType.create(product.children.map(Product.getProductType)) as any,
 }
@@ -31,5 +31,5 @@ export const TupleProductType = {
     type: "TupleProductType",
     elementTypes,
   }),
-  isTupleProductType: checkTypeProperty<TupleProductType>("TupleProductType"),
+  isTupleProductType: checkTypeProperty.string<TupleProductType>("TupleProductType"),
 }

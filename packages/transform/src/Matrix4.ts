@@ -14,7 +14,7 @@ export type Sixteen<T> = [
   T, T, T, T,
 ];
 
-const matrix4Id = Id.create(__filename, "@escad/transform", "0", "LeafProduct/Matrix4");
+const matrix4Id = Id.create(__filename, "@escad/transform", "LeafProduct", "Matrix4", "0");
 
 export interface Matrix4 extends LeafProduct {
   readonly type: typeof matrix4Id,

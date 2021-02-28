@@ -1,11 +1,11 @@
 
-import { Id } from "./Id";
+import { ScopedId } from "./Id";
 import { ContextStack, contextStack as defaultContextStack } from "./ContextStack";
 
 export class Context<T> {
 
   constructor(
-    public id: Id,
+    public id: ScopedId<"Context">,
     public defaultValue: T,
     public contextStack: ContextStack = defaultContextStack,
   ){}

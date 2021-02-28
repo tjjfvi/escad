@@ -11,7 +11,7 @@ export interface NumberParamArgs {
   readonly integer?: boolean,
 }
 
-const numberParamId = Id.create(__filename, "@escad/parameters", "0", "Parameter/NumberParam");
+const numberParamId = Id.create(__filename, "@escad/parameters", "Parameter", "NumberParam", "0");
 
 export interface NumberParam extends Parameter<number>, NumberParamArgs {
   readonly type: typeof numberParamId,

@@ -3,7 +3,7 @@ import { Face } from "./Face";
 import { Mesh } from "./Mesh";
 
 exportTypeRegistry.register<Mesh>({
-  id: Id.create(__filename, "@escad/mesh", "0", "ExportType/MeshBinaryStl"),
+  id: Id.create(__filename, "@escad/mesh", "ExportType", "MeshBinaryStl", "0"),
   name: "Binary STL",
   extension: ".stl",
   productType: Mesh.productType,
@@ -27,7 +27,7 @@ exportTypeRegistry.register<Mesh>({
 })
 
 exportTypeRegistry.register<Mesh>({
-  id: Id.create(__filename, "@escad/mesh", "0", "ExportType/MeshAsciiStl"),
+  id: Id.create(__filename, "@escad/mesh", "ExportType", "MeshAsciiStl", "0"),
   name: "ASCII STL",
   extension: ".stl",
   productType: Mesh.productType,

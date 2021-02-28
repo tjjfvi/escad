@@ -1,3 +1,4 @@
+
 import { checkTypeProperty } from "./checkTypeProperty";
 import { Element, Elementish } from "./Element";
 import { ExtensibleFunction } from "./ExtensibleFunction";
@@ -57,5 +58,5 @@ export const Realm = {
     ) as Realm<C>;
     return that;
   },
-  isRealm: checkTypeProperty<Realm<unknown>>("Realm")
+  isRealm: checkTypeProperty.string<Realm<unknown>>("Realm")
 }

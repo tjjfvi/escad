@@ -1,7 +1,7 @@
-import { Id } from "@escad/core";
+import { ScopedId } from "@escad/core";
 
 export interface Parameter<V> {
-  readonly type: Id<string, string, `Parameter/${string}`>,
+  readonly type: ScopedId<string>,
   readonly defaultValue: V,
   readonly name?: string,
   readonly desc?: string,

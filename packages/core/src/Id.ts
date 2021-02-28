@@ -6,21 +6,30 @@ import { checkTypeProperty } from "./checkTypeProperty";
 
 const ids = new Map<string, Id>();
 
-export interface Id<P extends string = string, V extends string = string, N extends string = string> {
+export interface Id<
+  P extends string = string,
+  S extends string = string,
+  N extends string = string,
+  V extends string = string,
+> {
   readonly type: "Id",
   readonly packageName: P,
-  readonly version: V,
+  readonly scope: S,
   readonly name: N,
-  readonly full: `${P}/${V}/${N}`,
+  readonly version: V,
+  readonly full: string,
 }
 
+export type ScopedId<S extends string> = Id<string, S, string, string>
+
 export const Id = {
-  create: <P extends string, V extends string, N extends string>(
+  create: <P extends string, S extends string, V extends string, N extends string>(
     filepath: string,
     packageName: P,
-    version: V,
+    scope: S,
     name: N,
-  ): Id<P, V, N> => {
+    version: V,
+  ): Id<P, S, N, V> => {
     if(!("mocked" in fs)) {
       const result = readPkgUp.sync({ cwd: path.dirname(filepath) });
       if(!result)
@@ -35,12 +44,13 @@ export const Id = {
           `Id.create: version mismatch; ${packageName}@${packageJsonVersion} attempted to create an id under ${version}`
         );
     }
-    const full = `${packageName}/${version}/${name}` as `${P}/${V}/${N}`;
+    const full = `${packageName}/${scope}/${name}/${version}` as `${P}/${V}/${N}`;
     if(ids.has(full))
       throw new Error(`Duplicate ids created under ${full}`);
-    const id: Id<P, V, N> = {
+    const id: Id<P, S, N, V> = {
       type: "Id",
       packageName,
+      scope,
       name,
       version,
       full,
@@ -48,6 +58,6 @@ export const Id = {
     ids.set(full, id);
     return id;
   },
-  isId: checkTypeProperty<Id>("Id"),
+  isId: checkTypeProperty.string<Id>("Id"),
   equal: (a: Id, b: Id) => a.full === b.full
 };

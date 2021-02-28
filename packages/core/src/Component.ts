@@ -22,7 +22,7 @@ export interface ComponentOpts {
 }
 
 export const Component = {
-  isComponent: checkTypeProperty<Component<any, any>>("Component"),
+  isComponent: checkTypeProperty.string<Component<any, any>>("Component"),
   create: <I extends any[], T extends Thing>(
     name: string,
     func: (...args: I) => T,

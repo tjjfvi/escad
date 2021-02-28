@@ -50,7 +50,7 @@ export const Hierarchy = {
       linkedProducts,
     };
   },
-  isHierarchy: checkTypeProperty<Hierarchy>("Hierarchy"),
+  isHierarchy: checkTypeProperty.string<Hierarchy>("Hierarchy"),
   from: (val: unknown, raw = false): Hierarchy => {
     if(
       typeof val === "string" ||

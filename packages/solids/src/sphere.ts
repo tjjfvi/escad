@@ -14,7 +14,7 @@ import { Smooth, smoothContext } from "./smoothContext";
 
 const tau = Math.PI * 2;
 
-const sphereId = Id.create(__filename, "@escad/solids", "0", "LeafProduct/Sphere");
+const sphereId = Id.create(__filename, "@escad/solids", "LeafProduct", "Sphere", "0");
 
 export interface Sphere extends LeafProduct {
   readonly type: typeof sphereId,

@@ -11,7 +11,7 @@ import {
 } from "@escad/core";
 import { TripletObj, Triplet, interpretTriplet } from "./helpers";
 
-const cubeId = Id.create(__filename, "@escad/solids", "0", "LeafProduct/Cube");
+const cubeId = Id.create(__filename, "@escad/solids", "LeafProduct", "Cube", "0");
 
 export interface Cube extends LeafProduct {
   readonly type: typeof cubeId,

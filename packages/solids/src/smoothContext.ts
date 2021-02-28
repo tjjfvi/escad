@@ -7,5 +7,5 @@ export interface Smooth {
   readonly size?: number,
 }
 
-const smoothContextId = Id.create(__filename, "@escad/solids", "0", "SmoothContext");
+const smoothContextId = Id.create(__filename, "@escad/solids", "Context", "SmoothContext", "0");
 export const smoothContext = new Context<Smooth>(smoothContextId, { sides: 16 })

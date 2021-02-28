@@ -19,7 +19,7 @@ export const ArrayProduct = {
       children,
     };
   },
-  isArrayProduct: checkTypeProperty<ArrayProduct>("ArrayProduct"),
+  isArrayProduct: checkTypeProperty.string<ArrayProduct>("ArrayProduct"),
   getArrayProductType: <T extends ArrayProduct>(product: T): ArrayProductType<T> =>
     ArrayProductType.create(Product.getProductType(product.children[0])) as any
 }
@@ -34,5 +34,5 @@ export const ArrayProductType = {
     type: "ArrayProductType",
     elementType,
   }),
-  isArrayProductType: checkTypeProperty<ArrayProductType>("ArrayProductType"),
+  isArrayProductType: checkTypeProperty.string<ArrayProductType>("ArrayProductType"),
 }

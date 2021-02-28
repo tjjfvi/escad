@@ -12,7 +12,7 @@ export const UnknownProduct = {
     type: "UnknownProduct",
     product,
   }),
-  isUnknownProduct: checkTypeProperty<UnknownProduct>("UnknownProduct"),
+  isUnknownProduct: checkTypeProperty.string<UnknownProduct>("UnknownProduct"),
 };
 
 export interface UnknownProductType {
@@ -23,5 +23,5 @@ export const UnknownProductType = {
   create: (): UnknownProductType => ({
     type: "UnknownProductType",
   }),
-  isUnknownProductType: checkTypeProperty<UnknownProductType>("UnknownProductType"),
+  isUnknownProductType: checkTypeProperty.string<UnknownProductType>("UnknownProductType"),
 }

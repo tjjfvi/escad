@@ -18,7 +18,7 @@ import {
 } from "@escad/core";
 import { Bsp, ClipOptions } from "./Bsp";
 
-const intersectionMarkerId = Id.create(__filename, "@escad/csg", "0", "LeafProduct/IntersectionMarker");
+const intersectionMarkerId = Id.create(__filename, "@escad/csg", "LeafProduct", "IntersectionMarker", "0");
 
 export interface IntersectionMarker extends LeafProduct {
   readonly type: typeof intersectionMarkerId,

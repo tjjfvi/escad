@@ -20,7 +20,7 @@ export class ConversionRegistry {
     this.artifactManager.artifactStores.push(this.artifactStore)
   }
 
-  static readonly artifactStoreId = Id.create(__filename, "@escad/core", "0", "ConversionRegistryArifactStore");
+  static readonly artifactStoreId = Id.create(__filename, "@escad/core", "ArtifactStore", "ConversionRegistry", "0");
   readonly artifactStore: ArtifactStore = {
     lookupRef: async ([id, toType, product]) => {
       if(!Id.isId(id) || !Id.equal(id, ConversionRegistry.artifactStoreId)) return null;

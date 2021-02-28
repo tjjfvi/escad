@@ -13,7 +13,7 @@ import {
 } from "@escad/core";
 import { Mesh, Face } from "@escad/mesh";
 
-const flipFacesMarkerId = Id.create(__filename, "@escad/transform", "0", "LeafProduct/FlipFacesProduct");
+const flipFacesMarkerId = Id.create(__filename, "@escad/transform", "LeafProduct", "FlipFacesProduct", "0");
 
 export interface FlipFacesMarker extends LeafProduct {
   readonly type: typeof flipFacesMarkerId,

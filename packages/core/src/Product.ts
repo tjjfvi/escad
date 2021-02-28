@@ -12,8 +12,10 @@ import {
 import { hash } from "./hash";
 import { timers } from "./Timer";
 import { UnknownProduct, UnknownProductType } from "./UnknownProduct";
+import { ScopedId } from "./Id";
 
 export interface _Product {
+  readonly type: string | ScopedId<"LeafProduct">,
   readonly [__convertibleToTransitivityOverride]?: TransitivityOverride.A,
   readonly [__convertibleTo]?: (
     __convertibleToOverride extends keyof this
