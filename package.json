@@ -6,7 +6,7 @@
     "bootstrap": "lerna exec 'rm -rf node_modules package-lock.json'; lerna bootstrap --hoist; patch-package",
     "test": "npm run quick-build && jest -u",
     "quick-build": "tsc -b packages",
-    "build-playground": "mkdir -p packages/playground/static/packages; lerna run build-for-playground; lerna run build-playground",
+    "build-playground": "mkdir -p packages/playground/static/packages; lerna run build-for-playground --parallel; lerna run build-playground",
     "build": "npm run bootstrap; npm run index; npm run quick-build",
     "force-build": "lerna run clean; npm run build",
     "index": "create-index -X ts -x ts -x tsx -Sui packages/ -c {}",
