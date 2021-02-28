@@ -9,7 +9,6 @@
     "clean": "rm -rf dist tsconfig.tsbuildinfo",
     "build": "npm run clean; tsc -b .",
     "build-playground": "./buildProject.sh",
-    "prepack": "npm run build",
     "open-errors": "tsc | grep -p '^\\S' | sed -e 's/(.*//' | sort | uniq | xargs code"
   },
   "author": "",

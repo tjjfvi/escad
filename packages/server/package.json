@@ -8,7 +8,6 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "clean": "rm -rf dist tsconfig.tsbuildinfo",
     "build": "npm run clean; tsc -b .",
-    "prepack": "npm run build",
     "open-errors": "tsc | grep -p '^\\S' | sed -e 's/(.*//' | sort | uniq | xargs code"
   },
   "author": "",

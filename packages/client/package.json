@@ -9,7 +9,6 @@
     "clean": "rm -rf dist tsconfig.tsbuildinfo",
     "build-for-playground": "npm pack; tgz=`echo *.tgz`; mv $tgz ${tgz%-*}.tgz; mv *.tgz ../playground/static/packages",
     "build": "npm run clean; tsc -b .",
-    "prepack": "npm run build",
     "open-errors": "tsc | grep -p '^\\S' | sed -e 's/(.*//' | sort | uniq | xargs code"
   },
   "author": "",
