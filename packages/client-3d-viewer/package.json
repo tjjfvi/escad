@@ -18,7 +18,7 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "rhobo": "^0.3.6",
-    "three": "^0.112.1"
+    "three": "^0.125.0"
   },
   "devDependencies": {
     "@types/react": "^17.0.0",
