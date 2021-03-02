@@ -1,6 +1,6 @@
 
 import { Messenger } from "@escad/messages"
-import { Hash } from "@escad/core"
+import { Hash, Log } from "@escad/core"
 import { Info } from "./serverRenderer"
 
 export type ServerClientShape = {
@@ -16,6 +16,7 @@ export type ServerClientEvents = {
   info: [info: Info],
   bundleStart: [],
   bundleFinish: [hash: Hash<unknown>],
+  log: [log: Hash<Log> | null],
 }
 
 export type ServerClientMessenger = Messenger<ServerClientShape, ClientServerShape, ServerClientEvents>

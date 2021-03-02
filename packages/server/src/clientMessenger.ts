@@ -18,7 +18,7 @@ export const createServerClientMessenger = ({
   bundlerMessenger?: ServerBundlerMessenger,
   serverEmitter: ServerEmitter,
 }) => {
-  let renderer = createRendererMessenger()
+  let renderer: Promise<ServerRendererMessenger>
   const messenger: ServerClientMessenger = createMessenger({
     impl: {
       async lookupRaw(hash){
@@ -39,6 +39,7 @@ export const createServerClientMessenger = ({
     },
     connection,
   })
+  renderer = createRenderer()
 
   messenger.emit("reload", serverEmitter.on("reload"))
   if(bundlerMessenger) {
@@ -47,4 +48,11 @@ export const createServerClientMessenger = ({
   }
 
   return messenger
+
+  async function createRenderer(){
+    renderer?.then(r => r.destroy(true))
+    renderer = createRendererMessenger()
+    messenger.emit("log", (await renderer).on("log"))
+    return await renderer
+  }
 }

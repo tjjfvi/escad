@@ -9,6 +9,7 @@ import {
   contextStack,
   ObjectParam,
   ProductType,
+  Logger,
 } from "@escad/core"
 import { Info, RendererServerMessenger } from "@escad/protocol"
 import { Connection, createMessenger } from "@escad/messages"
@@ -19,6 +20,7 @@ import { RenderFunction } from "./renderFunction"
 export const createRendererServerMessenger = (
   connection: Connection<unknown>,
   requireFile: () => unknown,
+  logger: Logger,
 ) => {
   const messenger: RendererServerMessenger = createMessenger({
     impl: {
@@ -28,9 +30,26 @@ export const createRendererServerMessenger = (
     connection,
   })
 
+  let lastEmitLogPromise = Promise.resolve<unknown>(undefined)
+  logger.onLog(async log => {
+    if(!log)
+      messenger.emit("log", null)
+    else {
+      // Preserves log ordering and avoids race conditions where
+      // the client requests the log before the file is written
+      const [hash] = await (lastEmitLogPromise = Promise.all([
+        artifactManager.storeRaw(log),
+        lastEmitLogPromise,
+      ]))
+      messenger.emit("log", hash)
+    }
+  })
+
   return messenger
 
   async function run(params?: unknown){
+    logger.log(null)
+
     const fullExported = requireFile()
 
     if(typeof fullExported !== "object" || !fullExported || !("default" in fullExported))

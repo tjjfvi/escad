@@ -5,6 +5,7 @@ import { HierarchyPane } from "./HierarchyPane"
 import { ParametersPane } from "./ParametersPane"
 import { Preview } from "./Preview"
 import { ClientState } from "./ClientState"
+import { LogsPane } from "./LogsPane"
 
 export const App = ({ state }: { state: ClientState }) =>
   <ClientState.Context.Provider value={state}>
@@ -12,4 +13,5 @@ export const App = ({ state }: { state: ClientState }) =>
     <Preview/>
     <Statuses/>
     <HierarchyPane/>
+    <LogsPane/>
   </ClientState.Context.Provider>
