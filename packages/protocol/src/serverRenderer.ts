@@ -1,5 +1,5 @@
 
-import { ExportTypeInfo, Hash, Hierarchy, ObjectParam, Product, ProductType } from "@escad/core"
+import { ExportTypeInfo, Hash, Hierarchy, ObjectParam, Product, ProductType, Log } from "@escad/core"
 import { Messenger } from "@escad/messages"
 import { PluginRegistration } from "@escad/register-client-plugin"
 
@@ -17,7 +17,9 @@ export type RendererServerShape = {
   lookupRef(loc: readonly unknown[]): Promise<Hash<unknown>>,
 }
 
-export type ServerRendererEvents = {}
+export type ServerRendererEvents = {
+  log: [log: Hash<Log> | null],
+}
 
 export type ServerRendererShape = {}
 

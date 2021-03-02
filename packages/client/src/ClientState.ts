@@ -10,6 +10,7 @@ import {
   Hierarchy,
   Id,
   Product,
+  Log,
 } from "@escad/core"
 import { ObjectParam } from "@escad/core"
 import { createContext } from "react"
@@ -106,6 +107,7 @@ export class ClientState implements ArtifactStore {
   paramDef = observable<ObjectParam<any>>()
   params = observable<Record<string, unknown>>({})
   hierarchy = observable<Hierarchy>()
+  logs = observable<Promise<Log>[]>([])
   sendParams = false
 
   productHashes = computed<readonly Hash<Product>[]>(() => {
@@ -155,6 +157,17 @@ export class ClientState implements ArtifactStore {
       this.handleConversions(info.conversions)
       this.handleExportTypes(info.exportTypes)
     })
+
+    this.clientServerMessenger.on("log", logHash => {
+      if(!logHash)
+        return this.logs([])
+      this.logs([...this.logs(), (async () => {
+        const log = await this.artifactManager.lookupRaw(logHash)
+        if(!log)
+          throw new Error(`Could not find log under hash of ${logHash}`)
+        return log
+      })()])
+    })
   }
 
   removeStatusSet(name: string){
@@ -166,6 +179,7 @@ export class ClientState implements ArtifactStore {
   }
 
   connect(){
+    this.logs([])
     this.clientServerMessenger.emit("reload")
   }
 

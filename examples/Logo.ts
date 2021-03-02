@@ -2,7 +2,6 @@
 import "../packages/builtins/register"
 import { renderFunction } from "../packages/renderer/dist"
 import { booleanParam, numberParam } from "../packages/builtins/dist"
-import { cube, sub } from "../packages/builtins/dist"
 import escad, { objectParam } from "../packages/core/dist"
 
 export default renderFunction(
@@ -19,9 +18,16 @@ export default renderFunction(
       }),
     }),
   },
-  ({ outerSize, hollow: { enabled: hollow, innerSize } }) =>
-    escad
-      .cube({ size: outerSize })
-      ._(hollow ? sub(cube({ size: innerSize })) : escad)
-      .sub(cube({ size: outerSize, center: false })),
+  ({ outerSize, hollow: { enabled: hollow, innerSize } }) => {
+    console.log("hi")
+    console.log({ outerSize, hollow, innerSize })
+    const main = escad.cube({ size: outerSize })
+    const inner = escad.cube({ size: innerSize })
+    const corner = escad.cube({ size: outerSize, center: false })
+    const final = main
+      ._(hollow ? escad.sub(inner) : escad)
+      .sub(corner)
+    console.log({ main, inner, corner, final })
+    return final
+  },
 )

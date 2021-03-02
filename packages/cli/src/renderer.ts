@@ -2,9 +2,9 @@
 // eslint-disable-next-line @typescript-eslint/no-var-requires
 require("ts-node").register()
 
-import { artifactManager } from "@escad/core"
+import { artifactManager, logger } from "@escad/core"
 import { parentProcessConnection } from "@escad/messages"
-import { createRendererServerMessenger } from "@escad/renderer"
+import { createRendererServerMessenger, hookConsole } from "@escad/renderer"
 import { FsArtifactStore } from "./FsArtifactStore"
 
 const artifactsDir = process.env.ARTIFACTS_DIR
@@ -13,4 +13,6 @@ const loadFile = process.env.LOAD_FILE
 if(!loadFile) throw new Error("Renderer process was not passed environment variable LOAD_FILE")
 artifactManager.artifactStores.push(new FsArtifactStore(artifactsDir))
 
-createRendererServerMessenger(parentProcessConnection(), () => require(loadFile))
+createRendererServerMessenger(parentProcessConnection(), () => require(loadFile), logger)
+
+hookConsole(console, logger)

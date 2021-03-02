@@ -1,0 +1,29 @@
+
+.Logs
+  > div.content
+    display flex
+    flex-direction column
+    overflow-y auto
+    padding-bottom
+    &:after
+      content ""
+      height 100px
+      flex 0 0 auto
+  .Log:not(.none)
+    font-size 20px
+    font-family Inconsolata, monospace
+  .Log
+    color $lightgrey
+    margin-left 5px
+  .Log.loading
+    display flex
+    align-items center
+    justify-content center
+    color $grey
+  .Log.none
+    display flex
+    flex-direction column
+    align-items center
+    justify-content center
+    & > .Id
+      color $grey
