@@ -59,7 +59,7 @@ function isProduct(arg: any, productType?: ProductType){
       ArrayProduct.isArrayProduct(arg) ||
       UnknownProduct.isUnknownProduct(arg)
     ) &&
-    (!productType || Hash.create(Product.getProductType(arg)) === Hash.create(productType))
+    (!productType || Hash.equal(Product.getProductType(arg), productType))
   );
 }
 

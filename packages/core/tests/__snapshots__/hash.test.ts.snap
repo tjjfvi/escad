@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[` 1`] = `
+exports[`Hash.create 1`] = `
 Array [
   "4a44dc15364204a80fe80e9039455cc1608281820fe2b24f1e5233ade6af1dd5",
   "74234e98afe7498fb5daf1f36ac2d78acc339464f950703b8c019892f982b90b",

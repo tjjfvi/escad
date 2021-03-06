@@ -58,7 +58,7 @@ export class ConversionRegistry {
       type: fromType,
       prior: [] as ConversionPath,
     }], function*({ type, prior }){
-      if(prior.some(c => Hash.create(c.fromType) === Hash.create(type)))
+      if(prior.some(c => Hash.equal(c.fromType, type)))
         return;
 
       initialComposed.add([fromType, type], prior);
@@ -95,7 +95,7 @@ export class ConversionRegistry {
   }
 
   private maybeImplicitlyConvertibleTo(a: ProductType, b: ProductType): boolean{
-    return Hash.create(a) === Hash.create(b) || (
+    return Hash.equal(a, b) || (
       TupleProductType.isTupleProductType(a) &&
       TupleProductType.isTupleProductType(b) &&
       a.elementTypes.length === b.elementTypes.length
@@ -117,7 +117,7 @@ export class ConversionRegistry {
       const fromType = path[i - 1].toType;
       const toType = path[i].fromType;
 
-      if(Hash.create(fromType) === Hash.create(toType))
+      if(Hash.equal(fromType, toType))
         continue;
 
       if(UnknownProductType.isUnknownProductType(toType)) {

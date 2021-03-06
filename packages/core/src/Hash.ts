@@ -8,6 +8,17 @@ export const Hash = {
     hash.update(timers.stringifyHash.time(JSON.stringify)(obj));
     return hash.digest("hex") as Hash<T>;
   }),
+  equal: (a: unknown, b: unknown) => {
+    if(a === b)
+      return true
+    if(typeof a !== "object" || typeof b !== "object")
+      return false
+    if(!a || !b)
+      return false
+    if(a["type" as never] !== b["type" as never])
+      return false
+    return Hash.create(a) === Hash.create(b);
+  }
 };
 
 export type Hash<T = unknown> = string & { __hash__: T };
