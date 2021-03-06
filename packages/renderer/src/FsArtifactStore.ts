@@ -15,12 +15,12 @@ export class FsArtifactStore implements ArtifactStore {
 
   constructor(public rootDir: string){}
 
-  async storeRaw(hash: Hash, buffer: BufferLike){
+  async storeRaw(hash: Hash<unknown>, buffer: BufferLike){
     const path = await this.getPathRaw(hash);
     await writeFile(path, buffer);
   }
 
-  async storeRef(loc: readonly unknown[], hash: Hash){
+  async storeRef(loc: readonly unknown[], hash: Hash<unknown>){
     const fromPath = await this.getPathRef(loc);
     const toPath = await this.getPathRaw(hash);
     const tmpPath = await this.getPathTmp();
@@ -28,7 +28,7 @@ export class FsArtifactStore implements ArtifactStore {
     await rename(tmpPath, fromPath);
   }
 
-  async lookupRaw(hash: Hash){
+  async lookupRaw(hash: Hash<unknown>){
     const path = await this.getPathRaw(hash);
     return await readFile(path).catch(() => null);
   }
@@ -45,7 +45,7 @@ export class FsArtifactStore implements ArtifactStore {
     return path;
   }
 
-  private async getPathRaw(hash: Hash){
+  private async getPathRaw(hash: Hash<unknown>){
     const path = join(this.rootDir, "raw", hash);
     await mkdir(dirname(path), { recursive: true });
     return path;

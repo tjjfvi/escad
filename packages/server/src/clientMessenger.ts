@@ -5,7 +5,7 @@ import { ServerRendererMessenger } from "@escad/protocol";
 
 export const createServerClientMessenger = (
   connection: Connection<unknown>,
-  hashToUrl: (hash: Hash) => string,
+  hashToUrl: (hash: Hash<unknown>) => string,
   rendererMessenger: ServerRendererMessenger,
   bundlerMessenger?: ServerBundlerMessenger,
 ) => {

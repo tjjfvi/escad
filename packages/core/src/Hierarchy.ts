@@ -14,7 +14,7 @@ export interface Hierarchy {
   readonly name: string,
   readonly braceType: BraceType,
   readonly children: readonly Hierarchy[],
-  readonly linkedProducts: readonly Hash[],
+  readonly linkedProducts: readonly Hash<Product>[],
 }
 
 export const Hierarchy = {

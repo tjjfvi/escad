@@ -66,15 +66,15 @@ export class ArtifactManager {
     return artifactHash;
   }
 
-  async lookupRaw(
-    hash: Hash,
+  async lookupRaw<T>(
+    hash: Hash<T>,
     excludeStores?: ReadonlySet<ArtifactStore>,
-  ){
+  ): Promise<T | null>{
     for(const store of this.artifactStores)
       if(!excludeStores?.has(store)) {
         const buffer = await store.lookupRaw?.(hash, this);
         if(buffer)
-          return this.deserialize(buffer);
+          return this.deserialize(buffer) as T;
       }
     return null;
   }

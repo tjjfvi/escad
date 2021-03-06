@@ -1,12 +1,12 @@
 
-import { ExportTypeInfo, Hash, ProductType } from "@escad/core";
+import { ExportTypeInfo, Hash, Hierarchy, ObjectParam, Product, ProductType } from "@escad/core";
 import { Messenger } from "@escad/messages";
 import { PluginRegistration } from "@escad/register-client-plugin";
 
 export interface RunInfo {
-  hierarchy: Hash | null,
-  products: Hash[],
-  paramDef: Hash | null,
+  hierarchy: Hash<Hierarchy> | null,
+  products: Hash<Product>[],
+  paramDef: Hash<ObjectParam<any>> | null,
 }
 
 export interface LoadInfo extends RunInfo {
@@ -19,7 +19,7 @@ export type RendererServerMessengerShape = {
   onLoad(): AsyncIterable<LoadInfo>,
   load(path: string): Promise<LoadInfo>,
   run(params: unknown): Promise<RunInfo>,
-  lookupRef(loc: readonly unknown[]): Promise<Hash>,
+  lookupRef(loc: readonly unknown[]): Promise<Hash<unknown>>,
 }
 
 export type ServerRendererMessengerShape = {

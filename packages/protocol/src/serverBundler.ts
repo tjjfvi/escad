@@ -14,7 +14,7 @@ export type ServerBundlerMessengerShape = { /**/ };
 
 export type BundlerServerMessengerShape = {
   bundle(options: BundleOptions): Promise<void>,
-  onBundle(): AsyncIterable<Hash>,
+  onBundle(): AsyncIterable<Hash<unknown>>,
 }
 
 export type ServerBundlerMessenger = Messenger<ServerBundlerMessengerShape, BundlerServerMessengerShape>;

@@ -21,4 +21,4 @@ export const Hash = {
   }
 };
 
-export type Hash<T = unknown> = string & { __hash__: T };
+export type Hash<T> = string & { __hash__: T };

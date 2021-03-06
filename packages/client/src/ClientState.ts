@@ -8,6 +8,7 @@ import {
   ExportTypeInfo,
   Hash,
   Hierarchy,
+  Parameter,
   Product,
   ProductType,
 } from "@escad/core";
@@ -73,10 +74,13 @@ export class ClientState implements ArtifactStore {
     }
   }
 
-  public async handleProducts(productHashes: readonly Hash[]){
-    this.products(await Promise.all(productHashes.map(async (sha): Promise<Product> =>
-      await this.artifactManager.lookupRaw(sha) as Product
-    )));
+  public async handleProducts(productHashes: readonly Hash<Product>[]){
+    this.products(await Promise.all(productHashes.map(async (hash): Promise<Product> => {
+      const product = await this.artifactManager.lookupRaw(hash)
+      if(!product)
+        throw new Error("Could not find Product under hash of " + hash)
+      return product;
+    })));
   }
 
   private async handleExportTypes(exportTypes?: ExportTypeInfo[]){
@@ -84,12 +88,12 @@ export class ClientState implements ArtifactStore {
       this.exportTypes(exportTypes);
   }
 
-  private async handleParamDef(paramDefHash: Hash | null){
-    this.paramDef(paramDefHash ? await this.artifactManager.lookupRaw(paramDefHash) as ObjectParam<any> : null)
+  private async handleParamDef(paramDefHash: Hash<ObjectParam<any>> | null){
+    this.paramDef(paramDefHash ? await this.artifactManager.lookupRaw(paramDefHash) : null)
   }
 
-  private async handleHierarchy(hierarchyHash: Hash | null){
-    this.hierarchy(hierarchyHash ? await this.artifactManager.lookupRaw(hierarchyHash) as Hierarchy : null)
+  private async handleHierarchy(hierarchyHash: Hash<Hierarchy> | null){
+    this.hierarchy(hierarchyHash ? await this.artifactManager.lookupRaw(hierarchyHash) : null)
   }
 
   private async handleConversions(conversions?: [ProductType, ProductType][]){
@@ -105,11 +109,11 @@ export class ClientState implements ArtifactStore {
         })
   }
 
-  lookupRawUrl(hash: Hash): Promise<string>{
+  lookupRawUrl(hash: Hash<unknown>): Promise<string>{
     return this.clientServerMessenger.req.lookupRaw(hash);
   }
 
-  async lookupRaw(hash: Hash){
+  async lookupRaw(hash: Hash<unknown>){
     const response = await fetch(await this.lookupRawUrl(hash));
     return Buffer.from(await response.arrayBuffer())
   }

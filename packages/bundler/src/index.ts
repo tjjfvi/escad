@@ -12,11 +12,11 @@ export const createBundlerServerMessenger = (
   connection: Connection<unknown>,
   createCompiler: (options: BundleOptions, entryPaths: string[]) => Compiler,
 ): BundlerServerMessenger => {
-  const [emitBundle, onBundle] = createEmittableAsyncIterable<Hash>();
+  const [emitBundle, onBundle] = createEmittableAsyncIterable<Hash<unknown>>();
 
   let watcher: ReturnType<Compiler["watch"]> | undefined;
 
-  let lastOptionsHash: Hash | undefined;
+  let lastOptionsHash: Hash<BundleOptions> | undefined;
 
   return createMessenger({
     bundle,

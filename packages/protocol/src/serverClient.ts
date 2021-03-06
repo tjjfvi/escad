@@ -1,11 +1,11 @@
 
 import { Messenger } from "@escad/messages";
-import { ExportTypeInfo, Hash, ProductType } from "@escad/core";
+import { ExportTypeInfo, Hash, Hierarchy, ObjectParam, Product, ProductType } from "@escad/core";
 
 export interface Info {
-  products: Hash[],
-  hierarchy: Hash | null,
-  paramDef: Hash | null,
+  products: Hash<Product>[],
+  hierarchy: Hash<Hierarchy> | null,
+  paramDef: Hash<ObjectParam<any>> | null,
   conversions?: [ProductType, ProductType][],
   exportTypes?: ExportTypeInfo[],
 }
@@ -13,9 +13,9 @@ export interface Info {
 export type ServerClientMessengerShape = {
   ping(period: number): AsyncIterable<void>,
   info(): AsyncIterable<Info>,
-  lookupRaw(hash: Hash): Promise<string>,
+  lookupRaw(hash: Hash<unknown>): Promise<string>,
   lookupRef(loc: readonly unknown[]): Promise<string>,
-  onBundle(): AsyncIterable<Hash>,
+  onBundle(): AsyncIterable<Hash<unknown>>,
 }
 
 export type ClientServerMessengerShape = {
