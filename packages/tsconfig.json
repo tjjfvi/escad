@@ -17,22 +17,13 @@
       "path": "client"
     },
     {
-      "path": "client-3d-viewer"
+      "path": "client-builtins"
     },
     {
       "path": "bundler"
     },
     {
-      "path": "client-mesh"
-    },
-    {
       "path": "core"
-    },
-    {
-      "path": "csg"
-    },
-    {
-      "path": "mesh"
     },
     {
       "path": "parameters"
@@ -48,15 +39,6 @@
     },
     {
       "path": "protocol"
-    },
-    {
-      "path": "protocol"
-    },
-    {
-      "path": "solids"
-    },
-    {
-      "path": "transform"
     },
   ]
 }

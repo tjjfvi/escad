@@ -2,8 +2,7 @@
 import "../packages/builtins/register";
 import { renderFunction } from "../packages/renderer/dist";
 import { booleanParam, numberParam, objectParam } from "../packages/parameters/dist";
-import { cube } from "../packages/solids/dist";
-import { sub } from "../packages/csg/dist";
+import { cube, sub } from "../packages/builtins/dist";
 import escad from "../packages/core/dist";
 
 export default renderFunction(

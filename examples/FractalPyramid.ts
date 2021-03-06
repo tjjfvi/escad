@@ -2,7 +2,7 @@ import escad, { Element } from "../packages/core";
 import "../packages/builtins/register";
 import { renderFunction } from "../packages/renderer";
 import { numberParam } from "../packages/renderer/node_modules/@escad/parameters/dist";
-import { Mesh } from "../packages/csg/node_modules/@escad/mesh/dist";
+import { Mesh } from "../packages/csg/node_modules/@escad/builtins/dist";
 
 export default renderFunction(
   {

@@ -1,5 +1,14 @@
 
-import "@escad/mesh/register";
-import "@escad/csg/register";
-import "@escad/solids/register";
-import "@escad/transform/register";
+import "..";
+import { extendChainables } from "@escad/core";
+import chainables from "../chainables"
+
+type Chainables = typeof chainables;
+
+declare global {
+  export namespace escad {
+    export interface DefaultChainables extends Chainables { }
+  }
+}
+
+extendChainables(chainables);
