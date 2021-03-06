@@ -1,5 +1,4 @@
-import { ObjectParamGeneric, ObjectParamValue } from "@escad/parameters"
-import { Elementish } from "@escad/core"
+import { ObjectParamGeneric, ObjectParamValue, Elementish } from "@escad/core"
 
 export class RenderFunction<O extends ObjectParamGeneric> {
 

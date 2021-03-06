@@ -9,10 +9,12 @@ export { default } from "./chainables";
 
 // @create-index {"mode":"*","ignore":["register","helpers.ts"]}
 
+export * from './BooleanParam';
 export * from './Bsp';
 export * from './Face';
 export * from './Matrix4';
 export * from './Mesh';
+export * from './NumberParam';
 export * from './Plane';
 export * from './Transformation';
 export * from './Vector3';

@@ -1,8 +1,7 @@
 import { IdView } from "./IdView";
 import { Observable, Writeable } from "rhobo";
 import React, { useContext } from "react";
-import { HashMap, Id } from "@escad/core";
-import { Parameter } from "@escad/parameters";
+import { HashMap, Id, Parameter } from "@escad/core";
 import { ClientState } from "./ClientState";
 
 export interface ParameterRegistration<T, P extends Parameter<T>> {

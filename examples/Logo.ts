@@ -1,9 +1,9 @@
 
 import "../packages/builtins/register";
 import { renderFunction } from "../packages/renderer/dist";
-import { booleanParam, numberParam, objectParam } from "../packages/parameters/dist";
+import { booleanParam, numberParam } from "../packages/builtins/dist";
 import { cube, sub } from "../packages/builtins/dist";
-import escad from "../packages/core/dist";
+import escad, { objectParam } from "../packages/core/dist";
 
 export default renderFunction(
   {

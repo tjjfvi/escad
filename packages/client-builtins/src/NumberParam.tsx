@@ -1,8 +1,8 @@
 import "../stylus/NumberParam.styl"
-import { NumberParam } from "@escad/parameters";
+import { NumberParam } from "@escad/builtins";
 import React from "react";
 import { observer, useObservable, useComputed } from "rhobo";
-import { NameDesc, registerParameter } from "./Parameters";
+import { NameDesc, registerParameter } from "@escad/client";
 
 registerParameter<number, NumberParam>({
   id: NumberParam.id,

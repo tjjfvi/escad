@@ -7,10 +7,10 @@ import {
   Element,
   Hierarchy,
   contextStack,
+  ObjectParam,
 } from "@escad/core";
 import { RunInfo, RendererServerMessenger, LoadInfo } from "@escad/protocol";
 import { Connection, createEmittableAsyncIterable, createMessenger } from "@escad/messages";
-import { ObjectParam } from "@escad/parameters";
 import { registeredPlugins } from "@escad/register-client-plugin";
 import { lookupRef } from "./lookupRef";
 import { FsArtifactStore } from "./FsArtifactStore";

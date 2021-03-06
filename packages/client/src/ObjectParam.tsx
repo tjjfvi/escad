@@ -1,5 +1,5 @@
 import "../stylus/ObjectParam.styl"
-import { ObjectParam, Parameter } from "@escad/parameters";
+import { ObjectParam, Parameter } from "@escad/core";
 import React from "react";
 import { observer } from "rhobo";
 import { NameDesc, ParameterView, registerParameter } from "./Parameters";

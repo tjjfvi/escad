@@ -11,7 +11,7 @@ import {
   Product,
   ProductType,
 } from "@escad/core";
-import { ObjectParam } from "@escad/parameters";
+import { ObjectParam } from "@escad/core";
 import { createContext } from "react";
 import {
   Connection,

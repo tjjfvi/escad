@@ -1,4 +1,4 @@
-import { ScopedId } from "@escad/core";
+import { ScopedId } from "./Id";
 
 export interface Parameter<V> {
   readonly type: ScopedId<string>,

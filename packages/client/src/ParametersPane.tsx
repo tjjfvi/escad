@@ -1,5 +1,5 @@
 import "../stylus/Parameters.styl"
-import { Parameter } from "@escad/parameters";
+import { Parameter } from "@escad/core";
 import React, { useContext } from "react";
 import { observer } from "rhobo";
 import { ClientState } from "./ClientState";

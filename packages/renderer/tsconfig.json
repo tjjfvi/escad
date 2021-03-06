@@ -15,9 +15,6 @@
       "path": "../core/tsconfig.json"
     },
     {
-      "path": "../parameters/tsconfig.json"
-    },
-    {
       "path": "../register-client-plugin/tsconfig.json"
     },
     {

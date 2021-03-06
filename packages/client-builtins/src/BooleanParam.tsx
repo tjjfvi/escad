@@ -1,9 +1,9 @@
 
 import "../stylus/BooleanParam.styl";
-import { BooleanParam } from "@escad/parameters";
+import { BooleanParam } from "@escad/builtins";
 import React from "react";
 import { observer } from "rhobo";
-import { NameDesc, registerParameter } from "./Parameters";
+import { NameDesc, registerParameter } from "@escad/client";
 
 registerParameter<boolean, BooleanParam>({
   id: BooleanParam.id,

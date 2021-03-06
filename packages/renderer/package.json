@@ -15,7 +15,6 @@
   "dependencies": {
     "@escad/messages": "^0.0.0",
     "@escad/core": "^0.0.0",
-    "@escad/parameters": "^0.0.0",
     "@escad/register-client-plugin": "^0.0.0",
     "@escad/protocol": "^0.0.0",
     "fs-extra": "^9.1.0"
