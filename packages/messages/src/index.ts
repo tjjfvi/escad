@@ -9,7 +9,6 @@ export * from './createConnection';
 export * from './createEmittableAsyncIterable';
 export * from './createMessenger';
 export * from './dedupeAsyncIterable';
-export * from './eeToAsyncIterable';
 export * from './filterConnection';
 export * from './mapConnection';
 export * from './noopConnection';
