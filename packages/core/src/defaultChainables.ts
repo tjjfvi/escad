@@ -9,4 +9,6 @@ export type DefaultChainables = escad.DefaultChainables;
 
 export const defaultChainables: DefaultChainables = {};
 
-export const extendChainables = (extension: Partial<DefaultChainables>) => Object.assign(defaultChainables, extension);
+// istanbul ignore next
+export const extendChainables = (extension: Partial<DefaultChainables>) =>
+  Object.assign(defaultChainables, extension);

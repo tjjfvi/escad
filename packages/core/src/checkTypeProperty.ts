@@ -4,6 +4,7 @@ export const checkTypeProperty =
     (value: unknown): value is T =>
       (typeof value === "object" || typeof value === "function") &&
       value !== null &&
+      "type" in value &&
       fn(value["type" as never])
 
 checkTypeProperty.string = <T extends { type: string }>(type: T["type"]) =>
