@@ -73,8 +73,10 @@ export class ArtifactManager {
     for(const store of this.artifactStores)
       if(!excludeStores?.has(store)) {
         const buffer = await store.lookupRaw?.(hash, this);
-        if(buffer)
-          return this.deserialize(buffer) as T;
+        if(!buffer) continue;
+        const artifact = this.deserialize(buffer);
+        if(Hash.check(hash, artifact))
+          return artifact;
       }
     return null;
   }

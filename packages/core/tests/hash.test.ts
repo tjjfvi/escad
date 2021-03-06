@@ -29,3 +29,8 @@ test("Hash.equal", () => {
   expect(Hash.equal({ x: 1 }, null)).toBe(false);
   expect(Hash.equal(undefined, null)).toBe(false);
 })
+
+test("Hash.check", () => {
+  expect(Hash.check(Hash.create(1), 2)).toBe(false);
+  expect(Hash.check(Hash.create(1), 1)).toBe(true);
+})

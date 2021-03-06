@@ -18,7 +18,15 @@ export const Hash = {
     if(a["type" as never] !== b["type" as never])
       return false
     return Hash.create(a) === Hash.create(b);
-  }
+  },
+  check: <T>(hash: Hash<T>, value: unknown): value is T & NonExhaustive =>
+    Hash.create(value) === hash
 };
 
 export type Hash<T> = string & { __hash__: T };
+
+declare class NonExhaustive {
+
+ private __nonExhaustive__: never
+
+}
