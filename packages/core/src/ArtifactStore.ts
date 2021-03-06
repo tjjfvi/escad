@@ -1,6 +1,6 @@
 
 import { ArtifactManager } from "./ArtifactManager";
-import { Hash } from "./hash";
+import { Hash } from "./Hash";
 
 export type BufferLike = Buffer | string;
 

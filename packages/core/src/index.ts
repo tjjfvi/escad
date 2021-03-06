@@ -20,6 +20,7 @@ export * from './Element';
 export * from './ExportType';
 export * from './ExportTypeRegistry';
 export * from './ExtensibleFunction';
+export * from './Hash';
 export * from './HashMap';
 export * from './Hierarchy';
 export * from './Id';
@@ -42,6 +43,5 @@ export * from './WeakCache';
 export * from './checkTypeProperty';
 export * from './defaultChainables';
 export * from './depthFirst';
-export * from './hash';
 export * from './mapOperation';
 

@@ -1,6 +1,6 @@
 
 import { WeakCache } from "./WeakCache";
-import { Hash, hash } from "./hash";
+import { Hash } from "./Hash";
 import { ArtifactStore, BufferLike } from "./ArtifactStore";
 import { timers } from "./Timer";
 
@@ -33,7 +33,7 @@ export class ArtifactManager {
     excludeStores?: ReadonlySet<ArtifactStore>,
   ){
     const artifact = await artifactPromise;
-    const artifactHash = hash(artifact);
+    const artifactHash = Hash.create(artifact);
 
     this.cache.set(artifactHash, () => artifact);
 
@@ -51,7 +51,7 @@ export class ArtifactManager {
     excludeStores?: ReadonlySet<ArtifactStore>,
   ){
     const artifact = await artifactPromise;
-    const artifactHash = hash(artifact);
+    const artifactHash = Hash.create(artifact);
 
     this.cache.set(loc, () => artifact);
 

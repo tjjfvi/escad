@@ -2,7 +2,7 @@
 import { ProductType, Product } from "./Product";
 import { ConvertibleTo, ConversionImpl } from "./Conversions";
 import { MultiHashMap } from "./MultiHashMap";
-import { hash } from "./hash";
+import { Hash } from "./Hash";
 import { artifactManager, ArtifactManager } from "./ArtifactManager";
 import { ArtifactStore } from "./ArtifactStore";
 import { Id } from "./Id";
@@ -58,7 +58,7 @@ export class ConversionRegistry {
       type: fromType,
       prior: [] as ConversionPath,
     }], function*({ type, prior }){
-      if(prior.some(c => hash(c.fromType) === hash(type)))
+      if(prior.some(c => Hash.create(c.fromType) === Hash.create(type)))
         return;
 
       initialComposed.add([fromType, type], prior);
@@ -95,7 +95,7 @@ export class ConversionRegistry {
   }
 
   private maybeImplicitlyConvertibleTo(a: ProductType, b: ProductType): boolean{
-    return hash(a) === hash(b) || (
+    return Hash.create(a) === Hash.create(b) || (
       TupleProductType.isTupleProductType(a) &&
       TupleProductType.isTupleProductType(b) &&
       a.elementTypes.length === b.elementTypes.length
@@ -117,7 +117,7 @@ export class ConversionRegistry {
       const fromType = path[i - 1].toType;
       const toType = path[i].fromType;
 
-      if(hash(fromType) === hash(toType))
+      if(Hash.create(fromType) === Hash.create(toType))
         continue;
 
       if(UnknownProductType.isUnknownProductType(toType)) {
@@ -199,7 +199,7 @@ export class ConversionRegistry {
     // console.log(conversions?.map(formatConversion), conversions?.length);
 
     if(!conversions)
-      throw new Error(`Could not find path to convert product type ${hash(fromType)} to ${hash(toType)}`);
+      throw new Error(`Could not find path to convert product type ${Hash.create(fromType)} to ${Hash.create(toType)}`);
 
     let prevProducts: (Product | null)[] = [from];
     let currentProduct: Product = from;

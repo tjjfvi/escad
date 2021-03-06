@@ -2,7 +2,7 @@
 import { Compiler, Stats } from "webpack"
 import { Connection, createEmittableAsyncIterable, createMessenger } from "@escad/messages";
 import { BundleOptions, BundlerServerMessenger } from "@escad/protocol";
-import { hash, Hash } from "@escad/core";
+import { Hash } from "@escad/core";
 import { writeFile } from "fs-extra";
 import stylus from "stylus";
 import path from "path";
@@ -25,7 +25,7 @@ export const createBundlerServerMessenger = (
 
   function bundle(options: BundleOptions){
     return new Promise<void>((resolve, reject) => {
-      const optionsHash = hash(options);
+      const optionsHash = Hash.create(options);
       if(optionsHash === lastOptionsHash)
         return;
       lastOptionsHash = optionsHash;
@@ -46,7 +46,7 @@ export const createBundlerServerMessenger = (
           reject(err);
           return;
         }
-        const bundleHash = hash(result?.compilation.fullHash ?? Math.random());
+        const bundleHash = Hash.create(result?.compilation.fullHash ?? Math.random());
         writeFile(path.join(options.outDir, "bundle.hash"), bundleHash);
         emitBundle(bundleHash);
         resolve();

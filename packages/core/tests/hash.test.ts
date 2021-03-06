@@ -1,5 +1,5 @@
 
-import { hash } from "../src";
+import { Hash } from "../src";
 
 test("", () => {
   expect([
@@ -7,5 +7,5 @@ test("", () => {
     null,
     [1, 2, 3],
     { a: 1 },
-  ].map(hash)).toMatchSnapshot()
+  ].map(Hash.create)).toMatchSnapshot()
 })

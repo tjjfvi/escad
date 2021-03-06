@@ -4,7 +4,7 @@ import { LeafProduct } from "./LeafProduct";
 import { checkTypeProperty } from "./checkTypeProperty";
 import { Component } from "./Component";
 import { Element } from "./Element";
-import { hash, Hash } from "./hash";
+import { Hash } from "./Hash";
 import { Operation } from "./Operation";
 
 export type BraceType = "{" | "[" | "|" | "(" | ":" | "=" | "";
@@ -72,12 +72,12 @@ export const Hierarchy = {
       if(LeafProduct.isLeafProduct(val))
         return Hierarchy.create({
           name: `<${val.type.full}>`,
-          linkedProducts: [hash(val)],
+          linkedProducts: [Hash.create(val)],
         });
       if(Product.isProduct(val))
         return Hierarchy.create({
           name: `<${val.type}>`,
-          linkedProducts: [hash(val)],
+          linkedProducts: [Hash.create(val)],
         });
     }
     if(val instanceof Array)

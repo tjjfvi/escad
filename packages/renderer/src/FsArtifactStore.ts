@@ -1,5 +1,5 @@
 
-import { hash, Hash, Id, ArtifactStore, BufferLike } from "@escad/core";
+import { Hash, Id, ArtifactStore, BufferLike } from "@escad/core";
 import { join, dirname } from "path";
 import fs from "fs";
 import { promisify } from "util";
@@ -52,7 +52,7 @@ export class FsArtifactStore implements ArtifactStore {
   }
 
   private async getPathRef(loc: readonly unknown[]){
-    const path = join(this.rootDir, ...loc.map(x => Id.isId(x) ? x.full.replace(/\//g, "-") : hash(x)));
+    const path = join(this.rootDir, ...loc.map(x => Id.isId(x) ? x.full.replace(/\//g, "-") : Hash.create(x)));
     await mkdir(dirname(path), { recursive: true });
     return path;
   }

@@ -9,7 +9,7 @@ import {
   __convertibleToTransitivityOverride,
   TransitivityOverride,
 } from "./Conversions";
-import { hash } from "./hash";
+import { Hash } from "./Hash";
 import { timers } from "./Timer";
 import { UnknownProduct, UnknownProductType } from "./UnknownProduct";
 import { ScopedId } from "./Id";
@@ -59,7 +59,7 @@ function isProduct(arg: any, productType?: ProductType){
       ArrayProduct.isArrayProduct(arg) ||
       UnknownProduct.isUnknownProduct(arg)
     ) &&
-    (!productType || hash(Product.getProductType(arg)) === hash(productType))
+    (!productType || Hash.create(Product.getProductType(arg)) === Hash.create(productType))
   );
 }
 

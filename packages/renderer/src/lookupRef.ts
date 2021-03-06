@@ -1,9 +1,9 @@
 
-import { hash, artifactManager, Id, ConversionRegistry, ExportTypeRegistry } from "@escad/core";
+import { Hash, artifactManager, Id, ConversionRegistry, ExportTypeRegistry } from "@escad/core";
 
 export async function lookupRef(loc: readonly unknown[]){
   const type = getRefType(loc);
-  const timerName = type ? type + " " + hash(loc) : undefined;
+  const timerName = type ? type + " " + Hash.create(loc) : undefined;
   if(type) console.time(timerName);
   const artifact = await artifactManager.lookupRef(loc);
   const artifactHash = await artifactManager.storeRaw(artifact);

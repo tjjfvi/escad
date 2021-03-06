@@ -1,6 +1,6 @@
 
 import fs from "fs";
-import { hash } from "@escad/core";
+import { Hash } from "@escad/core";
 
 export const createResourceFile = (source: string, extension = ".js") => {
   const path = getResourceFilePath(source, extension);
@@ -9,4 +9,4 @@ export const createResourceFile = (source: string, extension = ".js") => {
 }
 
 export const getResourceFilePath = (source: string, extension = ".js") =>
-  `/resourceFiles/${hash(source)}${extension}`
+  `/resourceFiles/${Hash.create(source)}${extension}`

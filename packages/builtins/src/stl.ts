@@ -1,4 +1,4 @@
-import { exportTypeRegistry, hash, Id } from "@escad/core";
+import { exportTypeRegistry, Hash, Id } from "@escad/core";
 import { Face } from "./Face";
 import { Mesh } from "./Mesh";
 
@@ -10,7 +10,7 @@ exportTypeRegistry.register<Mesh>({
   export: async meshes => {
     const triangles = meshes.flatMap(m => m.faces.flatMap(f => Face.toTriangles(f)));
     const buffer = Buffer.alloc(84 + triangles.length * 50)
-    buffer.write("@escad/builtins/stl/" + hash(meshes), "utf-8");
+    buffer.write("@escad/builtins/stl/" + Hash.create(meshes), "utf-8");
     buffer.writeUInt32LE(triangles.length, 80);
     let position = 84;
     for(const triangle of triangles) {
@@ -33,7 +33,7 @@ exportTypeRegistry.register<Mesh>({
   productType: Mesh.productType,
   export: async meshes => {
     const triangles = meshes.flatMap(m => m.faces.flatMap(f => Face.toTriangles(f)));
-    const name = `@escad/builtins/stl/${hash(meshes)}`;
+    const name = `@escad/builtins/stl/${Hash.create(meshes)}`;
     let str = "";
     str += `solid ${name}\n`
     for(const triangle of triangles) {
