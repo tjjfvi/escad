@@ -1,11 +1,8 @@
 
 import { WeakCache } from "./WeakCache";
 import { Hash } from "./Hash";
-import { ArtifactStore, BufferLike } from "./ArtifactStore";
+import { ArtifactStore } from "./ArtifactStore";
 import { timers } from "./Timer";
-
-export type SerializeFunc<T> = (artifact: T) => BufferLike;
-export type DeserializeFunc<T> = (buffer: Buffer) => T;
 
 export class ArtifactManager {
 
@@ -38,8 +35,8 @@ export class ArtifactManager {
     this.cache.set(artifactHash, () => artifact);
 
     let serialized;
-    await Promise.all(this.artifactStores.map(s =>
-      !excludeStores?.has(s) && s.storeRaw?.(artifactHash, serialized ??= this.serialize(artifact), this)
+    await Promise.all(this.artifactStores.map(async s =>
+      !excludeStores?.has(s) && await s.storeRaw?.(artifactHash, serialized ??= this.serialize(artifact), this)
     ));
 
     return artifactHash;

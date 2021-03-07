@@ -1,5 +1,5 @@
 
-import { Hash, Id, ArtifactStore, BufferLike } from "@escad/core";
+import { Hash, Id, ArtifactStore } from "@escad/core";
 import { join, dirname } from "path";
 import fs from "fs";
 import { promisify } from "util";
@@ -15,7 +15,7 @@ export class FsArtifactStore implements ArtifactStore {
 
   constructor(public rootDir: string){}
 
-  async storeRaw(hash: Hash<unknown>, buffer: BufferLike){
+  async storeRaw(hash: Hash<unknown>, buffer: Buffer){
     const path = await this.getPathRaw(hash);
     await writeFile(path, buffer);
   }
