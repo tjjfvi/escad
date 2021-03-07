@@ -5,10 +5,10 @@ import { createServerClientMessenger } from "@escad/server";
 import React, { useState } from "react";
 import { createBlob } from "../utils/createBlob";
 import { bundlerMessenger, rendererMessenger } from "./server";
-import fs from "fs";
 import { getClientURL } from "../utils/getClientURL";
 import { observer } from "rhobo";
 import { loadingStatuses } from "./initialize";
+import { artifactStore } from "./rendererWorker";
 
 export const ClientFrame = observer(() => {
   const [, setState] = useState({});
@@ -47,7 +47,7 @@ export const ClientFrame = observer(() => {
       );
       createServerClientMessenger(
         connection,
-        hash => createBlob(fs.readFileSync(`/artifacts/raw/${hash}`)),
+        hash => createBlob(artifactStore.raw.get(hash) ?? Buffer.alloc(0)),
         // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
         rendererMessenger!,
         bundlerMessenger,

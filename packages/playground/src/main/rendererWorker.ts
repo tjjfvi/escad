@@ -8,6 +8,10 @@ import { ServerRendererMessenger } from "@escad/protocol";
 import RendererBundlerWorker from "worker-loader?filename=bundler.worker.js!../workers/bundler.js";
 import type { RendererBundlerMessengerShape } from "../workers/rendererBundler";
 import { attachWorkerFs } from "../utils/attachWorkerFs";
+import { InMemoryArtifactStore } from "../utils/InMemoryArtifactStore";
+import { ArtifactStore } from "@escad/core";
+
+export const artifactStore = new InMemoryArtifactStore();
 
 const rendererBundlerWorker = new RendererBundlerWorker();
 attachWorkerFs(rendererBundlerWorker);
@@ -26,9 +30,15 @@ export const createRendererWorker = async (): Promise<ServerRendererMessenger> =
     await rendererBundlerMessenger.req.bundle();
     const worker = new Worker(createBlob(fs.readFileSync("/out/bundle.js"), "text/javascript"));
     attachWorkerFs(worker);
+    const artifactMessenger = createMessenger<Required<ArtifactStore>, {/**/}>(
+      artifactStore,
+      brandConnection(workerConnection(worker), "artifacts")
+    );
     return createServerRendererMessenger(
-      brandConnection(workerConnection(worker), "renderer"),
-      "/artifacts",
+      {
+        ...brandConnection(workerConnection(worker), "renderer"),
+        destroy: () => artifactMessenger.destroy(),
+      }
     );
   })
 }

@@ -25,7 +25,7 @@ export const bundlerMessenger = createServerBundlerMessenger(
   brandConnection(workerConnection(bundlerWorker), "bundler")
 );
 
-export const rendererMessenger = createRendererDispatcher("/artifacts", 1, createRendererWorker);
+export const rendererMessenger = createRendererDispatcher(1, createRendererWorker);
 
 (async function(){
   for await (const { clientPlugins } of rendererMessenger.req.onLoad())
