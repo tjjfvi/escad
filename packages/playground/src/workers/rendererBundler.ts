@@ -1,7 +1,7 @@
 
-import "worker-loader?filename=dynamicWorkerSetup.worker.js!./dynamicWorkerSetup.js";
+import fsMockSource from "!!raw-loader!@escad/bundler/dist/fs-mock.js"
 import "../main/initialize";
-import webpack, { ProvidePlugin } from "webpack";
+import webpack from "webpack";
 import fs from "fs";
 import NodePolyfillPlugin from "node-polyfill-webpack-plugin"
 import rendererSource from "!!raw-loader!./renderer.js";
@@ -28,7 +28,7 @@ const compiler = webpack({
   },
   resolve: {
     alias: {
-      fs: getResourceFilePath("module.exports=self.fs"),
+      fs: getResourceFilePath(fsMockSource),
     },
     modules: ["/project/node_modules"],
   },
@@ -41,9 +41,6 @@ const compiler = webpack({
   mode: "development",
   plugins: [
     new NodePolyfillPlugin(),
-    new ProvidePlugin({
-      process: getResourceFilePath("module.exports=self.process")
-    })
   ]
 })
 

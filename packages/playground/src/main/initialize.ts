@@ -193,8 +193,6 @@ if(self.document) {
   fs.mkdirSync("/resourceFiles");
   createResourceFile(fsMockSource)
   createResourceFile(rendererSource)
-  createResourceFile("module.exports=self.fs"),
-  createResourceFile("module.exports=self.process")
 }
 
 export const loadingStatuses = observable<{ text: string }[]>([]);

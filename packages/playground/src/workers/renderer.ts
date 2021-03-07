@@ -1,6 +1,4 @@
 
-importScripts(location.origin + "/bundled/dynamicWorkerSetup.worker.js");
-
 import { artifactManager, ArtifactStore } from "@escad/core";
 import { workerConnection, brandConnection, createMessenger } from "@escad/messages";
 import { createRendererServerMessenger } from "@escad/renderer"
