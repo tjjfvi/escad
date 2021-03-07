@@ -13,11 +13,13 @@ import url = require("url");
 import { promisify } from "util";
 import stylusStdLib from "!!raw-loader!stylus/lib/functions/index.styl";
 import { escadPackages } from "../utils/escadPackages";
-import JSZip from "jszip";
 
 declare const BrowserFS: any;
 
 url.URL = URL;
+
+let fsPromiseResolve;
+export const fsPromise = new Promise(res => fsPromiseResolve = res);
 
 if(self.document)
   BrowserFS.configure({
@@ -41,6 +43,7 @@ if(self.document)
     },
   }, err => {
     if(err) throw err;
+    else fsPromiseResolve();
   });
 else
   BrowserFS.configure({
@@ -48,6 +51,7 @@ else
     options: { worker: self }
   }, err => {
     if(err) throw err;
+    else fsPromiseResolve();
   });
 
 self.fs = fs;
@@ -181,6 +185,9 @@ import fsMockSource from "!!raw-loader!@escad/bundler/dist/fs-mock.js"
 import rendererSource from "!!raw-loader!../workers/renderer.js";
 import { createResourceFile } from "../utils/resourceFiles";
 import { observable } from "rhobo";
+import minipassFetch from "minipass-fetch"
+import tar from "tar";
+import { once } from "events";
 
 if(self.document) {
   fs.mkdirSync("/resourceFiles");
@@ -203,17 +210,12 @@ export const addLoadingStatus = async <T, >(text: string, fn: () => Promise<T>):
 export const installProjectPromise = (async () => {
   if(!self.document)
     return;
-  const zip = new JSZip();
-  await addLoadingStatus("Downloading project zip", async () => {
-    const zipContent = await fetch("/bundled/project.zip").then(r => r.arrayBuffer());
-    await zip.loadAsync(zipContent)
+  fs.mkdirSync("/project");
+  await addLoadingStatus("Unpacking project", async () => {
+    const response = await minipassFetch(location.origin + "/bundled/project.tgz")
+    await once(
+      response.body.pipe(tar.extract({})),
+      "close",
+    )
   })
-  await addLoadingStatus("Unpacking project", () =>
-    Promise.all(Object.keys(zip.files).map(async path => {
-      mkdirpSync("/" + dirname(path))
-      const file = zip.file(path);
-      if(!file) return;
-      fs.writeFileSync("/" + path, await file.async("nodebuffer"))
-    }))
-  )
 })();

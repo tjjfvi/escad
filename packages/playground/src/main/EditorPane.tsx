@@ -51,8 +51,6 @@ monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
 })
 
 export const augmentMonacoEditor = (editor: monaco.editor.IStandaloneCodeEditor) => {
-  fs.mkdirSync("/project");
-
   const defaultCode = `
 import escad from "@escad/core";
 import "@escad/builtins/register";

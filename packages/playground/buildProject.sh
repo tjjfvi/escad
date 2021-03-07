@@ -17,6 +17,6 @@ npm i ../packages/*.tgz \
   sha.js
 cd ..
 mkdir bundled
-rm bundled/project.zip
-zip -r bundled/project.zip project
+rm bundled/project.tgz
+tar -czf bundled/project.tgz project
 rm -rf project

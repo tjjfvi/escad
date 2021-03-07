@@ -9,6 +9,7 @@ import { getResourceFilePath } from "../utils/resourceFiles";
 import { brandConnection, createMessenger, workerConnection } from "@escad/messages";
 import { promisify } from "util";
 import { ModuleKind, ModuleResolutionKind, ScriptTarget, transpileModule } from "typescript"
+import { fsPromise } from "../main/initialize";
 
 export type RendererBundlerMessengerShape = {
   bundle: () => Promise<void>,
@@ -55,7 +56,9 @@ const readFile = promisify(fs.readFile);
 
 createMessenger<RendererBundlerMessengerShape, {/**/}>({
   bundle: async () => {
-    await writeFile("/project/index.js", transpileModule(await readFile("/project/index.ts", "utf8"), {
+    await fsPromise;
+    const orig = await readFile("/project/index.ts", "utf8");
+    const transpiled = transpileModule(orig, {
       compilerOptions: {
         strict: true,
         esModuleInterop: true,
@@ -64,7 +67,8 @@ createMessenger<RendererBundlerMessengerShape, {/**/}>({
         moduleResolution: ModuleResolutionKind.NodeJs,
         module: ModuleKind.CommonJS,
       }
-    }).outputText)
-    void await run();
+    }).outputText
+    await writeFile("/project/index.js", transpiled);
+    await run();
   }
 }, brandConnection(workerConnection(self as any), "rendererBundler"));
