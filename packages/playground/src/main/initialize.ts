@@ -185,7 +185,7 @@ import fsMockSource from "!!raw-loader!@escad/bundler/dist/fs-mock.js"
 import rendererSource from "!!raw-loader!../workers/renderer.js";
 import { createResourceFile } from "../utils/resourceFiles";
 import { observable } from "rhobo";
-import minipassFetch from "minipass-fetch"
+import { ReadableWebToNodeStream } from "readable-web-to-node-stream"
 import tar from "tar";
 import { once } from "events";
 
@@ -210,10 +210,8 @@ export const installProjectPromise = (async () => {
     return;
   fs.mkdirSync("/project");
   await addLoadingStatus("Unpacking project", async () => {
-    const response = await minipassFetch(location.origin + "/bundled/project.tgz")
-    await once(
-      response.body.pipe(tar.extract({})),
-      "close",
-    )
+    const response = await fetch(location.origin + "/bundled/project.tgz")
+    const stream = new ReadableWebToNodeStream(response.body);
+    await once(stream.pipe(tar.extract({})), "close")
   })
 })();
