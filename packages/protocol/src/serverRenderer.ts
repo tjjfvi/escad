@@ -22,9 +22,7 @@ export type RendererServerMessengerShape = {
   lookupRef(loc: readonly unknown[]): Promise<Hash<unknown>>,
 }
 
-export type ServerRendererMessengerShape = {
-  getArtifactsDir(): Promise<string>,
-}
+export type ServerRendererMessengerShape = { /**/ }
 
 export type ServerRendererMessenger = Messenger<ServerRendererMessengerShape, RendererServerMessengerShape>;
 export type RendererServerMessenger = Messenger<RendererServerMessengerShape, ServerRendererMessengerShape>;

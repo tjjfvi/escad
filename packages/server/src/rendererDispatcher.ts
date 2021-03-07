@@ -8,12 +8,11 @@ import {
 import { createServerRendererMessenger } from "./rendererMessenger";
 
 export const createRendererDispatcher = (
-  artifactsDir: string,
   maxRenderers: number,
   createRenderer: () => ServerRendererMessenger | Promise<ServerRendererMessenger>,
 ): ServerRendererMessenger => {
   const [a, b] = noopConnection();
-  const publicMessenger = createServerRendererMessenger(a, artifactsDir);
+  const publicMessenger = createServerRendererMessenger(a);
 
   let renderers: Promise<ServerRendererMessenger>[] = createRenderers();
 

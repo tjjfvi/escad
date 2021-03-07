@@ -13,7 +13,6 @@ import { RunInfo, RendererServerMessenger, LoadInfo } from "@escad/protocol";
 import { Connection, createEmittableAsyncIterable, createMessenger } from "@escad/messages";
 import { registeredPlugins } from "@escad/register-client-plugin";
 import { lookupRef } from "./lookupRef";
-import { FsArtifactStore } from "./FsArtifactStore";
 import { RenderFunction } from "./renderFunction";
 
 export const createRendererServerMessenger = (
@@ -31,15 +30,9 @@ export const createRendererServerMessenger = (
     run: params => run(params),
   }, connection);
 
-  const aritfactDirPromise = messenger.req.getArtifactsDir().then(artifactsDir => {
-    artifactManager.artifactStores.unshift(new FsArtifactStore(artifactsDir));
-  });
-
   return messenger;
 
   async function load(path: string){
-    await aritfactDirPromise;
-
     // eslint-disable-next-line @typescript-eslint/no-var-requires
     const fullExported = requireFile(path);
 

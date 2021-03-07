@@ -34,12 +34,11 @@ export const createServer = async (artifactsDir: string, port: number, loadFile:
 
   bundlerMessenger.req.bundle(baseBundleOptions);
 
-  const rendererMessenger = createRendererDispatcher(artifactsDir, 3, () => {
-    const child = fork(require.resolve("./renderer"));
-    return createServerRendererMessenger(
-      childProcessConnection(child),
-      artifactsDir,
-    );
+  const rendererMessenger = createRendererDispatcher(3, () => {
+    const child = fork(require.resolve("./renderer"), {
+      env: { ...process.env, ARTIFACTS_DIR: artifactsDir }
+    });
+    return createServerRendererMessenger(childProcessConnection(child));
   });
 
   rendererMessenger.req.load(loadFile)
