@@ -210,7 +210,7 @@ export const installProjectPromise = (async () => {
     return;
   fs.mkdirSync("/project");
   await addLoadingStatus("Unpacking project", async () => {
-    const response = await fetch(location.origin + "/bundled/project.tgz")
+    const response = await fetch(location.origin + "/bundled/project.tar")
     const stream = new ReadableWebToNodeStream(response.body);
     await once(stream.pipe(tar.extract({})), "close")
   })
