@@ -8,7 +8,6 @@ import {
   ExportTypeInfo,
   Hash,
   Hierarchy,
-  Parameter,
   Product,
   ProductType,
 } from "@escad/core";
@@ -22,7 +21,7 @@ import {
   filterConnection,
   mapConnection,
 } from "@escad/messages";
-import { Status } from "./Status";
+import { baseStatuses, Status } from "./Status";
 
 const _ClientStateContext = createContext<ClientState>(null as never);
 
@@ -31,7 +30,7 @@ export class ClientState implements ArtifactStore {
   static Context = _ClientStateContext;
 
   bundleHash = fetch("/bundle.hash").then(r => r.text()).catch(() => null);
-  status = observable<Status>("disconnected");
+  status = observable<Status | null>(baseStatuses.disconnected);
   products = observable<Product[]>([]);
   exportTypes = observable<ExportTypeInfo[]>([]);
   paramDef = observable<ObjectParam<any>>();
@@ -60,8 +59,8 @@ export class ClientState implements ArtifactStore {
 
   async listenForBundle(){
     for await (const newBundleHash of this.clientServerMessenger.req.onBundle())
-      if(this.status.value !== "disconnected")
-        this.status(newBundleHash !== await this.bundleHash ? "reload" : "connected")
+      if(newBundleHash !== await this.bundleHash)
+        this.status(baseStatuses.reload);
   }
 
   async listenForInfo(){
@@ -161,7 +160,7 @@ export class WebSocketClientState extends ClientState {
     ws.addEventListener("open", () => {
       if(this.curWs !== ws)
         return ws.close();
-      this.status("connected");
+      this.status(baseStatuses.connected);
       this.listenForInfo();
       this.listenForBundle();
     });
@@ -177,7 +176,7 @@ export class WebSocketClientState extends ClientState {
     ws.close();
     if(ws !== this.curWs)
       return;
-    this.status("disconnected");
+    this.status(baseStatuses.disconnected);
     this.curWs = undefined;
     setTimeout(() => this.initWs(), 5000);
   }

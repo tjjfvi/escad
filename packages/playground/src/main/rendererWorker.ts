@@ -29,7 +29,6 @@ export const createRendererWorker = async (): Promise<ServerRendererMessenger> =
   return addLoadingStatus("Bundling renderer", async () => {
     await rendererBundlerMessenger.req.bundle();
     const worker = new Worker(createBlob(fs.readFileSync("/out/bundle.js"), "text/javascript"));
-    attachWorkerFs(worker);
     const artifactMessenger = createMessenger<Required<ArtifactStore>, {/**/}>(
       artifactStore,
       brandConnection(workerConnection(worker), "artifacts")

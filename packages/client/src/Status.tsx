@@ -6,19 +6,27 @@ import React, { useContext } from "react";
 import { observer } from "rhobo";
 import { ClientState } from "./ClientState";
 
-export type Status = "connected" | "disconnected" | "reload";
+export interface Status {
+  text: string,
+  className?: string,
+  icon: string,
+  onClick?: () => void,
+}
 
-const statusDatas: Record<Status, { name: string, icon: string, onClick?: () => void }> = {
+export const baseStatuses = {
   connected: {
-    name: "Connected",
+    text: "Connected",
+    className: "connected",
     icon: mdiCheck,
   },
   disconnected: {
-    name: "Disconnected",
+    text: "Disconnected",
+    className: "disconnected",
     icon: mdiClose,
   },
   reload: {
-    name: "Reload Required",
+    text: "Reload Required",
+    className: "reload",
     icon: mdiRefresh,
     onClick: () => window.location.reload(),
   },
@@ -27,10 +35,10 @@ const statusDatas: Record<Status, { name: string, icon: string, onClick?: () => 
 export const Status = observer(() => {
   const state = useContext(ClientState.Context);
   const status = state.status();
-  const statusData = statusDatas[status];
-  const className = "Status " + status + (statusData.onClick ? " clickable" : "")
-  return <div className={className} onClick={statusData.onClick}>
-    <Icon path={statusData.icon}/>
-    <span>{statusData.name}</span>
+  if(!status) return null;
+  const className = "Status " + (status.className ?? "") + (status.onClick ? " clickable" : "")
+  return <div className={className} onClick={status.onClick}>
+    <Icon path={status.icon}/>
+    <span>{status.text}</span>
   </div>
 });

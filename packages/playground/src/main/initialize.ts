@@ -183,6 +183,8 @@ self.setImmediate = (fn, ...args) => setTimeout(fn, 0, ...args);
 
 import fsMockSource from "!!raw-loader!@escad/bundler/dist/fs-mock.js"
 import rendererSource from "!!raw-loader!../workers/renderer.js";
+import imasSource from "!!raw-loader!../utils/InMemoryArtifactStore.js";
+import createBlobSource from "!!raw-loader!../utils/createBlob.js";
 import { createResourceFile } from "../utils/resourceFiles";
 import { observable } from "rhobo";
 import { ReadableWebToNodeStream } from "readable-web-to-node-stream"
@@ -193,6 +195,9 @@ if(self.document) {
   fs.mkdirSync("/resourceFiles");
   createResourceFile(fsMockSource)
   createResourceFile(rendererSource)
+  fs.mkdirSync("/utils");
+  fs.writeFileSync("/utils/InMemoryArtifactStore.js", imasSource);
+  fs.writeFileSync("/utils/createBlob.js", createBlobSource);
 }
 
 export const loadingStatuses = observable<{ text: string }[]>([]);
