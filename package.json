@@ -3,7 +3,9 @@
   "version": "0.0.0",
   "description": "",
   "scripts": {
+    "prebootstrap": "cp package-lock-lock.json package-lock.json",
     "bootstrap": "lerna exec 'rm -rf node_modules package-lock.json'; lerna bootstrap --hoist; patch-package",
+    "postbootstrap": "cp package-lock.json package-lock-lock.json",
     "test": "npm run quick-build && jest -u",
     "quick-build": "tsc -b packages",
     "build-playground": "mkdir -p packages/playground/static/packages; lerna run build-for-playground --parallel; lerna run build-playground",
@@ -15,7 +17,7 @@
     "escad": "npm run quick-build && node packages/cli/dist/bin/escad.js",
     "playground": "node packages/playground/dist/server/devServer.js",
     "open-errors": "npm run quick-build | grep packages/ | sed -e 's/(.*//' | sort | uniq | xargs code",
-    "postinstall": "git checkout -- package-lock.json package.json; npm run bootstrap",
+    "postinstall": "npm run bootstrap",
     "build-playground-prod": "npm run force-build && npm run build-playground && node packages/playground/dist/server/buildProduction.js"
   },
   "author": "",

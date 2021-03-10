@@ -10,3 +10,4 @@ test/index.js
 coverage
 .DS_Store
 **/*.tgz
+package-lock.json
