@@ -1,8 +1,10 @@
 
-import fs from "fs";
 import { posix as path } from "path";
-import readPkgUp from "read-pkg-up";
 import { checkTypeProperty } from "./checkTypeProperty";
+
+// Import read-pkg-up if in node, do nothing in webpack & co
+const nodeRequire = eval(`typeof require === "undefined" ? () => {} : require`);
+const readPkgUp: typeof import("read-pkg-up") | undefined = nodeRequire("read-pkg-up")
 
 const ids = new Map<string, Id>();
 
@@ -30,7 +32,7 @@ export const Id = {
     name: N,
     version: V,
   ): Id<P, S, N, V> => {
-    if(!("mocked" in fs)) {
+    if(readPkgUp) {
       const result = readPkgUp.sync({ cwd: path.dirname(filepath) });
       if(!result)
         throw new Error("Could not find package.json from file " + filepath);

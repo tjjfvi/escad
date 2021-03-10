@@ -26,7 +26,6 @@ app.post("/create", async (req, res) => {
   };
 
   await Promise.all(Object.entries(files).map(async ([name, content]) => {
-    console.log(typeof content, typeof content !== "string" ? content : null)
     await fs.writeFile(join(staticDir, "run", name), content);
   }));
 

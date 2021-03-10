@@ -20,3 +20,4 @@ mkdir bundled
 rm bundled/project.tar
 tar -cf bundled/project.tar project
 rm -rf project
+cd ..

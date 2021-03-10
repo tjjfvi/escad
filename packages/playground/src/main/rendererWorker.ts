@@ -28,7 +28,12 @@ export const createRendererWorker = async (): Promise<ServerRendererMessenger> =
   }
   return addLoadingStatus("Bundling renderer", async () => {
     await rendererBundlerMessenger.req.bundle();
-    const worker = new Worker(createBlob(fs.readFileSync("/out/bundle.js"), "text/javascript"));
+    const bundleUrl = createBlob(fs.readFileSync("/out/bundle.js"), "text/javascript");
+    const rendererUrl = createBlob(
+      Buffer.from(`importScripts("${location.origin}/bundled/escad.js","${bundleUrl}")`),
+      "test/javascript",
+    );
+    const worker = new Worker(rendererUrl);
     const artifactMessenger = createMessenger<Required<ArtifactStore>, {/**/}>(
       artifactStore,
       brandConnection(workerConnection(worker), "artifacts")

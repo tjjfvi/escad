@@ -10,7 +10,7 @@ import fs from "fs";
 
 export const createBundlerServerMessenger = (
   connection: Connection<unknown>,
-  createCompiler: (options: BundleOptions, entryPaths: string[]) => Compiler,
+  createCompiler: (options: BundleOptions, entryPaths: string[]) => Compiler | Promise<Compiler>,
 ): BundlerServerMessenger => {
   const [emitBundle, onBundle] = createEmittableAsyncIterable<Hash<unknown>>();
 
@@ -24,7 +24,7 @@ export const createBundlerServerMessenger = (
   }, connection);
 
   function bundle(options: BundleOptions){
-    return new Promise<void>((resolve, reject) => {
+    return new Promise<void>(async (resolve, reject) => {
       const optionsHash = Hash.create(options);
       if(optionsHash === lastOptionsHash)
         return;
@@ -35,7 +35,7 @@ export const createBundlerServerMessenger = (
       watcher?.close(() => {});
       watcher = undefined;
 
-      const compiler = createCompiler(options, entryPaths);
+      const compiler = await createCompiler(options, entryPaths);
 
     // @ts-ignore: fix for running in browser
       compiler.inputFileSystem.join = fs.join;

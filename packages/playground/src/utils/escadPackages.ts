@@ -1,21 +1,17 @@
 
-export const escadPackages = [
-  "escad-builtins.tgz",
-  // "escad-cli.tgz",
-  "escad-client.tgz",
-  "escad-client-3d-viewer.tgz",
-  // "escad-bundler.tgz",
-  "escad-client-mesh.tgz",
-  "escad-core.tgz",
-  "escad-csg.tgz",
-  "escad-mesh.tgz",
-  "escad-parameters.tgz",
-  "escad-register-client-plugin.tgz",
-  "escad-renderer.tgz",
-  // "escad-server.tgz",
-  "escad-protocol.tgz",
-  "escad-protocol.tgz",
-  "escad-solids.tgz",
-  "escad-transform.tgz",
-  "escad-messages.tgz",
+export const escadPackageNames = [
+  "builtins",
+  // "cli",
+  "client",
+  // "bundler",
+  "client-builtins",
+  "core",
+  "register-client-plugin",
+  "renderer",
+  "server",
+  "protocol",
+  "messages",
 ]
+
+export const escadPackageTgzs = escadPackageNames.map(x => `escad-${x}.tgz`);
+export const escadPackages = escadPackageNames.map(x => `@escad/${x}`);

@@ -2,7 +2,7 @@
 import { installProjectPromise } from "./initialize";
 // @ts-ignore
 import Arborist = require("@npmcli/arborist");
-import { escadPackages } from "../utils/escadPackages";
+import { escadPackageTgzs } from "../utils/escadPackages";
 
 let deps: string[] = [];
 let currentOperation: Promise<unknown> = installProjectPromise
@@ -31,18 +31,7 @@ export function install(newDeps: string[]){
 }
 
 const defaultDeps = [
-  ...escadPackages.map(p => `/packages/${p}`),
-  "path-browserify",
-  "process",
-  "util",
-  "buffer",
-  "assert",
-  "events",
-  "crypto-browserify",
-  "readable-stream",
-  "stream-browserify",
-  "constants-browserify",
-  "prop-types",
+  ...escadPackageTgzs.map(p => `/packages/${p}`),
 ];
 deps = defaultDeps
 

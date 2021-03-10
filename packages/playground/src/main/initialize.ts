@@ -12,11 +12,14 @@ import EventEmitter = require("events");
 import url = require("url");
 import { promisify } from "util";
 import stylusStdLib from "!!raw-loader!stylus/lib/functions/index.styl";
-import { escadPackages } from "../utils/escadPackages";
+import { escadPackageTgzs } from "../utils/escadPackages";
 
 declare const BrowserFS: any;
 
 url.URL = URL;
+
+path.posix = path;
+path.win32 = path;
 
 let fsPromiseResolve;
 export const fsPromise = new Promise(res => fsPromiseResolve = res);
@@ -32,7 +35,7 @@ if(self.document)
             fs: "XmlHttpRequest",
             options: {
               baseUrl: "/packages",
-              index: Object.fromEntries(escadPackages.map(x => [x, null]))
+              index: Object.fromEntries(escadPackageTgzs.map(x => [x, null]))
             }
           },
           writable: {
@@ -125,6 +128,14 @@ Object.keys(fs).filter(x => typeof fs[x] === "function").forEach(x => {
     return orig(...args);
   }
 })
+
+process.binding = x => x === "fs" ? fs : null
+process.getMaxListeners = () => Infinity
+process.versions = { node: "0.0.0" };
+process.browser = true
+process.stderr = {};
+process.hrtime = ([a] = [0]) => [Date.now() / 1000 | 0 - a, 0]
+
 const webpackLoaderMap = {};
 Object.entries({
   /* eslint-disable */
@@ -174,17 +185,12 @@ global.__webpackLoaderMap = path => {
 
 export const fds: Record<number, { _path: string }> = fs.getFSModule().fdMap;
 
-process.binding = x => x === "fs" ? fs : null
-process.getMaxListeners = () => Infinity
-process.versions = { node: "0.0.0" };
-process.browser = true
-
 self.setImmediate = (fn, ...args) => setTimeout(fn, 0, ...args);
 
-import fsMockSource from "!!raw-loader!@escad/bundler/dist/fs-mock.js"
 import rendererSource from "!!raw-loader!../workers/renderer.js";
 import imasSource from "!!raw-loader!../utils/InMemoryArtifactStore.js";
 import createBlobSource from "!!raw-loader!../utils/createBlob.js";
+import fakeImportAllEscadSource from "!!raw-loader!../utils/fakeImportAllEscad.js";
 import { createResourceFile } from "../utils/resourceFiles";
 import { observable } from "rhobo";
 import { ReadableWebToNodeStream } from "readable-web-to-node-stream"
@@ -193,8 +199,8 @@ import { once } from "events";
 
 if(self.document) {
   fs.mkdirSync("/resourceFiles");
-  createResourceFile(fsMockSource)
   createResourceFile(rendererSource)
+  createResourceFile(fakeImportAllEscadSource)
   fs.mkdirSync("/utils");
   fs.writeFileSync("/utils/InMemoryArtifactStore.js", imasSource);
   fs.writeFileSync("/utils/createBlob.js", createBlobSource);

@@ -4,27 +4,32 @@ import { createBundlerServerMessenger, stylusGlobals } from "@escad/bundler";
 import { workerConnection, brandConnection } from "@escad/messages";
 import NodePolyfillPlugin from "node-polyfill-webpack-plugin";
 import { webpack } from "webpack";
-import { getResourceFilePath } from "../utils/resourceFiles";
-import fsMockSource from "!!raw-loader!@escad/bundler/dist/fs-mock.js"
+import { createResourceFileAsync, getResourceFilePath } from "../utils/resourceFiles";
+import fakeImportAllEscadSource from "!!raw-loader!../utils/fakeImportAllEscad.js";
+import { mapModuleIds } from "../utils/mapModuleIds";
+import path from "path";
 
 createBundlerServerMessenger(
   brandConnection(workerConnection(self as any), "bundler"),
-  (options, entryPaths) =>
-    // debugger;
+  async (options, entryPaths) =>
     webpack({
-      entry: entryPaths,
+      entry: {
+        bundle: {
+          import: await createResourceFileAsync(entryPaths.map(x => `import "${path.resolve("../project", x)}";`).join("\n")),
+          dependOn: "escad",
+        },
+        escad: getResourceFilePath(fakeImportAllEscadSource),
+      },
       output: {
         path: options.outDir,
-        filename: "bundle.js",
-        sourceMapFilename: "bundle.js.map",
+        filename: "[name].js",
+        sourceMapFilename: "[name].js.map",
+        chunkLoadingGlobal: "webpackChunk",
       },
       optimization: {
         minimize: false,
       },
       resolve: {
-        alias: {
-          "fs": getResourceFilePath(fsMockSource),
-        },
         modules: ["/project/node_modules"],
       },
       module: {
@@ -50,6 +55,7 @@ createBundlerServerMessenger(
       mode: "development",
       plugins: [
         new NodePolyfillPlugin(),
+        mapModuleIds(id => id.replace(/^\.\/project\/node_modules\//, "./node_modules/")),
       ],
       resolveLoader: {
         modules: ["/bundled/node_modules"],

@@ -20,6 +20,7 @@ export function getClientURL(){
 </head>
 <body>
   <div id="root"></div>
+  <script src="${location.origin}/bundled/escad.js"></script>
   <script src="${scriptURL}"></script>
 </body>
 </html>

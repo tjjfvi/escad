@@ -1,5 +1,4 @@
 
-import fsMockSource from "!!raw-loader!@escad/bundler/dist/fs-mock.js"
 import "../main/initialize";
 import webpack from "webpack";
 import fs from "fs";
@@ -10,26 +9,32 @@ import { brandConnection, createMessenger, workerConnection } from "@escad/messa
 import { promisify } from "util";
 import { ModuleKind, ModuleResolutionKind, ScriptTarget, transpileModule } from "typescript"
 import { fsPromise } from "../main/initialize";
+import fakeImportAllEscadSource from "!!raw-loader!../utils/fakeImportAllEscad.js";
+import { mapModuleIds } from "../utils/mapModuleIds";
 
 export type RendererBundlerMessengerShape = {
   bundle: () => Promise<void>,
 }
 
 const compiler = webpack({
-  entry: [getResourceFilePath(rendererSource)],
+  entry: {
+    bundle: {
+      import: getResourceFilePath(rendererSource),
+      dependOn: "escad",
+    },
+    escad: getResourceFilePath(fakeImportAllEscadSource),
+  },
   output: {
     path: "/out/",
-    filename: "bundle.js",
-    sourceMapFilename: "bundle.js.map",
+    filename: "[name].js",
+    sourceMapFilename: "[name].js.map",
     hashFunction: "md5",
+    chunkLoadingGlobal: "webpackChunk",
   },
   optimization: {
     minimize: false,
   },
   resolve: {
-    alias: {
-      fs: getResourceFilePath(fsMockSource),
-    },
     modules: ["/project/node_modules"],
   },
   node: {
@@ -41,6 +46,7 @@ const compiler = webpack({
   mode: "development",
   plugins: [
     new NodePolyfillPlugin(),
+    mapModuleIds(id => id.replace(/^\.\/project\/node_modules\//, "./node_modules/")),
   ]
 })
 

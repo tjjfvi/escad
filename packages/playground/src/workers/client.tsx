@@ -23,7 +23,9 @@ if(isRun) {
 
   const artifactStore = new InMemoryArtifactStore();
 
-  const worker = new Worker("renderer.bundle.js");
+  const worker = new Worker(createBlob(
+    `importScripts("${location.origin}/static/bundled/escad.js","${location.href}renderer.bundle.js")`
+  ));
 
   createMessenger<Required<ArtifactStore>, {/**/}>(
     artifactStore,
@@ -36,7 +38,7 @@ if(isRun) {
 
   createServerClientMessenger(
     mapConnection.log(serverClient),
-    hash => createBlob(artifactStore.raw.get(hash) ?? Buffer.alloc(0)),
+    hash => createBlob(artifactStore.raw.get(hash) ?? new Uint8Array(0)),
     rendererMessenger,
   );
 

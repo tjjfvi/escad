@@ -6,6 +6,7 @@ import MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 import NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
 import { stylusGlobals } from "@escad/bundler";
 import path from "path";
+import { mapModuleIds } from "../utils/mapModuleIds";
 
 export const staticDir = __dirname + "/../../static/";
 const bundledDir = staticDir + "bundled/";
@@ -13,11 +14,18 @@ const bundledDir = staticDir + "bundled/";
 const prefix = "/bundled/";
 
 export const compiler = webpack({
-  entry: [require.resolve("../main/index")],
+  entry: {
+    bundle: {
+      import: require.resolve("../main/index"),
+      dependOn: "escad",
+    },
+    escad: require.resolve("../utils/fakeImportAllEscad"),
+  },
   output: {
     path: bundledDir,
-    filename: "bundle.js",
-    sourceMapFilename: "bundle.js.map",
+    filename: "[name].js",
+    sourceMapFilename: "[name].js.map",
+    chunkLoadingGlobal: "webpackChunk",
   },
   optimization: {
     minimize: false,
@@ -31,7 +39,7 @@ export const compiler = webpack({
       processGlobal: "browserfs/dist/shims/process.js",
       bufferGlobal: "browserfs/dist/shims/bufferGlobal.js",
       bfsGlobal: require.resolve("browserfs"),
-      process: require.resolve("../stubs/process"),
+      process$: "process/browser",
     }
   },
   devtool: "source-map",
@@ -71,7 +79,11 @@ export const compiler = webpack({
   },
   plugins: [
     new NodePolyfillPlugin(),
-    new webpack.ProvidePlugin({ BrowserFS: 'bfsGlobal', process: 'processGlobal', Buffer: 'bufferGlobal' }),
+    new webpack.ProvidePlugin({
+      BrowserFS: 'bfsGlobal',
+      // process: 'process',
+      // Buffer: 'bufferGlobal'
+    }),
     new MonacoWebpackPlugin(),
     // Modified from <https://github.com/webpack/webpack/blob/master/lib/NodeStuffPlugin.js>
     function(compiler){
@@ -109,6 +121,7 @@ export const compiler = webpack({
             .tap("NodeStuffPlugin", handler);
         }
       )
-    }
+    },
+    mapModuleIds(id => id.replace(/\\/g, "/").replace(/^\.\/packages\//g, "./node_modules/@escad/")),
   ],
 })

@@ -17,11 +17,6 @@ createBundlerServerMessenger(
       optimization: {
         minimize: false,
       },
-      resolve: {
-        alias: {
-          "fs": require.resolve("@escad/bundler/dist/fs-mock"),
-        }
-      },
       module: {
         rules: [
           {
