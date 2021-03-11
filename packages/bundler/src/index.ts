@@ -23,23 +23,23 @@ export const createBundlerServerMessenger = (
     onBundle,
   }, connection);
 
-  function bundle(options: BundleOptions){
-    return new Promise<void>(async (resolve, reject) => {
-      const optionsHash = Hash.create(options);
-      if(optionsHash === lastOptionsHash)
-        return;
-      lastOptionsHash = optionsHash;
+  async function bundle(options: BundleOptions){
+    const optionsHash = Hash.create(options);
+    if(optionsHash === lastOptionsHash)
+      return;
+    lastOptionsHash = optionsHash;
 
-      const entryPaths = [options.coreClientPath, ...options.clientPlugins.map(reg => reg.path)];
+    const entryPaths = [options.coreClientPath, ...options.clientPlugins.map(reg => reg.path)];
 
-      watcher?.close(() => {});
-      watcher = undefined;
+    watcher?.close(() => {});
+    watcher = undefined;
 
-      const compiler = await createCompiler(options, entryPaths);
+    const compiler = await createCompiler(options, entryPaths);
 
     // @ts-ignore: fix for running in browser
-      compiler.inputFileSystem.join = fs.join;
+    compiler.inputFileSystem.join = fs.join;
 
+    return await new Promise<void>((resolve, reject) => {
       const handler = (err: Error | undefined, result: Stats | undefined) => {
         if(err) {
           console.error(err);
