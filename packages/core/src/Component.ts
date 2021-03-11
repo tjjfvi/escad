@@ -32,27 +32,27 @@ export const Component = {
       new ExtensibleFunction(
         (...args: I) => {
           const result = contextStack.wrap(() => func(...args));
-          const origHierarchy = Hierarchy.from(result);
-          let hierarchy = origHierarchy;
+          const origHierarchy = result.hierarchy;
+          let resultHierarchy = origHierarchy;
           if(overrideHierarchy)
-            hierarchy = Hierarchy.create({
+            resultHierarchy = Hierarchy.create({
               braceType: "(",
               children: [
-                that.hierarchy ?? Hierarchy.create({ name }),
+                hierarchy ?? Hierarchy.create({ name }),
                 ...args.map(x => Hierarchy.from(x)),
               ],
-              linkedProducts: origHierarchy.linkedProducts,
+              linkedProducts: Hierarchy.from(result).linkedProducts,
             });
-          if(overrideHierarchy && showOutputInHierarchy)
-            hierarchy = Hierarchy.create({
+          if(overrideHierarchy && resultHierarchy && origHierarchy && showOutputInHierarchy)
+            resultHierarchy = Hierarchy.create({
               braceType: "=",
               children: [
-                hierarchy,
+                resultHierarchy,
                 origHierarchy,
               ],
               linkedProducts: origHierarchy.linkedProducts,
             })
-          return Thing.applyHierarchy(result, hierarchy);
+          return Thing.applyHierarchy(result, resultHierarchy);
         },
         {},
         name,

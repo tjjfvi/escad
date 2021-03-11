@@ -41,18 +41,22 @@ export const Element = {
       hierarchy ??= elementish.hierarchy;
       elementish = elementish.value;
     }
-    if(elementish instanceof Array)
+
+    if(elementish instanceof Array) {
       value = elementish.map(x => Element.create(x));
-    else if(ObjMap.isObjMap(elementish))
-      value = Object.assign(
-        Object.create(null),
-        ...Object.entries(elementish).map(([k, v]) => ({ [k]: Element.create(v) }))
-      );
-    else if(Product.isProduct(elementish)) {
+      if(value.some(x => x.hierarchy))
+        hierarchy ??= Hierarchy.from(elementish);
+    } else if(ObjMap.isObjMap(elementish)) {
+      value = Object.fromEntries(Object.entries(elementish).map(([k, v]) => [k, Element.create(v)]))
+      if(Object.values(value).some(x => x.hierarchy))
+        hierarchy ??= Hierarchy.from(elementish);
+    } else if(Product.isProduct(elementish)) {
       value = elementish;
       artifactManager.storeRaw(value);
-    } else
+    } else {
       throw new Error("Invalid elementish passed to Element");
+    }
+
     return {
       type: "Element",
       value,

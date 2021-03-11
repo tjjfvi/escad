@@ -35,7 +35,7 @@ export const Operation = {
       new ExtensibleFunction(
         (...args: any[]) => {
           const result = Element.create(contextStack.wrap(() => func(Element.create(args))));
-          const origHierarchy = Hierarchy.from(result);
+          const origHierarchy = result.hierarchy;
           let resultHierarchy = origHierarchy;
           if(overrideHierarchy)
             resultHierarchy = Hierarchy.create({
@@ -44,9 +44,9 @@ export const Operation = {
                 hierarchy ?? Hierarchy.create({ name }),
                 ...Hierarchy.from(args).children,
               ],
-              linkedProducts: origHierarchy.linkedProducts,
+              linkedProducts: Hierarchy.from(result).linkedProducts,
             });
-          if(overrideHierarchy && showOutputInHierarchy)
+          if(overrideHierarchy && resultHierarchy && origHierarchy && showOutputInHierarchy)
             resultHierarchy = Hierarchy.create({
               braceType: "=",
               children: [

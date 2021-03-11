@@ -130,7 +130,6 @@ function hierarchyToTree(hierarchy: Hierarchy): Tree{
 }
 
 function _hierarchyToTree(hierarchy: Hierarchy): Tree{
-  const origHierarchy = hierarchy;
   if(hierarchy.braceType === "")
     return [{ text: [hierarchy.name] }];
   if(hierarchy.braceType === ":")
@@ -144,32 +143,68 @@ function _hierarchyToTree(hierarchy: Hierarchy): Tree{
       { children: hierarchy.children.map(hierarchyToTree), joiner: ", ", state: { open: false } },
       { text: [hierarchy.braceType === "[" ? "]" : "}"] },
     ]
-  if(hierarchy.braceType === "|" || hierarchy.braceType === "(") {
-    const operators: Hierarchy[] = [];
-    while(hierarchy.braceType === "|" && hierarchy.children.length === 2) {
-      operators.push({ ...hierarchy.children[0], linkedProducts: hierarchy.linkedProducts });
-      hierarchy = hierarchy.children[1];
-    }
-    let operands: readonly Hierarchy[];
-    if(hierarchy.braceType === "|" || (hierarchy.braceType === "(" && !operators.length)) {
-      operators.push({
-        ...hierarchy.children[0],
-        linkedProducts: (
-          hierarchy.braceType === "|" ?
-            hierarchy.linkedProducts :
-            hierarchy.children[0].linkedProducts
-        )
-      })
-      operands = hierarchy.children.slice(1)
-    } else {
-      operands = [hierarchy]
-    }
+  if(hierarchy.braceType === "(") {
+    const [operator, ...operands] = hierarchy.children;
     return [
-      ...(origHierarchy.braceType === "(" ? hierarchyToTree(operators[0]) : [
+      ...hierarchyToTree(operator),
+      ...wrapLinkedProducts(Hierarchy.create({ braceType: "[", children: operands }), [
         { text: ["("] },
-        { children: operators.map(hierarchyToTree), joiner: "∘", state: { open: false }, forceOpenable: true },
+        {
+          children: operands.map(hierarchyToTree),
+          joiner: ", ",
+          state: { open: false },
+        },
         { text: [")"] },
       ]),
+    ]
+  }
+  if(hierarchy.braceType === "|" || hierarchy.braceType === "=") {
+    const operators: Tree[] = [];
+    let operands: readonly Hierarchy[] = [];
+    while(true) {
+      let tempHierarchy = hierarchy;
+      let result: Hierarchy | undefined;
+      if(hierarchy.braceType === "=")
+        [hierarchy, result] = hierarchy.children
+      if(hierarchy.braceType !== "|") {
+        hierarchy = tempHierarchy;
+        break;
+      }
+      const operator = {
+        ...hierarchy.children[0],
+        linkedProducts: hierarchy.linkedProducts,
+      };
+      operands = hierarchy.children.slice(1);
+      if(result)
+        operators.push([
+          ...hierarchyToTree(operator),
+          { text: [" -> "] },
+          {
+            state: { open: false },
+            children: [hierarchyToTree(result)],
+            forceEllipsis: true,
+          }
+        ])
+      else
+        operators.push(hierarchyToTree(operator))
+      if(hierarchy.children.length !== 2)
+        break
+      hierarchy = hierarchy.children[1];
+    }
+    if(!operators.length && hierarchy.braceType === "=")
+      return [
+        ...hierarchyToTree(hierarchy.children[0]),
+        { text: [" = "] },
+        {
+          state: { open: false },
+          children: [hierarchyToTree(hierarchy.children[1])],
+          forceEllipsis: true,
+        }
+      ]
+    return [
+      { text: ["("] },
+      { children: operators, joiner: "∘", state: { open: false }, forceOpenable: true },
+      { text: [")"] },
       ...wrapLinkedProducts(Hierarchy.create({ braceType: "[", children: operands }), [
         { text: ["("] },
         {
@@ -177,7 +212,6 @@ function _hierarchyToTree(hierarchy: Hierarchy): Tree{
           joiner: ", ",
           state: { open: false },
           forceOpenable: (
-            origHierarchy.braceType === "|" &&
             operands.length === 1 &&
             operands[0].braceType !== "[" &&
             operands[0].braceType !== "{"
@@ -185,17 +219,6 @@ function _hierarchyToTree(hierarchy: Hierarchy): Tree{
         },
         { text: [")"] },
       ]),
-    ]
-  }
-  if(hierarchy.braceType === "=") {
-    return [
-      ...hierarchyToTree(hierarchy.children[0]),
-      { text: [" = "] },
-      {
-        state: { open: false },
-        children: [hierarchyToTree(hierarchy.children[1])],
-        forceEllipsis: true,
-      }
     ]
   }
   assertNever(hierarchy.braceType);

@@ -42,6 +42,9 @@ export const Hierarchy = {
     if(braceType === "=" && children.length !== 2)
       throw new Error(`braceType "=" must be used with exactly two children`);
 
+    if(braceType === "=" && children[0].braceType === "=")
+      throw new Error(`braceType "="'s first child must not have a braceType of "="`)
+
     return {
       type: "Hierarchy",
       name,
