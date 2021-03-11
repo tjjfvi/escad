@@ -13,12 +13,13 @@ import { createServer } from "../server";
     .option("-d, --watch-dir <dir>", "directory to watch (default: basedir of <file>)")
     .option("--artifacts <dir>", "artifact directory", path.join(os.tmpdir(), "escad-artifacts"))
     .option("--clean", "clean artifacts directory")
+    .option("--dev", "run server in dev mode")
     .parse(process.argv);
 
   if(commander.args.length !== 1)
     return commander.outputHelp();
 
-  let { port, watchDir, artifacts: artifactsDir, clean } = commander.opts();
+  let { port, watchDir, artifacts: artifactsDir, clean, dev } = commander.opts();
   artifactsDir = path.resolve(artifactsDir);
   let [file] = commander.args;
 
@@ -28,5 +29,11 @@ import { createServer } from "../server";
   const loadFile = path.resolve(file);
   const loadDir = path.dirname(path.resolve(watchDir || loadFile));
 
-  createServer(artifactsDir, +port, loadFile, loadDir);
+  createServer({
+    artifactsDir,
+    port: +port,
+    loadFile,
+    loadDir,
+    dev,
+  });
 })();

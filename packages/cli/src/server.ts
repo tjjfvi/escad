@@ -13,7 +13,15 @@ import { fork } from "child_process";
 import watch from "node-watch";
 import { BundleOptions } from "../../client/node_modules/@escad/protocol/src";
 
-export const createServer = async (artifactsDir: string, port: number, loadFile: string, loadDir: string) => {
+export interface ServerOptions {
+  artifactsDir: string,
+  port: number,
+  loadFile: string,
+  loadDir: string,
+  dev: boolean,
+}
+
+export const createServer = async ({ artifactsDir, port, loadFile, loadDir, dev }: ServerOptions) => {
   const { app } = expressWs(express());
 
   const staticDir = path.join(__dirname, "../static/")
@@ -27,6 +35,7 @@ export const createServer = async (artifactsDir: string, port: number, loadFile:
     outDir: bundleDir,
     coreClientPath: require.resolve("./client"),
     clientPlugins: [],
+    watch: dev,
   };
 
   const bundlerProcess = fork(require.resolve("./bundler"));
