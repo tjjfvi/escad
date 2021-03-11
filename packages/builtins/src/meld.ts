@@ -49,6 +49,7 @@ conversionRegistry.register({
   convert: async ({ children: [, c] }: Meld<ArrayProduct<Mesh>>): Promise<Mesh> =>
     Mesh.create(c.children.flatMap(x => x.faces)),
   weight: 1,
+  id: Id.create(__filename, "@escad/builtins", "Conversion", "Meld", "0"),
 })
 
 export const meld: ConvertibleOperation<Mesh, Mesh> = (

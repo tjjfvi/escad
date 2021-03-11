@@ -1,4 +1,6 @@
 
+import { Hash } from "./Hash";
+import { ScopedId } from "./Id";
 import { Product, ProductType } from "./Product";
 
 export interface Conversion<A, B> {
@@ -10,6 +12,7 @@ export interface ConversionImpl<A extends Product, B extends Product> {
   readonly fromType: ProductType<A>,
   readonly toType: ProductType<B>,
   readonly weight: number,
+  readonly id: ScopedId<"Conversion"> | Hash<unknown>,
 }
 
 type Values<T> = T[keyof T];

@@ -83,6 +83,7 @@ conversionRegistry.register({
     }));
   },
   weight: 1,
+  id: Id.create(__filename, "@escad/builtins", "Conversion", "CylMesh", "0"),
 })
 
 export interface CylArgs {

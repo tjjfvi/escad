@@ -50,6 +50,7 @@ conversionRegistry.register<FlipFaces<Mesh>, Mesh>({
   fromType: TupleProductType.create([FlipFacesMarker.productType, Mesh.productType]),
   toType: Mesh.productType,
   weight: 1,
+  id: Id.create(__filename, "@escad/builtins", "Conversion", "FlipFaces", "0"),
 })
 
 export const flip: ConvertibleOperation<Mesh, FlipFaces<Mesh>> =

@@ -82,6 +82,7 @@ conversionRegistry.register({
     ]);
   },
   weight: 1,
+  id: Id.create(__filename, "@escad/builtins", "Conversion", "CubeMesh", "0"),
 })
 
 export interface CubeArgs extends TripletObj<number> {

@@ -90,6 +90,7 @@ conversionRegistry.register({
     );
   },
   weight: 1,
+  id: Id.create(__filename, "@escad/builtins", "Conversion", "SphereMesh", "0"),
 })
 
 type SphereArgs = number | {

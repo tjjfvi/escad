@@ -8,6 +8,7 @@ import {
   ExportTypeInfo,
   Hash,
   Hierarchy,
+  Id,
   Product,
   ProductType,
 } from "@escad/core";
@@ -24,6 +25,8 @@ import {
 import { baseStatuses, Status } from "./Status";
 
 const _ClientStateContext = createContext<ClientState>(null as never);
+
+const stubConversionId = Id.create(__filename, "@escad/client", "Conversion", "StubConversion", "0");
 
 export class ClientState implements ArtifactStore {
 
@@ -105,6 +108,7 @@ export class ClientState implements ArtifactStore {
             throw new Error("Stub conversion erroneously called")
           },
           weight: Infinity,
+          id: stubConversionId,
         })
   }
 

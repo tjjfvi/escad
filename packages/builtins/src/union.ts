@@ -56,6 +56,7 @@ conversionRegistry.register({
       return Bsp.build(a, Bsp.allFaces(b)) ?? Bsp.null();
     }),
   weight: 1,
+  id: Id.create(__filename, "@escad/builtins", "Conversion", "Union", "0"),
 })
 
 export const union: ConvertibleOperation<Bsp, Bsp> =

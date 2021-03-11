@@ -1,4 +1,4 @@
-import { TupleProduct, Conversion, Product, conversionRegistry, TupleProductType } from "@escad/core";
+import { TupleProduct, Conversion, Product, conversionRegistry, TupleProductType, Id } from "@escad/core";
 import { Mesh } from "./Mesh";
 import { Matrix4 } from "./Matrix4";
 import { Face } from "./Face";
@@ -29,4 +29,5 @@ conversionRegistry.register<Transformation<Mesh>, Mesh>({
   fromType: TupleProductType.create([Matrix4.productType, Mesh.productType]),
   toType: Mesh.productType,
   weight: 1,
+  id: Id.create(__filename, "@escad/builtins", "Conversion", "Transformation", "0"),
 })

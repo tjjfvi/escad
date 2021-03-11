@@ -127,6 +127,7 @@ export class ConversionRegistry {
           convert: async (product: Product) =>
             UnknownProduct.create(product),
           weight: 0,
+          id: Hash.create([fromType, toType])
         })
         i++
         continue;
@@ -139,6 +140,7 @@ export class ConversionRegistry {
           convert: async (product: TupleProduct) =>
             ArrayProduct.create(product.children),
           weight: 0,
+          id: Hash.create([fromType, toType])
         })
         i--;
         continue;
@@ -164,7 +166,8 @@ export class ConversionRegistry {
         weight: fromType.elementTypes.map((f, i) =>
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
           this.weight(this.composed!.get([f, toType.elementTypes[i]])!)
-        ).reduce((a, b) => a + b)
+        ).reduce((a, b) => a + b),
+        id: Hash.create([fromType, toType])
       })
       i++
     }
@@ -178,6 +181,7 @@ export class ConversionRegistry {
       toType: type,
       convert: x => x,
       weight: 0,
+      id: Hash.create([type, type])
     };
   }
 
