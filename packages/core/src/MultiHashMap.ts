@@ -1,9 +1,10 @@
 
 import { HashMap } from "./HashMap";
+import { HashSet } from "./HashSet";
 
 export class MultiHashMap<K, V> {
 
-  private map = new HashMap<K, Set<V>>();
+  private map = new HashMap<K, HashSet<V>>();
 
   clear(){
     this.map.clear();
@@ -30,17 +31,17 @@ export class MultiHashMap<K, V> {
     return !!this.getSet(key).size
   }
 
-  public getAll(key: K): ReadonlySet<V>{
+  getAll(key: K): Iterable<V>{
     return this.getSet(key);
   }
 
-  private getSet(key: K): Set<V>{
+  private getSet(key: K): HashSet<V>{
     const existingSet = this.map.get(key);
 
     if(existingSet)
       return existingSet;
 
-    const newSet = new Set<V>();
+    const newSet = new HashSet<V>();
     this.map.set(key, newSet);
 
     return newSet;
