@@ -10,10 +10,10 @@ const createArtifactStoreMock = (name: string, output: unknown[], returnValues: 
     output.push([name, "lookupRef", loc])
     return returnValues.pop() ?? null
   },
-  storeRaw: (hash, buffer) => {
+  storeRaw: async (hash, buffer) => {
     output.push([name, "storeRaw", hash, buffer.toString("base64")])
   },
-  storeRef: (loc, hash) => {
+  storeRef: async (loc, hash) => {
     output.push([name, "storeRef", loc, hash])
   },
 })
