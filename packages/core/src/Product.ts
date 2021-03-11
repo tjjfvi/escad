@@ -17,6 +17,7 @@ import { ScopedId } from "./Id";
 export interface _Product {
   readonly type: string | ScopedId<"LeafProduct">,
   readonly [__convertibleToTransitivityOverride]?: TransitivityOverride.A,
+  // @ts-ignore: This doesn't normally error, but sometimes tsc -b does weird things.
   readonly [__convertibleTo]?: (
     __convertibleToOverride extends keyof this
       ? unknown
