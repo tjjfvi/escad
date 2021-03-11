@@ -6,6 +6,8 @@ import { checkTypeProperty } from "./checkTypeProperty";
 import { ConvertibleTo } from "./Conversions";
 import { contextStack } from "./ContextStack";
 import { ExtensibleFunction } from "./ExtensibleFunction";
+import { CallHierarchy } from "./CalHierarchy";
+import { NameHierarchy } from "./NameHierarchy";
 
 export type ConvertibleOperation<I extends Product, O extends Product> = Operation<ConvertibleTo<I>, ConvertibleTo<O>>;
 
@@ -35,27 +37,17 @@ export const Operation = {
       new ExtensibleFunction(
         (...args: any[]) => {
           const result = Element.create(contextStack.wrap(() => func(Element.create(args))));
-          const origHierarchy = result.hierarchy;
-          let resultHierarchy = origHierarchy;
+          const resultHierarchy = result.hierarchy;
+          let outputHierarchy = resultHierarchy;
           if(overrideHierarchy)
-            resultHierarchy = Hierarchy.create({
-              braceType: "|",
-              children: [
-                hierarchy ?? Hierarchy.create({ name }),
-                ...Hierarchy.from(args).children,
-              ],
+            outputHierarchy = CallHierarchy.create({
+              operator: hierarchy ?? NameHierarchy.create({ name }),
+              operands: args.map(x => Hierarchy.from(x)),
+              result: resultHierarchy && showOutputInHierarchy ? resultHierarchy : undefined,
+              composable: true,
               linkedProducts: Hierarchy.from(result).linkedProducts,
             });
-          if(overrideHierarchy && resultHierarchy && origHierarchy && showOutputInHierarchy)
-            resultHierarchy = Hierarchy.create({
-              braceType: "=",
-              children: [
-                resultHierarchy,
-                origHierarchy,
-              ],
-              linkedProducts: origHierarchy.linkedProducts,
-            })
-          return Element.applyHierarchy(result, resultHierarchy);
+          return Element.applyHierarchy(result, outputHierarchy);
         },
         {},
         name,

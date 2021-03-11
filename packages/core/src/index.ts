@@ -8,9 +8,11 @@ export default escad;
 
 // @create-index {"mode":"*"}
 
+export * from './ArrayHierarchy';
 export * from './ArrayProduct';
 export * from './ArtifactManager';
 export * from './ArtifactStore';
+export * from './CalHierarchy';
 export * from './Component';
 export * from './Context';
 export * from './ContextStack';
@@ -25,8 +27,10 @@ export * from './HashMap';
 export * from './HashSet';
 export * from './Hierarchy';
 export * from './Id';
+export * from './LabeledHierarchy';
 export * from './LeafProduct';
 export * from './MultiHashMap';
+export * from './ObjectHierarchy';
 export * from './ObjectParam';
 export * from './Operation';
 export * from './Parameter';
@@ -36,10 +40,12 @@ export * from './RealmComponent';
 export * from './RealmElement';
 export * from './RealmOperation';
 export * from './RealmThing';
+export * from './NameHierarchy';
 export * from './Thing';
 export * from './Timer';
 export * from './TupleProduct';
 export * from './UnknownProduct';
+export * from './ValueHierarchy';
 export * from './WeakCache';
 export * from './checkTypeProperty';
 export * from './defaultChainables';

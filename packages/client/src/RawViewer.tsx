@@ -1,6 +1,6 @@
 
 import "../stylus/RawViewer.styl"
-import { Hierarchy } from "@escad/core";
+import { Hierarchy, NameHierarchy } from "@escad/core";
 import { UnknownProduct, UnknownProductType } from "@escad/core";
 import React from "react";
 import { observer, useFromPromise } from "rhobo";
@@ -15,7 +15,7 @@ viewerRegistry.register<UnknownProduct, { product: UnknownProduct }>({
     className: "RawViewer",
     component: observer(({ inputs }) => {
       const hierarchyPromise = Promise.all(inputs).then(x => Hierarchy.from(x.map(x => x.product.product), true));
-      const hierarchy = useFromPromise(hierarchyPromise, Hierarchy.create({ name: "Loading" }))();
+      const hierarchy = useFromPromise(hierarchyPromise, NameHierarchy.create({ name: "Loading" }))();
       return <div className="inner"><HierarchyView hierarchy={hierarchy}/></div>
     }),
     weight: 0,
