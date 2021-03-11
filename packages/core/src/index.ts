@@ -22,6 +22,7 @@ export * from './ExportTypeRegistry';
 export * from './ExtensibleFunction';
 export * from './Hash';
 export * from './HashMap';
+export * from './HashSet';
 export * from './Hierarchy';
 export * from './Id';
 export * from './LeafProduct';
