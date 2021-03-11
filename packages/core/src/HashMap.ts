@@ -20,6 +20,7 @@ export class HashMap<K, V> {
 
   clear(){
     this.map.clear();
+    return this
   }
 
   delete(key: K){
