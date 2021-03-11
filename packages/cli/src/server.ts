@@ -38,7 +38,9 @@ export const createServer = async ({ artifactsDir, port, loadFile, loadDir, dev 
     watch: dev,
   };
 
-  const bundlerProcess = fork(require.resolve("./bundler"));
+  const bundlerProcess = fork(require.resolve("./bundler"), {
+    env: { ...process.env, DEV_MODE: dev + "" }
+  });
   const bundlerMessenger = createServerBundlerMessenger(childProcessConnection(bundlerProcess));
 
   bundlerMessenger.req.bundle(baseBundleOptions);
