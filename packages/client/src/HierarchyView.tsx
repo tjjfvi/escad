@@ -81,8 +81,10 @@ const TreeText = ({ str }: { str: TreeText}) => {
       typeof d === "string" ?
         [[...a, d === ellipsis ? <span className="ellipsis" key={i}>{d}</span> : d], b, ...c] :
         "close" in d ?
-          [[...b, (
-            <TreeTextPart key={i} onClick={() => d.onClick?.(state)} className={d.className}>{a}</TreeTextPart>
+          [[...b, ...(
+            d.onClick || d.className ?
+              [<TreeTextPart key={i} onClick={() => d.onClick?.(state)} className={d.className}>{a}</TreeTextPart>] :
+              a
           )], ...c] :
           [[], a, b, ...c]
     , [[]] as (string | React.ReactElement)[][])
@@ -232,7 +234,7 @@ function collapseTree(tree: Tree, onUpdate?: () => void, noSingle = false): Tree
         ...inner.map(x => "text" in x ? {
           text: x.text.map(x =>
             typeof x === "object" && "close" in x && x.className !== "openable" ?
-              { ...x, onClick: undefined } :
+              { close: true as const } :
               x
           )
         } : x),
