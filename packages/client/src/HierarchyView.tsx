@@ -268,7 +268,7 @@ function joinTree(tree: Tree, onUpdate?: () => void){
           className: "openable"
         }]]
   , [[], []]);
-  const t = [...r, { text: s }]
+  const t = [...r, { text: s }].filter(x => "children" in x || x.text.some(x => typeof x === "string" && x.length))
   return t.map(x => !("text" in x) ? x : {
     text: t.flatMap(y => "text" in y ? x === y ? y.text : y.text.filter(x => typeof x === "object") : [])
   })
