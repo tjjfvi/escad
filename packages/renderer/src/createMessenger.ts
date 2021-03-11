@@ -65,7 +65,7 @@ export const createRendererServerMessenger = (
     const loadInfo = {
       conversions,
       paramDef: await paramHash,
-      clientPlugins: registeredPlugins,
+      clientPlugins: [...registeredPlugins],
       exportTypes,
       products,
       hierarchy,
