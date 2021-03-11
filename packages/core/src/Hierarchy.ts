@@ -1,103 +1,69 @@
 
 import { Product } from "./Product";
 import { LeafProduct } from "./LeafProduct";
-import { checkTypeProperty } from "./checkTypeProperty";
 import { Component } from "./Component";
 import { Element } from "./Element";
 import { Hash } from "./Hash";
 import { Operation } from "./Operation";
+import { ArrayHierarchy } from "./ArrayHierarchy";
+import { CallHierarchy } from "./CalHierarchy";
+import { LabeledHierarchy } from "./LabeledHierarchy";
+import { ObjectHierarchy } from "./ObjectHierarchy";
+import { NameHierarchy } from "./NameHierarchy";
+import { ValueHierarchy } from "./ValueHierarchy";
 
-export type BraceType = "{" | "[" | "|" | "(" | ":" | "=" | "";
-
-export interface Hierarchy {
-  readonly type: "Hierarchy",
-  readonly name: string,
-  readonly braceType: BraceType,
-  readonly children: readonly Hierarchy[],
-  readonly linkedProducts: readonly Hash<Product>[],
+export interface _Hierarchy {
+  readonly type: `${string}Hierarchy`,
+  readonly linkedProducts?: readonly Hash<Product>[],
 }
 
+export type Hierarchy =
+  | ObjectHierarchy
+  | LabeledHierarchy
+  | ArrayHierarchy
+  | NameHierarchy
+  | ValueHierarchy
+  | CallHierarchy
+
 export const Hierarchy = {
-  create: ({
-    name = "",
-    braceType = "",
-    children = [],
-    linkedProducts = children.flatMap(c => c.linkedProducts),
-  }: Partial<Hierarchy>): Hierarchy => {
-    if(braceType === "" && children.length)
-      throw new Error(`braceType "${braceType}" must be used without children`)
-
-    if((braceType === "" || braceType === ":") && !name)
-      throw new Error(`braceType "${braceType}" must be used with a name`)
-
-    if((braceType !== "" && braceType !== ":") && name !== "")
-      throw new Error(`braceType "${braceType}" cannot be used with a name`);
-
-    if((braceType === "(" || braceType === "|") && !children.length)
-      throw new Error(`braceType "${braceType}" must be used with at least one child`);
-
-    if(braceType === ":" && children.length !== 1)
-      throw new Error("braceType \":\" must be used with exactly one child");
-
-    if(braceType === "=" && children.length !== 2)
-      throw new Error(`braceType "=" must be used with exactly two children`);
-
-    if(braceType === "=" && children[0].braceType === "=")
-      throw new Error(`braceType "="'s first child must not have a braceType of "="`)
-
-    return {
-      type: "Hierarchy",
-      name,
-      braceType,
-      children,
-      linkedProducts,
-    };
-  },
-  isHierarchy: checkTypeProperty.string<Hierarchy>("Hierarchy"),
-  from: (val: unknown, raw = false): Hierarchy => {
+  isHierarchy: (value: unknown): value is Hierarchy =>
+    ObjectHierarchy.isObjectHierarchy(value) ||
+    LabeledHierarchy.isLabeledHierarchy(value) ||
+    ArrayHierarchy.isArrayHierarchy(value) ||
+    NameHierarchy.isNameHierarchy(value) ||
+    ValueHierarchy.isValueHierarchy(value) ||
+    CallHierarchy.isCallHierarchy(value),
+  from: (value: unknown, raw = false): Hierarchy => {
     if(
-      typeof val === "string" ||
-      typeof val === "number" ||
-      typeof val === "bigint" ||
-      typeof val === "boolean" ||
-      typeof val === "symbol" ||
-      val === undefined ||
-      val === null
+      typeof value === "string" ||
+      typeof value === "number" ||
+      typeof value === "boolean" ||
+      typeof value === "symbol" ||
+      value === undefined ||
+      value === null
     )
-      return Hierarchy.create({ name: val ? val.toString() : val + "" })
+      return ValueHierarchy.from(value);
     if(!raw) {
-      if(Hierarchy.isHierarchy(val))
-        return val;
-      if(Element.isElement(val))
-        return val.hierarchy ?? Hierarchy.from(val.value);
-      if(Component.isComponent(val) || Operation.isOperation(val))
-        return val.hierarchy ?? Hierarchy.create({ name: val.name });
-      if(LeafProduct.isLeafProduct(val))
-        return Hierarchy.create({
-          name: `<${val.type.full}>`,
-          linkedProducts: [Hash.create(val)],
+      if(Hierarchy.isHierarchy(value))
+        return value;
+      if(Element.isElement(value))
+        return value.hierarchy ?? Hierarchy.from(value.value);
+      if(Component.isComponent(value) || Operation.isOperation(value))
+        return value.hierarchy ?? NameHierarchy.create({ name: value.name });
+      if(LeafProduct.isLeafProduct(value))
+        return NameHierarchy.create({
+          name: `<${value.type.full}>`,
+          linkedProducts: [Hash.create(value)],
         });
-      if(Product.isProduct(val))
-        return Hierarchy.create({
-          name: `<${val.type}>`,
-          linkedProducts: [Hash.create(val)],
+      if(Product.isProduct(value))
+        return NameHierarchy.create({
+          name: `<${value.type}>`,
+          linkedProducts: [Hash.create(value)],
         });
     }
-    if(val instanceof Array)
-      return Hierarchy.create({
-        braceType: "[",
-        children: val.map(e => Hierarchy.from(e, raw)),
-      });
-    return Hierarchy.create({
-      braceType: "{",
-      children: Object.entries(val as any).map(([k, v]) =>
-        Hierarchy.create({
-          name: k,
-          braceType: ":",
-          children: [Hierarchy.from(v, raw)]
-        })
-      )
-    });
+    if(value instanceof Array)
+      return ArrayHierarchy.from(value, raw);
+    return ObjectHierarchy.from(value as Record<string, unknown>);
   },
 };
 

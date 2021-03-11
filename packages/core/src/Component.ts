@@ -1,8 +1,10 @@
 
+import { CallHierarchy } from "./CalHierarchy";
 import { checkTypeProperty } from "./checkTypeProperty";
 import { contextStack } from "./ContextStack";
 import { ExtensibleFunction } from "./ExtensibleFunction";
 import { Hierarchy } from "./Hierarchy";
+import { NameHierarchy } from "./NameHierarchy";
 import { Thing, StripRealm } from "./Thing";
 
 export interface Component<I extends any[], T extends Thing> {
@@ -32,27 +34,17 @@ export const Component = {
       new ExtensibleFunction(
         (...args: I) => {
           const result = contextStack.wrap(() => func(...args));
-          const origHierarchy = result.hierarchy;
-          let resultHierarchy = origHierarchy;
+          const resultHierarchy = result.hierarchy;
+          let outputHierarchy = resultHierarchy;
           if(overrideHierarchy)
-            resultHierarchy = Hierarchy.create({
-              braceType: "(",
-              children: [
-                hierarchy ?? Hierarchy.create({ name }),
-                ...args.map(x => Hierarchy.from(x)),
-              ],
+            outputHierarchy = CallHierarchy.create({
+              operator: hierarchy ?? NameHierarchy.create({ name }),
+              operands: args.map(x => Hierarchy.from(x)),
+              result: resultHierarchy && showOutputInHierarchy ? resultHierarchy : undefined,
+              composable: false,
               linkedProducts: Hierarchy.from(result).linkedProducts,
             });
-          if(overrideHierarchy && resultHierarchy && origHierarchy && showOutputInHierarchy)
-            resultHierarchy = Hierarchy.create({
-              braceType: "=",
-              children: [
-                resultHierarchy,
-                origHierarchy,
-              ],
-              linkedProducts: origHierarchy.linkedProducts,
-            })
-          return Thing.applyHierarchy(result, resultHierarchy);
+          return Thing.applyHierarchy(result, outputHierarchy);
         },
         {},
         name,

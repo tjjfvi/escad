@@ -1,5 +1,13 @@
 
-import { Hierarchy } from "@escad/core";
+import {
+  ArrayHierarchy,
+  CallHierarchy,
+  Hierarchy,
+  LabeledHierarchy,
+  ObjectHierarchy,
+  NameHierarchy,
+  ValueHierarchy,
+} from "@escad/core";
 import React, { useContext, useRef, useState } from "react";
 import { useObservable } from "rhobo";
 import { ClientState } from "./ClientState";
@@ -141,12 +149,13 @@ type TreeTextPartProps = {
 }
 
 function wrapLinkedProducts(hierarchy: Hierarchy, tree: Tree): Tree{
-  if(!hierarchy.linkedProducts.length)
+  if(!hierarchy.linkedProducts || !hierarchy.linkedProducts.length)
     return tree;
   return [
     { text: [{ open: true }] },
     ...tree,
-    { text: [{ close: true, onClick: state => state.handleProducts(hierarchy.linkedProducts), className: "link" }] },
+    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+    { text: [{ close: true, onClick: state => state.handleProducts(hierarchy.linkedProducts!), className: "link" }] },
   ]
 }
 
@@ -159,82 +168,84 @@ function hierarchyToTree(hierarchy: Hierarchy): Tree{
 }
 
 function _hierarchyToTree(hierarchy: Hierarchy): Tree{
-  if(hierarchy.braceType === "")
+  if(NameHierarchy.isNameHierarchy(hierarchy))
     return [{ text: [hierarchy.name] }];
-  if(hierarchy.braceType === ":")
+  if(ValueHierarchy.isValueHierarchy(hierarchy))
+    return [{
+      text: [(
+        hierarchy.value === null ?
+          "null" :
+          typeof hierarchy.value === "object" ?
+            "undefined" in hierarchy.value ?
+              "undefined" :
+              `Symbol(${hierarchy.value ?? ""})` :
+            JSON.stringify(hierarchy.value)
+      )]
+    }];
+  if(LabeledHierarchy.isLabeledHierarchy(hierarchy))
     return [
-      { text: [hierarchy.name + ": "] },
-      { children: [hierarchyToTree(hierarchy.children[0])], state: { open: false } }
+      { text: [hierarchy.label + ": "] },
+      { children: [hierarchyToTree(hierarchy.value)], state: { open: false } }
     ]
-  if(hierarchy.braceType === "[" || hierarchy.braceType === "{")
+  if(ObjectHierarchy.isObjectHierarchy(hierarchy))
     return [
-      { text: [hierarchy.braceType] },
+      { text: ["{"] },
       { children: hierarchy.children.map(hierarchyToTree), joiner: ", ", state: { open: false } },
-      { text: [hierarchy.braceType === "[" ? "]" : "}"] },
+      { text: ["}"] },
     ]
-  if(hierarchy.braceType === "(") {
-    const [operator, ...operands] = hierarchy.children;
+  if(ArrayHierarchy.isArrayHierarchy(hierarchy))
     return [
-      ...hierarchyToTree(operator),
-      ...wrapLinkedProducts(Hierarchy.create({ braceType: "[", children: operands }), [
-        { text: ["("] },
-        {
-          children: operands.map(hierarchyToTree),
-          joiner: ", ",
-          state: { open: false },
-        },
-        { text: [")"] },
-      ]),
+      { text: ["["] },
+      { children: hierarchy.children.map(hierarchyToTree), joiner: ", ", state: { open: false } },
+      { text: ["]"] },
     ]
-  }
-  if(hierarchy.braceType === "|" || hierarchy.braceType === "=") {
+  if(CallHierarchy.isCallHierarchy(hierarchy)) {
+    if(!hierarchy.composable)
+      return [
+        ...hierarchyToTree(hierarchy.operator),
+        ...wrapLinkedProducts(ArrayHierarchy.from(hierarchy.operands), [
+          { text: ["("] },
+          {
+            children: hierarchy.operands.map(hierarchyToTree),
+            joiner: ", ",
+            state: { open: false },
+          },
+          { text: [")"] },
+        ]),
+        ...(hierarchy.result ? [
+          { text: [" = "] },
+          {
+            state: { open: false },
+            children: [hierarchyToTree(hierarchy.result)],
+            forceEllipsis: true,
+          }
+        ] : [])
+      ]
     const operators: Tree[] = [];
-    let operands: readonly Hierarchy[] = [];
-    while(true) {
-      let tempHierarchy = hierarchy;
-      let result: Hierarchy | undefined;
-      if(hierarchy.braceType === "=")
-        [hierarchy, result] = hierarchy.children
-      if(hierarchy.braceType !== "|") {
-        hierarchy = tempHierarchy;
-        break;
-      }
-      const operator = {
-        ...hierarchy.children[0],
-        linkedProducts: hierarchy.linkedProducts,
-      };
-      operands = hierarchy.children.slice(1);
-      if(result)
-        operators.push([
-          ...hierarchyToTree(operator),
+    let operands: Hierarchy[] = [hierarchy];
+    while(operands.length === 1 && CallHierarchy.isCallHierarchy(operands[0]) && operands[0].composable) {
+      const [curHierarchy] = operands;
+      operands = curHierarchy.operands;
+      operators.push([
+        ...hierarchyToTree({
+          ...curHierarchy.operator,
+          linkedProducts: curHierarchy.linkedProducts,
+        }),
+        ...(curHierarchy.result ? [
           { text: [" -> "] },
           {
             state: { open: false },
-            children: [hierarchyToTree(result)],
+            children: [hierarchyToTree(curHierarchy.result)],
             forceEllipsis: true,
           }
-        ])
-      else
-        operators.push(hierarchyToTree(operator))
-      if(hierarchy.children.length !== 2)
-        break
-      hierarchy = hierarchy.children[1];
+        ] : [])
+      ])
     }
-    if(!operators.length && hierarchy.braceType === "=")
-      return [
-        ...hierarchyToTree(hierarchy.children[0]),
-        { text: [" = "] },
-        {
-          state: { open: false },
-          children: [hierarchyToTree(hierarchy.children[1])],
-          forceEllipsis: true,
-        }
-      ]
     return [
       { text: ["("] },
       { children: operators, joiner: "∘", state: { open: false }, forceOpenable: true },
       { text: [")"] },
-      ...wrapLinkedProducts(Hierarchy.create({ braceType: "[", children: operands }), [
+      ...wrapLinkedProducts(ArrayHierarchy.from(operands), [
         { text: ["("] },
         {
           children: operands.map(hierarchyToTree),
@@ -242,15 +253,15 @@ function _hierarchyToTree(hierarchy: Hierarchy): Tree{
           state: { open: false },
           forceOpenable: (
             operands.length === 1 &&
-            operands[0].braceType !== "[" &&
-            operands[0].braceType !== "{"
+            !ArrayHierarchy.isArrayHierarchy(operands[0]) &&
+            !ObjectHierarchy.isObjectHierarchy(operands[0])
           ),
         },
         { text: [")"] },
       ]),
     ]
   }
-  assertNever(hierarchy.braceType);
+  assertNever(hierarchy);
 }
 
 function collapseTree(tree: Tree, onUpdate?: () => void, noSingle = false): Tree{
