@@ -36,7 +36,6 @@ export const Sphere = {
   id: sphereId,
 };
 
-
 declare global {
   namespace escad {
     interface ConversionsObj {

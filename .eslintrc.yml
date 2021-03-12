@@ -131,7 +131,7 @@ rules:
     - warn
   no-multiple-empty-lines:
     - warn
-    - max: 2
+    - max: 1
   no-trailing-spaces:
     - warn
   no-unneeded-ternary:

@@ -26,7 +26,6 @@ export default (escad, p) => {
     },
   ]);
 
-
   const d = 32
   const t = .8
   const h = 10

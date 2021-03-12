@@ -12,4 +12,3 @@ export interface Viewer<I extends ViewerInput> {
   weight: number,
 }
 
-

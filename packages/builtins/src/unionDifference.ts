@@ -21,5 +21,4 @@ export const udMeld: ConvertibleOperation<Bsp, Bsp> =
 export const unionDiff: ConvertibleOperation<Bsp, Bsp> =
   Operation.create("unionDiff", el => diff(udMeld(...Element.toArray(el))))
 
-
 export const unionDiffMeld = udMeld;

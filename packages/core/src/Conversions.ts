@@ -158,7 +158,6 @@ export type ConvertibleTo<T extends Product> = Product & {
 //   TupleProduct<[ProductC, TupleProduct<ConvertibleTo<ProductA>[]>]>
 // >;
 
-
 // // type A0 = Assert<A1, A2>
 // // type A1 = ConvertibleTo<TupleProduct<[ProductC, ProductA]>>;
 // // type A2 = TupleProduct<[ProductC, TupleProduct<ConvertibleTo<ProductA>[]>]>;
@@ -170,7 +169,6 @@ export type ConvertibleTo<T extends Product> = Product & {
 // // type A4 = Assert<A3[0], A3[1]>
 // // type A5 = keyof A3[1]["children"]
 // // type A6 = Assert<ConvertibleTo<ProductA>, ConvertibleTo<ProductB>>;
-
 
 // type W<A extends Product> = Assert<_ConvertibleTo<A>, _ConvertibleTo<ConvertibleTo<A>>>;
 // type X__<A extends Product> = Assert<ConvertibleTo<A>, ConvertibleTo<ConvertibleTo<A>>>;
