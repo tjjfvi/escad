@@ -80,9 +80,9 @@ rules:
   array-bracket-newline:
     - warn
     - consistent
-#   array-bracket-spacing:
-#     - warn
-#     - always
+  array-bracket-spacing:
+    - warn
+    - never
   array-element-newline:
     - warn
     - consistent

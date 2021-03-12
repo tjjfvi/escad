@@ -11,7 +11,7 @@ const axesData = [
 ] as const;
 
 export const createLineAxes = () =>
-  axesData.map(([vector, color, opacity ]) => {
+  axesData.map(([vector, color, opacity]) => {
     let geo = new t.Geometry();
     geo.vertices.push(
       new t.Vector3(),
