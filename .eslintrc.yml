@@ -54,7 +54,7 @@ rules:
   indent:
     - warn
     - 2
-    - ignoreComments: true
+    - ignoreComments: false
       SwitchCase: 1
   linebreak-style:
     - error
