@@ -63,7 +63,7 @@ export const Hierarchy = {
     }
     if(value instanceof Array)
       return ArrayHierarchy.from(value, raw);
-    return ObjectHierarchy.from(value as Record<string, unknown>);
+    return ObjectHierarchy.from(value as Record<string, unknown>, raw);
   },
 };
 
