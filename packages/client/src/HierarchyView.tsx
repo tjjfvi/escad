@@ -28,10 +28,14 @@ export const HierarchyView = ({ hierarchy }: { hierarchy: Hierarchy }) => {
 const Arrow = ({ state, onClick }: { state: "open" | "closed" | "leaf", onClick?: () => void }) =>
   <div className={ "arrow " + state } onClick={onClick}></div>;
 
+const arrowWidth = 25;
+const characterWidth = 10;
+
 const Tree = ({ tree, width }: { tree: Tree, width: number }) => {
   const [, _update] = useState({});
   const update = () => _update({});
-  const maxLength = (width - 25) / 10
+  const innerWidth = width - arrowWidth;
+  const maxLength = innerWidth / characterWidth;
 
   const collapsedTree = fullyCollapseTree(tree, maxLength, update);
   const joinedCollapsedTree = joinTree(collapsedTree, update);
@@ -45,7 +49,7 @@ const Tree = ({ tree, width }: { tree: Tree, width: number }) => {
       {joinedCollapsedTree.map((x, i, a) => {
         if("children" in x)
           return <div className="children" key={i}>
-            {x.children.map((y, i) => <Tree width={width - 25} tree={y} key={i}/>)}
+            {x.children.map((y, i) => <Tree width={innerWidth} tree={y} key={i}/>)}
           </div>
         const next = a[i + 1];
         const state = !next || "text" in next ? null : next.state;
