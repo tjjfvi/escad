@@ -6,7 +6,7 @@ import { Element } from "./Element";
 import { Hash } from "./Hash";
 import { Operation } from "./Operation";
 import { ArrayHierarchy } from "./ArrayHierarchy";
-import { CallHierarchy } from "./CalHierarchy";
+import { CallHierarchy } from "./CallHierarchy";
 import { LabeledHierarchy } from "./LabeledHierarchy";
 import { ObjectHierarchy } from "./ObjectHierarchy";
 import { NameHierarchy } from "./NameHierarchy";

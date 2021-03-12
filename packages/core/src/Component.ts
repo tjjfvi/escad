@@ -1,5 +1,5 @@
 
-import { CallHierarchy } from "./CalHierarchy";
+import { CallHierarchy } from "./CallHierarchy";
 import { checkTypeProperty } from "./checkTypeProperty";
 import { contextStack } from "./ContextStack";
 import { ExtensibleFunction } from "./ExtensibleFunction";
