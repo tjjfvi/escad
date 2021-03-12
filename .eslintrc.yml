@@ -172,9 +172,13 @@ rules:
     - warn
   semi-style:
     - warn
+    - first
   semi:
+    - off
+  '@typescript-eslint/semi':
     - warn
     - never
+    - beforeStatementContinuationChars: always
   space-before-blocks:
     - warn
     - functions: never
