@@ -1,12 +1,12 @@
 
 export class Timer {
 
-  totalTime = 0;
-  totalCount = 0;
-  activeCount = 0;
-  actualTime = 0;
-  averageTime = 0;
-  averageConcurrency = 0;
+  totalTime = 0
+  totalCount = 0
+  activeCount = 0
+  actualTime = 0
+  averageTime = 0
+  averageConcurrency = 0
 
   start(){
     if(!this.activeCount)

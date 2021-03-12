@@ -24,5 +24,5 @@ export type RendererServerMessengerShape = {
 
 export type ServerRendererMessengerShape = { /**/ }
 
-export type ServerRendererMessenger = Messenger<ServerRendererMessengerShape, RendererServerMessengerShape>;
-export type RendererServerMessenger = Messenger<RendererServerMessengerShape, ServerRendererMessengerShape>;
+export type ServerRendererMessenger = Messenger<ServerRendererMessengerShape, RendererServerMessengerShape>
+export type RendererServerMessenger = Messenger<RendererServerMessengerShape, ServerRendererMessengerShape>

@@ -9,7 +9,7 @@ test("Stack", () => {
 })
 
 test("depthFirst", () => {
-  type Node = number | Node[];
+  type Node = number | Node[]
   const nodes: Node[] = []
   const tree = [[[[5]], 4], [[3], [2, [1], 0]]]
   depthFirst<Node>([tree], function*(x){

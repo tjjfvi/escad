@@ -2,7 +2,7 @@
 import { Id } from "./Id"
 import { Parameter } from "./Parameter"
 
-export type ObjectParamGeneric = Record<string, Parameter<any>>;
+export type ObjectParamGeneric = Record<string, Parameter<any>>
 
 export interface ObjectParamArgs<O extends ObjectParamGeneric> {
   readonly children: O,

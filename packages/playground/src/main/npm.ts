@@ -1,7 +1,7 @@
 
 import { installProjectPromise } from "./initialize"
 // @ts-ignore
-import Arborist = require("@npmcli/arborist");
+import Arborist = require("@npmcli/arborist")
 import { escadPackageTgzs } from "../utils/escadPackages"
 
 let deps: string[] = []

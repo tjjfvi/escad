@@ -22,5 +22,5 @@ export type ClientServerMessengerShape = {
   params(): AsyncIterable<unknown>,
 }
 
-export type ServerClientMessenger = Messenger<ServerClientMessengerShape, ClientServerMessengerShape>;
-export type ClientServerMessenger = Messenger<ClientServerMessengerShape, ServerClientMessengerShape>;
+export type ServerClientMessenger = Messenger<ServerClientMessengerShape, ClientServerMessengerShape>
+export type ClientServerMessenger = Messenger<ClientServerMessengerShape, ServerClientMessengerShape>

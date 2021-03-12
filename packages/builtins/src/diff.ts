@@ -29,7 +29,7 @@ export const DiffMarker = {
   id: diffMarkerId,
 }
 
-export type Diff<A extends Product, B extends Product> = TupleProduct<[DiffMarker, A, B]>;
+export type Diff<A extends Product, B extends Product> = TupleProduct<[DiffMarker, A, B]>
 export const Diff = {
   create: <A extends Product, B extends Product>(a: A, b: B): Diff<A, B> =>
     TupleProduct.create([DiffMarker.create(), a, b]),

@@ -17,7 +17,7 @@ function range(...args: [number] | [number, number] | [number, number, number]):
 export default () => {
   // console.log(global.timers);
 
-  type ConnectorStyle = "all" | "none" | "edge";
+  type ConnectorStyle = "all" | "none" | "edge"
 
   const
     or = 7.5,

@@ -7,13 +7,13 @@ const escad = Realm.create(() => ({
   bracket,
 }))
 
-type BeamOrientation = "xy" | "yx" | "yz" | "zy" | "xz" | "zx";
+type BeamOrientation = "xy" | "yx" | "yz" | "zy" | "xz" | "zx"
 
 type BracketOrientation =
   | "xy" | "xY" | "XY" | "Xy" | "xz" | "xZ" | "Xz" | "XZ" | "yz" | "yZ" | "Yz" | "YZ"
   | "yx" | "Yx" | "YX" | "yX" | "zx" | "Zx" | "zX" | "ZX" | "zy" | "Zy" | "zY" | "ZY"
 
-type XYZ = [number, number, number];
+type XYZ = [number, number, number]
 
 const beam =
   Component.create("beam", (orientation: BeamOrientation, length: number, xyz: XYZ): ConvertibleElement<Mesh> => {

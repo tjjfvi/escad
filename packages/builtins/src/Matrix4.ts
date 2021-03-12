@@ -12,7 +12,7 @@ export type Sixteen<T> = [
   T, T, T, T,
   T, T, T, T,
   T, T, T, T,
-];
+]
 
 const matrix4Id = Id.create(__filename, "@escad/builtins", "LeafProduct", "Matrix4", "0")
 

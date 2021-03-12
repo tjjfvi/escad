@@ -3,7 +3,7 @@ import { Hash } from "./Hash"
 
 export class HashMap<K, V> {
 
-  private map = new Map<Hash<K>, V>();
+  private map = new Map<Hash<K>, V>()
 
   set(key: K, value: V){
     this.map.set(Hash.create(key), value)

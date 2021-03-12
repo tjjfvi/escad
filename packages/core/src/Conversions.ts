@@ -15,7 +15,7 @@ export interface ConversionImpl<A extends Product, B extends Product> {
   readonly id: ScopedId<"Conversion"> | Hash<unknown>,
 }
 
-type Values<T> = T[keyof T];
+type Values<T> = T[keyof T]
 
 declare global {
   namespace escad {
@@ -35,7 +35,7 @@ export type ConversionImpls<C = ConversionsUnion> = (
         : never
       : never
     : never
-);
+)
 
 export type DirectConvertibleTo<T, C = ConversionsUnion> =
   C extends Conversion<infer F, infer T2>
@@ -47,18 +47,18 @@ export type DirectConvertibleTo<T, C = ConversionsUnion> =
 export declare const __convertibleTo: unique symbol
 export declare const __convertibleToOverride: unique symbol
 export declare const __convertibleToTransitivityOverride: unique symbol
-export type __convertibleTo = typeof __convertibleTo;
-export type __convertibleToOverride = typeof __convertibleToOverride;
-export type __convertibleToTransitivityOverride = typeof __convertibleToTransitivityOverride;
+export type __convertibleTo = typeof __convertibleTo
+export type __convertibleToOverride = typeof __convertibleToOverride
+export type __convertibleToTransitivityOverride = typeof __convertibleToTransitivityOverride
 
 // A is assignable to B, and B is assignable to C, but A is not assignable to C
 export namespace TransitivityOverride {
-  export type A = (x?: true) => never;
-  export type B = () => true;
-  export type C = (x?: false) => boolean;
+  export type A = (x?: true) => never
+  export type B = () => true
+  export type C = (x?: false) => boolean
 }
 
-type Match<T, U> = keyof U extends keyof T ? Pick<T, keyof U> extends U ? true : false : false;
+type Match<T, U> = keyof U extends keyof T ? Pick<T, keyof U> extends U ? true : false : false
 
 type _ImplicitlyConvertibleTo<A> = A extends A ?
   Match<A, { type: "TupleProduct" }> extends true
@@ -83,7 +83,7 @@ type _ImplicitlyConvertibleTo<A> = A extends A ?
         }
         : never : never
       : A
-: never;
+: never
 
 export type _ConvertibleTo<T, E=never> =
   T extends T
@@ -104,7 +104,7 @@ export type _ConvertibleTo<T, E=never> =
 
 // Preserves type info but does not affect assignability
 export interface Phantom<T> { _: Phantom<T> }
-export type Unphantom<T> = T extends Phantom<infer U> ? U : never;
+export type Unphantom<T> = T extends Phantom<infer U> ? U : never
 
 export type ConvertibleTo<T extends Product> = Product & {
   [__convertibleToTransitivityOverride]?: TransitivityOverride.B,

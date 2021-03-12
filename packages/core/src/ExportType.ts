@@ -9,4 +9,4 @@ export interface ExportType<P extends Product> {
   readonly export: (products: P[]) => Promise<Buffer>,
 }
 
-export type ExportTypeInfo = Omit<ExportType<any>, "export">;
+export type ExportTypeInfo = Omit<ExportType<any>, "export">

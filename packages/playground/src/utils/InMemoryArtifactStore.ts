@@ -3,8 +3,8 @@ import { ArtifactStore, Hash, HashMap } from "@escad/core"
 
 export class InMemoryArtifactStore implements ArtifactStore {
 
-  readonly raw = new Map<Hash<unknown>, Buffer>();
-  readonly ref = new HashMap<readonly unknown[], Hash<unknown>>();
+  readonly raw = new Map<Hash<unknown>, Buffer>()
+  readonly ref = new HashMap<readonly unknown[], Hash<unknown>>()
 
   async storeRaw(hash: Hash<unknown>, buffer: Buffer){
     this.raw.set(hash, buffer)

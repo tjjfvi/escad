@@ -3,8 +3,8 @@ import { Mesh } from "./Mesh"
 import { Vector3 } from "./Vector3"
 import { Element, Component } from "@escad/core"
 
-type PolyhedronVerts = Vector3[];
-type PolyhedronFaces = number[][];
+type PolyhedronVerts = Vector3[]
+type PolyhedronFaces = number[][]
 type PolyhedronArgs =
   | [PolyhedronVerts, PolyhedronFaces]
   | [{

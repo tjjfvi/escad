@@ -26,7 +26,7 @@ export const FlipFacesMarker = {
   id: flipFacesMarkerId,
 }
 
-export type FlipFaces<T extends Product> = TupleProduct<readonly [FlipFacesMarker, T]>;
+export type FlipFaces<T extends Product> = TupleProduct<readonly [FlipFacesMarker, T]>
 export const FlipFaces = {
   create: <T extends Product>(p: T): FlipFaces<T> =>
     TupleProduct.create([FlipFacesMarker.create(), p]),

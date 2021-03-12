@@ -1,15 +1,15 @@
 // @ts-nocheck
 
-import path = require("path");
+import path = require("path")
 
 path.resolve = path.resolve.bind(path)
 
 const { dirname } = path
-import fs = require("fs");
-import fsConstants = require("fs-constants");
-import util = require("util");
-import EventEmitter = require("events");
-import url = require("url");
+import fs = require("fs")
+import fsConstants = require("fs-constants")
+import util = require("util")
+import EventEmitter = require("events")
+import url = require("url")
 import { promisify } from "util"
 import stylusStdLib from "!!raw-loader!stylus/lib/functions/index.styl"
 import { escadPackageTgzs } from "../utils/escadPackages"

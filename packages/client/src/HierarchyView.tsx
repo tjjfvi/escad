@@ -128,7 +128,7 @@ type TreeTextPart =
   | string
   | { open: true }
   | { close: true, onClick?: (state: ClientState) => void, className?: string }
-type TreeText = TreeTextPart[];
+type TreeText = TreeTextPart[]
 
 type TreePart =
   | { readonly text: TreeText }
@@ -140,7 +140,7 @@ type TreePart =
     readonly forceEllipsis?: boolean,
   }
 
-type Tree = TreePart[];
+type Tree = TreePart[]
 
 type TreeTextPartProps = {
   children: React.ReactNode,

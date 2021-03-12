@@ -1,9 +1,9 @@
 
 import webpack, { NormalModule } from "webpack"
 // @ts-ignore
-import CachedConstDependency = require("webpack/lib/dependencies/CachedConstDependency");
-import MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
-import NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+import CachedConstDependency = require("webpack/lib/dependencies/CachedConstDependency")
+import MonacoWebpackPlugin = require("monaco-editor-webpack-plugin")
+import NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
 import { stylusGlobals } from "@escad/bundler"
 import path from "path"
 import { mapModuleIds } from "../utils/mapModuleIds"

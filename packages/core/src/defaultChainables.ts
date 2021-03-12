@@ -5,7 +5,7 @@ declare global {
   }
 }
 
-export type DefaultChainables = escad.DefaultChainables;
+export type DefaultChainables = escad.DefaultChainables
 
 export const defaultChainables: DefaultChainables = {}
 

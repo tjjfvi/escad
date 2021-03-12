@@ -18,9 +18,9 @@ export default () => {
 
   const cylinderLength = segmentLength - radius * 2
 
-  type Point = readonly [number, number];
-  type Line = readonly [Point, Point];
-  type Path = readonly Line[];
+  type Point = readonly [number, number]
+  type Line = readonly [Point, Point]
+  type Path = readonly Line[]
 
   const lerp = (b: Point, a: Point, t: number): Point =>
     a.map((A, i) => A * t + b[i] * (1 - t)) as any

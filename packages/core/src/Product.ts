@@ -33,7 +33,7 @@ export interface _Product {
   ),
 }
 
-export type Product = LeafProduct | TupleProduct | ArrayProduct | UnknownProduct;
+export type Product = LeafProduct | TupleProduct | ArrayProduct | UnknownProduct
 
 export const Product = {
   isProduct,

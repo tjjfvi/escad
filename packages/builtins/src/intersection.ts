@@ -30,7 +30,7 @@ export const IntersectionMarker = {
   id: intersectionMarkerId,
 }
 
-export type Intersection<T extends Product> = TupleProduct<[IntersectionMarker, T]>;
+export type Intersection<T extends Product> = TupleProduct<[IntersectionMarker, T]>
 export const Intersection = {
   create: <T extends Product>(children: T): Intersection<T> =>
     TupleProduct.create([IntersectionMarker.create(), children]),

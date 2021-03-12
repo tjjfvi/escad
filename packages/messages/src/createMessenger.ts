@@ -37,9 +37,9 @@ export const createMessenger = (
           )
         }
       },
-    });
-    (impl as any).req = other;
-    (impl as any).destroy = () => {
+    })
+;(impl as any).req = other
+    ;(impl as any).destroy = () => {
       destroyed = true
       resolveMap = Object.create(null)
       rejectMap = Object.create(null)

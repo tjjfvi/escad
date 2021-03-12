@@ -4,7 +4,7 @@ import { HashSet } from "./HashSet"
 
 export class MultiHashMap<K, V> {
 
-  private map = new HashMap<K, HashSet<V>>();
+  private map = new HashMap<K, HashSet<V>>()
 
   clear(){
     this.map.clear()

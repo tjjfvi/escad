@@ -1,14 +1,14 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-type F<K, V> = (k: K) => V;
-type FA<K, V> = (k: K) => Promise<V>;
+type F<K, V> = (k: K) => V
+type FA<K, V> = (k: K) => Promise<V>
 
 export class WeakCacheBasic<K, V> {
 
-  private asyncCache: Map<K, Promise<V>>;
+  private asyncCache: Map<K, Promise<V>>
 
-  protected static readonly notFound = Symbol();
-  protected readonly notFound: typeof WeakCacheBasic.notFound = WeakCacheBasic.notFound;
+  protected static readonly notFound = Symbol()
+  protected readonly notFound: typeof WeakCacheBasic.notFound = WeakCacheBasic.notFound
 
   constructor(){
     this.asyncCache = new Map<K, Promise<V>>()
@@ -68,8 +68,8 @@ const FinReg = (
 if("WeakRef" in global && FinReg)
   WeakCache = class WeakCache<K, V> extends WeakCacheBasic<K, V> {
 
-    private cache: Map<K, WeakRef<V & object>> = new Map();
-    private cleanup: any;
+    private cache: Map<K, WeakRef<V & object>> = new Map()
+    private cleanup: any
 
     constructor(){
       super()

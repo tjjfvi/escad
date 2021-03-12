@@ -10,9 +10,9 @@ export class ProductConsumerRegistry<C extends ProductConsumer<any, any, any>> {
 
   constructor(public conversionRegistry: ConversionRegistry){}
 
-  registrations = new Set<C>();
+  registrations = new Set<C>()
 
-  *findConsumers(productType: ProductType){
+  public *findConsumers(productType: ProductType){
     for(const viewerRegistration of this.registrations.values())
       if(this.conversionRegistry.has(productType, viewerRegistration.type))
         yield viewerRegistration

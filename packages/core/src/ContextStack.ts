@@ -3,8 +3,8 @@ import { Id } from "./Id"
 
 export class ContextStack {
 
-  private root: Record<string, unknown> = Object.create(null);
-  private contextMap = this.root;
+  private root: Record<string, unknown> = Object.create(null)
+  private contextMap = this.root
 
   wrap<U>(fn: () => U): U{
     const orig = this.contextMap

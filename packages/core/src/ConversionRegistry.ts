@@ -20,7 +20,7 @@ export class ConversionRegistry {
     this.artifactManager.artifactStores.push(this.artifactStore)
   }
 
-  static readonly artifactStoreId = Id.create(__filename, "@escad/core", "ArtifactStore", "ConversionRegistry", "0");
+  static readonly artifactStoreId = Id.create(__filename, "@escad/core", "ArtifactStore", "ConversionRegistry", "0")
   readonly artifactStore: ArtifactStore = {
     lookupRef: async ([id, toType, product]) => {
       if(!Id.isId(id) || !Id.equal(id, ConversionRegistry.artifactStoreId)) return null
@@ -29,11 +29,11 @@ export class ConversionRegistry {
     },
   }
 
-  readonly excludeStores: ReadonlySet<ArtifactStore> = new Set([this.artifactStore]);
+  readonly excludeStores: ReadonlySet<ArtifactStore> = new Set([this.artifactStore])
 
-  private readonly registered = new Set<ConversionImpl<any, any>>();
-  private initialComposed = new MultiHashMap<[ProductType, ProductType], ConversionPath>();
-  private composed = new HashMap<[ProductType, ProductType], ConversionPath | null>();
+  private readonly registered = new Set<ConversionImpl<any, any>>()
+  private initialComposed = new MultiHashMap<[ProductType, ProductType], ConversionPath>()
+  private composed = new HashMap<[ProductType, ProductType], ConversionPath | null>()
 
   register<F extends Product, T extends Product>(
     conversion: ConversionImpl<F, T>,

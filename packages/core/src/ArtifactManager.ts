@@ -8,7 +8,7 @@ export class ArtifactManager {
 
   private cache = new WeakCache<unknown, unknown>()
 
-  artifactStores: ArtifactStore[] = [];
+  artifactStores: ArtifactStore[] = []
 
   private serialize(artifact: unknown): Buffer{
     return artifact instanceof Buffer

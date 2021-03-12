@@ -10,12 +10,12 @@ export interface BundleOptions {
   clientPlugins: PluginRegistration[],
 }
 
-export type ServerBundlerMessengerShape = { /**/ };
+export type ServerBundlerMessengerShape = { /**/ }
 
 export type BundlerServerMessengerShape = {
   bundle(options: BundleOptions): Promise<void>,
   onBundle(): AsyncIterable<Hash<unknown>>,
 }
 
-export type ServerBundlerMessenger = Messenger<ServerBundlerMessengerShape, BundlerServerMessengerShape>;
-export type BundlerServerMessenger = Messenger<BundlerServerMessengerShape, ServerBundlerMessengerShape>;
+export type ServerBundlerMessenger = Messenger<ServerBundlerMessengerShape, BundlerServerMessengerShape>
+export type BundlerServerMessenger = Messenger<BundlerServerMessengerShape, ServerBundlerMessengerShape>

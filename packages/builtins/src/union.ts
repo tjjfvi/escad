@@ -30,7 +30,7 @@ export const UnionMarker = {
   id: unionMarkerId,
 }
 
-export type Union<T extends Product> = TupleProduct<[UnionMarker, T]>;
+export type Union<T extends Product> = TupleProduct<[UnionMarker, T]>
 export const Union = {
   create: <T extends Product>(children: T): Union<T> =>
     TupleProduct.create([UnionMarker.create(), children]),

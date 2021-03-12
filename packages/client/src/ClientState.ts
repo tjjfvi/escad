@@ -30,21 +30,21 @@ const stubConversionId = Id.create(__filename, "@escad/client", "Conversion", "S
 
 export class ClientState implements ArtifactStore {
 
-  static Context = _ClientStateContext;
+  static Context = _ClientStateContext
 
-  bundleHash = fetch("/bundle.hash").then(r => r.text()).catch(() => null);
-  status = observable<Status | null>(baseStatuses.disconnected);
-  products = observable<Product[]>([]);
-  exportTypes = observable<ExportTypeInfo[]>([]);
-  paramDef = observable<ObjectParam<any>>();
-  params = observable<Record<string, unknown>>({});
-  hierarchy = observable<Hierarchy>();
-  sendParams = false;
+  bundleHash = fetch("/bundle.hash").then(r => r.text()).catch(() => null)
+  status = observable<Status | null>(baseStatuses.disconnected)
+  products = observable<Product[]>([])
+  exportTypes = observable<ExportTypeInfo[]>([])
+  paramDef = observable<ObjectParam<any>>()
+  params = observable<Record<string, unknown>>({})
+  hierarchy = observable<Hierarchy>()
+  sendParams = false
 
-  clientServerMessenger: ClientServerMessenger;
+  clientServerMessenger: ClientServerMessenger
 
-  triggerParamUpdate: () => void;
-  onParamUpdate: () => AsyncIterable<void>;
+  triggerParamUpdate: () => void
+  onParamUpdate: () => AsyncIterable<void>
 
   constructor(public connection: Connection<unknown>, public artifactManager: ArtifactManager){
     const state = this
@@ -56,8 +56,8 @@ export class ClientState implements ArtifactStore {
           yield state.getNullifiedParams()
       },
     }, this.connection)
-    this.artifactManager.artifactStores.unshift(this);
-    [this.triggerParamUpdate, this.onParamUpdate] = createEmittableAsyncIterable<void>()
+    this.artifactManager.artifactStores.unshift(this)
+    ;[this.triggerParamUpdate, this.onParamUpdate] = createEmittableAsyncIterable<void>()
   }
 
   async listenForBundle(){
@@ -138,10 +138,10 @@ export class ClientState implements ArtifactStore {
 
 export class WebSocketClientState extends ClientState {
 
-  emit: (value: unknown) => void;
-  curWs: WebSocket | undefined;
-  disconnectTimeout: any;
-  url: string;
+  emit: (value: unknown) => void
+  curWs: WebSocket | undefined
+  disconnectTimeout: any
+  url: string
 
   constructor(url: string, artifactManager: ArtifactManager){
     const wsConnection = createConnection(msg => this.send(msg))

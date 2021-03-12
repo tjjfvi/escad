@@ -4,9 +4,8 @@ import commander from "commander"
 import path from "path"
 import os from "os"
 import fs from "fs"
-import { createServer } from "../server";
-
-(() => {
+import { createServer } from "../server"
+;(() => {
   commander
     .usage("[options] <file>")
     .option("-p, --port <port>", "port to host server on", "8080")

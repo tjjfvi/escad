@@ -6,7 +6,7 @@ interface LinkedList<T> {
 
 export class Stack<T> {
 
-  private list: LinkedList<T> | undefined;
+  private list: LinkedList<T> | undefined
 
   constructor(values: Iterable<T>){
     for(const value of values)

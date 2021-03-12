@@ -96,7 +96,7 @@ type SphereArgs = number | {
   radius: number,
   smooth?: Smooth,
   center?: Triplet<number | boolean>,
-};
+}
 
 export const sphere: Component<[SphereArgs], Element<Sphere>> =
   Component.create("sphere", args => {

@@ -3,7 +3,7 @@ import { Mesh } from "./Mesh"
 import { Matrix4 } from "./Matrix4"
 import { Face } from "./Face"
 
-export type Transformation<T extends Product> = TupleProduct<readonly [Matrix4, T]>;
+export type Transformation<T extends Product> = TupleProduct<readonly [Matrix4, T]>
 export const Transformation = {
   create: <T extends Product>(matrix: Matrix4, p: T): Transformation<T> =>
     TupleProduct.create([matrix, p]),

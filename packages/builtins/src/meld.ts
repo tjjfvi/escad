@@ -27,7 +27,7 @@ export const MeldMarker = {
   ...createLeafProductUtils<MeldMarker, "MeldMarker">(meldMarkerId, "MeldMarker"),
 }
 
-export type Meld<T extends ArrayProduct | TupleProduct> = TupleProduct<[MeldMarker, T]>;
+export type Meld<T extends ArrayProduct | TupleProduct> = TupleProduct<[MeldMarker, T]>
 export const Meld = {
   create: <T extends ArrayProduct | TupleProduct>(children: T): Meld<T> =>
     TupleProduct.create([MeldMarker.create(), children]),

@@ -9,7 +9,7 @@ import { ExtensibleFunction } from "./ExtensibleFunction"
 import { CallHierarchy } from "./CallHierarchy"
 import { NameHierarchy } from "./NameHierarchy"
 
-export type ConvertibleOperation<I extends Product, O extends Product> = Operation<ConvertibleTo<I>, ConvertibleTo<O>>;
+export type ConvertibleOperation<I extends Product, O extends Product> = Operation<ConvertibleTo<I>, ConvertibleTo<O>>
 
 export interface Operation<I extends Product, O extends Product> {
   readonly type: "Operation",

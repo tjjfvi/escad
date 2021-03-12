@@ -6,7 +6,7 @@ import { Mesh } from "./Mesh"
 
 const tau = Math.PI * 2
 
-type RotateOpts = { unit?: "radians" | "rad" | "degrees" | "deg" };
+type RotateOpts = { unit?: "radians" | "rad" | "degrees" | "deg" }
 type RotateArgs =
   | [number, number, number, RotateOpts?]
   | [{ x?: number, y?: number, z?: number }, RotateOpts?]

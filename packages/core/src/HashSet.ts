@@ -3,7 +3,7 @@ import { HashMap } from "./HashMap"
 
 export class HashSet<T> {
 
-  private map = new HashMap<T, T>();
+  private map = new HashMap<T, T>()
 
   add(value: T){
     this.map.set(value, value)

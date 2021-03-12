@@ -5,7 +5,7 @@ import { observer } from "rhobo"
 import { ClientState } from "./ClientState"
 import { ProductConsumer, ProductConsumerRegistry } from "./ProductConsumerRegistry"
 
-type ExportTypeProductConsumer<P extends Product> = ProductConsumer<P, P, ExportTypeInfo>;
+type ExportTypeProductConsumer<P extends Product> = ProductConsumer<P, P, ExportTypeInfo>
 
 export const Export = observer(() => {
   const state = useContext(ClientState.Context)
