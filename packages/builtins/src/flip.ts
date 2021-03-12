@@ -29,7 +29,7 @@ export const FlipFacesMarker = {
 export type FlipFaces<T extends Product> = TupleProduct<readonly [FlipFacesMarker, T]>;
 export const FlipFaces = {
   create: <T extends Product>(p: T): FlipFaces<T> =>
-    TupleProduct.create([FlipFacesMarker.create(), p])
+    TupleProduct.create([FlipFacesMarker.create(), p]),
 };
 
 declare global {
@@ -45,7 +45,7 @@ declare global {
 conversionRegistry.register<FlipFaces<Mesh>, Mesh>({
   convert: async ({ children: [, mesh] }) =>
     Mesh.create(mesh.faces.map(face =>
-      Face.create(face.points.slice().reverse())
+      Face.create(face.points.slice().reverse()),
     )),
   fromType: TupleProductType.create([FlipFacesMarker.productType, Mesh.productType]),
   toType: Mesh.productType,

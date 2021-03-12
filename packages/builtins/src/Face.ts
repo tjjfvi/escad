@@ -15,5 +15,5 @@ export const Face = {
   toTriangles: (face: Face): Face[] =>
     face.points.slice(2).map((_, i) => Face.create([face.points[0], face.points[i + 1], face.points[i + 2]])),
   flip: (face: Face) =>
-    Face.create([...face.points].reverse())
+    Face.create([...face.points].reverse()),
 }

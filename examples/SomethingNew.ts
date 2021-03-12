@@ -37,13 +37,13 @@ export default (escad, p) => {
     r: r + t,
     h: h + t,
     c: false,
-    sides
+    sides,
   })
   const negative = escad.cyl({
     r,
     h,
     c: false,
-    sides
+    sides,
   })
   const shell = escad
     .diff(outer, negative)

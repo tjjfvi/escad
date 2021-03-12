@@ -3,7 +3,7 @@ import {
   LoadInfo,
   RendererServerMessengerShape,
   ServerRendererMessenger,
-  ServerRendererMessengerShape
+  ServerRendererMessengerShape,
 } from "@escad/protocol";
 import { createServerRendererMessenger } from "./rendererMessenger";
 
@@ -31,8 +31,8 @@ export const createRendererDispatcher = (
       resetRenderers();
       const loadInfo = await Promise.race(
         renderers.map(async renderer =>
-          (await renderer).req.load(path)
-        )
+          (await renderer).req.load(path),
+        ),
       );
       curLoadInfo = loadInfo;
       triggerLoad(loadInfo);

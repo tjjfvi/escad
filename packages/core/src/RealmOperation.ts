@@ -62,7 +62,7 @@ export const RealmOperation = {
 
               const val = chainables[prop as never];
               return that(val);
-            }
+            },
           },
           operation.name,
         ),
@@ -71,8 +71,8 @@ export const RealmOperation = {
           func: operation.func,
           hierarchy: operation.hierarchy,
           overrideHierarchy: operation.overrideHierarchy,
-        }
+        },
       ) as any;
       return that;
-    }
+    },
 }

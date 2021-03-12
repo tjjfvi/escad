@@ -20,17 +20,17 @@ interface ProductC extends LeafProduct { readonly type: typeof productCId }
 const ProductA = {
   create: (): ProductA => ({ type: productAId }),
   id: productAId,
-  ...createLeafProductUtils<ProductA, "ProductA">(productAId, "ProductA")
+  ...createLeafProductUtils<ProductA, "ProductA">(productAId, "ProductA"),
 }
 const ProductB = {
   create: (): ProductB => ({ type: productBId }),
   id: productBId,
-  ...createLeafProductUtils<ProductB, "ProductB">(productBId, "ProductB")
+  ...createLeafProductUtils<ProductB, "ProductB">(productBId, "ProductB"),
 }
 const ProductC = {
   create: (): ProductC => ({ type: productCId }),
   id: productCId,
-  ...createLeafProductUtils<ProductC, "ProductC">(productCId, "ProductC")
+  ...createLeafProductUtils<ProductC, "ProductC">(productCId, "ProductC"),
 }
 
 describe("createLeafProductUtils", () => {
@@ -70,7 +70,7 @@ describe.each<readonly [string, () => Product]>([
   ["TupleProduct<[ProductA, ProductB]>", () => TupleProduct.create([ProductA.create(), ProductB.create()])],
   ["ArrayProduct<ProductA>", () => ArrayProduct.create([ProductA.create(), ProductA.create()])],
   ["UnknownProduct", () => UnknownProduct.create(ProductB.create())],
-  ["Complex", () => createProduct()]
+  ["Complex", () => createProduct()],
 ] as const)("%s", (_, createProduct) => {
   test(".create", () => {
     expect(createProduct()).toMatchSnapshot();
@@ -88,7 +88,7 @@ describe.each<readonly [string, () => Product]>([
     test.each([
       ["ProductC", ProductC.productType],
       ["ArrayProduct<ProductC>", ArrayProductType.create(ProductC.productType)],
-      ["TupleProduct<[ProductA, ProductC]>", TupleProductType.create([ProductA.productType, ProductC.productType])]
+      ["TupleProduct<[ProductA, ProductC]>", TupleProductType.create([ProductA.productType, ProductC.productType])],
     ] as const)("%s", (_, productType) => {
       expect(Product.isProduct(createProduct(), productType)).toBe(false);
     })

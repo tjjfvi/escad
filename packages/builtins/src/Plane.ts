@@ -66,7 +66,7 @@ export const Plane = {
           back.push(Face.create(b))
       }
     }
-  }
+  },
 };
 
 function _Plane(normal: Vector3, w: number): Plane

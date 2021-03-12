@@ -13,7 +13,7 @@ export const ProductTypeView = ({ productType }: { productType: ProductType }) =
         <Fragment key={i}>
           {i === 0 ? null : ", "}
           <ProductTypeView productType={x}/>
-        </Fragment>
+        </Fragment>,
       )}
       {"]"}
     </span>

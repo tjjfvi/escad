@@ -138,8 +138,8 @@ export default () => {
         .bracket("XY", [36 / 2 - 1.5, 36 / 2 - 1.5, 36 / 2 - 3.5 / 2])
         .bracket("XY", [36 / 2 - 3.5, 36 / 2 - 3.5, -36 / 2 + 10 + 1.5 / 2])
         .bracket("xy", [36 / 2, 36 / 2, -36 / 2 + 10 + 3.5 / 2])
-        .rotateZ(a)
-    )
+        .rotateZ(a),
+    ),
   ])
 
   return escad.meld({

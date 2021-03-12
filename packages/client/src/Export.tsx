@@ -22,7 +22,7 @@ export const Export = observer(() => {
       <div>
         {
           exportTypes.map(exportType =>
-            <span key={exportType.id.full} onClick={() => exportProducts(state, exportType)}>{exportType.name}</span>
+            <span key={exportType.id.full} onClick={() => exportProducts(state, exportType)}>{exportType.name}</span>,
           )
         }
         <span>Export</span>

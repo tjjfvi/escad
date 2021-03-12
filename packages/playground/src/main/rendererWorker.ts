@@ -17,7 +17,7 @@ const rendererBundlerWorker = new RendererBundlerWorker();
 attachWorkerFs(rendererBundlerWorker);
 const rendererBundlerMessenger = createMessenger<{/**/}, RendererBundlerMessengerShape>(
   {},
-  brandConnection(workerConnection(rendererBundlerWorker), "rendererBundler")
+  brandConnection(workerConnection(rendererBundlerWorker), "rendererBundler"),
 );
 
 let firstTime = true;
@@ -36,13 +36,13 @@ export const createRendererWorker = async (): Promise<ServerRendererMessenger> =
     const worker = new Worker(rendererUrl);
     const artifactMessenger = createMessenger<Required<ArtifactStore>, {/**/}>(
       artifactStore,
-      brandConnection(workerConnection(worker), "artifacts")
+      brandConnection(workerConnection(worker), "artifacts"),
     );
     return createServerRendererMessenger(
       {
         ...brandConnection(workerConnection(worker), "renderer"),
         destroy: () => artifactMessenger.destroy(),
-      }
+      },
     );
   })
 }

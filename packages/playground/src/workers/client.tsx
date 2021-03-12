@@ -24,16 +24,16 @@ if(isRun) {
   const artifactStore = new InMemoryArtifactStore();
 
   const worker = new Worker(createBlob(
-    `importScripts("${location.origin}/static/bundled/escad.js","${location.href}renderer.bundle.js")`
+    `importScripts("${location.origin}/static/bundled/escad.js","${location.href}renderer.bundle.js")`,
   ));
 
   createMessenger<Required<ArtifactStore>, {/**/}>(
     artifactStore,
-    brandConnection(workerConnection(worker), "artifacts")
+    brandConnection(workerConnection(worker), "artifacts"),
   );
 
   const rendererMessenger = createServerRendererMessenger(
-    mapConnection.log(brandConnection(workerConnection(worker), "renderer"))
+    mapConnection.log(brandConnection(workerConnection(worker), "renderer")),
   );
 
   createServerClientMessenger(
@@ -53,7 +53,7 @@ if(isRun) {
       clientState.status({
         text: "Fork",
         icon: mdiPencil,
-        onClick: () => location.href = info.url
+        onClick: () => location.href = info.url,
       })
   })
 
@@ -68,7 +68,7 @@ if(!isRun) {
       offMsg: cb => window.removeEventListener("message", cb),
     }, (ev: any): ev is unknown => ev.origin === location.origin),
     x => x,
-    (ev: any) => ev.data
+    (ev: any) => ev.data,
   )
   const clientState = new ClientState(brandConnection(baseConnection, "client"), artifactManager);
   const saveMessenger = createMessenger<{/**/}, { share(): Promise<void> }>(
@@ -80,7 +80,7 @@ if(!isRun) {
     icon: mdiExportVariant,
     onClick: () => {
       saveMessenger.req.share();
-    }
+    },
   });
   clientState.listenForInfo();
   clientState.listenForBundle();

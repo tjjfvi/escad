@@ -18,5 +18,5 @@ registerParameter<boolean, BooleanParam>({
         </label>
       </div>
     </>
-  ))
+  )),
 })

@@ -79,7 +79,7 @@ export const Bsp = {
         back: bsp.front,
         faces: bsp.faces.map(Face.flip),
         plane: bsp.plane ? Plane.flip(bsp.plane) : null,
-      } : null
+      } : null,
     ),
 
   clipFaces: arrayify(function*(bsp: Bsp, faces: readonly Face[], options: ClipOptions){
@@ -106,8 +106,8 @@ export const Bsp = {
     Bsp.map(a, bsp =>
       bsp ? {
         ...bsp,
-        faces: Bsp.clipFaces(b, bsp.faces, options)
-      } : null
+        faces: Bsp.clipFaces(b, bsp.faces, options),
+      } : null,
     ),
 
   allFaces: arrayify(function*(bsp: Bsp | null){
@@ -151,7 +151,7 @@ export const Bsp = {
           faces,
           plane,
         },
-        [front, back]
+        [front, back],
       ]
     }),
 

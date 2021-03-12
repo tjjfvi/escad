@@ -47,7 +47,7 @@ export const Product = {
     if(UnknownProduct.isUnknownProduct(product))
       return UnknownProductType.create() as ProductType<P>;
     throw new Error("Invalid product passed to Product.getProductType");
-  })
+  }),
 }
 
 function isProduct(arg: any): arg is Product
@@ -75,5 +75,5 @@ export const ProductType = {
     LeafProductType.isLeafProductType(value) ||
     TupleProductType.isTupleProductType(value) ||
     ArrayProductType.isArrayProductType(value) ||
-    UnknownProductType.isUnknownProductType(value)
+    UnknownProductType.isUnknownProductType(value),
 }

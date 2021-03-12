@@ -25,7 +25,7 @@ export const createServerClientMessenger = (
       return hashToUrl(hash);
     },
     info: dedupeAsyncIterable(info),
-    onBundle: dedupeAsyncIterable(bundlerMessenger?.req.onBundle ?? async function*(){})
+    onBundle: dedupeAsyncIterable(bundlerMessenger?.req.onBundle ?? async function*(){}),
   }, connection)
 
   return messenger;

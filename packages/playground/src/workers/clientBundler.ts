@@ -16,7 +16,7 @@ createBundlerServerMessenger(
       entry: {
         bundle: {
           import: await createResourceFileAsync(
-            entryPaths.map(x => `import "${path.resolve("../project", x)}";`).join("\n")
+            entryPaths.map(x => `import "${path.resolve("../project", x)}";`).join("\n"),
           ),
           dependOn: "escad",
         },
@@ -49,8 +49,8 @@ createBundlerServerMessenger(
                   },
                 },
               },
-            ]
-          }
+            ],
+          },
         ],
       },
       devtool: "source-map",
@@ -61,6 +61,6 @@ createBundlerServerMessenger(
       ],
       resolveLoader: {
         modules: ["/bundled/node_modules"],
-      }
-    })
+      },
+    }),
 );

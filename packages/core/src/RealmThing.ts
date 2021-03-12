@@ -22,6 +22,6 @@ export const RealmThing = {
     if(Component.isComponent(thing))
       return RealmComponent.create(realm, thing) as never
     throw new Error("Invalid thing passed to RealmThing.create");
-  }
+  },
 
 }

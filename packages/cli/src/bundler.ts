@@ -32,16 +32,16 @@ createBundlerServerMessenger(
                   },
                 },
               },
-            ]
-          }
-        ]
+            ],
+          },
+        ],
       },
       devtool: "source-map",
       mode: "development",
       plugins: [
         new NodePolyfillPlugin(),
         new EnvironmentPlugin(["DEV_MODE"]),
-      ]
-    })
+      ],
+    }),
 
 );

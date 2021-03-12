@@ -54,7 +54,7 @@ export const Component = {
         func,
         overrideHierarchy,
         hierarchy,
-      }
+      },
     ) as Component<I, T>;
     return that
   },
@@ -62,5 +62,5 @@ export const Component = {
     Component.create(component.name, component.func, {
       ...component,
       hierarchy,
-    })
+    }),
 }

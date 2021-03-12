@@ -98,7 +98,7 @@ rules:
     - always
   comma-dangle:
     - warn
-    - only-multiline
+    - always-multiline
   comma-spacing:
     - warn
   eol-last:

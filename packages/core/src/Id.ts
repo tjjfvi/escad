@@ -39,11 +39,12 @@ export const Id = {
       const { packageJson: { name: packageJsonName, version: packageJsonVersion } } = result;
       if(packageName !== packageJsonName)
         throw new Error(
-          `Id.create: packageName mismatch; ${packageJsonName} attempted to create an id under ${packageName}`
+          `Id.create: packageName mismatch; ${packageJsonName} attempted to create an id under ${packageName}`,
         )
       if(version.startsWith("v") && version.slice(1) !== packageJsonVersion)
         throw new Error(
-          `Id.create: version mismatch; ${packageName}@${packageJsonVersion} attempted to create an id under ${version}`
+          // eslint-disable-next-line max-len
+          `Id.create: version mismatch; ${packageName}@${packageJsonVersion} attempted to create an id under ${version}`,
         );
     }
     const full = `${packageName}/${scope}/${name}/${version}` as `${P}/${V}/${N}`;
@@ -61,5 +62,5 @@ export const Id = {
     return id;
   },
   isId: checkTypeProperty.string<Id>("Id"),
-  equal: (a: Id, b: Id) => a.full === b.full
+  equal: (a: Id, b: Id) => a.full === b.full,
 };

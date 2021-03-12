@@ -27,7 +27,7 @@ export function createOrientCube(getCamera: () => t.Camera, controls: OrbitContr
   let sides = [
     new t.Vector3(1, 0, 0),
     new t.Vector3(0, 1, 0),
-    new t.Vector3(0, 0, 1)
+    new t.Vector3(0, 0, 1),
   ].flatMap(a => [a, a.clone().negate()].map(a => {
     let mesh = new t.Mesh(planeGeo, mat);
     mesh.position.copy(a).multiplyScalar(.25);
@@ -66,7 +66,7 @@ export function createOrientCube(getCamera: () => t.Camera, controls: OrbitContr
 
   group.add(new t.LineSegments(
     new t.EdgesGeometry(new t.BoxGeometry(.5, .5, .5)),
-    new t.LineBasicMaterial({ color: colors.lightgrey })
+    new t.LineBasicMaterial({ color: colors.lightgrey }),
   ));
 
   let raycaster = new t.Raycaster();

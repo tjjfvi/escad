@@ -37,7 +37,7 @@ export const Preview = observer(() => {
     <div className="menubar">
       <div>
         {viewers.map((v, i) =>
-          <span key={i} onClick={() => viewerObs(v)}>{v.name}</span>
+          <span key={i} onClick={() => viewerObs(v)}>{v.name}</span>,
         )}
         <span>Viewer</span>
       </div>

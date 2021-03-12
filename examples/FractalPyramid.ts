@@ -39,7 +39,7 @@ export default renderFunction(
           r2: adjustment / h * Math.sqrt(2) * sideLength / 2,
           i: .00001,
           h: h - adjustment,
-          sides: 4
+          sides: 4,
         }).rotateZ(45).translate(0, 0, (h - adjustment) / 2),
       });
     }
@@ -54,12 +54,12 @@ export default renderFunction(
       return escad<Mesh>({
         fractal: escad.union([
           ...[[1, 1], [1, -1], [-1, 1], [-1, -1]].map(([x, y]) =>
-            sub.translate(...[x, y, 0].map(n => n * adjustedSideLength * sideCount / 2) as any)
+            sub.translate(...[x, y, 0].map(n => n * adjustedSideLength * sideCount / 2) as any),
           ),
           ...[0, 180].map(r =>
-            sub.rotate(0, r, 0).translate(0, 0, calcHeight(adjustedSideLength * sideCount))
+            sub.rotate(0, r, 0).translate(0, 0, calcHeight(adjustedSideLength * sideCount)),
           ),
-        ])
+        ]),
       });
     };
 

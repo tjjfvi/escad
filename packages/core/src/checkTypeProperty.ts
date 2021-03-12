@@ -9,13 +9,13 @@ export const checkTypeProperty =
 
 checkTypeProperty.string = <T extends { type: string }>(type: T["type"]) =>
   checkTypeProperty((value): value is T["type"] =>
-    value === type
+    value === type,
   );
 
 checkTypeProperty.id = <T extends { type: Id }>(id: T["type"]) =>
   checkTypeProperty((value): value is T["type"] =>
     Id.isId(value) &&
-    Id.equal(value, id)
+    Id.equal(value, id),
   );
 
 checkTypeProperty.idScope =
@@ -23,7 +23,7 @@ checkTypeProperty.idScope =
   <T extends { type: Id }>(scope: T["type"]["scope"]) =>
     checkTypeProperty((value): value is T["type"] =>
       Id.isId(value) &&
-      value.scope === scope
+      value.scope === scope,
     )
 
 import { Id } from "./Id"

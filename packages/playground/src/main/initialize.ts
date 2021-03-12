@@ -35,11 +35,11 @@ if(self.document)
             fs: "XmlHttpRequest",
             options: {
               baseUrl: "/packages",
-              index: Object.fromEntries(escadPackageTgzs.map(x => [x, null]))
-            }
+              index: Object.fromEntries(escadPackageTgzs.map(x => [x, null])),
+            },
           },
           writable: {
-            fs: "InMemory"
+            fs: "InMemory",
           },
         },
       },
@@ -51,7 +51,7 @@ if(self.document)
 else
   BrowserFS.configure({
     fs: "WorkerFS",
-    options: { worker: self }
+    options: { worker: self },
   }, err => {
     if(err) throw err;
     else fsPromiseResolve();
@@ -63,7 +63,7 @@ fs.mocked = true;
 fs.constants = fsConstants;
 fs.copyFile = () => {};
 fs.promises = {
-  stat: util.promisify(fs.stat)
+  stat: util.promisify(fs.stat),
 }
 fs.symlink = (a, b, ...args) =>
   fs.readFile(a, (err, data) => err ? args[args.length - 1](null) : fs.writeFile(b, data, args[args.length - 1]))

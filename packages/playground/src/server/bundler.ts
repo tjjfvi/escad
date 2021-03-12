@@ -40,7 +40,7 @@ export const compiler = webpack({
       bufferGlobal: "browserfs/dist/shims/bufferGlobal.js",
       bfsGlobal: require.resolve("browserfs"),
       process$: "process/browser",
-    }
+    },
   },
   devtool: "source-map",
   mode: "development",
@@ -54,7 +54,7 @@ export const compiler = webpack({
         use: [
           { loader: "style-loader" },
           { loader: "css-loader" },
-        ]
+        ],
       },
       {
         test: /^.*\.styl$/,
@@ -69,13 +69,13 @@ export const compiler = webpack({
               },
             },
           },
-        ]
+        ],
       },
       {
         test: /\.ttf$/,
-        use: ["file-loader"]
+        use: ["file-loader"],
       },
-    ]
+    ],
   },
   plugins: [
     new NodePolyfillPlugin(),
@@ -98,7 +98,7 @@ export const compiler = webpack({
                   const dep = new CachedConstDependency(
                     JSON.stringify(fn(parser.state.module)),
                     expr.range,
-                    expressionName
+                    expressionName,
                   );
                   dep.loc = expr.loc;
                   parser.state.module.addPresentationalDependency(dep);
@@ -107,10 +107,10 @@ export const compiler = webpack({
             };
 
             setModuleConstant("__filename", module =>
-              path.resolve(prefix, path.relative(compiler.context, module.resource))
+              path.resolve(prefix, path.relative(compiler.context, module.resource)),
             )
             setModuleConstant("__dirname", module =>
-              path.resolve(prefix, path.relative(compiler.context, path.dirname(module.resource)))
+              path.resolve(prefix, path.relative(compiler.context, path.dirname(module.resource))),
             )
           }
           normalModuleFactory.hooks.parser
@@ -119,7 +119,7 @@ export const compiler = webpack({
           normalModuleFactory.hooks.parser
             .for("javascript/dynamic")
             .tap("NodeStuffPlugin", handler);
-        }
+        },
       )
     },
     mapModuleIds(id => id.replace(/\\/g, "/").replace(/^\.\/packages\//g, "./node_modules/@escad/")),

@@ -33,7 +33,7 @@ export const UnionMarker = {
 export type Union<T extends Product> = TupleProduct<[UnionMarker, T]>;
 export const Union = {
   create: <T extends Product>(children: T): Union<T> =>
-    TupleProduct.create([UnionMarker.create(), children])
+    TupleProduct.create([UnionMarker.create(), children]),
 };
 
 declare global {

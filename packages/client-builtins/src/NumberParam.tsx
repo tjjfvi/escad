@@ -32,5 +32,5 @@ registerParameter<number, NumberParam>({
         </div>
       </div>
     </>
-  })
+  }),
 })

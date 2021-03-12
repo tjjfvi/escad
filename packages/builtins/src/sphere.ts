@@ -85,8 +85,8 @@ conversionRegistry.register({
           vertices.push(vertex(i, j + 1));
 
           return Face.create(vertices)
-        })
-      )
+        }),
+      ),
     );
   },
   weight: 1,

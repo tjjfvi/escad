@@ -18,6 +18,6 @@ registerParameter<Record<string, unknown>, ObjectParam<Record<string, Parameter<
           return <ParameterView parameter={paramDef} value={value} key={key}/>;
         })}
       </div>
-    </>)
-  )
+    </>),
+  ),
 })

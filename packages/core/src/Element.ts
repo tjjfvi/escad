@@ -12,7 +12,7 @@ const ObjMap = {
   isObjMap: (o: unknown): o is ObjMap<unknown> =>
     !Product.isProduct(o) &&
   typeof o === "object" && !!o &&
-  (o.constructor === Object || Object.getPrototypeOf(o) === null)
+  (o.constructor === Object || Object.getPrototypeOf(o) === null),
 }
 
 type Arrayish<T> = ObjMap<T> | ReadonlyArray<T>
@@ -123,5 +123,5 @@ export const Element = {
       return createElement(Element.map(element.value, fn, hierarchyGen, false));
 
     throw new Error("Invalid Element.val type");
-  }
+  },
 }

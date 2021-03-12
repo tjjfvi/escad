@@ -19,7 +19,7 @@ export const translate: Component<TranslateArgs, ConvertibleOperation<Mesh, Tran
     return mapOperation(
       "translate",
       mesh => Transformation.create(matrix, mesh),
-      { showOutputInHierarchy: false }
+      { showOutputInHierarchy: false },
     );
   }, { showOutputInHierarchy: false });
 

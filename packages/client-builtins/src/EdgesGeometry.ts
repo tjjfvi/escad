@@ -59,7 +59,7 @@ function EdgesGeometry(geometry, thresholdAngle = 1){
   this.setAttribute("position", new Float32BufferAttribute(
     keepEdges
       .concat(Object.entries(map).flatMap(([a, os]) => os.filter(o => !o.done).map(({ o: b }) => [a, b])))
-      .flatMap(e => e.flatMap(i => verts[i].toArray())), 3)
+      .flatMap(e => e.flatMap(i => verts[i].toArray())), 3),
   );
 
 }

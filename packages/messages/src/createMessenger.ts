@@ -32,11 +32,11 @@ export const createMessenger = (
                   connection.send(["next", id, id2]);
                   return recvPromise(id2);
                 },
-              })
-            }
+              }),
+            },
           );
         };
-      }
+      },
     });
     (impl as any).req = other;
     (impl as any).destroy = () => {

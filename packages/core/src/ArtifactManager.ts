@@ -36,7 +36,7 @@ export class ArtifactManager {
 
     let serialized;
     await Promise.all(this.artifactStores.map(async s =>
-      !excludeStores?.has(s) && await s.storeRaw?.(artifactHash, serialized ??= this.serialize(artifact), this)
+      !excludeStores?.has(s) && await s.storeRaw?.(artifactHash, serialized ??= this.serialize(artifact), this),
     ));
 
     return artifactHash;
@@ -56,7 +56,7 @@ export class ArtifactManager {
       this.storeRaw(artifact, excludeStores),
       ...loc.map(l => this.storeRaw(l, excludeStores)),
       ...this.artifactStores.map(s =>
-        !excludeStores?.has(s) && s.storeRef?.(loc, artifactHash, this)
+        !excludeStores?.has(s) && s.storeRef?.(loc, artifactHash, this),
       ),
     ]);
 

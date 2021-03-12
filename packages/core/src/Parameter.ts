@@ -9,5 +9,5 @@ export interface Parameter<V> {
 }
 
 export const Parameter = {
-  isParameter: checkTypeProperty.idScope<Parameter<unknown>>("Parameter")
+  isParameter: checkTypeProperty.idScope<Parameter<unknown>>("Parameter"),
 }

@@ -26,7 +26,7 @@ export class ConversionRegistry {
       if(!Id.isId(id) || !Id.equal(id, ConversionRegistry.artifactStoreId)) return null;
       if(!Product.isProduct(product)) return null;
       return this.convertProduct(toType as ProductType, product);
-    }
+    },
   }
 
   readonly excludeStores: ReadonlySet<ArtifactStore> = new Set([this.artifactStore]);
@@ -127,7 +127,7 @@ export class ConversionRegistry {
           convert: async (product: Product) =>
             UnknownProduct.create(product),
           weight: 0,
-          id: Hash.create([fromType, toType])
+          id: Hash.create([fromType, toType]),
         })
         i++
         continue;
@@ -140,7 +140,7 @@ export class ConversionRegistry {
           convert: async (product: TupleProduct) =>
             ArrayProduct.create(product.children),
           weight: 0,
-          id: Hash.create([fromType, toType])
+          id: Hash.create([fromType, toType]),
         })
         i--;
         continue;
@@ -161,13 +161,13 @@ export class ConversionRegistry {
         toType,
         convert: async (product: TupleProduct<any[]>) =>
           TupleProduct.create(await Promise.all(product.children.map((p, i) =>
-            this.convertProduct(toType.elementTypes[i], p)
+            this.convertProduct(toType.elementTypes[i], p),
           ))),
         weight: fromType.elementTypes.map((f, i) =>
           // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-          this.weight(this.composed!.get([f, toType.elementTypes[i]])!)
+          this.weight(this.composed!.get([f, toType.elementTypes[i]])!),
         ).reduce((a, b) => a + b),
-        id: Hash.create([fromType, toType])
+        id: Hash.create([fromType, toType]),
       })
       i++
     }
@@ -181,7 +181,7 @@ export class ConversionRegistry {
       toType: type,
       convert: x => x,
       weight: 0,
-      id: Hash.create([type, type])
+      id: Hash.create([type, type]),
     };
   }
 
@@ -213,7 +213,7 @@ export class ConversionRegistry {
         const { toType } = conversions[j]
         const result = await this.artifactManager.lookupRef(
           [ConversionRegistry.artifactStoreId, toType, currentProduct],
-          this.excludeStores
+          this.excludeStores,
         );
         if(!result || !Product.isProduct(result)) continue;
         currentProduct = result;

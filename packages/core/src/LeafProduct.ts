@@ -19,11 +19,11 @@ export const createLeafProductUtils = <P extends LeafProduct, N extends string>(
   productType: LeafProductType.create(id) as LeafProductType<P>,
   ...({
     [`is${name}`]: (q: Product): q is P =>
-      Product.isProduct(q, LeafProductType.create(id))
+      Product.isProduct(q, LeafProductType.create(id)),
   } as Record<`is${N}`, (q: Product) => q is P>),
   convert<Q extends ConvertibleTo<P>>(q: Q): Promise<P>{
     return conversionRegistry.convertProduct<P, Q>(LeafProductType.create(id), q);
-  }
+  },
 });
 
 export interface LeafProductType<T extends LeafProduct = LeafProduct> {

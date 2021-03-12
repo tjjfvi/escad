@@ -47,7 +47,7 @@ const compiler = webpack({
   plugins: [
     new NodePolyfillPlugin(),
     mapModuleIds(id => id.replace(/^\.\/project\/node_modules\//, "./node_modules/")),
-  ]
+  ],
 })
 
 // @ts-ignore
@@ -69,9 +69,9 @@ createMessenger<RendererBundlerMessengerShape, {/**/}>({
         downlevelIteration: true,
         moduleResolution: ModuleResolutionKind.NodeJs,
         module: ModuleKind.CommonJS,
-      }
+      },
     }).outputText
     await writeFile("/project/index.js", transpiled);
     await run();
-  }
+  },
 }, brandConnection(workerConnection(self as any), "rendererBundler"));

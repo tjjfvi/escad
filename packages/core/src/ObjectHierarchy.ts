@@ -19,7 +19,7 @@ export const ObjectHierarchy = {
   }),
   from: (object: Record<string, unknown>, raw = false) =>
     ObjectHierarchy.create({
-      children: Object.entries(object).map(e => LabeledHierarchy.from(e, raw))
+      children: Object.entries(object).map(e => LabeledHierarchy.from(e, raw)),
     }),
   isObjectHierarchy: checkTypeProperty.string<ObjectHierarchy>("ObjectHierarchy"),
 }

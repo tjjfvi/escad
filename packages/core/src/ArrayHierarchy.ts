@@ -18,7 +18,7 @@ export const ArrayHierarchy = {
   }),
   from: (array: unknown[], raw = false) =>
     ArrayHierarchy.create({
-      children: array.map(x => Hierarchy.from(x, raw))
+      children: array.map(x => Hierarchy.from(x, raw)),
     }),
   isArrayHierarchy: checkTypeProperty.string<ArrayHierarchy>("ArrayHierarchy"),
 }

@@ -25,5 +25,5 @@ export const Thing = {
     throw new Error("Invalid thing passed to RealmThing.create")
   },
   stripRealm: <T extends Thing>(thing: T): StripRealm<T> =>
-    Thing.applyHierarchy(thing, thing.hierarchy)
+    Thing.applyHierarchy(thing, thing.hierarchy),
 }

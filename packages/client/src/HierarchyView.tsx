@@ -180,12 +180,12 @@ function _hierarchyToTree(hierarchy: Hierarchy): Tree{
               "undefined" :
               `Symbol(${hierarchy.value ?? ""})` :
             JSON.stringify(hierarchy.value)
-      )]
+      )],
     }];
   if(LabeledHierarchy.isLabeledHierarchy(hierarchy))
     return [
       { text: [hierarchy.label + ": "] },
-      { children: [hierarchyToTree(hierarchy.value)], state: { open: false } }
+      { children: [hierarchyToTree(hierarchy.value)], state: { open: false } },
     ]
   if(ObjectHierarchy.isObjectHierarchy(hierarchy))
     return [
@@ -218,8 +218,8 @@ function _hierarchyToTree(hierarchy: Hierarchy): Tree{
             state: { open: false },
             children: [hierarchyToTree(hierarchy.result)],
             forceEllipsis: true,
-          }
-        ] : [])
+          },
+        ] : []),
       ]
     const operators: Tree[] = [];
     let operands: Hierarchy[] = [hierarchy];
@@ -237,8 +237,8 @@ function _hierarchyToTree(hierarchy: Hierarchy): Tree{
             state: { open: false },
             children: [hierarchyToTree(curHierarchy.result)],
             forceEllipsis: true,
-          }
-        ] : [])
+          },
+        ] : []),
       ])
     }
     return [
@@ -273,16 +273,16 @@ function collapseTree(tree: Tree, onUpdate?: () => void, noSingle = false): Tree
           text: x.text.map(x =>
             typeof x === "object" && "close" in x && x.className !== "openable" ?
               { close: true as const } :
-              x
-          )
+              x,
+          ),
         } : x),
         {
           text: [{
             close: true,
             onClick: () => (part.state.open = true, onUpdate?.()),
             className: "openable",
-          }]
-        }
+          }],
+        },
       ] :
       [...inner, { text: [] }]
   return tree.flatMap(part => {
@@ -305,12 +305,12 @@ function joinTree(tree: Tree, onUpdate?: () => void){
         [a, [...b, { open: true }, ellipsis, {
           close: true,
           onClick: () => (c.state.open = true, onUpdate?.()),
-          className: "openable"
+          className: "openable",
         }]]
   , [[], []]);
   const t = [...r, { text: s }].filter(x => "children" in x || x.text.some(x => typeof x === "string" && x.length))
   return t.map(x => !("text" in x) ? x : {
-    text: t.flatMap(y => "text" in y ? x === y ? y.text : y.text.filter(x => typeof x === "object") : [])
+    text: t.flatMap(y => "text" in y ? x === y ? y.text : y.text.filter(x => typeof x === "object") : []),
   })
 }
 

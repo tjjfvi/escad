@@ -11,6 +11,6 @@ export const createEmittableAsyncIterable = <T>() => {
     async function*(): AsyncIterable<T>{
       while(true)
         yield await new Promise(res => listeners.add(res))
-    }
+    },
   ] as const;
 }

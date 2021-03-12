@@ -49,8 +49,8 @@ export default () => {
       escad.union(
         subpieceConnector(),
         subpiece().translate([0, 0, (angle % 180 ? 1 : -1) * (connectorHeight + thickness) / 2]),
-      ).rotateZ(-angle)
-    ))
+      ).rotateZ(-angle),
+    )),
   });
 
   const connector = () => ({
@@ -60,8 +60,8 @@ export default () => {
         .cube({ d: [or, thickness * connectorHoleMultiplier, thickness * 2 + connectorHeight / 2], c: true })
         .rotate(30, 0, 0)
         .translate([-or / 2, 0, -thickness / 2 - connectorHeight])
-        .rotateZ(-45)
-    )
+        .rotateZ(-45),
+    ),
   })
 
   let translateAmount = translateMultiplier * or;
@@ -80,9 +80,9 @@ export default () => {
                 x === 0 || y === 0 ?
                   connector :
                   piece
-          )())
-        )).tX(x + or)
-      ))
+          )()),
+        )).tX(x + or),
+      )),
     )
 
 }

@@ -17,11 +17,11 @@ export default renderFunction(
         defaultValue: .9,
         min: 0,
       }),
-    })
+    }),
   },
   ({ outerSize, hollow: { enabled: hollow, innerSize } }) =>
     escad
       .cube({ size: outerSize })
       ._(hollow ? sub(cube({ size: innerSize })) : escad)
-      .sub(cube({ size: outerSize, center: false }))
+      .sub(cube({ size: outerSize, center: false })),
 );

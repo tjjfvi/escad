@@ -22,7 +22,7 @@ export const ObjectParam = {
   create: <O extends ObjectParamGeneric>(children: O): ObjectParam<O> => ({
     type: objectParamId,
     children: mapObj(children, (v, k) => ({ name: nameFromKey(k as any), ...v })) as any,
-    defaultValue: mapObj(children, v => v.defaultValue) as any
+    defaultValue: mapObj(children, v => v.defaultValue) as any,
   }),
   id: objectParamId,
 };

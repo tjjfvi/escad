@@ -24,12 +24,12 @@ export class ExportTypeRegistry {
       if(!exportType) return null;
       if(!(products instanceof Array) || !products.every(Product.isProduct)) return null;
       const convertedProducts = await Promise.all(products.map(p =>
-        this.conversionRegistry.convertProduct(exportType.productType, p)
+        this.conversionRegistry.convertProduct(exportType.productType, p),
       ))
       const exported = await exportType.export(convertedProducts);
       await artifactManager.storeRef([id, exportTypeId, products], exported);
       return exported;
-    }
+    },
   }
 
   register<T extends Product>(exportType: ExportType<T>){

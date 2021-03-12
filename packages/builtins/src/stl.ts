@@ -23,7 +23,7 @@ exportTypeRegistry.register<Mesh>({
       position += 2;
     }
     return buffer;
-  }
+  },
 })
 
 exportTypeRegistry.register<Mesh>({
@@ -46,5 +46,5 @@ exportTypeRegistry.register<Mesh>({
     }
     str += `endsolid ${name}\n`
     return Buffer.from(str);
-  }
+  },
 })

@@ -40,7 +40,7 @@ export const ValueHierarchy = {
           typeof value === "symbol" ?
             { symbol: value.description } :
             value
-      )
+      ),
     }),
   isValueHierarchy: checkTypeProperty.string<ValueHierarchy>("ValueHierarchy"),
 }

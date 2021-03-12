@@ -18,5 +18,5 @@ export const Mesh = {
   fromVertsFaces: (verts: Vector3[], faces: number[][]): Mesh =>
     Mesh.create(faces.map(is => Face.create(is.map(i => verts[i])))),
   id: meshId,
-  ...createLeafProductUtils<Mesh, "Mesh">(meshId, "Mesh")
+  ...createLeafProductUtils<Mesh, "Mesh">(meshId, "Mesh"),
 };

@@ -21,7 +21,7 @@ export const ArrayProduct = {
   },
   isArrayProduct: checkTypeProperty.string<ArrayProduct>("ArrayProduct"),
   getArrayProductType: <T extends ArrayProduct>(product: T): ArrayProductType<T> =>
-    ArrayProductType.create(Product.getProductType(product.children[0])) as any
+    ArrayProductType.create(Product.getProductType(product.children[0])) as any,
 }
 
 export interface ArrayProductType<T extends ArrayProduct = ArrayProduct> {

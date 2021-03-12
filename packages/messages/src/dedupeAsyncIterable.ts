@@ -8,8 +8,8 @@ export function dedupeAsyncIterable<T>(iterableFn: () => AsyncIterable<T>){
         iterator ??= iterableFn()[Symbol.asyncIterator]();
         curPromise ??= iterator.next().finally(() => curPromise = undefined);
         return curPromise;
-      }
-    })
+      },
+    }),
   }
   const fn = async function*(){
     for await (const value of dedupedIterable)

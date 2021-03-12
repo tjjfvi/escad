@@ -22,7 +22,7 @@ const baseBundleOptions: BundleOptions = {
 const bundlerWorker = new BundlerWorker();
 attachWorkerFs(bundlerWorker);
 export const bundlerMessenger = createServerBundlerMessenger(
-  brandConnection(workerConnection(bundlerWorker), "bundler")
+  brandConnection(workerConnection(bundlerWorker), "bundler"),
 );
 
 export const rendererMessenger = createRendererDispatcher(1, createRendererWorker);
@@ -33,12 +33,12 @@ export const rendererMessenger = createRendererDispatcher(1, createRendererWorke
       bundlerMessenger.req.bundle({
         ...baseBundleOptions,
         clientPlugins,
-      })
+      }),
     )
 })()
 
 export const reloadRenderer = () => {
   addLoadingStatus("Rendering", () =>
-    rendererMessenger.req.load("/project/index")
+    rendererMessenger.req.load("/project/index"),
   )
 }

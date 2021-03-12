@@ -49,14 +49,14 @@ export const Realm = {
 
             const val = chainables[prop as never];
             return that(val);
-          }
-        }
+          },
+        },
       ),
       {
         type: "Realm" as const,
-      }
+      },
     ) as Realm<C>;
     return that;
   },
-  isRealm: checkTypeProperty.string<Realm<unknown>>("Realm")
+  isRealm: checkTypeProperty.string<Realm<unknown>>("Realm"),
 }

@@ -58,7 +58,7 @@ export const Operation = {
         hierarchy,
         overrideHierarchy,
         showOutputInHierarchy,
-      }
+      },
     ) as Operation<I, O>;
     return that;
   },

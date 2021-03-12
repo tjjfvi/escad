@@ -21,7 +21,7 @@ export const ClientFrame = observer(() => {
     return <div className="ClientFrame loading">
       Loading...
       {loadingStatuses().map(({ text }, i) =>
-        <span key={i}>{text}</span>
+        <span key={i}>{text}</span>,
       )}
     </div>;
   }
@@ -46,7 +46,7 @@ export const ClientFrame = observer(() => {
             offMsg: cb => window.removeEventListener("message", cb),
           }, (ev: any): ev is unknown => ev.origin === location.origin),
           x => x,
-          (ev: any) => ev.data
+          (ev: any) => ev.data,
         );
         const clientMessenger = createServerClientMessenger(
           brandConnection(baseConnection, "client"),
@@ -66,11 +66,11 @@ export const ClientFrame = observer(() => {
                 client: fs.readFileSync("/static/bundle.js", "utf8"),
               }),
               headers: {
-                "Content-Type": "application/json"
-              }
+                "Content-Type": "application/json",
+              },
             }).then(r => r.json());
             location = response.url;
-          }
+          },
         }, brandConnection(baseConnection, "share"))
         onNewWindow.current = () => {
           clientMessenger.destroy()

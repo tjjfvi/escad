@@ -22,7 +22,7 @@ export const RealmComponent = {
           func: component.func,
           overrideHierarchy: component.overrideHierarchy,
           hierarchy: component.hierarchy,
-        }
+        },
       ) as RealmComponent<I, T, C>;
       return that
     },

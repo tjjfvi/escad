@@ -5,7 +5,7 @@ import {
   createRendererDispatcher,
   createServerBundlerMessenger,
   createServerClientMessenger,
-  createServerRendererMessenger
+  createServerRendererMessenger,
 } from "@escad/server";
 import path from "path";
 import { childProcessConnection, filterConnection, mapConnection } from "@escad/messages";
@@ -39,7 +39,7 @@ export const createServer = async ({ artifactsDir, port, loadFile, loadDir, dev 
   };
 
   const bundlerProcess = fork(require.resolve("./bundler"), {
-    env: { ...process.env, DEV_MODE: dev + "" }
+    env: { ...process.env, DEV_MODE: dev + "" },
   });
   const bundlerMessenger = createServerBundlerMessenger(childProcessConnection(bundlerProcess));
 
@@ -47,7 +47,7 @@ export const createServer = async ({ artifactsDir, port, loadFile, loadDir, dev 
 
   const rendererMessenger = createRendererDispatcher(3, () => {
     const child = fork(require.resolve("./renderer"), {
-      env: { ...process.env, ARTIFACTS_DIR: artifactsDir }
+      env: { ...process.env, ARTIFACTS_DIR: artifactsDir },
     });
     return createServerRendererMessenger(childProcessConnection(child));
   });

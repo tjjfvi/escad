@@ -54,7 +54,7 @@ export class ClientState implements ArtifactStore {
         // eslint-disable-next-line @typescript-eslint/no-unused-vars
         for await (const _ of state.onParamUpdate())
           yield state.getNullifiedParams();
-      }
+      },
     }, this.connection)
     this.artifactManager.artifactStores.unshift(this);
     [this.triggerParamUpdate, this.onParamUpdate] = createEmittableAsyncIterable<void>()

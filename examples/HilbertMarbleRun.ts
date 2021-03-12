@@ -105,7 +105,7 @@ export default () => {
           [4, 5, 7, 6],
           [5, 4, 1, 3],
           [2, 0, 6, 7],
-        ]).rotateZ(180)
+        ]).rotateZ(180),
       ),
       e.union(
         e.cyl({ r: radius, h: cylinderLength }),

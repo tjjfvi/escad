@@ -61,11 +61,11 @@ export const RealmElement = {
 
             const val = chainables[prop as never];
             return that(val);
-          }
-        }
+          },
+        },
       ),
       element,
     ) as any
     return that;
-  }
+  },
 }
