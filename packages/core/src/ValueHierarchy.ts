@@ -2,15 +2,25 @@
 import { checkTypeProperty } from "./checkTypeProperty";
 import { _Hierarchy } from "./Hierarchy";
 
+type SerializableValue = 
+  | string
+  | number
+  | boolean
+  | null
+
+type RawValue = 
+  | SerializableValue
+  | undefined
+  | symbol
+
+type ValueHierarchyValue =
+  | SerializableValue
+  | { undefined: true }
+  | { symbol: string | undefined },
+
 export interface ValueHierarchy extends _Hierarchy {
   readonly type: "ValueHierarchy",
-  readonly value:
-    | string
-    | number
-    | boolean
-    | null
-    | { undefined: true }
-    | { symbol: string | undefined },
+  readonly value: ValueHierarchyValue,
 }
 
 export const ValueHierarchy = {
@@ -22,11 +32,14 @@ export const ValueHierarchy = {
     value,
     linkedProducts,
   }),
-  from: (value: string | number | boolean | null | undefined | symbol) =>
+  from: (value: RawValue) =>
     ValueHierarchy.create({
       value: (
         value === undefined ?
-          { undefined: true } : typeof value === "symbol" ? { symbol: value.description } : value
+          { undefined: true } :
+          typeof value === "symbol" ?
+            { symbol: value.description } :
+            value
       )
     }),
   isValueHierarchy: checkTypeProperty.string<ValueHierarchy>("ValueHierarchy"),
