@@ -15,7 +15,9 @@ createBundlerServerMessenger(
     webpack({
       entry: {
         bundle: {
-          import: await createResourceFileAsync(entryPaths.map(x => `import "${path.resolve("../project", x)}";`).join("\n")),
+          import: await createResourceFileAsync(
+            entryPaths.map(x => `import "${path.resolve("../project", x)}";`).join("\n")
+          ),
           dependOn: "escad",
         },
         escad: getResourceFilePath(fakeImportAllEscadSource),
