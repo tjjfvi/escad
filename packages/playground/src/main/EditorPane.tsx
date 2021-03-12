@@ -104,9 +104,8 @@ export default () =>
         allFiles.add(file)
     for(const changed of changedFiles) {
       if(changed === "/project/index.ts" || !changed.startsWith("/project/")) continue;
-      for(const file of files) {
+      for(const file of files)
         syncFile(file);
-      }
     }
     changedFiles.clear();
   }

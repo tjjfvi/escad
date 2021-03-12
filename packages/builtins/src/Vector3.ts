@@ -50,12 +50,11 @@ function _createVector3(x: number, y: number, z: number): Vector3
 function _createVector3(xyz: [number, number, number]): Vector3
 function _createVector3(xyz: { x: number, y: number, z: number }): Vector3
 function _createVector3(x: number | { x: number, y: number, z: number } | [number, number, number] = 0, y = 0, z = 0){
-  if(typeof x === "object") {
+  if(typeof x === "object")
     if(x instanceof Array)
       [x, y, z] = x
     else
       ({ x, y, z } = x)
-  }
 
   return { x, y, z };
 }

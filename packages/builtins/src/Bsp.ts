@@ -122,14 +122,13 @@ export const Bsp = {
 
   build: (bsp: Bsp | null, allFaces: readonly Face[]): Bsp | null =>
     Bsp.mapExtra([bsp ?? Bsp.create(null, null, [], allFaces[0].plane), allFaces], (bsp, allFaces) => {
-      while(bsp && !bsp.faces.length) {
-        if(!(bsp.front && bsp.back)) {
+      while(bsp && !bsp.faces.length)
+        if(!(bsp.front && bsp.back))
           bsp = bsp.front ?? bsp.back;
-        } else {
+        else {
           allFaces = allFaces.concat(Bsp.allFaces(bsp))
           bsp = null;
         }
-      }
 
       if(!allFaces.length)
         return [bsp, null];

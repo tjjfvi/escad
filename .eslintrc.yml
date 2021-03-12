@@ -138,6 +138,9 @@ rules:
     - warn
   no-whitespace-before-property:
     - warn
+  curly:
+    - warn
+    - multi
   object-curly-newline:
     - warn
     - multiline: true

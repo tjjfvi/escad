@@ -21,9 +21,8 @@ export const Preview = observer(() => {
   const productTypes = products.map(Product.getProductType);
   const viewers = [...viewerRegistry.getConsumersForAll(productTypes)].sort((a, b) => b.weight - a.weight);
 
-  if(!viewerObs.value || !viewers.includes(viewerObs.value)) {
+  if(!viewerObs.value || !viewers.includes(viewerObs.value))
     viewerObs.value = viewers[0] ?? null;
-  }
 
   const viewer = viewerObs.value;
 

@@ -53,9 +53,8 @@ export const Element = {
     } else if(Product.isProduct(elementish)) {
       value = elementish;
       artifactManager.storeRaw(value);
-    } else {
+    } else
       throw new Error("Invalid elementish passed to Element");
-    }
 
     return {
       type: "Element",

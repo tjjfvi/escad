@@ -24,13 +24,12 @@ function EdgesGeometry(geometry, thresholdAngle = 1){
 
   let keepEdges = [];
 
-  for(let face of faces) {
+  for(let face of faces)
     for(let j = 0; j < 3; j++) {
       let edge1 = face[keys[j]];
       let edge2 = face[keys[(j + 1) % 3]];
       runEdge(edge1, edge2, face.normal);
     }
-  }
 
   function runEdge(edge1, edge2, normal){
 
