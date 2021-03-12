@@ -1,18 +1,37 @@
 
 import { Hierarchy } from "@escad/core";
-import React, { useContext, useState } from "react";
+import React, { useContext, useRef, useState } from "react";
 import { useObservable } from "rhobo";
 import { ClientState } from "./ClientState";
+import { ResizeSensor } from "css-element-queries"
 
-export const HierarchyView = ({ hierarchy, maxLength }: { hierarchy: Hierarchy, maxLength: number }) =>
-  <Tree maxLength={maxLength} tree={hierarchyToTree(hierarchy)}/>
+export const HierarchyView = ({ hierarchy }: { hierarchy: Hierarchy }) => {
+  const [width, setWidth] = useState<number>(0);
+  const sensorRef = useRef<ResizeSensor>();
+  return <div
+    ref={el => {
+      sensorRef.current?.detach();
+      if(!el) return;
+      const sensor = new ResizeSensor(el, () => {
+        setWidth(el.clientWidth);
+      });
+      sensorRef.current = sensor;
+    }}
+  >
+    <Tree
+      width={width}
+      tree={hierarchyToTree(hierarchy)}
+    />
+  </div>
+}
 
 const Arrow = ({ state, onClick }: { state: "open" | "closed" | "leaf", onClick?: () => void }) =>
   <div className={ "arrow " + state } onClick={onClick}></div>;
 
-const Tree = ({ tree, maxLength }: { tree: Tree, maxLength: number }) => {
+const Tree = ({ tree, width }: { tree: Tree, width: number }) => {
   const [, _update] = useState({});
   const update = () => _update({});
+  const maxLength = (width - 25) / 10
 
   const collapsedTree = fullyCollapseTree(tree, maxLength, update);
   const joinedCollapsedTree = joinTree(collapsedTree, update);
@@ -26,7 +45,7 @@ const Tree = ({ tree, maxLength }: { tree: Tree, maxLength: number }) => {
       {joinedCollapsedTree.map((x, i, a) => {
         if("children" in x)
           return <div className="children" key={i}>
-            {x.children.map((y, i) => <Tree maxLength={maxLength} tree={y} key={i}/>)}
+            {x.children.map((y, i) => <Tree width={width - 25} tree={y} key={i}/>)}
           </div>
         const next = a[i + 1];
         const state = !next || "text" in next ? null : next.state;
@@ -127,8 +146,12 @@ function wrapLinkedProducts(hierarchy: Hierarchy, tree: Tree): Tree{
   ]
 }
 
+const hierarchyTreeMemo = new WeakMap<Hierarchy, Tree>();
+
 function hierarchyToTree(hierarchy: Hierarchy): Tree{
-  return wrapLinkedProducts(hierarchy, _hierarchyToTree(hierarchy));
+  const tree = hierarchyTreeMemo.get(hierarchy) ?? wrapLinkedProducts(hierarchy, _hierarchyToTree(hierarchy));
+  hierarchyTreeMemo.set(hierarchy, tree);
+  return tree;
 }
 
 function _hierarchyToTree(hierarchy: Hierarchy): Tree{
