@@ -1,5 +1,5 @@
 
-import { ArtifactStore, Hash, HashMap } from "@escad/core";
+import { ArtifactStore, Hash, HashMap } from "@escad/core"
 
 export class InMemoryArtifactStore implements ArtifactStore {
 
@@ -7,15 +7,15 @@ export class InMemoryArtifactStore implements ArtifactStore {
   readonly ref = new HashMap<readonly unknown[], Hash<unknown>>();
 
   async storeRaw(hash: Hash<unknown>, buffer: Buffer){
-    this.raw.set(hash, buffer);
+    this.raw.set(hash, buffer)
   }
 
   async lookupRaw(hash: Hash<unknown>){
-    return this.raw.get(hash) ?? null;
+    return this.raw.get(hash) ?? null
   }
 
   async storeRef(loc: readonly unknown[], hash: Hash<unknown>){
-    this.ref.set(loc, hash);
+    this.ref.set(loc, hash)
   }
 
   async lookupRef(loc: readonly unknown[]){

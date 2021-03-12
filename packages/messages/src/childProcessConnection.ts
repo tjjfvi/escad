@@ -1,6 +1,6 @@
 
-import type { ChildProcess } from "child_process";
-import { Connection } from "./Connection";
+import type { ChildProcess } from "child_process"
+import { Connection } from "./Connection"
 
 /* istanbul ignore next: covered by types, difficult to test */
 export const childProcessConnection = (childProcess: ChildProcess): Connection<unknown> => ({

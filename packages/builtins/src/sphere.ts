@@ -1,5 +1,5 @@
 
-import { Mesh } from "./Mesh";
+import { Mesh } from "./Mesh"
 import {
   Element,
   Id,
@@ -8,15 +8,15 @@ import {
   createLeafProductUtils,
   Conversion,
   conversionRegistry,
-} from "@escad/core";
-import { interpretTriplet, Triplet } from "./helpers";
-import { Smooth, smoothContext } from "./smoothContext";
-import { Face } from "./Face";
-import { Vector3 } from "./Vector3";
+} from "@escad/core"
+import { interpretTriplet, Triplet } from "./helpers"
+import { Smooth, smoothContext } from "./smoothContext"
+import { Face } from "./Face"
+import { Vector3 } from "./Vector3"
 
-const tau = Math.PI * 2;
+const tau = Math.PI * 2
 
-const sphereId = Id.create(__filename, "@escad/builtins", "LeafProduct", "Sphere", "0");
+const sphereId = Id.create(__filename, "@escad/builtins", "LeafProduct", "Sphere", "0")
 
 export interface Sphere extends LeafProduct {
   readonly type: typeof sphereId,
@@ -34,7 +34,7 @@ export const Sphere = {
   }),
   ...createLeafProductUtils<Sphere, "Sphere">(sphereId, "Sphere"),
   id: sphereId,
-};
+}
 
 declare global {
   namespace escad {
@@ -50,20 +50,20 @@ conversionRegistry.register({
   fromType: Sphere.productType,
   toType: Mesh.productType,
   convert: async (sphere: Sphere): Promise<Mesh> => {
-    const { radius, smooth, centering } = sphere;
+    const { radius, smooth, centering } = sphere
     const sides = Math.max(
       2,
       smooth.sides ?? 0,
       Math.ceil(radius * tau / 2 / (smooth.size ?? Infinity)),
       360 / 2 / (smooth.angle ?? Infinity),
-    );
-    const center = Vector3.multiplyScalar(centering, radius);
-    const slices = 2 * sides;
-    const stacks = sides;
+    )
+    const center = Vector3.multiplyScalar(centering, radius)
+    const slices = 2 * sides
+    const stacks = sides
 
     const vertex = (i: number, j: number) => {
-      const theta = i * tau / slices;
-      const phi = j * tau / 2 / stacks;
+      const theta = i * tau / slices
+      const phi = j * tau / 2 / stacks
       return Vector3.create(
         center.x + Math.sin(theta) * Math.sin(phi) * radius,
         center.y + Math.cos(theta) * Math.sin(phi) * radius,
@@ -74,19 +74,19 @@ conversionRegistry.register({
     return Mesh.create(
       [...Array(slices)].flatMap((_, i) =>
         [...Array(stacks)].flatMap((_, j) => {
-          let vertices = [];
+          let vertices = []
 
-          vertices.push(vertex(i, j));
+          vertices.push(vertex(i, j))
           if(j > 0)
-            vertices.push(vertex(i + 1, j));
+            vertices.push(vertex(i + 1, j))
           if(j < stacks - 1)
-            vertices.push(vertex(i + 1, j + 1));
-          vertices.push(vertex(i, j + 1));
+            vertices.push(vertex(i + 1, j + 1))
+          vertices.push(vertex(i, j + 1))
 
           return Face.create(vertices)
         }),
       ),
-    );
+    )
   },
   weight: 1,
   id: Id.create(__filename, "@escad/builtins", "Conversion", "SphereMesh", "0"),
@@ -101,7 +101,7 @@ type SphereArgs = number | {
 export const sphere: Component<[SphereArgs], Element<Sphere>> =
   Component.create("sphere", args => {
     if(typeof args === "number")
-      args = { radius: args };
-    args.smooth ??= smoothContext.get();
-    return Element.create(Sphere.create(args.radius, args.smooth, interpretTriplet(args.center, 0)));
+      args = { radius: args }
+    args.smooth ??= smoothContext.get()
+    return Element.create(Sphere.create(args.radius, args.smooth, interpretTriplet(args.center, 0)))
   }, { showOutputInHierarchy: false })

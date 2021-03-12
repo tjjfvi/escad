@@ -1,8 +1,8 @@
-import escad, { Element } from "../packages/core";
-import "../packages/builtins/register";
-import { renderFunction } from "../packages/renderer";
-import { numberParam } from "../packages/renderer/node_modules/@escad/parameters/dist";
-import { Mesh } from "../packages/csg/node_modules/@escad/builtins/dist";
+import escad, { Element } from "../packages/core"
+import "../packages/builtins/register"
+import { renderFunction } from "../packages/renderer"
+import { numberParam } from "../packages/renderer/node_modules/@escad/parameters/dist"
+import { Mesh } from "../packages/csg/node_modules/@escad/builtins/dist"
 
 export default renderFunction(
   {
@@ -26,12 +26,12 @@ export default renderFunction(
   },
   parameters => {
 
-    let calcHeight = (s: number) => Math.sqrt(s ** 2 - (Math.sqrt(2) / 2 * s) ** 2);
+    let calcHeight = (s: number) => Math.sqrt(s ** 2 - (Math.sqrt(2) / 2 * s) ** 2)
 
     let pyramid = (sideLength: number, adjustment: number) => {
-      let h = calcHeight(sideLength);
+      let h = calcHeight(sideLength)
 
-      adjustment = calcHeight(adjustment);
+      adjustment = calcHeight(adjustment)
 
       return escad<Mesh>({
         pyramid: escad.cyl({
@@ -41,16 +41,16 @@ export default renderFunction(
           h: h - adjustment,
           sides: 4,
         }).rotateZ(45).translate(0, 0, (h - adjustment) / 2),
-      });
+      })
     }
 
     let fractal = (sideLength: number, adjustment: number, order: number): Element<Mesh> => {
-      order--;
-      let sideCount = 2 ** (order - 1);
-      let adjustedSideLength = sideLength - adjustment;
+      order--
+      let sideCount = 2 ** (order - 1)
+      let adjustedSideLength = sideLength - adjustment
       if(order === 0)
-        return pyramid(sideLength, adjustment);
-      const sub = fractal(sideLength, adjustment, order);
+        return pyramid(sideLength, adjustment)
+      const sub = fractal(sideLength, adjustment, order)
       return escad<Mesh>({
         fractal: escad.union([
           ...[[1, 1], [1, -1], [-1, 1], [-1, -1]].map(([x, y]) =>
@@ -60,11 +60,11 @@ export default renderFunction(
             sub.rotate(0, r, 0).translate(0, 0, calcHeight(adjustedSideLength * sideCount)),
           ),
         ]),
-      });
-    };
+      })
+    }
 
-    console.log(parameters);
-    return fractal(parameters.sideLength, parameters.adjustment, parameters.order);
+    console.log(parameters)
+    return fractal(parameters.sideLength, parameters.adjustment, parameters.order)
     // return escad.cyl({ r: 1, i: .00001, h: 20, sides: 12 })
 
-  });
+  })

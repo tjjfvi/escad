@@ -1,18 +1,18 @@
 
 import { LeafProduct, LeafProductType } from "./LeafProduct"
 import { TupleProduct, TupleProductType } from "./TupleProduct"
-import { ArrayProduct, ArrayProductType } from "./ArrayProduct";
+import { ArrayProduct, ArrayProductType } from "./ArrayProduct"
 import {
   __convertibleTo,
   __convertibleToOverride,
   _ConvertibleTo,
   __convertibleToTransitivityOverride,
   TransitivityOverride,
-} from "./Conversions";
-import { Hash } from "./Hash";
-import { timers } from "./Timer";
-import { UnknownProduct, UnknownProductType } from "./UnknownProduct";
-import { ScopedId } from "./Id";
+} from "./Conversions"
+import { Hash } from "./Hash"
+import { timers } from "./Timer"
+import { UnknownProduct, UnknownProductType } from "./UnknownProduct"
+import { ScopedId } from "./Id"
 
 export interface _Product {
   readonly type: string | ScopedId<"LeafProduct">,
@@ -41,12 +41,12 @@ export const Product = {
     if(LeafProduct.isLeafProduct(product))
       return LeafProduct.getLeafProductType(product)
     if(TupleProduct.isTupleProduct(product))
-      return TupleProduct.getTupleProductType(product);
+      return TupleProduct.getTupleProductType(product)
     if(ArrayProduct.isArrayProduct(product))
-      return ArrayProduct.getArrayProductType(product);
+      return ArrayProduct.getArrayProductType(product)
     if(UnknownProduct.isUnknownProduct(product))
-      return UnknownProductType.create() as ProductType<P>;
-    throw new Error("Invalid product passed to Product.getProductType");
+      return UnknownProductType.create() as ProductType<P>
+    throw new Error("Invalid product passed to Product.getProductType")
   }),
 }
 
@@ -61,7 +61,7 @@ function isProduct(arg: any, productType?: ProductType){
       || UnknownProduct.isUnknownProduct(arg)
     )
     && (!productType || Hash.equal(Product.getProductType(arg), productType))
-  );
+  )
 }
 
 export type ProductType<U extends Product = Product> =

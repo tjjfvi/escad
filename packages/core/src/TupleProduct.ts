@@ -1,6 +1,6 @@
 
-import { checkTypeProperty } from "./checkTypeProperty";
-import { Product, _Product, ProductType } from "./Product";
+import { checkTypeProperty } from "./checkTypeProperty"
+import { Product, _Product, ProductType } from "./Product"
 
 export interface TupleProduct<T extends readonly Product[] = readonly Product[]> extends _Product {
   readonly type: "TupleProduct",

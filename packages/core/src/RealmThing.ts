@@ -1,12 +1,12 @@
 
-import { Component } from "./Component";
-import { Operation } from "./Operation";
-import { Element } from "./Element";
-import { Realm } from "./Realm";
-import { RealmElement } from "./RealmElement";
-import { RealmOperation } from "./RealmOperation";
-import { RealmComponent } from "./RealmComponent";
-import { StripRealm, Thing } from "./Thing";
+import { Component } from "./Component"
+import { Operation } from "./Operation"
+import { Element } from "./Element"
+import { Realm } from "./Realm"
+import { RealmElement } from "./RealmElement"
+import { RealmOperation } from "./RealmOperation"
+import { RealmComponent } from "./RealmComponent"
+import { StripRealm, Thing } from "./Thing"
 
 export type RealmThing<T extends Thing, C> =
   | (T extends Element<infer T> ? RealmElement<T, C> : never)
@@ -21,7 +21,7 @@ export const RealmThing = {
       return RealmOperation.create(realm, thing) as never
     if(Component.isComponent(thing))
       return RealmComponent.create(realm, thing) as never
-    throw new Error("Invalid thing passed to RealmThing.create");
+    throw new Error("Invalid thing passed to RealmThing.create")
   },
 
 }

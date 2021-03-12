@@ -1,16 +1,16 @@
 
-import { ProductType, Product } from "./Product";
-import { ConvertibleTo, ConversionImpl } from "./Conversions";
-import { MultiHashMap } from "./MultiHashMap";
-import { Hash } from "./Hash";
-import { artifactManager, ArtifactManager } from "./ArtifactManager";
-import { ArtifactStore } from "./ArtifactStore";
-import { Id } from "./Id";
-import { depthFirst } from "./depthFirst";
-import { HashMap } from "./HashMap";
-import { TupleProduct, TupleProductType } from "./TupleProduct";
-import { ArrayProduct, ArrayProductType } from "./ArrayProduct";
-import { UnknownProduct, UnknownProductType } from "./UnknownProduct";
+import { ProductType, Product } from "./Product"
+import { ConvertibleTo, ConversionImpl } from "./Conversions"
+import { MultiHashMap } from "./MultiHashMap"
+import { Hash } from "./Hash"
+import { artifactManager, ArtifactManager } from "./ArtifactManager"
+import { ArtifactStore } from "./ArtifactStore"
+import { Id } from "./Id"
+import { depthFirst } from "./depthFirst"
+import { HashMap } from "./HashMap"
+import { TupleProduct, TupleProductType } from "./TupleProduct"
+import { ArrayProduct, ArrayProductType } from "./ArrayProduct"
+import { UnknownProduct, UnknownProductType } from "./UnknownProduct"
 
 type ConversionPath = ConversionImpl<any, any>[]
 
@@ -23,9 +23,9 @@ export class ConversionRegistry {
   static readonly artifactStoreId = Id.create(__filename, "@escad/core", "ArtifactStore", "ConversionRegistry", "0");
   readonly artifactStore: ArtifactStore = {
     lookupRef: async ([id, toType, product]) => {
-      if(!Id.isId(id) || !Id.equal(id, ConversionRegistry.artifactStoreId)) return null;
-      if(!Product.isProduct(product)) return null;
-      return this.convertProduct(toType as ProductType, product);
+      if(!Id.isId(id) || !Id.equal(id, ConversionRegistry.artifactStoreId)) return null
+      if(!Product.isProduct(product)) return null
+      return this.convertProduct(toType as ProductType, product)
     },
   }
 
@@ -38,37 +38,37 @@ export class ConversionRegistry {
   register<F extends Product, T extends Product>(
     conversion: ConversionImpl<F, T>,
   ): void{
-    this.initialComposed.clear();
-    this.composed.clear();
+    this.initialComposed.clear()
+    this.composed.clear()
     this.registered.add(conversion)
   }
 
   has(a: ProductType, b: ProductType): boolean{
-    return !!this.compose(a, b);
+    return !!this.compose(a, b)
   }
 
   listAll(): Iterable<ConversionImpl<any, any>>{
-    return this.registered.values();
+    return this.registered.values()
   }
 
   private initialCompose(fromType: ProductType){
-    const initialComposed = this.initialComposed ??= new MultiHashMap();
+    const initialComposed = this.initialComposed ??= new MultiHashMap()
 
     depthFirst([{
       type: fromType,
       prior: [] as ConversionPath,
     }], function*({ type, prior }){
       if(prior.some(c => Hash.equal(c.fromType, type)))
-        return;
+        return
 
-      initialComposed.add([fromType, type], prior);
+      initialComposed.add([fromType, type], prior)
 
       for(const conversion of this.registered)
         if(this.maybeImplicitlyConvertibleTo(type, conversion.fromType))
           yield {
             prior: [...prior, conversion],
             type: conversion.toType,
-          };
+          }
     }, this)
   }
 
@@ -80,18 +80,18 @@ export class ConversionRegistry {
       return this.composed.get([fromType, toType]) ?? null
 
     if(!this.initialComposed.hasAny([fromType, toType]))
-      this.initialCompose(fromType);
+      this.initialCompose(fromType)
 
-    let bestPath = this.finishPath(fromType, [], toType);
+    let bestPath = this.finishPath(fromType, [], toType)
     for(const initialPath of this.initialComposed.getAll([fromType, toType])) {
-      const path = this.finishPath(fromType, initialPath, toType);
+      const path = this.finishPath(fromType, initialPath, toType)
       if(!bestPath || path && this.weight(path) <= this.weight(bestPath))
-        bestPath = path;
+        bestPath = path
     }
 
     this.composed.set([fromType, toType], bestPath)
 
-    return bestPath;
+    return bestPath
   }
 
   private maybeImplicitlyConvertibleTo(a: ProductType, b: ProductType): boolean{
@@ -104,21 +104,21 @@ export class ConversionRegistry {
       && ArrayProductType.isArrayProductType(b)
     ) || (
       UnknownProductType.isUnknownProductType(b)
-    );
+    )
   }
 
   private finishPath(fromType: ProductType, initialPath: ConversionPath | null, toType: ProductType){
     if(!initialPath)
-      return initialPath;
+      return initialPath
 
     let path = [this.noopConversion(fromType), ...initialPath, this.noopConversion(toType)]
 
     for(let i = 1; i < path.length; i++) {
-      const fromType = path[i - 1].toType;
-      const toType = path[i].fromType;
+      const fromType = path[i - 1].toType
+      const toType = path[i].fromType
 
       if(Hash.equal(fromType, toType))
-        continue;
+        continue
 
       if(UnknownProductType.isUnknownProductType(toType)) {
         path.splice(i, 0, {
@@ -130,7 +130,7 @@ export class ConversionRegistry {
           id: Hash.create([fromType, toType]),
         })
         i++
-        continue;
+        continue
       }
 
       if(TupleProductType.isTupleProductType(fromType) && ArrayProductType.isArrayProductType(toType)) {
@@ -142,8 +142,8 @@ export class ConversionRegistry {
           weight: 0,
           id: Hash.create([fromType, toType]),
         })
-        i--;
-        continue;
+        i--
+        continue
       }
 
       if(
@@ -154,7 +154,7 @@ export class ConversionRegistry {
         return null
 
       if(!fromType.elementTypes.every((f, i) => this.has(f, toType.elementTypes[i])))
-        return null;
+        return null
 
       path.splice(i, 0, {
         fromType,
@@ -172,7 +172,7 @@ export class ConversionRegistry {
       i++
     }
 
-    return path.slice(1, -1);
+    return path.slice(1, -1)
   }
 
   private noopConversion(type: ProductType): ConversionImpl<any, any>{
@@ -182,7 +182,7 @@ export class ConversionRegistry {
       convert: x => x,
       weight: 0,
       id: Hash.create([type, type]),
-    };
+    }
   }
 
   private weight(path: ConversionPath){
@@ -193,20 +193,20 @@ export class ConversionRegistry {
     toType: ProductType<T>,
     from: F,
   ): Promise<T>{
-    const fromType = Product.getProductType(from);
+    const fromType = Product.getProductType(from)
 
-    this.compose(fromType, toType);
-    const conversions = this.composed.get([fromType, toType]);
+    this.compose(fromType, toType)
+    const conversions = this.composed.get([fromType, toType])
 
     // log.productType(fromType);
     // log.productType(toType);
     // console.log(conversions?.map(formatConversion), conversions?.length);
 
     if(!conversions)
-      throw new Error(`Could not find path to convert product type ${Hash.create(fromType)} to ${Hash.create(toType)}`);
+      throw new Error(`Could not find path to convert product type ${Hash.create(fromType)} to ${Hash.create(toType)}`)
 
-    let prevProducts: (Product | null)[] = [from];
-    let currentProduct: Product = from;
+    let prevProducts: (Product | null)[] = [from]
+    let currentProduct: Product = from
 
     main: for(let i = 0; i < conversions.length; i++) {
       for(let j = conversions.length - 1; j >= i; j--) {
@@ -214,24 +214,24 @@ export class ConversionRegistry {
         const result = await this.artifactManager.lookupRef(
           [ConversionRegistry.artifactStoreId, toType, currentProduct],
           this.excludeStores,
-        );
-        if(!result || !Product.isProduct(result)) continue;
-        currentProduct = result;
-        prevProducts.push(...Array(j - i + 1).fill(null));
-        i = j;
-        continue main;
+        )
+        if(!result || !Product.isProduct(result)) continue
+        currentProduct = result
+        prevProducts.push(...Array(j - i + 1).fill(null))
+        i = j
+        continue main
       }
-      currentProduct = await conversions[i].convert(currentProduct);
-      prevProducts.push(currentProduct);
+      currentProduct = await conversions[i].convert(currentProduct)
+      prevProducts.push(currentProduct)
       for(let k = 0; k < i; k++) {
-        const { toType } = conversions[i];
-        const fromProduct = prevProducts[k];
-        if(!fromProduct) continue;
-        await this.artifactManager.storeRef([ConversionRegistry.artifactStoreId, toType, fromProduct], currentProduct);
+        const { toType } = conversions[i]
+        const fromProduct = prevProducts[k]
+        if(!fromProduct) continue
+        await this.artifactManager.storeRef([ConversionRegistry.artifactStoreId, toType, fromProduct], currentProduct)
       }
     }
 
-    return currentProduct as T;
+    return currentProduct as T
   }
 
   // convertElementish<A extends Product, B extends ConvertibleTo<A> & Product>(
@@ -243,4 +243,4 @@ export class ConversionRegistry {
 
 }
 
-export const conversionRegistry = new ConversionRegistry(artifactManager);
+export const conversionRegistry = new ConversionRegistry(artifactManager)

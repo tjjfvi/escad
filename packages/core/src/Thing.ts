@@ -1,8 +1,8 @@
 
-import { Component } from "./Component";
-import { Operation } from "./Operation";
-import { Element } from "./Element";
-import { Hierarchy } from "./Hierarchy";
+import { Component } from "./Component"
+import { Operation } from "./Operation"
+import { Element } from "./Element"
+import { Hierarchy } from "./Hierarchy"
 
 export type Thing = Element<any> | Component<any[], any> | Operation<any, any>;
 export type StripRealm<T extends Thing> =

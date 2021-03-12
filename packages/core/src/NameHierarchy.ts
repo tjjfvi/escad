@@ -1,6 +1,6 @@
 
-import { checkTypeProperty } from "./checkTypeProperty";
-import { _Hierarchy } from "./Hierarchy";
+import { checkTypeProperty } from "./checkTypeProperty"
+import { _Hierarchy } from "./Hierarchy"
 
 export interface NameHierarchy extends _Hierarchy {
   readonly type: "NameHierarchy",

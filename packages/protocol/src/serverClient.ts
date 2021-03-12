@@ -1,6 +1,6 @@
 
-import { Messenger } from "@escad/messages";
-import { ExportTypeInfo, Hash, Hierarchy, ObjectParam, Product, ProductType } from "@escad/core";
+import { Messenger } from "@escad/messages"
+import { ExportTypeInfo, Hash, Hierarchy, ObjectParam, Product, ProductType } from "@escad/core"
 
 export interface Info {
   products: Hash<Product>[],

@@ -5,10 +5,10 @@ declare module "worker-loader?*"{
     constructor();
 
   }
-  export default WebpackWorker;
+  export default WebpackWorker
 }
 
 declare module "!!raw-loader!*" {
-  const content: string;
-  export default content;
+  const content: string
+  export default content
 }

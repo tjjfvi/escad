@@ -1,5 +1,5 @@
 
-import { Connection } from "./Connection";
+import { Connection } from "./Connection"
 
 /* istanbul ignore next: covered by types, difficult to test */
 export const workerConnection = (worker: Worker): Connection<unknown> => ({

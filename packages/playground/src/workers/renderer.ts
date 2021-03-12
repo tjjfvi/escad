@@ -1,12 +1,12 @@
 
-import { artifactManager, ArtifactStore } from "@escad/core";
-import { workerConnection, brandConnection, createMessenger } from "@escad/messages";
+import { artifactManager, ArtifactStore } from "@escad/core"
+import { workerConnection, brandConnection, createMessenger } from "@escad/messages"
 import { createRendererServerMessenger } from "@escad/renderer"
 
 const artifactMessenger = createMessenger<{/**/}, Required<ArtifactStore>>(
   {},
   brandConnection(workerConnection(self as any), "artifacts"),
-).req;
+).req
 
 // Prevent sending non-serializable ArtifactManager
 artifactManager.artifactStores.unshift({
@@ -14,9 +14,9 @@ artifactManager.artifactStores.unshift({
   storeRef: (loc, buffer) => artifactMessenger.storeRef(loc, buffer, null as never),
   lookupRaw: loc => artifactMessenger.lookupRaw(loc, null as never),
   lookupRef: hash => artifactMessenger.lookupRef(hash, null as never),
-});
+})
 
 createRendererServerMessenger(
   brandConnection(workerConnection(self as any), "renderer"),
   () => require("/project/index.js"),
-);
+)

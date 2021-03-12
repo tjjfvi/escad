@@ -12,4 +12,4 @@ export const colors = {
   green: 0x2ecc71,
   blue: 0x0984e3,
   purple: 0x8e44ad,
-};
+}

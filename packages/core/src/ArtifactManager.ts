@@ -1,8 +1,8 @@
 
-import { WeakCache } from "./WeakCache";
-import { Hash } from "./Hash";
-import { ArtifactStore } from "./ArtifactStore";
-import { timers } from "./Timer";
+import { WeakCache } from "./WeakCache"
+import { Hash } from "./Hash"
+import { ArtifactStore } from "./ArtifactStore"
+import { timers } from "./Timer"
 
 export class ArtifactManager {
 
@@ -17,11 +17,11 @@ export class ArtifactManager {
   }
 
   private deserialize(buffer: unknown): unknown{
-    if(!(buffer instanceof Buffer)) return buffer;
+    if(!(buffer instanceof Buffer)) return buffer
     try {
-      return JSON.parse(buffer.toString("utf8"));
+      return JSON.parse(buffer.toString("utf8"))
     } catch (e) {
-      return buffer;
+      return buffer
     }
   }
 
@@ -29,17 +29,17 @@ export class ArtifactManager {
     artifactPromise: T | Promise<T>,
     excludeStores?: ReadonlySet<ArtifactStore>,
   ){
-    const artifact = await artifactPromise;
-    const artifactHash = Hash.create(artifact);
+    const artifact = await artifactPromise
+    const artifactHash = Hash.create(artifact)
 
-    this.cache.set(artifactHash, () => artifact);
+    this.cache.set(artifactHash, () => artifact)
 
-    let serialized;
+    let serialized
     await Promise.all(this.artifactStores.map(async s =>
       !excludeStores?.has(s) && await s.storeRaw?.(artifactHash, serialized ??= this.serialize(artifact), this),
-    ));
+    ))
 
-    return artifactHash;
+    return artifactHash
   }
 
   async storeRef<T>(
@@ -47,10 +47,10 @@ export class ArtifactManager {
     artifactPromise: T | Promise<T>,
     excludeStores?: ReadonlySet<ArtifactStore>,
   ){
-    const artifact = await artifactPromise;
-    const artifactHash = Hash.create(artifact);
+    const artifact = await artifactPromise
+    const artifactHash = Hash.create(artifact)
 
-    this.cache.set(loc, () => artifact);
+    this.cache.set(loc, () => artifact)
 
     await Promise.all<any>([
       this.storeRaw(artifact, excludeStores),
@@ -58,9 +58,9 @@ export class ArtifactManager {
       ...this.artifactStores.map(s =>
         !excludeStores?.has(s) && s.storeRef?.(loc, artifactHash, this),
       ),
-    ]);
+    ])
 
-    return artifactHash;
+    return artifactHash
   }
 
   async lookupRaw<T>(
@@ -69,13 +69,13 @@ export class ArtifactManager {
   ): Promise<T | null>{
     for(const store of this.artifactStores)
       if(!excludeStores?.has(store)) {
-        const buffer = await store.lookupRaw?.(hash, this);
-        if(!buffer) continue;
-        const artifact = this.deserialize(buffer);
+        const buffer = await store.lookupRaw?.(hash, this)
+        if(!buffer) continue
+        const artifact = this.deserialize(buffer)
         if(Hash.check(hash, artifact))
-          return artifact;
+          return artifact
       }
-    return null;
+    return null
   }
 
   async lookupRef(
@@ -84,16 +84,16 @@ export class ArtifactManager {
   ){
     for(const store of this.artifactStores)
       if(!excludeStores?.has(store)) {
-        const buffer = await store.lookupRef?.(loc, this);
+        const buffer = await store.lookupRef?.(loc, this)
         if(buffer) {
-          const artifact = this.deserialize(buffer);
-          await this.storeRaw(artifact, excludeStores);
-          return this.deserialize(buffer);
+          const artifact = this.deserialize(buffer)
+          await this.storeRaw(artifact, excludeStores)
+          return this.deserialize(buffer)
         }
       }
-    return null;
+    return null
   }
 
 }
 
-export const artifactManager = new ArtifactManager();
+export const artifactManager = new ArtifactManager()

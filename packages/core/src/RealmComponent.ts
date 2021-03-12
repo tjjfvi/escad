@@ -1,8 +1,8 @@
-import { Component } from "./Component";
-import { ExtensibleFunction } from "./ExtensibleFunction";
-import { Realm } from "./Realm";
-import { RealmThing } from "./RealmThing";
-import { Thing } from "./Thing";
+import { Component } from "./Component"
+import { ExtensibleFunction } from "./ExtensibleFunction"
+import { Realm } from "./Realm"
+import { RealmThing } from "./RealmThing"
+import { Thing } from "./Thing"
 
 export interface RealmComponent<I extends any[], T extends Thing, C> extends Component<I, T> {
   (...args: I): RealmThing<T, C>,
@@ -23,7 +23,7 @@ export const RealmComponent = {
           overrideHierarchy: component.overrideHierarchy,
           hierarchy: component.hierarchy,
         },
-      ) as RealmComponent<I, T, C>;
+      ) as RealmComponent<I, T, C>
       return that
     },
 }

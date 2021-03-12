@@ -7,8 +7,8 @@ declare global {
 
 export type DefaultChainables = escad.DefaultChainables;
 
-export const defaultChainables: DefaultChainables = {};
+export const defaultChainables: DefaultChainables = {}
 
 // istanbul ignore next
 export const extendChainables = (extension: Partial<DefaultChainables>) =>
-  Object.assign(defaultChainables, extension);
+  Object.assign(defaultChainables, extension)

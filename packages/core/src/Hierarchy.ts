@@ -1,16 +1,16 @@
 
-import { Product } from "./Product";
-import { LeafProduct } from "./LeafProduct";
-import { Component } from "./Component";
-import { Element } from "./Element";
-import { Hash } from "./Hash";
-import { Operation } from "./Operation";
-import { ArrayHierarchy } from "./ArrayHierarchy";
-import { CallHierarchy } from "./CallHierarchy";
-import { LabeledHierarchy } from "./LabeledHierarchy";
-import { ObjectHierarchy } from "./ObjectHierarchy";
-import { NameHierarchy } from "./NameHierarchy";
-import { ValueHierarchy } from "./ValueHierarchy";
+import { Product } from "./Product"
+import { LeafProduct } from "./LeafProduct"
+import { Component } from "./Component"
+import { Element } from "./Element"
+import { Hash } from "./Hash"
+import { Operation } from "./Operation"
+import { ArrayHierarchy } from "./ArrayHierarchy"
+import { CallHierarchy } from "./CallHierarchy"
+import { LabeledHierarchy } from "./LabeledHierarchy"
+import { ObjectHierarchy } from "./ObjectHierarchy"
+import { NameHierarchy } from "./NameHierarchy"
+import { ValueHierarchy } from "./ValueHierarchy"
 
 export interface _Hierarchy {
   readonly type: `${string}Hierarchy`,
@@ -42,28 +42,28 @@ export const Hierarchy = {
       || value === undefined
       || value === null
     )
-      return ValueHierarchy.from(value);
+      return ValueHierarchy.from(value)
     if(!raw) {
       if(Hierarchy.isHierarchy(value))
-        return value;
+        return value
       if(Element.isElement(value))
-        return value.hierarchy ?? Hierarchy.from(value.value);
+        return value.hierarchy ?? Hierarchy.from(value.value)
       if(Component.isComponent(value) || Operation.isOperation(value))
-        return value.hierarchy ?? NameHierarchy.create({ name: value.name });
+        return value.hierarchy ?? NameHierarchy.create({ name: value.name })
       if(LeafProduct.isLeafProduct(value))
         return NameHierarchy.create({
           name: `<${value.type.full}>`,
           linkedProducts: [Hash.create(value)],
-        });
+        })
       if(Product.isProduct(value))
         return NameHierarchy.create({
           name: `<${value.type}>`,
           linkedProducts: [Hash.create(value)],
-        });
+        })
     }
     if(value instanceof Array)
-      return ArrayHierarchy.from(value, raw);
-    return ObjectHierarchy.from(value as Record<string, unknown>, raw);
+      return ArrayHierarchy.from(value, raw)
+    return ObjectHierarchy.from(value as Record<string, unknown>, raw)
   },
-};
+}
 

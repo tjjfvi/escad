@@ -1,12 +1,12 @@
 
-import { Hash } from "./Hash";
+import { Hash } from "./Hash"
 
 export class HashMap<K, V> {
 
   private map = new Map<Hash<K>, V>();
 
   set(key: K, value: V){
-    this.map.set(Hash.create(key), value);
+    this.map.set(Hash.create(key), value)
     return this
   }
 
@@ -19,7 +19,7 @@ export class HashMap<K, V> {
   }
 
   clear(){
-    this.map.clear();
+    this.map.clear()
     return this
   }
 
@@ -28,11 +28,11 @@ export class HashMap<K, V> {
   }
 
   get size(){
-    return this.map.size;
+    return this.map.size
   }
 
   values(){
-    return this.map.values();
+    return this.map.values()
   }
 
 }

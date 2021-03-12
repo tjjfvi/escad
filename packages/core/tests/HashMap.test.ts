@@ -1,5 +1,5 @@
 
-import { HashMap } from "../src";
+import { HashMap } from "../src"
 
 test("HashMap", () => {
   const map = new HashMap()
@@ -8,7 +8,7 @@ test("HashMap", () => {
   map.set({ a: 1 }, 5)
   expect(map.has({ a: 1 })).toBe(true)
   expect(map.get({ a: 1 })).toBe(5)
-  map.clear();
+  map.clear()
   expect(map.has({ a: 1 })).toBe(false)
   expect(map.get({ a: 1 })).toBe(undefined)
   map.set({ a: 1 }, "x")
@@ -18,7 +18,7 @@ test("HashMap", () => {
   expect(map.get({ b: 1 })).toBe("42")
   expect(map.size).toBe(2)
   expect([...map.values()]).toEqual(["x", "42"])
-  map.delete({ b: 1 });
+  map.delete({ b: 1 })
   expect(map.get({ b: 1 })).toBe(undefined)
   expect(map.size).toBe(1)
 })

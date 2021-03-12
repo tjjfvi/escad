@@ -1,5 +1,5 @@
-import { Connection, createMessenger } from "@escad/messages";
-import { ServerBundlerMessenger } from "@escad/protocol";
+import { Connection, createMessenger } from "@escad/messages"
+import { ServerBundlerMessenger } from "@escad/protocol"
 
 export const createServerBundlerMessenger = (connection: Connection<unknown>): ServerBundlerMessenger =>
   createMessenger({}, connection)

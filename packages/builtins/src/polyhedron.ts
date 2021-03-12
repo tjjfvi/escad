@@ -1,7 +1,7 @@
 
-import { Mesh } from "./Mesh";
-import { Vector3 } from "./Vector3";
-import { Element, Component } from "@escad/core";
+import { Mesh } from "./Mesh"
+import { Vector3 } from "./Vector3"
+import { Element, Component } from "@escad/core"
 
 type PolyhedronVerts = Vector3[];
 type PolyhedronFaces = number[][];
@@ -19,4 +19,4 @@ export const polyhedron: Component<PolyhedronArgs, Element<Mesh>> =
         ? Mesh.fromVertsFaces(...args)
         : Mesh.fromVertsFaces(args[0].verts, args[0].faces),
     )
-  , { showOutputInHierarchy: false });
+  , { showOutputInHierarchy: false })

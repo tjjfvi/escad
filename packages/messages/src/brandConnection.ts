@@ -1,7 +1,7 @@
 
-import { Connection } from "./Connection";
-import { filterConnection } from "./filterConnection";
-import { mapConnection } from "./mapConnection";
+import { Connection } from "./Connection"
+import { filterConnection } from "./filterConnection"
+import { mapConnection } from "./mapConnection"
 
 export const brandConnection =
   (connection: Connection<unknown>, brand: string): Connection<unknown> =>

@@ -1,6 +1,6 @@
 
-import { checkTypeProperty } from "./checkTypeProperty";
-import { Product, _Product, ProductType } from "./Product";
+import { checkTypeProperty } from "./checkTypeProperty"
+import { Product, _Product, ProductType } from "./Product"
 
 export interface ArrayProduct<T extends Product = Product> extends _Product {
   readonly type: "ArrayProduct",
@@ -10,14 +10,14 @@ export interface ArrayProduct<T extends Product = Product> extends _Product {
 export const ArrayProduct = {
   create: <T extends Product>(children: readonly T[]): ArrayProduct<T> => {
     if(children.length === 0)
-      throw new Error("ArrayProducts cannot be empty");
-    const childProductType = Product.getProductType(children[0]);
+      throw new Error("ArrayProducts cannot be empty")
+    const childProductType = Product.getProductType(children[0])
     if(children.slice(1).some(x => !Product.isProduct(x, childProductType)))
-      throw new Error("ArrayProduct children must all be of the same product type");
+      throw new Error("ArrayProduct children must all be of the same product type")
     return {
       type: "ArrayProduct",
       children,
-    };
+    }
   },
   isArrayProduct: checkTypeProperty.string<ArrayProduct>("ArrayProduct"),
   getArrayProductType: <T extends ArrayProduct>(product: T): ArrayProductType<T> =>

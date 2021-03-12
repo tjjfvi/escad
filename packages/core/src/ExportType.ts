@@ -1,5 +1,5 @@
-import { ScopedId } from "./Id";
-import { Product, ProductType } from "./Product";
+import { ScopedId } from "./Id"
+import { Product, ProductType } from "./Product"
 
 export interface ExportType<P extends Product> {
   readonly id: ScopedId<"ExportType">,

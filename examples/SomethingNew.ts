@@ -24,7 +24,7 @@ export default (escad, p) => {
       step: .1,
       default: .3,
     },
-  ]);
+  ])
 
   const d = 32
   const t = .8
@@ -48,11 +48,11 @@ export default (escad, p) => {
     .diff(outer, negative)
     .rotate([0, 180, 0])
 
-  const out = shell;
+  const out = shell
 
-  console.log(parameters);
+  console.log(parameters)
   // return fractal(parameters.sideLength, parameters.adjustment, parameters.order);
   // return pyramid(parameters.sideLength, parameters.adjustment);
-  return out;
+  return out
 
 }

@@ -9,11 +9,11 @@ import {
   TupleProduct,
   TupleProductType,
   UnknownProduct,
-} from "../src";
+} from "../src"
 
-const productAId = Id.create(__filename, "@escad/core", "LeafProduct", "ProductA", "0");
-const productBId = Id.create(__filename, "@escad/core", "LeafProduct", "ProductB", "0");
-const productCId = Id.create(__filename, "@escad/core", "LeafProduct", "ProductC", "0");
+const productAId = Id.create(__filename, "@escad/core", "LeafProduct", "ProductA", "0")
+const productBId = Id.create(__filename, "@escad/core", "LeafProduct", "ProductB", "0")
+const productCId = Id.create(__filename, "@escad/core", "LeafProduct", "ProductC", "0")
 interface ProductA extends LeafProduct { readonly type: typeof productAId }
 interface ProductB extends LeafProduct { readonly type: typeof productBId }
 interface ProductC extends LeafProduct { readonly type: typeof productCId }
@@ -35,14 +35,14 @@ const ProductC = {
 
 describe("createLeafProductUtils", () => {
   test("Consistent keys", () => {
-    expect(Object.keys(ProductA)).toMatchSnapshot();
+    expect(Object.keys(ProductA)).toMatchSnapshot()
   })
   test(".productType", () => {
-    expect(ProductA.productType).toMatchSnapshot();
+    expect(ProductA.productType).toMatchSnapshot()
   })
   describe(".isProductA", () => {
-    const productA = ProductA.create();
-    const productB = ProductB.create();
+    const productA = ProductA.create()
+    const productB = ProductB.create()
     test("Matches productA", () => {
       expect(ProductA.isProductA(productA)).toEqual(true)
     })
@@ -50,8 +50,8 @@ describe("createLeafProductUtils", () => {
       expect(ProductA.isProductA(productB)).toEqual(false)
     })
     // Type guard
-    const product: ProductA | null = ProductA.isProductA(productB) ? productB : null;
-    product;
+    const product: ProductA | null = ProductA.isProductA(productB) ? productB : null
+    product
   })
 })
 
@@ -73,16 +73,16 @@ describe.each<readonly [string, () => Product]>([
   ["Complex", () => createProduct()],
 ] as const)("%s", (_, createProduct) => {
   test(".create", () => {
-    expect(createProduct()).toMatchSnapshot();
+    expect(createProduct()).toMatchSnapshot()
   })
   test("Product.isProduct", () => {
-    expect(Product.isProduct(createProduct())).toBe(true);
+    expect(Product.isProduct(createProduct())).toBe(true)
   })
   test("Product.getProductType", () => {
-    expect(Product.getProductType(createProduct())).toMatchSnapshot();
+    expect(Product.getProductType(createProduct())).toMatchSnapshot()
   })
   test("Product.isProduct with correct ProductType", () => {
-    expect(Product.isProduct(createProduct(), Product.getProductType(createProduct()))).toBe(true);
+    expect(Product.isProduct(createProduct(), Product.getProductType(createProduct()))).toBe(true)
   })
   describe("Product.isProduct with wrong ProductType", () => {
     test.each([
@@ -90,19 +90,19 @@ describe.each<readonly [string, () => Product]>([
       ["ArrayProduct<ProductC>", ArrayProductType.create(ProductC.productType)],
       ["TupleProduct<[ProductA, ProductC]>", TupleProductType.create([ProductA.productType, ProductC.productType])],
     ] as const)("%s", (_, productType) => {
-      expect(Product.isProduct(createProduct(), productType)).toBe(false);
+      expect(Product.isProduct(createProduct(), productType)).toBe(false)
     })
   })
 })
 
 describe("Product.getProductType", () => {
   test("Throw on invalid product", () => {
-    expect(() => Product.getProductType(null as never)).toThrowErrorMatchingSnapshot();
+    expect(() => Product.getProductType(null as never)).toThrowErrorMatchingSnapshot()
   })
 })
 
 describe("ArrayProduct.create", () => {
   test("Throws on []", () => {
-    expect(() => ArrayProduct.create([])).toThrowErrorMatchingSnapshot();
+    expect(() => ArrayProduct.create([])).toThrowErrorMatchingSnapshot()
   })
 })

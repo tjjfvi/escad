@@ -44,7 +44,7 @@ export const Vector3 = {
       a.z * b.x - a.x * b.z,
       a.x * b.y - a.y * b.x,
     ),
-};
+}
 
 function _createVector3(x: number, y: number, z: number): Vector3
 function _createVector3(xyz: [number, number, number]): Vector3
@@ -56,5 +56,5 @@ function _createVector3(x: number | { x: number, y: number, z: number } | [numbe
     else
       ({ x, y, z } = x)
 
-  return { x, y, z };
+  return { x, y, z }
 }

@@ -1,30 +1,30 @@
 
 import "../stylus/Preview.styl"
-import React, { useContext } from "react";
-import { viewerRegistry } from "./ViewerRegistry";
-import { observer, useObservable } from "rhobo";
-import { Product } from "@escad/core";
-import { Export } from "./Export";
-import { Viewer } from "./Viewer";
-import { ClientState } from "./ClientState";
+import React, { useContext } from "react"
+import { viewerRegistry } from "./ViewerRegistry"
+import { observer, useObservable } from "rhobo"
+import { Product } from "@escad/core"
+import { Export } from "./Export"
+import { Viewer } from "./Viewer"
+import { ClientState } from "./ClientState"
 
 export const Preview = observer(() => {
-  const state = useContext(ClientState.Context);
-  const products = state.products();
-  const viewerObs = useObservable.use<Viewer<any>>();
+  const state = useContext(ClientState.Context)
+  const products = state.products()
+  const viewerObs = useObservable.use<Viewer<any>>()
 
   if(!products.length)
     return <div className="Preview none">
       <span className="header">No products to display.</span>
     </div>
 
-  const productTypes = products.map(Product.getProductType);
-  const viewers = [...viewerRegistry.getConsumersForAll(productTypes)].sort((a, b) => b.weight - a.weight);
+  const productTypes = products.map(Product.getProductType)
+  const viewers = [...viewerRegistry.getConsumersForAll(productTypes)].sort((a, b) => b.weight - a.weight)
 
   if(!viewerObs.value || !viewers.includes(viewerObs.value))
-    viewerObs.value = viewers[0] ?? null;
+    viewerObs.value = viewers[0] ?? null
 
-  const viewer = viewerObs.value;
+  const viewer = viewerObs.value
 
   if(!viewer)
     return <div className="Preview none">
@@ -43,4 +43,4 @@ export const Preview = observer(() => {
       <Export/>
     </div>
   </div>
-});
+})

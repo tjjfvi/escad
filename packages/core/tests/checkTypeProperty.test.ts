@@ -1,8 +1,8 @@
 import { checkTypeProperty, Id } from "../src"
 
 describe("checkTypeProperty", () => {
-  const fnTrue = checkTypeProperty((v): v is unknown => true);
-  const fnFalse = checkTypeProperty((v): v is never => false);
+  const fnTrue = checkTypeProperty((v): v is unknown => true)
+  const fnFalse = checkTypeProperty((v): v is never => false)
 
   test("Doesn't match non-object", () => {
     expect(fnTrue(5)).toBe(false)
@@ -28,26 +28,26 @@ describe("checkTypeProperty", () => {
     expect(fnFalse({ type: "whatever" })).toBe(false)
     expect(fnFalse(Object.assign(() => {}, { type: "whatever" }))).toBe(false)
   })
-});
+})
 
 test("checkTypeProperty.string", () => {
-  expect(checkTypeProperty.string("test")({ type: "test" })).toBe(true);
-  expect(checkTypeProperty.string("test")({ type: "wrong" })).toBe(false);
+  expect(checkTypeProperty.string("test")({ type: "test" })).toBe(true)
+  expect(checkTypeProperty.string("test")({ type: "wrong" })).toBe(false)
 })
 
 test("checkTypeProperty.id", () => {
-  const testId = Id.create(__filename, "@escad/core", "Test", "ctpi", "0");
-  const wrongId = Id.create(__filename, "@escad/core", "Test", "ctpiw", "0");
-  expect(checkTypeProperty.id(testId)({ type: testId })).toBe(true);
-  expect(checkTypeProperty.id(testId)({ type: { ...testId } })).toBe(true);
-  expect(checkTypeProperty.id(testId)({ type: "wrong" })).toBe(false);
-  expect(checkTypeProperty.id(testId)({ type: wrongId })).toBe(false);
+  const testId = Id.create(__filename, "@escad/core", "Test", "ctpi", "0")
+  const wrongId = Id.create(__filename, "@escad/core", "Test", "ctpiw", "0")
+  expect(checkTypeProperty.id(testId)({ type: testId })).toBe(true)
+  expect(checkTypeProperty.id(testId)({ type: { ...testId } })).toBe(true)
+  expect(checkTypeProperty.id(testId)({ type: "wrong" })).toBe(false)
+  expect(checkTypeProperty.id(testId)({ type: wrongId })).toBe(false)
 })
 
 test("checkTypeProperty.idScope", () => {
-  const testId = Id.create(__filename, "@escad/core", "Test", "ctpis", "0");
-  const wrongId = Id.create(__filename, "@escad/core", "Wrong", "ctpis", "0");
-  expect(checkTypeProperty.idScope("Test")({ type: testId })).toBe(true);
-  expect(checkTypeProperty.idScope("Test")({ type: "wrong" })).toBe(false);
-  expect(checkTypeProperty.idScope("Test")({ type: wrongId })).toBe(false);
+  const testId = Id.create(__filename, "@escad/core", "Test", "ctpis", "0")
+  const wrongId = Id.create(__filename, "@escad/core", "Wrong", "ctpis", "0")
+  expect(checkTypeProperty.idScope("Test")({ type: testId })).toBe(true)
+  expect(checkTypeProperty.idScope("Test")({ type: "wrong" })).toBe(false)
+  expect(checkTypeProperty.idScope("Test")({ type: wrongId })).toBe(false)
 })

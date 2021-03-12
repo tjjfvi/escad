@@ -1,7 +1,7 @@
 
-import { Hash } from "./Hash";
-import { ScopedId } from "./Id";
-import { Product, ProductType } from "./Product";
+import { Hash } from "./Hash"
+import { ScopedId } from "./Id"
+import { Product, ProductType } from "./Product"
 
 export interface Conversion<A, B> {
   (value: A): B,
@@ -44,9 +44,9 @@ export type DirectConvertibleTo<T, C = ConversionsUnion> =
       : never
     : never
 
-export declare const __convertibleTo: unique symbol;
-export declare const __convertibleToOverride: unique symbol;
-export declare const __convertibleToTransitivityOverride: unique symbol;
+export declare const __convertibleTo: unique symbol
+export declare const __convertibleToOverride: unique symbol
+export declare const __convertibleToTransitivityOverride: unique symbol
 export type __convertibleTo = typeof __convertibleTo;
 export type __convertibleToOverride = typeof __convertibleToOverride;
 export type __convertibleToTransitivityOverride = typeof __convertibleToTransitivityOverride;

@@ -1,5 +1,5 @@
-import escad from "../packages/core";
-import "../packages/builtins/register";
+import escad from "../packages/core"
+import "../packages/builtins/register"
 
 function range(max: number): number[]
 function range(min: number, max: number): number[]
@@ -11,7 +11,7 @@ function range(...args: [number] | [number, number] | [number, number, number]):
       : args.length === 2
         ? [args[0], 1, args[1]]
         : args
-  return [...Array(Math.ceil((max - min) / interval))].map((_, i) => i * interval + min);
+  return [...Array(Math.ceil((max - min) / interval))].map((_, i) => i * interval + min)
 }
 
 export default () => {
@@ -29,7 +29,7 @@ export default () => {
     height = 100,
     translateMultiplier = 1.1,
     connectorHoleMultiplier = .25,
-    connectorStyle = "edge" as ConnectorStyle;
+    connectorStyle = "edge" as ConnectorStyle
 
   const subpiece = () =>
     escad
@@ -51,7 +51,7 @@ export default () => {
         subpiece().translate([0, 0, (angle % 180 ? 1 : -1) * (connectorHeight + thickness) / 2]),
       ).rotateZ(-angle),
     )),
-  });
+  })
 
   const connector = () => ({
     connector: escad.diff(
@@ -64,9 +64,9 @@ export default () => {
     ),
   })
 
-  let translateAmount = translateMultiplier * or;
+  let translateAmount = translateMultiplier * or
 
-  let tf = (n: number) => -Math.floor((n - or * 2) / translateAmount) * translateAmount / 2 - or;
+  let tf = (n: number) => -Math.floor((n - or * 2) / translateAmount) * translateAmount / 2 - or
 
   return escad
     .translate(tf(width), tf(height), 0)(

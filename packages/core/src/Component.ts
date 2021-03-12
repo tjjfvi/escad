@@ -1,11 +1,11 @@
 
-import { CallHierarchy } from "./CallHierarchy";
-import { checkTypeProperty } from "./checkTypeProperty";
-import { contextStack } from "./ContextStack";
-import { ExtensibleFunction } from "./ExtensibleFunction";
-import { Hierarchy } from "./Hierarchy";
-import { NameHierarchy } from "./NameHierarchy";
-import { Thing, StripRealm } from "./Thing";
+import { CallHierarchy } from "./CallHierarchy"
+import { checkTypeProperty } from "./checkTypeProperty"
+import { contextStack } from "./ContextStack"
+import { ExtensibleFunction } from "./ExtensibleFunction"
+import { Hierarchy } from "./Hierarchy"
+import { NameHierarchy } from "./NameHierarchy"
+import { Thing, StripRealm } from "./Thing"
 
 export interface Component<I extends any[], T extends Thing> {
   readonly type: "Component",
@@ -33,9 +33,9 @@ export const Component = {
     const that = Object.assign(
       new ExtensibleFunction(
         (...args: I) => {
-          const result = contextStack.wrap(() => func(...args));
-          const resultHierarchy = result.hierarchy;
-          let outputHierarchy = resultHierarchy;
+          const result = contextStack.wrap(() => func(...args))
+          const resultHierarchy = result.hierarchy
+          let outputHierarchy = resultHierarchy
           if(overrideHierarchy)
             outputHierarchy = CallHierarchy.create({
               operator: hierarchy ?? NameHierarchy.create({ name }),
@@ -43,8 +43,8 @@ export const Component = {
               result: resultHierarchy && showOutputInHierarchy ? resultHierarchy : undefined,
               composable: false,
               linkedProducts: Hierarchy.from(result).linkedProducts,
-            });
-          return Thing.applyHierarchy(result, outputHierarchy);
+            })
+          return Thing.applyHierarchy(result, outputHierarchy)
         },
         {},
         name,
@@ -55,7 +55,7 @@ export const Component = {
         overrideHierarchy,
         hierarchy,
       },
-    ) as Component<I, T>;
+    ) as Component<I, T>
     return that
   },
   applyHierarchy: <I extends any[], T extends Thing>(component: Component<I, T>, hierarchy?: Hierarchy) =>

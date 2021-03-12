@@ -1,21 +1,21 @@
 
 import "../../stylus/ClientFrame.styl"
-import { brandConnection, createMessenger, filterConnection, mapConnection } from "@escad/messages";
-import { createServerClientMessenger } from "@escad/server";
-import React, { useState } from "react";
-import { createBlob } from "../utils/createBlob";
-import { bundlerMessenger, rendererMessenger } from "./server";
-import { getClientURL } from "../utils/getClientURL";
-import { observer } from "rhobo";
-import { loadingStatuses } from "./initialize";
-import { artifactStore } from "./rendererWorker";
-import fs from "fs";
+import { brandConnection, createMessenger, filterConnection, mapConnection } from "@escad/messages"
+import { createServerClientMessenger } from "@escad/server"
+import React, { useState } from "react"
+import { createBlob } from "../utils/createBlob"
+import { bundlerMessenger, rendererMessenger } from "./server"
+import { getClientURL } from "../utils/getClientURL"
+import { observer } from "rhobo"
+import { loadingStatuses } from "./initialize"
+import { artifactStore } from "./rendererWorker"
+import fs from "fs"
 
 export const ClientFrame = observer(() => {
-  const [, setState] = useState({});
-  const src = getClientURL();
-  const lastWindow = React.useRef<Window>();
-  const onNewWindow = React.useRef<() => void>();
+  const [, setState] = useState({})
+  const src = getClientURL()
+  const lastWindow = React.useRef<Window>()
+  const onNewWindow = React.useRef<() => void>()
   if(!src) {
     bundlerMessenger.req.onBundle()[Symbol.asyncIterator]().next().then(() => setState({}))
     return <div className="ClientFrame loading">
@@ -23,22 +23,22 @@ export const ClientFrame = observer(() => {
       {loadingStatuses().map(({ text }, i) =>
         <span key={i}>{text}</span>,
       )}
-    </div>;
+    </div>
   }
   return <iframe
     src={src}
     onLoad={e => {
       if(e.currentTarget.src !== src)
-        e.currentTarget.src = src;
+        e.currentTarget.src = src
     }}
     className="ClientFrame"
     ref={iframe => {
-      if(!iframe) return;
+      if(!iframe) return
       // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-      const childWindow = iframe.contentWindow!;
+      const childWindow = iframe.contentWindow!
       if(childWindow !== lastWindow.current) {
-        onNewWindow.current?.();
-        lastWindow.current = childWindow;
+        onNewWindow.current?.()
+        lastWindow.current = childWindow
         const baseConnection = mapConnection(
           filterConnection({
             send: msg => childWindow.postMessage(msg, "*"),
@@ -47,17 +47,17 @@ export const ClientFrame = observer(() => {
           }, (ev: any): ev is unknown => ev.origin === location.origin),
           x => x,
           (ev: any) => ev.data,
-        );
+        )
         const clientMessenger = createServerClientMessenger(
           brandConnection(baseConnection, "client"),
           hash => createBlob(artifactStore.raw.get(hash) ?? Buffer.alloc(0)),
           rendererMessenger,
           bundlerMessenger,
-        );
+        )
         const saveMessenger = createMessenger<{ share(): Promise<void> }, {/**/}>({
           async share(){
-            const isProd = location.hostname === "escad.dev";
-            const createUrl = isProd ? "https://escad.run/create" : "/create";
+            const isProd = location.hostname === "escad.dev"
+            const createUrl = isProd ? "https://escad.run/create" : "/create"
             const response = await fetch(createUrl, {
               method: "POST",
               body: JSON.stringify({
@@ -68,8 +68,8 @@ export const ClientFrame = observer(() => {
               headers: {
                 "Content-Type": "application/json",
               },
-            }).then(r => r.json());
-            location = response.url;
+            }).then(r => r.json())
+            location = response.url
           },
         }, brandConnection(baseConnection, "share"))
         onNewWindow.current = () => {

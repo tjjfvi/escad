@@ -10,11 +10,11 @@ import {
   conversionRegistry,
   TupleProductType,
   ConvertibleOperation,
-} from "@escad/core";
-import { Face } from "./Face";
-import { Mesh } from "./Mesh";
+} from "@escad/core"
+import { Face } from "./Face"
+import { Mesh } from "./Mesh"
 
-const flipFacesMarkerId = Id.create(__filename, "@escad/builtins", "LeafProduct", "FlipFacesProduct", "0");
+const flipFacesMarkerId = Id.create(__filename, "@escad/builtins", "LeafProduct", "FlipFacesProduct", "0")
 
 export interface FlipFacesMarker extends LeafProduct {
   readonly type: typeof flipFacesMarkerId,
@@ -24,13 +24,13 @@ export const FlipFacesMarker = {
   create: () => ({ type: flipFacesMarkerId }),
   ...createLeafProductUtils<FlipFacesMarker, "FlipFacesProduct">(flipFacesMarkerId, "FlipFacesProduct"),
   id: flipFacesMarkerId,
-};
+}
 
 export type FlipFaces<T extends Product> = TupleProduct<readonly [FlipFacesMarker, T]>;
 export const FlipFaces = {
   create: <T extends Product>(p: T): FlipFaces<T> =>
     TupleProduct.create([FlipFacesMarker.create(), p]),
-};
+}
 
 declare global {
   namespace escad {
@@ -54,4 +54,4 @@ conversionRegistry.register<FlipFaces<Mesh>, Mesh>({
 })
 
 export const flip: ConvertibleOperation<Mesh, FlipFaces<Mesh>> =
-  mapOperation("flip", FlipFaces.create, { showOutputInHierarchy: false });
+  mapOperation("flip", FlipFaces.create, { showOutputInHierarchy: false })

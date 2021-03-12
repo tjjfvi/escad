@@ -1,11 +1,11 @@
 
-import React, { Fragment } from "react";
-import { LeafProductType, ArrayProductType, TupleProductType, ProductType } from "@escad/core";
-import { IdView } from "./IdView";
+import React, { Fragment } from "react"
+import { LeafProductType, ArrayProductType, TupleProductType, ProductType } from "@escad/core"
+import { IdView } from "./IdView"
 
 export const ProductTypeView = ({ productType }: { productType: ProductType }) => {
   if(LeafProductType.isLeafProductType(productType))
-    return <IdView id={productType.id}/>;
+    return <IdView id={productType.id}/>
   if(TupleProductType.isTupleProductType(productType))
     return <span className="ProductType">
       {"["}

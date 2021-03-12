@@ -1,6 +1,6 @@
 
-import { Id } from "@escad/core";
-import { Parameter } from "@escad/core";
+import { Id } from "@escad/core"
+import { Parameter } from "@escad/core"
 
 export interface NumberParamArgs {
   readonly defaultValue: number,
@@ -11,7 +11,7 @@ export interface NumberParamArgs {
   readonly integer?: boolean,
 }
 
-const numberParamId = Id.create(__filename, "@escad/builtins", "Parameter", "NumberParam", "0");
+const numberParamId = Id.create(__filename, "@escad/builtins", "Parameter", "NumberParam", "0")
 
 export interface NumberParam extends Parameter<number>, NumberParamArgs {
   readonly type: typeof numberParamId,
@@ -25,4 +25,4 @@ export const NumberParam = {
   id: numberParamId,
 }
 
-export const numberParam = NumberParam.create;
+export const numberParam = NumberParam.create

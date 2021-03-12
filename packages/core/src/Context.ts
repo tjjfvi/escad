@@ -1,6 +1,6 @@
 
-import { ScopedId } from "./Id";
-import { ContextStack, contextStack as defaultContextStack } from "./ContextStack";
+import { ScopedId } from "./Id"
+import { ContextStack, contextStack as defaultContextStack } from "./ContextStack"
 
 export class Context<T> {
 
@@ -15,13 +15,13 @@ export class Context<T> {
   }
 
   set(value: T){
-    this.contextStack.set(this.id, value);
+    this.contextStack.set(this.id, value)
   }
 
   wrap<U>(value: T, fn: () => U): U{
     return this.contextStack.wrap(() => {
-      this.set(value);
-      return fn();
+      this.set(value)
+      return fn()
     })
   }
 

@@ -1,21 +1,21 @@
 /* eslint-disable react/prop-types */
 
-import "../stylus/Viewer3d.styl";
+import "../stylus/Viewer3d.styl"
 
-import React, { useEffect } from "react";
-import { ViewerInput, Viewer } from "@escad/client";
+import React, { useEffect } from "react"
+import { ViewerInput, Viewer } from "@escad/client"
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-import * as t from "three";
-import { createScene } from "./createScene";
+import * as t from "three"
+import { createScene } from "./createScene"
 
 export interface Viewer3dInput extends ViewerInput {
   group: t.Group,
 }
 
-const s = createScene();
+const s = createScene()
 
 const Viewer3d = ({ inputs }: { inputs: Promise<Viewer3dInput>[] }) => {
-  let el: HTMLDivElement | null = null;
+  let el: HTMLDivElement | null = null
 
   const {
     scene,
@@ -31,29 +31,29 @@ const Viewer3d = ({ inputs }: { inputs: Promise<Viewer3dInput>[] }) => {
     orientRenderer,
     orientMouse,
     orientRaycast,
-  } = s;
+  } = s
 
-  let active = true;
+  let active = true
   useEffect(() => () => {
-    active = false;
-  });
+    active = false
+  })
 
-  inputGroup.remove(...inputGroup.children);
+  inputGroup.remove(...inputGroup.children)
   inputs.map(async i => {
-    const { group } = await i;
-    if(active) inputGroup.add(group);
-  });
+    const { group } = await i
+    if(active) inputGroup.add(group)
+  })
 
   function render(){
     if(!el)
-      return;
-    requestAnimationFrame(render);
+      return
+    requestAnimationFrame(render)
 
-    let width = el.clientWidth;
-    let height = el.clientHeight;
+    let width = el.clientWidth
+    let height = el.clientHeight
 
-    camera.aspect = width / height;
-    camera.updateProjectionMatrix();
+    camera.aspect = width / height
+    camera.updateProjectionMatrix()
 
     orthocamera.position
       .copy(camera.position)
@@ -61,79 +61,79 @@ const Viewer3d = ({ inputs }: { inputs: Promise<Viewer3dInput>[] }) => {
       .normalize()
       .multiplyScalar(10000)
       .add(controls.target)
-    orthocamera.quaternion.copy(camera.quaternion);
-    orthocamera.zoom = 1.73 / camera.position.clone().sub(controls.target).length();
-    orthocamera.left = orthocamera.bottom * width / height;
-    orthocamera.right = orthocamera.top * width / height;
-    orthocamera.updateProjectionMatrix();
+    orthocamera.quaternion.copy(camera.quaternion)
+    orthocamera.zoom = 1.73 / camera.position.clone().sub(controls.target).length()
+    orthocamera.left = orthocamera.bottom * width / height
+    orthocamera.right = orthocamera.top * width / height
+    orthocamera.updateProjectionMatrix()
 
-    centerSphere.position.copy(controls.target);
+    centerSphere.position.copy(controls.target)
     centerSphere.scale.set(1, 1, 1).multiplyScalar(camera.position.clone().sub(controls.target).length() / 100)
 
-    renderer.setSize(width, height);
-    renderer.render(scene, s.ortho ? orthocamera : camera);
-    orientCamera.position.copy(camera.position).sub(controls.target).normalize();
-    orientCamera.lookAt(0, 0, 0);
-    orientOrthocamera.position.copy(orientCamera.position);
-    orientOrthocamera.quaternion.copy(orientCamera.quaternion);
-    orientRenderer.render(orientScene, s.ortho ? orientOrthocamera : orientCamera);
-    orientRaycast(orientMouse);
+    renderer.setSize(width, height)
+    renderer.render(scene, s.ortho ? orthocamera : camera)
+    orientCamera.position.copy(camera.position).sub(controls.target).normalize()
+    orientCamera.lookAt(0, 0, 0)
+    orientOrthocamera.position.copy(orientCamera.position)
+    orientOrthocamera.quaternion.copy(orientCamera.quaternion)
+    orientRenderer.render(orientScene, s.ortho ? orientOrthocamera : orientCamera)
+    orientRaycast(orientMouse)
   }
 
   return <div className="Viewer3d" ref={newEl => {
-    el = newEl;
-    if(!el) return;
+    el = newEl
+    if(!el) return
 
-    el.appendChild(renderer.domElement);
-    el.appendChild(orientRenderer.domElement);
+    el.appendChild(renderer.domElement)
+    el.appendChild(orientRenderer.domElement)
 
     let handle = (event: MouseEvent) => {
-      let cel = orientRenderer.domElement;
-      let rect = cel.getBoundingClientRect();
-      orientMouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      orientMouse.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
-    };
+      let cel = orientRenderer.domElement
+      let rect = cel.getBoundingClientRect()
+      orientMouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+      orientMouse.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1)
+    }
     renderer.domElement.addEventListener("mousemove", handle, false)
     orientRenderer.domElement.addEventListener("mousemove", handle, false)
 
     orientRenderer.domElement.addEventListener("click", () => {
-      orientRaycast(orientMouse)(camera);
+      orientRaycast(orientMouse)(camera)
     })
 
     orientRenderer.domElement.addEventListener("contextmenu", (event: MouseEvent) => {
-      s.ortho = !s.ortho;
-      event.preventDefault();
+      s.ortho = !s.ortho
+      event.preventDefault()
     })
 
-    let raycaster = new t.Raycaster();
-    let mouse = new t.Vector2();
-    let sphere = new t.Mesh(new t.SphereBufferGeometry(1, 100, 100), new t.MeshNormalMaterial());
-    sphere.visible = false;
-    scene.add(sphere);
+    let raycaster = new t.Raycaster()
+    let mouse = new t.Vector2()
+    let sphere = new t.Mesh(new t.SphereBufferGeometry(1, 100, 100), new t.MeshNormalMaterial())
+    sphere.visible = false
+    scene.add(sphere)
     renderer.domElement.addEventListener("dblclick", (event: MouseEvent) => {
-      let cam = s.ortho ? orthocamera : camera;
+      let cam = s.ortho ? orthocamera : camera
       sphere.scale.set(1, 1, 1).multiplyScalar(cam.position.length() / 100)
-      sphere.updateMatrixWorld();
-      let cel = renderer.domElement;
-      let rect = cel.getBoundingClientRect();
-      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
-      mouse.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1);
-      raycaster.setFromCamera(mouse, cam);
-      let hits = raycaster.intersectObjects([inputGroup, sphere], true);
+      sphere.updateMatrixWorld()
+      let cel = renderer.domElement
+      let rect = cel.getBoundingClientRect()
+      mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1
+      mouse.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1)
+      raycaster.setFromCamera(mouse, cam)
+      let hits = raycaster.intersectObjects([inputGroup, sphere], true)
       for(let { object, point } of hits) {
         if(object.type !== "Mesh")
-          continue;
+          continue
         if(object === sphere)
-          point.set(0, 0, 0);
-        camera.position.add(point).sub(controls.target);
-        controls.target = point;
-        break;
+          point.set(0, 0, 0)
+        camera.position.add(point).sub(controls.target)
+        controls.target = point
+        break
       }
     })
-    orientRenderer.domElement.classList.add("orient");
+    orientRenderer.domElement.classList.add("orient")
 
-    render();
-  }}></div>;
+    render()
+  }}></div>
 }
 
 export const viewer3d: Viewer<Viewer3dInput> = {

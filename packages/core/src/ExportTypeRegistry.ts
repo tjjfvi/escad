@@ -1,16 +1,16 @@
 
 import { ExportType } from "./ExportType"
-import { artifactManager, ArtifactManager } from "./ArtifactManager";
-import { Id } from "./Id";
-import { ArtifactStore } from "./ArtifactStore";
-import { Product } from "./Product";
-import { conversionRegistry, ConversionRegistry } from "./ConversionRegistry";
-import { HashMap } from "./HashMap";
+import { artifactManager, ArtifactManager } from "./ArtifactManager"
+import { Id } from "./Id"
+import { ArtifactStore } from "./ArtifactStore"
+import { Product } from "./Product"
+import { conversionRegistry, ConversionRegistry } from "./ConversionRegistry"
+import { HashMap } from "./HashMap"
 
 export class ExportTypeRegistry {
 
   constructor(public artifactManager: ArtifactManager, public conversionRegistry: ConversionRegistry){
-    this.artifactManager.artifactStores.push(this.artifactStore);
+    this.artifactManager.artifactStores.push(this.artifactStore)
   }
 
   private registered = new HashMap<Id, ExportType<any>>();
@@ -18,28 +18,28 @@ export class ExportTypeRegistry {
   static readonly artifactStoreId = Id.create(__filename, "@escad/core", "ArtifactStore", "ExportTypeRegistry", "0");
   readonly artifactStore: ArtifactStore = {
     lookupRef: async ([id, exportTypeId, products], artifactManager) => {
-      if(!Id.isId(id) || !Id.equal(id, ExportTypeRegistry.artifactStoreId)) return null;
-      if(!Id.isId(exportTypeId)) return null;
-      const exportType = this.registered.get(exportTypeId);
-      if(!exportType) return null;
-      if(!(products instanceof Array) || !products.every(Product.isProduct)) return null;
+      if(!Id.isId(id) || !Id.equal(id, ExportTypeRegistry.artifactStoreId)) return null
+      if(!Id.isId(exportTypeId)) return null
+      const exportType = this.registered.get(exportTypeId)
+      if(!exportType) return null
+      if(!(products instanceof Array) || !products.every(Product.isProduct)) return null
       const convertedProducts = await Promise.all(products.map(p =>
         this.conversionRegistry.convertProduct(exportType.productType, p),
       ))
-      const exported = await exportType.export(convertedProducts);
-      await artifactManager.storeRef([id, exportTypeId, products], exported);
-      return exported;
+      const exported = await exportType.export(convertedProducts)
+      await artifactManager.storeRef([id, exportTypeId, products], exported)
+      return exported
     },
   }
 
   register<T extends Product>(exportType: ExportType<T>){
-    this.registered.set(exportType.id, exportType);
+    this.registered.set(exportType.id, exportType)
   }
 
   listRegistered(): Iterable<ExportType<any>>{
-    return this.registered.values();
+    return this.registered.values()
   }
 
 }
 
-export const exportTypeRegistry = new ExportTypeRegistry(artifactManager, conversionRegistry);
+export const exportTypeRegistry = new ExportTypeRegistry(artifactManager, conversionRegistry)

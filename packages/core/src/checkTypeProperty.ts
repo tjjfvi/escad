@@ -10,13 +10,13 @@ export const checkTypeProperty =
 checkTypeProperty.string = <T extends { type: string }>(type: T["type"]) =>
   checkTypeProperty((value): value is T["type"] =>
     value === type,
-  );
+  )
 
 checkTypeProperty.id = <T extends { type: Id }>(id: T["type"]) =>
   checkTypeProperty((value): value is T["type"] =>
     Id.isId(value)
     && Id.equal(value, id),
-  );
+  )
 
 checkTypeProperty.idScope =
   // eslint-disable-next-line @typescript-eslint/no-unused-vars

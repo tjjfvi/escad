@@ -1,7 +1,7 @@
 
-import React from "react";
-import { EditorPane } from "./EditorPane";
-import { ClientFrame } from "./ClientFrame";
+import React from "react"
+import { EditorPane } from "./EditorPane"
+import { ClientFrame } from "./ClientFrame"
 
 export const App = () =>
   <>

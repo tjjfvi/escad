@@ -1,2 +1,2 @@
 
-import "../dist/register";
+import "../dist/register"

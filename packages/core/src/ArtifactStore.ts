@@ -1,6 +1,6 @@
 
-import { ArtifactManager } from "./ArtifactManager";
-import { Hash } from "./Hash";
+import { ArtifactManager } from "./ArtifactManager"
+import { Hash } from "./Hash"
 
 export interface ArtifactStore {
   readonly storeRaw?: (hash: Hash<unknown>, buffer: Buffer, artifactManager: ArtifactManager) => Promise<void>,

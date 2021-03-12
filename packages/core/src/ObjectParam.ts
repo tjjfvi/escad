@@ -1,6 +1,6 @@
 
-import { Id } from "./Id";
-import { Parameter } from "./Parameter";
+import { Id } from "./Id"
+import { Parameter } from "./Parameter"
 
 export type ObjectParamGeneric = Record<string, Parameter<any>>;
 
@@ -8,7 +8,7 @@ export interface ObjectParamArgs<O extends ObjectParamGeneric> {
   readonly children: O,
 }
 
-const objectParamId = Id.create(__filename, "@escad/core", "Parameter", "ObjectParam", "0");
+const objectParamId = Id.create(__filename, "@escad/core", "Parameter", "ObjectParam", "0")
 
 export type ObjectParamValue<O extends ObjectParamGeneric> = {
   [K in keyof O]: O[K] extends Parameter<infer T> ? T : never;
@@ -25,14 +25,14 @@ export const ObjectParam = {
     defaultValue: mapObj(children, v => v.defaultValue) as any,
   }),
   id: objectParamId,
-};
+}
 
-export const objectParam = ObjectParam.create;
+export const objectParam = ObjectParam.create
 
 const mapObj = <O>(o: O, f: (v: O[keyof O], k: keyof O) => unknown): unknown =>
-  Object.assign({}, ...Object.entries(o).map(([k, v]: any) => ({ [k]: f(v, k) })));
+  Object.assign({}, ...Object.entries(o).map(([k, v]: any) => ({ [k]: f(v, k) })))
 
 const nameFromKey = (key: string) => {
-  let x = key.split(/([A-Z][A-Z]+)|(?=[A-Z])|(\d+)/).join(" ").replace(/ +/g, " ");
-  return x[0].toUpperCase() + x.slice(1);
+  let x = key.split(/([A-Z][A-Z]+)|(?=[A-Z])|(\d+)/).join(" ").replace(/ +/g, " ")
+  return x[0].toUpperCase() + x.slice(1)
 }

@@ -1,6 +1,6 @@
 
-import { Product, _Product } from "./Product";
-import { checkTypeProperty } from "./checkTypeProperty";
+import { Product, _Product } from "./Product"
+import { checkTypeProperty } from "./checkTypeProperty"
 
 export interface UnknownProduct extends _Product {
   readonly type: "UnknownProduct",
@@ -13,7 +13,7 @@ export const UnknownProduct = {
     product,
   }),
   isUnknownProduct: checkTypeProperty.string<UnknownProduct>("UnknownProduct"),
-};
+}
 
 export interface UnknownProductType {
   readonly type: "UnknownProductType",

@@ -172,6 +172,9 @@ rules:
     - warn
   semi-style:
     - warn
+  semi:
+    - warn
+    - never
   space-before-blocks:
     - warn
     - functions: never

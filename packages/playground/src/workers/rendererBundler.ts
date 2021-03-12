@@ -1,16 +1,16 @@
 
-import "../main/initialize";
-import webpack from "webpack";
-import fs from "fs";
+import "../main/initialize"
+import webpack from "webpack"
+import fs from "fs"
 import NodePolyfillPlugin from "node-polyfill-webpack-plugin"
-import rendererSource from "!!raw-loader!./renderer.js";
-import { getResourceFilePath } from "../utils/resourceFiles";
-import { brandConnection, createMessenger, workerConnection } from "@escad/messages";
-import { promisify } from "util";
+import rendererSource from "!!raw-loader!./renderer.js"
+import { getResourceFilePath } from "../utils/resourceFiles"
+import { brandConnection, createMessenger, workerConnection } from "@escad/messages"
+import { promisify } from "util"
 import { ModuleKind, ModuleResolutionKind, ScriptTarget, transpileModule } from "typescript"
-import { fsPromise } from "../main/initialize";
-import fakeImportAllEscadSource from "!!raw-loader!../utils/fakeImportAllEscad.js";
-import { mapModuleIds } from "../utils/mapModuleIds";
+import { fsPromise } from "../main/initialize"
+import fakeImportAllEscadSource from "!!raw-loader!../utils/fakeImportAllEscad.js"
+import { mapModuleIds } from "../utils/mapModuleIds"
 
 export type RendererBundlerMessengerShape = {
   bundle: () => Promise<void>,
@@ -51,16 +51,16 @@ const compiler = webpack({
 })
 
 // @ts-ignore
-compiler.inputFileSystem.join = fs.join;
+compiler.inputFileSystem.join = fs.join
 
 const run = promisify(compiler.run.bind(compiler))
-const writeFile = promisify(fs.writeFile);
-const readFile = promisify(fs.readFile);
+const writeFile = promisify(fs.writeFile)
+const readFile = promisify(fs.readFile)
 
 createMessenger<RendererBundlerMessengerShape, {/**/}>({
   bundle: async () => {
-    await fsPromise;
-    const orig = await readFile("/project/index.ts", "utf8");
+    await fsPromise
+    const orig = await readFile("/project/index.ts", "utf8")
     const transpiled = transpileModule(orig, {
       compilerOptions: {
         strict: true,
@@ -71,7 +71,7 @@ createMessenger<RendererBundlerMessengerShape, {/**/}>({
         module: ModuleKind.CommonJS,
       },
     }).outputText
-    await writeFile("/project/index.js", transpiled);
-    await run();
+    await writeFile("/project/index.js", transpiled)
+    await run()
   },
-}, brandConnection(workerConnection(self as any), "rendererBundler"));
+}, brandConnection(workerConnection(self as any), "rendererBundler"))

@@ -1,5 +1,5 @@
-import { checkTypeProperty } from "./checkTypeProperty";
-import { ScopedId } from "./Id";
+import { checkTypeProperty } from "./checkTypeProperty"
+import { ScopedId } from "./Id"
 
 export interface Parameter<V> {
   readonly type: ScopedId<"Parameter">,

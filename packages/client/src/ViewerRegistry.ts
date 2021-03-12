@@ -1,7 +1,7 @@
 
-import { Viewer, ViewerInput } from "./Viewer";
-import { conversionRegistry, Product } from "@escad/core";
-import { ProductConsumer, ProductConsumerRegistry } from "./ProductConsumerRegistry";
+import { Viewer, ViewerInput } from "./Viewer"
+import { conversionRegistry, Product } from "@escad/core"
+import { ProductConsumer, ProductConsumerRegistry } from "./ProductConsumerRegistry"
 
 export type ViewerRegistration<P extends Product, T extends ViewerInput> = ProductConsumer<P, T, Viewer<T>>
 
@@ -13,4 +13,4 @@ export class ViewerRegistry extends ProductConsumerRegistry<ViewerRegistration<a
 
 }
 
-export const viewerRegistry = new ViewerRegistry(conversionRegistry);
+export const viewerRegistry = new ViewerRegistry(conversionRegistry)

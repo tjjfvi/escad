@@ -19,16 +19,16 @@ export class Stack<T> {
   }
 
   pop(){
-    const value = this.list?.value;
-    this.list = this.list?.next;
-    return value;
+    const value = this.list?.value
+    this.list = this.list?.next
+    return value
   }
 
   *[Symbol.iterator](){
     while(this.list) {
-      const value = this.list.value;
-      this.list = this.list.next;
-      yield value;
+      const value = this.list.value
+      this.list = this.list.next
+      yield value
     }
   }
 

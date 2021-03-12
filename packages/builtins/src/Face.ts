@@ -1,6 +1,6 @@
 
-import { Vector3 } from "./Vector3";
-import { Plane } from "./Plane";
+import { Vector3 } from "./Vector3"
+import { Plane } from "./Plane"
 
 export interface Face {
   readonly points: readonly Vector3[],

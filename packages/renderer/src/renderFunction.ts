@@ -9,4 +9,4 @@ export class RenderFunction<O extends ObjectParamGeneric> {
 export const renderFunction = (
   <O extends ObjectParamGeneric>(paramDef: O, func: (params: ObjectParamValue<O>) => Elementish<any>) =>
     new RenderFunction(paramDef, func)
-);
+)

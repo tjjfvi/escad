@@ -1,5 +1,5 @@
-import { Component, ConvertibleElement, Realm } from "../packages/core/dist";
-import builtinChainables, { Mesh } from "../packages/builtins/dist";
+import { Component, ConvertibleElement, Realm } from "../packages/core/dist"
+import builtinChainables, { Mesh } from "../packages/builtins/dist"
 
 const escad = Realm.create(() => ({
   ...builtinChainables,
@@ -17,9 +17,9 @@ type XYZ = [number, number, number];
 
 const beam =
   Component.create("beam", (orientation: BeamOrientation, length: number, xyz: XYZ): ConvertibleElement<Mesh> => {
-    let [x, y, z] = "xyz".split("").map(n => orientation[0] === n ? length : orientation[1] === n ? 3.5 : 1.5);
-    return escad.cube({ x, y, z }).translate(...xyz);
-  });
+    let [x, y, z] = "xyz".split("").map(n => orientation[0] === n ? length : orientation[1] === n ? 3.5 : 1.5)
+    return escad.cube({ x, y, z }).translate(...xyz)
+  })
 
 const bracket =
   Component.create("bracket", (orientation: BracketOrientation, xyz: XYZ): ConvertibleElement<Mesh> => {
@@ -49,13 +49,13 @@ const bracket =
       "Zy": [0, 90, 0],
       "zY": [0, 90, 180],
       "ZY": [0, -90, 180],
-    };
-    const rot = obj[orientation];
+    }
+    const rot = obj[orientation]
     return escad.union(
       escad.cube({ size: [1, .1, 1], center: [false, true, true] }).translateX(-.05),
       escad.cube({ size: [.1, 1, 1], center: [true, false, true] }).translateY(-.05),
-    ).translate([.05, .05, 0]).rotate(rot).translate(...xyz);
-  });
+    ).translate([.05, .05, 0]).rotate(rot).translate(...xyz)
+  })
 
 export default () => {
   const legs =
@@ -149,6 +149,6 @@ export default () => {
     left,
     right: left.scale(1, -1, 1),
     verts,
-  });
+  })
 
 }

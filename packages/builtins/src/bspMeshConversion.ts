@@ -1,7 +1,7 @@
 
-import { Conversion, conversionRegistry, Id } from "@escad/core";
-import { Mesh } from "./Mesh";
-import { Bsp } from "./Bsp";
+import { Conversion, conversionRegistry, Id } from "@escad/core"
+import { Mesh } from "./Mesh"
+import { Bsp } from "./Bsp"
 
 declare global {
   namespace escad {

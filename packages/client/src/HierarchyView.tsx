@@ -7,23 +7,23 @@ import {
   ObjectHierarchy,
   NameHierarchy,
   ValueHierarchy,
-} from "@escad/core";
-import React, { useContext, useRef, useState } from "react";
-import { useObservable } from "rhobo";
-import { ClientState } from "./ClientState";
+} from "@escad/core"
+import React, { useContext, useRef, useState } from "react"
+import { useObservable } from "rhobo"
+import { ClientState } from "./ClientState"
 import { ResizeSensor } from "css-element-queries"
 
 export const HierarchyView = ({ hierarchy }: { hierarchy: Hierarchy }) => {
-  const [width, setWidth] = useState<number>(0);
-  const sensorRef = useRef<ResizeSensor>();
+  const [width, setWidth] = useState<number>(0)
+  const sensorRef = useRef<ResizeSensor>()
   return <div
     ref={el => {
-      sensorRef.current?.detach();
-      if(!el) return;
+      sensorRef.current?.detach()
+      if(!el) return
       const sensor = new ResizeSensor(el, () => {
-        setWidth(el.clientWidth);
-      });
-      sensorRef.current = sensor;
+        setWidth(el.clientWidth)
+      })
+      sensorRef.current = sensor
     }}
   >
     <Tree
@@ -34,19 +34,19 @@ export const HierarchyView = ({ hierarchy }: { hierarchy: Hierarchy }) => {
 }
 
 const Arrow = ({ state, onClick }: { state: "open" | "closed" | "leaf", onClick?: () => void }) =>
-  <div className={ "arrow " + state } onClick={onClick}></div>;
+  <div className={ "arrow " + state } onClick={onClick}></div>
 
-const arrowWidth = 25;
-const characterWidth = 10;
+const arrowWidth = 25
+const characterWidth = 10
 
 const Tree = ({ tree, width }: { tree: Tree, width: number }) => {
-  const [, _update] = useState({});
-  const update = () => _update({});
-  const innerWidth = width - arrowWidth;
-  const maxLength = innerWidth / characterWidth;
+  const [, _update] = useState({})
+  const update = () => _update({})
+  const innerWidth = width - arrowWidth
+  const maxLength = innerWidth / characterWidth
 
-  const collapsedTree = fullyCollapseTree(tree, maxLength, update);
-  const joinedCollapsedTree = joinTree(collapsedTree, update);
+  const collapsedTree = fullyCollapseTree(tree, maxLength, update)
+  const joinedCollapsedTree = joinTree(collapsedTree, update)
 
   if(
     joinedCollapsedTree.length !== 1
@@ -59,8 +59,8 @@ const Tree = ({ tree, width }: { tree: Tree, width: number }) => {
           return <div className="children" key={i}>
             {x.children.map((y, i) => <Tree width={innerWidth} tree={y} key={i}/>)}
           </div>
-        const next = a[i + 1];
-        const state = !next || "text" in next ? null : next.state;
+        const next = a[i + 1]
+        const state = !next || "text" in next ? null : next.state
         return <div className="line" key={i}>
           {state ? <Arrow state="open" onClick={() => (state.open = false, update())}/> : <Arrow state="leaf"/>}
           <TreeText str={x.text}/>
@@ -68,14 +68,14 @@ const Tree = ({ tree, width }: { tree: Tree, width: number }) => {
       })}
     </div>
 
-  const sections = fullyCollapseTree(tree, maxLength, update, true).filter(x => "children" in x);
+  const sections = fullyCollapseTree(tree, maxLength, update, true).filter(x => "children" in x)
 
   return <div className="TreeNode"><div className="line">
     {
       sections.length
         ? <Arrow state="closed" onClick={() => {
-          sections.forEach(x => "children" in x && (x.state.open = true));
-          update();
+          sections.forEach(x => "children" in x && (x.state.open = true))
+          update()
         }}/>
         : <Arrow state="leaf"/>
     }
@@ -86,17 +86,17 @@ const Tree = ({ tree, width }: { tree: Tree, width: number }) => {
 const TreeTextPart = ({ children, className, onClick }:TreeTextPartProps) => {
   const handleHover = (e: React.MouseEvent) => {
     if(!onClick) return
-    const value = e.type === "mousemove" && !e.defaultPrevented;
-    if(hovered.value !== value) hovered(value);
-    e.preventDefault();
+    const value = e.type === "mousemove" && !e.defaultPrevented
+    if(hovered.value !== value) hovered(value)
+    e.preventDefault()
   }
   const hovered = useObservable.use(false)
   return <span {...{
     className: (className ?? "") + (hovered() ? " hover" : ""),
     onClick: e => {
       if(!onClick) return
-      e.stopPropagation();
-      onClick();
+      e.stopPropagation()
+      onClick()
     },
     onMouseMove: handleHover,
     onMouseLeave: handleHover,
@@ -106,7 +106,7 @@ const TreeTextPart = ({ children, className, onClick }:TreeTextPartProps) => {
 }
 
 const TreeText = ({ str }: { str: TreeText}) => {
-  const state = useContext(ClientState.Context);
+  const state = useContext(ClientState.Context)
   return <span>{
     str.reduce(([a, b, ...c], d, i) =>
       typeof d === "string"
@@ -150,7 +150,7 @@ type TreeTextPartProps = {
 
 function wrapLinkedProducts(hierarchy: Hierarchy, tree: Tree): Tree{
   if(!hierarchy.linkedProducts || !hierarchy.linkedProducts.length)
-    return tree;
+    return tree
   return [
     { text: [{ open: true }] },
     ...tree,
@@ -159,17 +159,17 @@ function wrapLinkedProducts(hierarchy: Hierarchy, tree: Tree): Tree{
   ]
 }
 
-const hierarchyTreeMemo = new WeakMap<Hierarchy, Tree>();
+const hierarchyTreeMemo = new WeakMap<Hierarchy, Tree>()
 
 function hierarchyToTree(hierarchy: Hierarchy): Tree{
-  const tree = hierarchyTreeMemo.get(hierarchy) ?? wrapLinkedProducts(hierarchy, _hierarchyToTree(hierarchy));
-  hierarchyTreeMemo.set(hierarchy, tree);
-  return tree;
+  const tree = hierarchyTreeMemo.get(hierarchy) ?? wrapLinkedProducts(hierarchy, _hierarchyToTree(hierarchy))
+  hierarchyTreeMemo.set(hierarchy, tree)
+  return tree
 }
 
 function _hierarchyToTree(hierarchy: Hierarchy): Tree{
   if(NameHierarchy.isNameHierarchy(hierarchy))
-    return [{ text: [hierarchy.name] }];
+    return [{ text: [hierarchy.name] }]
   if(ValueHierarchy.isValueHierarchy(hierarchy))
     return [{
       text: [(
@@ -181,7 +181,7 @@ function _hierarchyToTree(hierarchy: Hierarchy): Tree{
               : `Symbol(${hierarchy.value ?? ""})`
             : JSON.stringify(hierarchy.value)
       )],
-    }];
+    }]
   if(LabeledHierarchy.isLabeledHierarchy(hierarchy))
     return [
       { text: [hierarchy.label + ": "] },
@@ -221,11 +221,11 @@ function _hierarchyToTree(hierarchy: Hierarchy): Tree{
           },
         ] : []),
       ]
-    const operators: Tree[] = [];
-    let operands: Hierarchy[] = [hierarchy];
+    const operators: Tree[] = []
+    let operands: Hierarchy[] = [hierarchy]
     while(operands.length === 1 && CallHierarchy.isCallHierarchy(operands[0]) && operands[0].composable) {
-      const [curHierarchy] = operands;
-      operands = curHierarchy.operands;
+      const [curHierarchy] = operands
+      operands = curHierarchy.operands
       operators.push([
         ...hierarchyToTree({
           ...curHierarchy.operator,
@@ -261,7 +261,7 @@ function _hierarchyToTree(hierarchy: Hierarchy): Tree{
       ]),
     ]
   }
-  assertNever(hierarchy);
+  assertNever(hierarchy)
 }
 
 function collapseTree(tree: Tree, onUpdate?: () => void, noSingle = false): Tree{
@@ -287,12 +287,12 @@ function collapseTree(tree: Tree, onUpdate?: () => void, noSingle = false): Tree
       : [...inner, { text: [] }]
   return tree.flatMap(part => {
     if("text" in part || part.state.open || part.forceEllipsis)
-      return [part];
+      return [part]
     if(part.children.length === 1 && !(noSingle && part.forceOpenable))
-      return wrapMaybeForceOpenable(part, part.children[0]);
+      return wrapMaybeForceOpenable(part, part.children[0])
     if(!noSingle)
-      return wrapMaybeForceOpenable(part, [...interleave(part.children, { text: [part.joiner ?? ""] })].flat());
-    return [part];
+      return wrapMaybeForceOpenable(part, [...interleave(part.children, { text: [part.joiner ?? ""] })].flat())
+    return [part]
   })
 }
 
@@ -307,7 +307,7 @@ function joinTree(tree: Tree, onUpdate?: () => void){
           onClick: () => (c.state.open = true, onUpdate?.()),
           className: "openable",
         }]]
-  , [[], []]);
+  , [[], []])
   const t = [...r, { text: s }].filter(x => "children" in x || x.text.some(x => typeof x === "string" && x.length))
   return t.map(x => !("text" in x) ? x : {
     text: t.flatMap(y => "text" in y ? x === y ? y.text : y.text.filter(x => typeof x === "object") : []),
@@ -315,36 +315,36 @@ function joinTree(tree: Tree, onUpdate?: () => void){
 }
 
 function validTree(tree: Tree, maxLength: number){
-  return joinTree(tree).every(x => "text" in x ? length(x.text) <= maxLength : true);
+  return joinTree(tree).every(x => "text" in x ? length(x.text) <= maxLength : true)
 }
 
 function fullyCollapseTree(tree: Tree, maxLength: number, onUpdate?: () => void, noSingle = false){
-  let last = tree;
-  let cur = collapseTree(tree, onUpdate, noSingle);
+  let last = tree
+  let cur = collapseTree(tree, onUpdate, noSingle)
   while(cur.length !== last.length && validTree(cur, maxLength)) {
-    last = cur;
+    last = cur
     cur = collapseTree(cur, onUpdate, noSingle)
   }
-  return last;
+  return last
 }
 
 function* interleave<T, U>(iterable: Iterable<T>, separator: U): Iterable<T | U>{
-  let first = true;
+  let first = true
   for(const value of iterable) {
     if(!first) yield separator
-    yield value;
-    first = false;
+    yield value
+    first = false
   }
 }
 
 function assertNever(value: never): never{
-  throw new Error("Expected never, got " + value);
+  throw new Error("Expected never, got " + value)
 }
 
 function length(str: TreeText): number{
   return str.map(x => {
     if(typeof x === "string")
       return x.length
-    return 0;
-  }).reduce((a, b) => a + b, 0);
+    return 0
+  }).reduce((a, b) => a + b, 0)
 }

@@ -1,5 +1,5 @@
 
-import { Id } from "./Id";
+import { Id } from "./Id"
 
 export class ContextStack {
 
@@ -7,11 +7,11 @@ export class ContextStack {
   private contextMap = this.root;
 
   wrap<U>(fn: () => U): U{
-    const orig = this.contextMap;
-    this.contextMap = Object.create(this.contextMap);
-    const result = fn();
-    this.contextMap = orig;
-    return result;
+    const orig = this.contextMap
+    this.contextMap = Object.create(this.contextMap)
+    const result = fn()
+    this.contextMap = orig
+    return result
   }
 
   get(id: Id): unknown{
@@ -19,9 +19,9 @@ export class ContextStack {
   }
 
   set(id: Id, value: unknown){
-    this.contextMap[id.full] = value;
+    this.contextMap[id.full] = value
   }
 
 }
 
-export const contextStack = new ContextStack();
+export const contextStack = new ContextStack()

@@ -1,10 +1,10 @@
 
 import { Matrix4 } from "./Matrix4"
-import { Component, mapOperation, ConvertibleOperation } from "@escad/core";
-import { Transformation } from "./Transformation";
-import { Mesh } from "./Mesh";
+import { Component, mapOperation, ConvertibleOperation } from "@escad/core"
+import { Transformation } from "./Transformation"
+import { Mesh } from "./Mesh"
 
-const tau = Math.PI * 2;
+const tau = Math.PI * 2
 
 type RotateOpts = { unit?: "radians" | "rad" | "degrees" | "deg" };
 type RotateArgs =
@@ -15,7 +15,7 @@ type RotateArgs =
 
 export const rotate: Component<RotateArgs, ConvertibleOperation<Mesh, Transformation<Mesh>>> =
   Component.create("rotate", (...args: RotateArgs) => {
-    let [first] = args;
+    let [first] = args
     let triple =
     args.length === 3
       ? args
@@ -32,30 +32,30 @@ export const rotate: Component<RotateArgs, ConvertibleOperation<Mesh, Transforma
           : typeof first === "object" && "unit" in first
             ? first
             : undefined
-    let arr = triple instanceof Array ? triple : [triple.x ?? 0, triple.y ?? 0, triple.z ?? 0] as const;
+    let arr = triple instanceof Array ? triple : [triple.x ?? 0, triple.y ?? 0, triple.z ?? 0] as const
 
-    let [x, y, z] = arr;
+    let [x, y, z] = arr
 
-    let { unit = "deg" } = opts ?? {};
-    let radians = unit === "rad" || unit === "radians";
+    let { unit = "deg" } = opts ?? {}
+    let radians = unit === "rad" || unit === "radians"
     let multiplier = radians ? 1 : tau / 360
 
-    x *= multiplier;
-    y *= multiplier;
-    z *= multiplier;
+    x *= multiplier
+    y *= multiplier
+    z *= multiplier
 
-    let m = Matrix4.multiply(Matrix4.multiply(Matrix4.rotateX(x), Matrix4.rotateY(y)), Matrix4.rotateZ(z));
+    let m = Matrix4.multiply(Matrix4.multiply(Matrix4.rotateX(x), Matrix4.rotateY(y)), Matrix4.rotateZ(z))
 
-    return mapOperation("rotate", leaf => Transformation.create(m, leaf), { showOutputInHierarchy: false });
-  }, { showOutputInHierarchy: false });
+    return mapOperation("rotate", leaf => Transformation.create(m, leaf), { showOutputInHierarchy: false })
+  }, { showOutputInHierarchy: false })
 
 export const rX: Component<[number], ConvertibleOperation<Mesh, Transformation<Mesh>>> =
-  Component.create("rX", (n: number) => rotate({ x: n }), { showOutputInHierarchy: false });
+  Component.create("rX", (n: number) => rotate({ x: n }), { showOutputInHierarchy: false })
 export const rY: Component<[number], ConvertibleOperation<Mesh, Transformation<Mesh>>> =
-  Component.create("rY", (n: number) => rotate({ y: n }), { showOutputInHierarchy: false });
+  Component.create("rY", (n: number) => rotate({ y: n }), { showOutputInHierarchy: false })
 export const rZ: Component<[number], ConvertibleOperation<Mesh, Transformation<Mesh>>> =
-  Component.create("rZ", (n: number) => rotate({ z: n }), { showOutputInHierarchy: false });
+  Component.create("rZ", (n: number) => rotate({ z: n }), { showOutputInHierarchy: false })
 
-export const rotateX = rX;
-export const rotateY = rY;
-export const rotateZ = rZ;
+export const rotateX = rX
+export const rotateY = rY
+export const rotateZ = rZ

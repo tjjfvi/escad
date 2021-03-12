@@ -12,10 +12,10 @@ import {
   ArrayProductType,
   ConvertibleOperation,
   Operation,
-} from "@escad/core";
-import { Mesh } from "./Mesh";
+} from "@escad/core"
+import { Mesh } from "./Mesh"
 
-const meldMarkerId = Id.create(__filename, "@escad/builtins", "LeafProduct", "MeldMarker", "0");
+const meldMarkerId = Id.create(__filename, "@escad/builtins", "LeafProduct", "MeldMarker", "0")
 
 export interface MeldMarker extends LeafProduct {
   readonly type: typeof meldMarkerId,
@@ -25,13 +25,13 @@ export const MeldMarker = {
   id: meldMarkerId,
   create: (): MeldMarker => ({ type: meldMarkerId }),
   ...createLeafProductUtils<MeldMarker, "MeldMarker">(meldMarkerId, "MeldMarker"),
-};
+}
 
 export type Meld<T extends ArrayProduct | TupleProduct> = TupleProduct<[MeldMarker, T]>;
 export const Meld = {
   create: <T extends ArrayProduct | TupleProduct>(children: T): Meld<T> =>
     TupleProduct.create([MeldMarker.create(), children]),
-};
+}
 
 declare global {
   namespace escad {
@@ -56,4 +56,4 @@ export const meld: ConvertibleOperation<Mesh, Mesh> = (
   Operation.create("meld", el =>
     Meld.create(TupleProduct.create(Element.toArrayFlat(el)))
   , { showOutputInHierarchy: false })
-);
+)

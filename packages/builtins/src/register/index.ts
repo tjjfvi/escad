@@ -1,6 +1,6 @@
 
-import "..";
-import { extendChainables } from "@escad/core";
+import ".."
+import { extendChainables } from "@escad/core"
 import chainables from "../chainables"
 
 type Chainables = typeof chainables;
@@ -11,4 +11,4 @@ declare global {
   }
 }
 
-extendChainables(chainables);
+extendChainables(chainables)

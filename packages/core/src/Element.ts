@@ -1,9 +1,9 @@
 
-import { Hierarchy } from "./Hierarchy";
-import { Product } from "./Product";
-import { ConvertibleTo } from "./Conversions";
-import { checkTypeProperty } from "./checkTypeProperty";
-import { artifactManager } from "./ArtifactManager";
+import { Hierarchy } from "./Hierarchy"
+import { Product } from "./Product"
+import { ConvertibleTo } from "./Conversions"
+import { checkTypeProperty } from "./checkTypeProperty"
+import { artifactManager } from "./ArtifactManager"
 
 interface ObjMap<T> {
   readonly [name: string]: T,
@@ -36,25 +36,25 @@ export interface Element<T extends Product> {
 
 export const Element = {
   create: <T extends Product>(elementish: Elementish<T>, hierarchy?: Hierarchy): Element<T> => {
-    let value: T | Arrayish<Element<T>>;
+    let value: T | Arrayish<Element<T>>
     if(Element.isElement(elementish)) {
-      hierarchy ??= elementish.hierarchy;
-      elementish = elementish.value;
+      hierarchy ??= elementish.hierarchy
+      elementish = elementish.value
     }
 
     if(elementish instanceof Array) {
-      value = elementish.map(x => Element.create(x));
+      value = elementish.map(x => Element.create(x))
       if(value.some(x => x.hierarchy))
-        hierarchy ??= Hierarchy.from(elementish);
+        hierarchy ??= Hierarchy.from(elementish)
     } else if(ObjMap.isObjMap(elementish)) {
       value = Object.fromEntries(Object.entries(elementish).map(([k, v]) => [k, Element.create(v)]))
       if(Object.values(value).some(x => x.hierarchy))
-        hierarchy ??= Hierarchy.from(elementish);
+        hierarchy ??= Hierarchy.from(elementish)
     } else if(Product.isProduct(elementish)) {
-      value = elementish;
-      artifactManager.storeRaw(value);
+      value = elementish
+      artifactManager.storeRaw(value)
     } else
-      throw new Error("Invalid elementish passed to Element");
+      throw new Error("Invalid elementish passed to Element")
 
     return {
       type: "Element",
@@ -63,32 +63,32 @@ export const Element = {
     }
   },
   toArray: <T extends Product>(element: Elementish<T>): Array<Element<T>> => {
-    element = Element.create(element);
+    element = Element.create(element)
     if(Array.isArray(element.value))
-      return element.value;
+      return element.value
     if(ObjMap.isObjMap(element.value))
-      return Object.values(element.value);
+      return Object.values(element.value)
     if(Product.isProduct(element.value))
-      return [element];
-    throw new Error("Invalid Element.val type");
+      return [element]
+    throw new Error("Invalid Element.val type")
   },
   toArrayDeep: <T extends Product>(element: Elementish<T>): DeepArray<T> | T => {
-    element = Element.create(element);
+    element = Element.create(element)
     if(Product.isProduct(element.value))
-      return element.value;
-    return Element.toArray(element).map(Element.toArrayDeep);
+      return element.value
+    return Element.toArray(element).map(Element.toArrayDeep)
   },
   toArrayFlat: <T extends Product>(element: Elementish<T>): T[] => {
-    element = Element.create(element);
+    element = Element.create(element)
     if(Product.isProduct(element.value))
-      return [element.value];
+      return [element.value]
     return Element.toArray(element).flatMap(Element.toArrayFlat)
   },
   concat:
     <T extends Product, U extends Product>(a: Element<T>, b: Element<U>): Element<T | U> => {
       let toArr = <T extends Product>(el: Element<T>): T[] =>
-      (Array.isArray(el) ? el.value : [el]) as never;
-      return Element.create([...toArr(a), ...toArr(b)]);
+      (Array.isArray(el) ? el.value : [el]) as never
+      return Element.create([...toArr(a), ...toArr(b)])
     },
   applyHierarchy: <T extends Product>(element: Element<T>, hierarchy?: Hierarchy): Element<T> =>
     Element.create(element.value, hierarchy),
@@ -105,22 +105,22 @@ export const Element = {
     isRoot = true,
   ): Element<U> => {
     let createElement = (e: Elementish<U>) =>
-      Element.create(e, hierarchyGen(Element.create(e), element, Product.isProduct(element.value), isRoot));
+      Element.create(e, hierarchyGen(Element.create(e), element, Product.isProduct(element.value), isRoot))
 
     if(element.value instanceof Array)
-      return createElement(element.value.map(v => Element.map(Element.create(v), fn, hierarchyGen, false).value));
+      return createElement(element.value.map(v => Element.map(Element.create(v), fn, hierarchyGen, false).value))
 
     if(ObjMap.isObjMap(element.value))
       return createElement(Object.assign({}, ...Object.entries(element.value).map(([k, v]) => ({
         [k]: Element.isElement(v) ? Element.map(v as never, fn, hierarchyGen, false) : v,
-      }))));
+      }))))
 
     if(Product.isProduct(element.value))
-      return createElement(fn(element.value));
+      return createElement(fn(element.value))
 
     if(Element.isElement(element.value))
-      return createElement(Element.map(element.value, fn, hierarchyGen, false));
+      return createElement(Element.map(element.value, fn, hierarchyGen, false))
 
-    throw new Error("Invalid Element.val type");
+    throw new Error("Invalid Element.val type")
   },
 }

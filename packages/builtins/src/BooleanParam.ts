@@ -1,6 +1,6 @@
 
-import { Id } from "@escad/core";
-import { Parameter } from "@escad/core";
+import { Id } from "@escad/core"
+import { Parameter } from "@escad/core"
 
 export interface BooleanParamArgs {
   readonly defaultValue: boolean,
@@ -8,7 +8,7 @@ export interface BooleanParamArgs {
   readonly desc?: string,
 }
 
-const booleanParamId = Id.create(__filename, "@escad/builtins", "Parameter", "BooleanParam", "0");
+const booleanParamId = Id.create(__filename, "@escad/builtins", "Parameter", "BooleanParam", "0")
 
 export interface BooleanParam extends Parameter<boolean>, BooleanParamArgs {
   readonly type: typeof booleanParamId,
@@ -22,4 +22,4 @@ export const BooleanParam = {
   id: booleanParamId,
 }
 
-export const booleanParam = BooleanParam.create;
+export const booleanParam = BooleanParam.create

@@ -4,14 +4,14 @@ import webpack, { NormalModule } from "webpack"
 import CachedConstDependency = require("webpack/lib/dependencies/CachedConstDependency");
 import MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
 import NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
-import { stylusGlobals } from "@escad/bundler";
-import path from "path";
-import { mapModuleIds } from "../utils/mapModuleIds";
+import { stylusGlobals } from "@escad/bundler"
+import path from "path"
+import { mapModuleIds } from "../utils/mapModuleIds"
 
-export const staticDir = __dirname + "/../../static/";
-const bundledDir = staticDir + "bundled/";
+export const staticDir = __dirname + "/../../static/"
+const bundledDir = staticDir + "bundled/"
 
-const prefix = "/bundled/";
+const prefix = "/bundled/"
 
 export const compiler = webpack({
   entry: {
@@ -99,12 +99,12 @@ export const compiler = webpack({
                     JSON.stringify(fn(parser.state.module)),
                     expr.range,
                     expressionName,
-                  );
-                  dep.loc = expr.loc;
-                  parser.state.module.addPresentationalDependency(dep);
-                  return true;
-                });
-            };
+                  )
+                  dep.loc = expr.loc
+                  parser.state.module.addPresentationalDependency(dep)
+                  return true
+                })
+            }
 
             setModuleConstant("__filename", module =>
               path.resolve(prefix, path.relative(compiler.context, module.resource)),
@@ -115,10 +115,10 @@ export const compiler = webpack({
           }
           normalModuleFactory.hooks.parser
             .for("javascript/auto")
-            .tap("NodeStuffPlugin", handler);
+            .tap("NodeStuffPlugin", handler)
           normalModuleFactory.hooks.parser
             .for("javascript/dynamic")
-            .tap("NodeStuffPlugin", handler);
+            .tap("NodeStuffPlugin", handler)
         },
       )
     },

@@ -1,5 +1,5 @@
 
-import { Product } from "@escad/core";
+import { Product } from "@escad/core"
 
 export interface ViewerInput {
   product: Product,
