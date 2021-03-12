@@ -6,7 +6,7 @@ import { checkTypeProperty } from "./checkTypeProperty";
 import { ConvertibleTo } from "./Conversions";
 import { contextStack } from "./ContextStack";
 import { ExtensibleFunction } from "./ExtensibleFunction";
-import { CallHierarchy } from "./CalHierarchy";
+import { CallHierarchy } from "./CallHierarchy";
 import { NameHierarchy } from "./NameHierarchy";
 
 export type ConvertibleOperation<I extends Product, O extends Product> = Operation<ConvertibleTo<I>, ConvertibleTo<O>>;
