@@ -101,7 +101,8 @@ fs.mkdir = async (...args) => {
     dir = path.resolve(dir, child)
     try {
       await fsMkdirProm(dir, ...args.slice(1, -1))
-    } catch (e) {
+    }
+    catch (e) {
       if(e.code === "EEXIST") continue
       args[args.length - 1](e)
       return
@@ -170,7 +171,8 @@ function mkdirpSync(path: string){
   path.split("/").slice(1).map((_, i, a) => "/" + a.slice(0, i + 1).join("/")).map(x => {
     try {
       fs.mkdirSync(x)
-    } catch (e) {
+    }
+    catch (e) {
       e
     }
   })

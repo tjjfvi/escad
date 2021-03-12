@@ -124,7 +124,8 @@ export default () =>
     let content: string | undefined
     try {
       content = fs.readFileSync(file, "utf8")
-    } catch (e) {
+    }
+    catch (e) {
       e
     }
     if(content === undefined) {

@@ -47,7 +47,8 @@ export const Bsp = {
         nodeStack.push([mappedNode.back ?? null, mappedExtras[1]]).push([mappedNode.front ?? null, mappedExtras[0]])
         mappedNode.front = undefined
         mappedNode.back = undefined
-      } else if(mappedNode) {
+      }
+      else if(mappedNode) {
         mappedNode.front ??= null
         mappedNode.back ??= null
       }

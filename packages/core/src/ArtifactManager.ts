@@ -20,7 +20,8 @@ export class ArtifactManager {
     if(!(buffer instanceof Buffer)) return buffer
     try {
       return JSON.parse(buffer.toString("utf8"))
-    } catch (e) {
+    }
+    catch (e) {
       return buffer
     }
   }

@@ -79,7 +79,8 @@ export const createRendererServerMessenger = (
       let result
       try {
         result = await contextStack.wrap(() => func(params as never))
-      } catch (e) {
+      }
+      catch (e) {
         console.error(e)
         return { products: [], hierarchy: null }
       }

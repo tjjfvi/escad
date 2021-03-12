@@ -6,7 +6,8 @@ export function getClientURL(){
   let scriptURL: string
   try {
     scriptURL = createBlob(fs.readFileSync("/static/bundle.js"))
-  } catch (e) {
+  }
+  catch (e) {
     return null
   }
   return createBlob(Buffer.from(`

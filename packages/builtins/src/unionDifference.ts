@@ -14,7 +14,8 @@ export const udMeld: ConvertibleOperation<Bsp, Bsp> =
       if(arg instanceof Array) {
         dargs[0].push(arg[0])
         dargs[1].push(...arg.slice(1))
-      } else dargs[0].push(arg)
+      }
+      else dargs[0].push(arg)
     return dargs
   })
 

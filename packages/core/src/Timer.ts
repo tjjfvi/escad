@@ -31,7 +31,8 @@ export class Timer {
       let result
       try {
         result = f(...args)
-      } catch (e) {
+      }
+      catch (e) {
         this.end()
         throw e
       }

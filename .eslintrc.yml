@@ -92,7 +92,7 @@ rules:
       after: true
   brace-style:
     - warn
-    - 1tbs
+    - stroustrup
   block-spacing:
     - warn
     - always
