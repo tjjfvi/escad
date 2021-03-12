@@ -80,7 +80,7 @@ export const compiler = webpack({
   plugins: [
     new NodePolyfillPlugin(),
     new webpack.ProvidePlugin({
-      BrowserFS: 'bfsGlobal',
+      BrowserFS: "bfsGlobal",
       // process: 'process',
       // Buffer: 'bufferGlobal'
     }),

@@ -60,10 +60,9 @@ rules:
     - error
     - unix
   quotes:
-    - off
-# # quotes:
-# #   - warn
-# #   - double
+    - warn
+    - double
+    - avoidEscape: true
   # no-magic-numbers:
   #   - warn
   #   - ignoreArrayIndexes: true

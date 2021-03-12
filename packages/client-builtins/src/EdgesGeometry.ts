@@ -6,13 +6,13 @@ function EdgesGeometry(geometry, thresholdAngle = 1){
 
   BufferGeometry.call(this);
 
-  this.type = 'EdgesGeometryT6';
+  this.type = "EdgesGeometryT6";
 
   this.parameters = { thresholdAngle };
 
   let thresholdDot = Math.cos(Math.PI / 180 * thresholdAngle);
   let map = {};
-  let keys = ['a', 'b', 'c'];
+  let keys = ["a", "b", "c"];
 
   geometry = geometry.isBufferGeometry ? new Geometry().fromBufferGeometry(geometry) : geometry.clone();
 
@@ -56,7 +56,7 @@ function EdgesGeometry(geometry, thresholdAngle = 1){
     (map[edge2] = map[edge2] || []).push({ o: edge1, n: normal });
   }
 
-  this.setAttribute('position', new Float32BufferAttribute(
+  this.setAttribute("position", new Float32BufferAttribute(
     keepEdges
       .concat(Object.entries(map).flatMap(([a, os]) => os.filter(o => !o.done).map(({ o: b }) => [a, b])))
       .flatMap(e => e.flatMap(i => verts[i].toArray())), 3)

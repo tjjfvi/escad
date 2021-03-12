@@ -66,7 +66,7 @@ export const ClientFrame = observer(() => {
                 client: fs.readFileSync("/static/bundle.js", "utf8"),
               }),
               headers: {
-                'Content-Type': 'application/json'
+                "Content-Type": "application/json"
               }
             }).then(r => r.json());
             location = response.url;

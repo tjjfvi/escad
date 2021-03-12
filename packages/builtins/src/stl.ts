@@ -38,11 +38,11 @@ exportTypeRegistry.register<Mesh>({
     str += `solid ${name}\n`
     for(const triangle of triangles) {
       str += `facet normal ${triangle.plane.normal.x} ${triangle.plane.normal.y} ${triangle.plane.normal.z}\n`;
-      str += `outer loop\n`
+      str += "outer loop\n"
       for(const vertex of triangle.points)
         str += `vertex ${vertex.x} ${vertex.y} ${vertex.z}\n`;
-      str += `endloop\n`
-      str += `endfacet\n`
+      str += "endloop\n"
+      str += "endfacet\n"
     }
     str += `endsolid ${name}\n`
     return Buffer.from(str);

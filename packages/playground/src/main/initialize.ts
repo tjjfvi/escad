@@ -156,7 +156,7 @@ Object.entries({
   if(self.document) {
     mkdirpSync(`/bundled/node_modules/${name}/${dirname(path)}`)
     fs.writeFileSync(`/bundled/node_modules/${name}/package.json`, `{"main":"./${path}","name":"${name}"}`)
-    fs.writeFileSync(`/bundled/node_modules/${name}/${path}`, `// Stub`)
+    fs.writeFileSync(`/bundled/node_modules/${name}/${path}`, "// Stub")
     extraFiles.forEach(([path, content]) => {
       console.log(`/bundled/node_modules/${name}/${path}`)
       mkdirpSync(`/bundled/node_modules/${name}/${dirname(path)}`)

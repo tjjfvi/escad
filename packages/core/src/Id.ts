@@ -3,7 +3,7 @@ import { posix as path } from "path";
 import { checkTypeProperty } from "./checkTypeProperty";
 
 // Import read-pkg-up if in node, do nothing in webpack & co
-const nodeRequire = eval(`typeof require === "undefined" ? () => {} : require`);
+const nodeRequire = eval("typeof require === \"undefined\" ? () => {} : require");
 const readPkgUp: typeof import("read-pkg-up") | undefined = nodeRequire("read-pkg-up")
 
 const ids = new Map<string, Id>();
