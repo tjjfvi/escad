@@ -2,13 +2,13 @@
 import { checkTypeProperty } from "./checkTypeProperty";
 import { _Hierarchy } from "./Hierarchy";
 
-type SerializableValue = 
+type SerializableValue =
   | string
   | number
   | boolean
   | null
 
-type RawValue = 
+type RawValue =
   | SerializableValue
   | undefined
   | symbol
@@ -16,7 +16,7 @@ type RawValue =
 type ValueHierarchyValue =
   | SerializableValue
   | { undefined: true }
-  | { symbol: string | undefined },
+  | { symbol: string | undefined }
 
 export interface ValueHierarchy extends _Hierarchy {
   readonly type: "ValueHierarchy",
