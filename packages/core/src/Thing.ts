@@ -12,9 +12,9 @@ export type StripRealm<T extends Thing> =
 
 export const Thing = {
   isThing: (value: unknown): value is Thing =>
-    Element.isElement(value) ||
-    Component.isComponent(value) ||
-    Operation.isOperation(value),
+    Element.isElement(value)
+    || Component.isComponent(value)
+    || Operation.isOperation(value),
   applyHierarchy: <T extends Thing>(thing: T, hierarchy?: Hierarchy): StripRealm<T> => {
     if(Element.isElement(thing))
       return Element.applyHierarchy(thing, hierarchy) as never

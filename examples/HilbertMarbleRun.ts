@@ -59,15 +59,15 @@ export default () => {
     return curve.map((l, i) => {
       let p = lerp(l[0], l[1], .5);
       let dir = l[0].map((A, i) => A - l[1][i]);
-      let rot = dir[1] === 1 ?
-        -90 :
-        dir[1] === -1 ?
-          90 :
-          dir[0] === 1 ?
-            0 :
-            dir[0] === -1 ?
-              180 :
-              null;
+      let rot = dir[1] === 1
+        ? -90
+        : dir[1] === -1
+          ? 90
+          : dir[0] === 1
+            ? 0
+            : dir[0] === -1
+              ? 180
+              : null;
       if(rot === null)
         throw new Error("Weird direction");
 

@@ -90,17 +90,17 @@ export const createServer = async ({ artifactsDir, port, loadFile, loadDir, dev 
   const httpServer = app.listen(port, () => {
     const address = httpServer.address();
     const addressString =
-    typeof address === "object" && address ?
-      address.family === "IPv6" ?
-        `[${address.address}]` :
-        address.address :
-      "<?>"
+    typeof address === "object" && address
+      ? address.family === "IPv6"
+        ? `[${address.address}]`
+        : address.address
+      : "<?>"
     const addressPortString = (
-      typeof address === "object" ?
-        address ?
-          `http://${addressString}:${address.port}` :
-          "<?>" :
-        address
+      typeof address === "object"
+        ? address
+          ? `http://${addressString}:${address.port}`
+          : "<?>"
+        : address
     )
     console.log(`Listening on ${addressPortString}`);
   });

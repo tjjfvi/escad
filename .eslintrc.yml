@@ -158,7 +158,9 @@ rules:
     - warn
   operator-linebreak:
     - warn
-    - after
+    - before
+    - overrides:
+        "=": after
   padded-blocks:
     - warn
     - classes: always

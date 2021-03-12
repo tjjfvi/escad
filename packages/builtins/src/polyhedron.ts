@@ -15,8 +15,8 @@ type PolyhedronArgs =
 export const polyhedron: Component<PolyhedronArgs, Element<Mesh>> =
   Component.create("polyhedron", (...args) =>
     Element.create(
-      args.length === 2 ?
-        Mesh.fromVertsFaces(...args) :
-        Mesh.fromVertsFaces(args[0].verts, args[0].faces),
+      args.length === 2
+        ? Mesh.fromVertsFaces(...args)
+        : Mesh.fromVertsFaces(args[0].verts, args[0].faces),
     )
   , { showOutputInHierarchy: false });

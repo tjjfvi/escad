@@ -11,9 +11,9 @@ export class ArtifactManager {
   artifactStores: ArtifactStore[] = [];
 
   private serialize(artifact: unknown): Buffer{
-    return artifact instanceof Buffer ?
-      artifact :
-      Buffer.from(timers.stringifySerialize.time(JSON.stringify)(artifact))
+    return artifact instanceof Buffer
+      ? artifact
+      : Buffer.from(timers.stringifySerialize.time(JSON.stringify)(artifact))
   }
 
   private deserialize(buffer: unknown): unknown{

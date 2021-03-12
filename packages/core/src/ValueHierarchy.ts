@@ -35,11 +35,11 @@ export const ValueHierarchy = {
   from: (value: RawValue) =>
     ValueHierarchy.create({
       value: (
-        value === undefined ?
-          { undefined: true } :
-          typeof value === "symbol" ?
-            { symbol: value.description } :
-            value
+        value === undefined
+          ? { undefined: true }
+          : typeof value === "symbol"
+            ? { symbol: value.description }
+            : value
       ),
     }),
   isValueHierarchy: checkTypeProperty.string<ValueHierarchy>("ValueHierarchy"),

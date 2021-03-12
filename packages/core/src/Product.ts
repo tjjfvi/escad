@@ -55,12 +55,12 @@ function isProduct<P extends Product>(arg: any, productType: ProductType<P>): ar
 function isProduct(arg: any, productType?: ProductType){
   return (
     (
-      LeafProduct.isLeafProduct(arg) ||
-      TupleProduct.isTupleProduct(arg) ||
-      ArrayProduct.isArrayProduct(arg) ||
-      UnknownProduct.isUnknownProduct(arg)
-    ) &&
-    (!productType || Hash.equal(Product.getProductType(arg), productType))
+      LeafProduct.isLeafProduct(arg)
+      || TupleProduct.isTupleProduct(arg)
+      || ArrayProduct.isArrayProduct(arg)
+      || UnknownProduct.isUnknownProduct(arg)
+    )
+    && (!productType || Hash.equal(Product.getProductType(arg), productType))
   );
 }
 
@@ -72,8 +72,8 @@ export type ProductType<U extends Product = Product> =
 
 export const ProductType = {
   isProductType: (value: unknown): value is ProductType =>
-    LeafProductType.isLeafProductType(value) ||
-    TupleProductType.isTupleProductType(value) ||
-    ArrayProductType.isArrayProductType(value) ||
-    UnknownProductType.isUnknownProductType(value),
+    LeafProductType.isLeafProductType(value)
+    || TupleProductType.isTupleProductType(value)
+    || ArrayProductType.isArrayProductType(value)
+    || UnknownProductType.isUnknownProductType(value),
 }

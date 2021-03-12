@@ -34,12 +34,12 @@ export const Pane = ({
     width(minWidth);
   return <div
     className={
-      "Pane " +
-      (left ? "left " : "right ") +
-      (open() ? "open " : "") +
-      (resizing() ? "resizing " : "") +
-      (resizable && open() ? "resizable " : "") +
-      className
+      "Pane "
+      + (left ? "left " : "right ")
+      + (open() ? "open " : "")
+      + (resizing() ? "resizing " : "")
+      + (resizable && open() ? "resizable " : "")
+      + className
     }
     style={{ maxWidth: open() ? Math.max(width(), minWidth) : 50 }}
   >

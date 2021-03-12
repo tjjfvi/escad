@@ -96,12 +96,12 @@ export class ConversionRegistry {
 
   private maybeImplicitlyConvertibleTo(a: ProductType, b: ProductType): boolean{
     return Hash.equal(a, b) || (
-      TupleProductType.isTupleProductType(a) &&
-      TupleProductType.isTupleProductType(b) &&
-      a.elementTypes.length === b.elementTypes.length
+      TupleProductType.isTupleProductType(a)
+      && TupleProductType.isTupleProductType(b)
+      && a.elementTypes.length === b.elementTypes.length
     ) || (
-      TupleProductType.isTupleProductType(a) &&
-      ArrayProductType.isArrayProductType(b)
+      TupleProductType.isTupleProductType(a)
+      && ArrayProductType.isArrayProductType(b)
     ) || (
       UnknownProductType.isUnknownProductType(b)
     );
@@ -147,9 +147,9 @@ export class ConversionRegistry {
       }
 
       if(
-        !(TupleProductType.isTupleProductType(fromType)) ||
-        !(TupleProductType.isTupleProductType(toType)) ||
-        fromType.elementTypes.length !== toType.elementTypes.length
+        !(TupleProductType.isTupleProductType(fromType))
+        || !(TupleProductType.isTupleProductType(toType))
+        || fromType.elementTypes.length !== toType.elementTypes.length
       )
         return null
 

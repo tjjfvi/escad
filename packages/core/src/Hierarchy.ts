@@ -27,20 +27,20 @@ export type Hierarchy =
 
 export const Hierarchy = {
   isHierarchy: (value: unknown): value is Hierarchy =>
-    ObjectHierarchy.isObjectHierarchy(value) ||
-    LabeledHierarchy.isLabeledHierarchy(value) ||
-    ArrayHierarchy.isArrayHierarchy(value) ||
-    NameHierarchy.isNameHierarchy(value) ||
-    ValueHierarchy.isValueHierarchy(value) ||
-    CallHierarchy.isCallHierarchy(value),
+    ObjectHierarchy.isObjectHierarchy(value)
+    || LabeledHierarchy.isLabeledHierarchy(value)
+    || ArrayHierarchy.isArrayHierarchy(value)
+    || NameHierarchy.isNameHierarchy(value)
+    || ValueHierarchy.isValueHierarchy(value)
+    || CallHierarchy.isCallHierarchy(value),
   from: (value: unknown, raw = false): Hierarchy => {
     if(
-      typeof value === "string" ||
-      typeof value === "number" ||
-      typeof value === "boolean" ||
-      typeof value === "symbol" ||
-      value === undefined ||
-      value === null
+      typeof value === "string"
+      || typeof value === "number"
+      || typeof value === "boolean"
+      || typeof value === "symbol"
+      || value === undefined
+      || value === null
     )
       return ValueHierarchy.from(value);
     if(!raw) {

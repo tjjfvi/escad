@@ -10,9 +10,9 @@ interface ObjMap<T> {
 }
 const ObjMap = {
   isObjMap: (o: unknown): o is ObjMap<unknown> =>
-    !Product.isProduct(o) &&
-  typeof o === "object" && !!o &&
-  (o.constructor === Object || Object.getPrototypeOf(o) === null),
+    !Product.isProduct(o)
+  && typeof o === "object" && !!o
+  && (o.constructor === Object || Object.getPrototypeOf(o) === null),
 }
 
 type Arrayish<T> = ObjMap<T> | ReadonlyArray<T>

@@ -13,11 +13,11 @@ type ScaleArgs =
 export const scale: Component<ScaleArgs, ConvertibleOperation<Mesh, Mesh>> =
   Component.create("scale", (...args: ScaleArgs) => {
     let triple =
-      args.length === 3 ?
-        args :
-        typeof args[0] === "number" ?
-          [args[0], args[0], args[0]] as [number, number, number] :
-          args[0]
+      args.length === 3
+        ? args
+        : typeof args[0] === "number"
+          ? [args[0], args[0], args[0]] as [number, number, number]
+          : args[0]
     let arr = triple instanceof Array ? triple : [triple.x ?? 1, triple.y ?? 1, triple.z ?? 1] as const;
 
     let matrix = Matrix4.scale(...arr);

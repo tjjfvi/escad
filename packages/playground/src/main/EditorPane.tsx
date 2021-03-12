@@ -113,9 +113,9 @@ export default () =>
 
   function relevantFile(file: string): boolean{
     return (
-      file.startsWith("/project/") &&
-    file.startsWith(file) &&
-    (file.endsWith(".d.ts") || file.endsWith("/package.json"))
+      file.startsWith("/project/")
+    && file.startsWith(file)
+    && (file.endsWith(".d.ts") || file.endsWith("/package.json"))
     )
   }
 

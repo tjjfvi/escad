@@ -6,11 +6,11 @@ function range(min: number, max: number): number[]
 function range(min: number, interval: number, max: number): number[]
 function range(...args: [number] | [number, number] | [number, number, number]): number[]{
   let [min, interval, max] =
-    args.length === 1 ?
-      [0, 1, args[0]] :
-      args.length === 2 ?
-        [args[0], 1, args[1]] :
-        args
+    args.length === 1
+      ? [0, 1, args[0]]
+      : args.length === 2
+        ? [args[0], 1, args[1]]
+        : args
   return [...Array(Math.ceil((max - min) / interval))].map((_, i) => i * interval + min);
 }
 
@@ -73,13 +73,13 @@ export default () => {
       escad.meld(range(0, translateAmount, width - or * 2).map(x =>
         escad.meld(range(0, translateAmount, height - or * 2).map(y =>
           escad.tY(y + or)((
-            connectorStyle === "none" ?
-              piece :
-              connectorStyle === "all" ?
-                connector :
-                x === 0 || y === 0 ?
-                  connector :
-                  piece
+            connectorStyle === "none"
+              ? piece
+              : connectorStyle === "all"
+                ? connector
+                : x === 0 || y === 0
+                  ? connector
+                  : piece
           )()),
         )).tX(x + or),
       )),

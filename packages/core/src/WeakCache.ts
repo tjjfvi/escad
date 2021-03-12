@@ -56,13 +56,13 @@ export class WeakCacheBasic<K, V> {
 export let WeakCache = WeakCacheBasic;
 
 const FinReg = (
-  typeof FinalizationRegistry !== "undefined" ?
-    FinalizationRegistry :
+  typeof FinalizationRegistry !== "undefined"
+    ? FinalizationRegistry
     // @ts-ignore
-    typeof FinalizationGroup !== "undefined" ?
+    : typeof FinalizationGroup !== "undefined"
       // @ts-ignore
-      FinalizationGroup :
-      null
+      ? FinalizationGroup
+      : null
 );
 
 if("WeakRef" in global && FinReg)
