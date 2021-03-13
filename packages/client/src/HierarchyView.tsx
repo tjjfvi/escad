@@ -48,39 +48,46 @@ const Tree = ({ tree, width }: { tree: Tree, width: number }) => {
   const collapsedTree = fullyCollapseTree(tree, maxLength, update)
   const joinedCollapsedTree = joinTree(collapsedTree, update)
 
-  if(
-    joinedCollapsedTree.length !== 1
-    || "children" in joinedCollapsedTree[0]
-    || !collapsedTree.some(x => "children" in x)
-  )
-    return <div className="TreeNode">
-      {joinedCollapsedTree.map((x, i, a) => {
-        if("children" in x)
-          return <div className="children" key={i}>
-            {x.children.map((y, i) => <Tree width={innerWidth} tree={y} key={i}/>)}
-          </div>
-        const next = a[i + 1]
-        const state = !next || "text" in next ? null : next.state
-        return <div className="line" key={i}>
-          {state ? <Arrow state="open" onClick={() => (state.open = false, update())}/> : <Arrow state="leaf"/>}
-          <TreeText str={x.text}/>
+  return <div className="TreeNode">
+    {joinedCollapsedTree.map((part, i) => {
+      const prev = joinedCollapsedTree[i - 1]
+      const next = joinedCollapsedTree[i + 1]
+
+      if("children" in part)
+        return <div className="children" key={i}>
+          {part.children.map((y, i) => <Tree width={innerWidth} tree={y} key={i}/>)}
         </div>
-      })}
-    </div>
 
-  const sections = fullyCollapseTree(tree, maxLength, update, true).filter(x => "children" in x)
+      if(next && "children" in next)
+        return <div className="line" key={i}>
+          <Arrow state="open" onClick={() => (next.state.open = false, update())}/>
+          <TreeText str={part.text}/>
+        </div>
 
-  return <div className="TreeNode"><div className="line">
-    {
-      sections.length
-        ? <Arrow state="closed" onClick={() => {
-          sections.forEach(x => "children" in x && (x.state.open = true))
+      const expandableSections = getExpandableSections(tree, maxLength, update)
+
+      const sectionsSplitInd =
+        prev && "children" in prev
+          ? expandableSections.findIndex(v => v.state === prev.state) + 1
+          : 0
+      const relevantSections = expandableSections.slice(sectionsSplitInd)
+
+      if(!relevantSections.length)
+        return <div className="line" key={i}>
+          <Arrow state="leaf"/>
+          <TreeText str={part.text}/>
+        </div>
+
+      return <div className="line" key={i}>
+        <Arrow state="closed" onClick={() => {
+          relevantSections.forEach(x => x.state.open = true)
           update()
         }}/>
-        : <Arrow state="leaf"/>
-    }
-    <TreeText str={joinedCollapsedTree[0].text}/>
-  </div></div>
+        <TreeText str={part.text}/>
+      </div>
+    })}
+  </div>
+
 }
 
 const TreeTextPart = ({ children, className, onClick }:TreeTextPartProps) => {
@@ -132,13 +139,15 @@ type TreeText = TreeTextPart[]
 
 type TreePart =
   | { readonly text: TreeText }
-  | {
-    readonly state: { open: boolean },
-    readonly children: readonly Tree[],
-    readonly joiner?: string,
-    readonly forceOpenable?: boolean,
-    readonly forceEllipsis?: boolean,
-  }
+  | TreePartChildren
+
+type TreePartChildren = {
+  readonly state: { open: boolean },
+  readonly children: readonly Tree[],
+  readonly joiner?: string,
+  readonly forceOpenable?: boolean,
+  readonly forceEllipsis?: boolean,
+}
 
 type Tree = TreePart[]
 
@@ -347,4 +356,8 @@ function length(str: TreeText): number{
       return x.length
     return 0
   }).reduce((a, b) => a + b, 0)
+}
+
+function getExpandableSections(tree: Tree, maxLength: number, onUpdate?: () => void){
+  return fullyCollapseTree(tree, maxLength, onUpdate, true).filter((x): x is TreePartChildren => "children" in x)
 }
