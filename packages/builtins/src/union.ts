@@ -60,8 +60,8 @@ conversionRegistry.register({
 })
 
 export const union: ConvertibleOperation<Bsp, Bsp> =
-  Operation.create("union", el =>
-    Union.create(TupleProduct.create(Element.toArrayFlat(el)))
+  Operation.create("union", async el =>
+    Union.create(TupleProduct.create(await Element.toArrayFlat(el)))
   , { showOutputInHierarchy: false })
 
 export const add: Component<ConvertibleElement<Bsp>[], ConvertibleOperation<Bsp, Bsp>> =

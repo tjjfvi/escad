@@ -4,6 +4,7 @@ import { Product } from "./Product"
 import { ConvertibleTo } from "./Conversions"
 import { checkTypeProperty } from "./checkTypeProperty"
 import { artifactManager } from "./ArtifactManager"
+import { Promisish } from "./Promisish"
 
 interface ObjMap<T> {
   readonly [name: string]: T,
@@ -30,16 +31,24 @@ interface DeepArray<T> extends ReadonlyArray<DeepArray<T> | T> {}
 
 export interface Element<T extends Product> {
   readonly type: "Element",
-  readonly value: T | Arrayish<Element<T>>,
-  readonly hierarchy?: Hierarchy,
+  readonly value: Promise<T | Arrayish<Element<T>>>,
+  readonly hierarchy?: Promise<Hierarchy | undefined>,
 }
 
 export const Element = {
-  create: <T extends Product>(elementish: Elementish<T>, hierarchy?: Hierarchy): Element<T> => {
+
+  createPromise: async <T extends Product>(
+    elementish: Promisish<Elementish<T>>,
+    hierarchy?: Promisish<Hierarchy | undefined>,
+  ): Promise<Element<T>> => {
     let value: T | Arrayish<Element<T>>
+
+    elementish = await elementish
+    hierarchy = await hierarchy
+
     if(Element.isElement(elementish)) {
-      hierarchy ??= elementish.hierarchy
-      elementish = elementish.value
+      if(!hierarchy) return elementish
+      elementish = await elementish.value
     }
 
     if(elementish instanceof Array) {
@@ -61,69 +70,82 @@ export const Element = {
 
     return {
       type: "Element",
-      value,
-      hierarchy,
+      value: Promise.resolve(value),
+      hierarchy: Promise.resolve(hierarchy),
     }
   },
-  toArray: <T extends Product>(element: Elementish<T>): Array<Element<T>> => {
+
+  create: <T extends Product>(
+    elementish: Promisish<Elementish<T>>,
+    hierarchy?: Promisish<Hierarchy | undefined>,
+  ): Element<T> => {
+    const elementPromise = Element.createPromise(elementish, hierarchy)
+    return {
+      type: "Element",
+      value: elementPromise.then(el => el.value),
+      hierarchy: elementPromise.then(el => el.hierarchy),
+    }
+  },
+
+  toArray: async <T extends Product>(element: Elementish<T>): Promise<Array<Element<T>>> => {
     element = Element.create(element)
-    if(Array.isArray(element.value))
-      return element.value
-    if(ObjMap.isObjMap(element.value))
-      return Object.values(element.value)
-    if(Product.isProduct(element.value))
+    const value = await element.value
+    if(Array.isArray(value))
+      return value
+    if(ObjMap.isObjMap(value))
+      return Object.values(value)
+    if(Product.isProduct(value))
       return [element]
     throw new Error("Invalid Element.val type")
   },
-  toArrayDeep: <T extends Product>(element: Elementish<T>): DeepArray<T> | T => {
+
+  toArrayDeep: async <T extends Product>(element: Elementish<T>): Promise<DeepArray<T> | T> => {
     element = Element.create(element)
-    if(Product.isProduct(element.value))
-      return element.value
-    return Element.toArray(element).map(Element.toArrayDeep)
+    const value = await element.value
+    if(Product.isProduct(value))
+      return value
+    return await Promise.all((await Element.toArray(element)).map(Element.toArrayDeep))
   },
-  toArrayFlat: <T extends Product>(element: Elementish<T>): T[] => {
+
+  toArrayFlat: async <T extends Product>(element: Elementish<T>): Promise<T[]> => {
     element = Element.create(element)
-    if(Product.isProduct(element.value))
-      return [element.value]
-    return Element.toArray(element).flatMap(Element.toArrayFlat)
+    const value = await element.value
+    if(Product.isProduct(value))
+      return [value]
+    return (await Promise.all((await Element.toArray(element)).map(Element.toArrayFlat))).flat()
   },
-  concat:
-    <T extends Product, U extends Product>(a: Element<T>, b: Element<U>): Element<T | U> => {
-      let toArr = <T extends Product>(el: Element<T>): T[] =>
-      (Array.isArray(el) ? el.value : [el]) as never
-      return Element.create([...toArr(a), ...toArr(b)])
-    },
-  applyHierarchy: <T extends Product>(element: Element<T>, hierarchy?: Hierarchy): Element<T> =>
+
+  concatPromise:
+    async <T extends Product, U extends Product>(a: Element<T>, b: Element<U>): Promise<Element<T | U>> =>
+      Element.create(([] as Elementish<T | U>[]).concat(await a.value).concat(await b.value)),
+
+  concat: <T extends Product, U extends Product>(a: Element<T>, b: Element<U>): Element<T | U> =>
+    Element.create(Element.concatPromise(a, b)),
+
+  applyHierarchy: <T extends Product>(element: Element<T>, hierarchy?: Promisish<Hierarchy | undefined>): Element<T> =>
     Element.create(element.value, hierarchy),
+
   isElement: checkTypeProperty.string<Element<Product>>("Element"),
-  map: <T extends Product, U extends Product>(
+
+  mapPromise: async <T extends Product, U extends Product>(
     element: Element<T>,
     fn: (value: T) => Elementish<U>,
-    hierarchyGen: (
-      el: Element<U>,
-      old: Element<T>,
-      isLeaf: boolean,
-      isRoot: boolean,
-    ) => Hierarchy = x => Hierarchy.from(x),
-    isRoot = true,
-  ): Element<U> => {
-    let createElement = (e: Elementish<U>) =>
-      Element.create(e, hierarchyGen(Element.create(e), element, Product.isProduct(element.value), isRoot))
+  ): Promise<Element<U>> => {
+    const value = await element.value
 
-    if(element.value instanceof Array)
-      return createElement(element.value.map(v => Element.map(Element.create(v), fn, hierarchyGen, false).value))
+    if(value instanceof Array)
+      return Element.create(value.map(v => Element.map(v, fn)))
 
-    if(ObjMap.isObjMap(element.value))
-      return createElement(Object.assign({}, ...Object.entries(element.value).map(([k, v]) => ({
-        [k]: Element.isElement(v) ? Element.map(v as never, fn, hierarchyGen, false) : v,
-      }))))
+    if(ObjMap.isObjMap(value))
+      return Element.create(Object.fromEntries(Object.entries(value).map(([k, v]) => [k, Element.map(v, fn)])))
 
-    if(Product.isProduct(element.value))
-      return createElement(fn(element.value))
-
-    if(Element.isElement(element.value))
-      return createElement(Element.map(element.value, fn, hierarchyGen, false))
+    if(Product.isProduct(value))
+      return Element.create(fn(value))
 
     throw new Error("Invalid Element.val type")
   },
+
+  map: <T extends Product, U extends Product>(element: Element<T>, fn: (value: T) => Elementish<U>): Element<U> =>
+    Element.create(Element.mapPromise(element, fn)),
+
 }

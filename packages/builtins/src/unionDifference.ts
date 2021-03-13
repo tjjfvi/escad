@@ -5,8 +5,8 @@ import { Bsp } from "./Bsp"
 import { diff } from "./diff"
 
 export const udMeld: ConvertibleOperation<Bsp, Bsp> =
-  Operation.create("udMeld", el => {
-    let args = Element.toArrayDeep(el)
+  Operation.create("udMeld", async el => {
+    let args = await Element.toArrayDeep(el)
     if(!(args instanceof Array))
       return [[args], []]
     let dargs: [ConvertibleElementish<Mesh>[], ConvertibleElementish<Mesh>[]] = [[], []]
@@ -20,6 +20,6 @@ export const udMeld: ConvertibleOperation<Bsp, Bsp> =
   })
 
 export const unionDiff: ConvertibleOperation<Bsp, Bsp> =
-  Operation.create("unionDiff", el => diff(udMeld(...Element.toArray(el))))
+  Operation.create("unionDiff", async el => diff(udMeld(...await Element.toArray(el))))
 
 export const unionDiffMeld = udMeld

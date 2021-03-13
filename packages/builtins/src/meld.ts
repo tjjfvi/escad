@@ -53,7 +53,7 @@ conversionRegistry.register({
 })
 
 export const meld: ConvertibleOperation<Mesh, Mesh> = (
-  Operation.create("meld", el =>
-    Meld.create(TupleProduct.create(Element.toArrayFlat(el)))
+  Operation.create("meld", async el =>
+    Meld.create(TupleProduct.create(await Element.toArrayFlat(el)))
   , { showOutputInHierarchy: false })
 )

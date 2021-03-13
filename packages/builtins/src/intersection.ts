@@ -60,8 +60,8 @@ conversionRegistry.register({
 })
 
 export const intersection: ConvertibleOperation<Bsp, Bsp> =
-  Operation.create("intersection", el =>
-    Intersection.create(TupleProduct.create(Element.toArrayFlat(el)))
+  Operation.create("intersection", async el =>
+    Intersection.create(TupleProduct.create(await Element.toArrayFlat(el)))
   , { showOutputInHierarchy: false })
 
 export const intersect: Component<ConvertibleElementish<Bsp>[], ConvertibleOperation<Bsp, Bsp>> =
