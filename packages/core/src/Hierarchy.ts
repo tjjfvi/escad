@@ -33,7 +33,8 @@ export const Hierarchy = {
     || NameHierarchy.isNameHierarchy(value)
     || ValueHierarchy.isValueHierarchy(value)
     || CallHierarchy.isCallHierarchy(value),
-  from: (value: unknown, raw = false): Hierarchy => {
+  from: async (value: unknown, raw = false): Promise<Hierarchy> => {
+    value = await value
     if(
       typeof value === "string"
       || typeof value === "number"
@@ -47,9 +48,9 @@ export const Hierarchy = {
       if(Hierarchy.isHierarchy(value))
         return value
       if(Element.isElement(value))
-        return value.hierarchy ?? Hierarchy.from(value.value)
+        return await value.hierarchy ?? Hierarchy.from(value.value)
       if(Component.isComponent(value) || Operation.isOperation(value))
-        return value.hierarchy ?? NameHierarchy.create({ name: value.name })
+        return await value.hierarchy ?? NameHierarchy.create({ name: value.name })
       if(LeafProduct.isLeafProduct(value))
         return NameHierarchy.create({
           name: `<${value.type.full}>`,

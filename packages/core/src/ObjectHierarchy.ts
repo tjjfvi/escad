@@ -17,9 +17,9 @@ export const ObjectHierarchy = {
     children,
     linkedProducts,
   }),
-  from: (object: Record<string, unknown>, raw = false) =>
+  from: async (object: Record<string, unknown>, raw = false) =>
     ObjectHierarchy.create({
-      children: Object.entries(object).map(e => LabeledHierarchy.from(e, raw)),
+      children: await Promise.all(Object.entries(object).map(e => LabeledHierarchy.from(e, raw))),
     }),
   isObjectHierarchy: checkTypeProperty.string<ObjectHierarchy>("ObjectHierarchy"),
 }

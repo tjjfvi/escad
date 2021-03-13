@@ -16,9 +16,9 @@ export const ArrayHierarchy = {
     children,
     linkedProducts,
   }),
-  from: (array: unknown[], raw = false) =>
+  from: async (array: unknown[], raw = false) =>
     ArrayHierarchy.create({
-      children: array.map(x => Hierarchy.from(x, raw)),
+      children: await Promise.all(array.map(x => Hierarchy.from(x, raw))),
     }),
   isArrayHierarchy: checkTypeProperty.string<ArrayHierarchy>("ArrayHierarchy"),
 }

@@ -59,19 +59,19 @@ conversionRegistry.register({
 })
 
 export const diff: ConvertibleOperation<Bsp, Bsp> =
-  Operation.create("diff", el => {
-    let originalArgs: ConvertibleElementish<Bsp> = Element.toArrayDeep(el)
+  Operation.create("diff", async el => {
+    let originalArgs: ConvertibleElementish<Bsp> = await Element.toArrayDeep(el)
     if(!(originalArgs instanceof Array))
       return originalArgs
     if(originalArgs.length === 0)
       return []
     if(originalArgs.length === 1)
       [originalArgs] = originalArgs
-    const args = Element.toArrayDeep(Element.create(originalArgs))
+    const args = await Element.toArrayDeep(Element.create(originalArgs))
     if(Product.isProduct(args))
       return args
-    const positive = Union.create(TupleProduct.create(Element.toArrayFlat(args[0])))
-    const negative = Union.create(TupleProduct.create(Element.toArrayFlat(args.slice(1))))
+    const positive = Union.create(TupleProduct.create(await Element.toArrayFlat(args[0])))
+    const negative = Union.create(TupleProduct.create(await Element.toArrayFlat(args.slice(1))))
     return Diff.create(positive, negative)
   }, { showOutputInHierarchy: false })
 

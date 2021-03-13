@@ -7,6 +7,8 @@ import {
   ObjectHierarchy,
   NameHierarchy,
   ValueHierarchy,
+  Product,
+  Hash,
 } from "@escad/core"
 import React, { useContext, useRef, useState } from "react"
 import { useObservable } from "rhobo"
@@ -148,21 +150,22 @@ type TreeTextPartProps = {
   className?: string,
 }
 
-function wrapLinkedProducts(hierarchy: Hierarchy, tree: Tree): Tree{
-  if(!hierarchy.linkedProducts || !hierarchy.linkedProducts.length)
+function wrapLinkedProducts(linkedProducts: readonly Hash<Product>[] | undefined, tree: Tree): Tree{
+  if(!linkedProducts || !linkedProducts.length)
     return tree
   return [
     { text: [{ open: true }] },
     ...tree,
-    // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
-    { text: [{ close: true, onClick: state => state.handleProducts(hierarchy.linkedProducts!), className: "link" }] },
+    { text: [{ close: true, onClick: state => state.handleProducts(linkedProducts), className: "link" }] },
   ]
 }
 
 const hierarchyTreeMemo = new WeakMap<Hierarchy, Tree>()
 
 function hierarchyToTree(hierarchy: Hierarchy): Tree{
-  const tree = hierarchyTreeMemo.get(hierarchy) ?? wrapLinkedProducts(hierarchy, _hierarchyToTree(hierarchy))
+  const tree =
+    hierarchyTreeMemo.get(hierarchy)
+    ?? wrapLinkedProducts(hierarchy.linkedProducts, _hierarchyToTree(hierarchy))
   hierarchyTreeMemo.set(hierarchy, tree)
   return tree
 }
@@ -203,7 +206,7 @@ function _hierarchyToTree(hierarchy: Hierarchy): Tree{
     if(!hierarchy.composable)
       return [
         ...hierarchyToTree(hierarchy.operator),
-        ...wrapLinkedProducts(ArrayHierarchy.from(hierarchy.operands), [
+        ...wrapLinkedProducts(hierarchy.operands.flatMap(x => x.linkedProducts ?? []), [
           { text: ["("] },
           {
             children: hierarchy.operands.map(hierarchyToTree),
@@ -245,7 +248,7 @@ function _hierarchyToTree(hierarchy: Hierarchy): Tree{
       { text: ["("] },
       { children: operators, joiner: "∘", state: { open: false }, forceOpenable: true },
       { text: [")"] },
-      ...wrapLinkedProducts(ArrayHierarchy.from(operands), [
+      ...wrapLinkedProducts(hierarchy.operands.flatMap(x => x.linkedProducts ?? []), [
         { text: ["("] },
         {
           children: operands.map(hierarchyToTree),

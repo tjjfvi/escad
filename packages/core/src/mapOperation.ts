@@ -8,8 +8,8 @@ export const mapOperation = (
     func: (i: I) => O,
     opts: OperationOptions = {},
   ) =>
-    Operation.create<I, O>(name, arg => {
-      const argArr = Element.toArray(arg)
+    Operation.create<I, O>(name, async arg => {
+      const argArr = await Element.toArray(arg)
       const flattenedArg = argArr.length === 1 ? argArr[0] : arg
       const output = Element.map(flattenedArg, func)
       return output

@@ -5,20 +5,21 @@ import { contextStack } from "./ContextStack"
 import { ExtensibleFunction } from "./ExtensibleFunction"
 import { Hierarchy } from "./Hierarchy"
 import { NameHierarchy } from "./NameHierarchy"
+import { Promisish } from "./Promisish"
 import { Thing, StripRealm } from "./Thing"
 
 export interface Component<I extends any[], T extends Thing> {
   readonly type: "Component",
   readonly func: (...input: I) => T,
   readonly name: string,
-  readonly hierarchy?: Hierarchy,
+  readonly hierarchy?: Promisish<Hierarchy | undefined>,
   readonly overrideHierarchy?: boolean,
   readonly showOutputInHierarchy?: boolean,
   (...args: I): StripRealm<T>,
 }
 
 export interface ComponentOpts {
-  readonly hierarchy?: Hierarchy,
+  readonly hierarchy?: Promisish<Hierarchy | undefined>,
   readonly overrideHierarchy?: boolean,
   readonly showOutputInHierarchy?: boolean,
 }
@@ -34,17 +35,7 @@ export const Component = {
       new ExtensibleFunction(
         (...args: I) => {
           const result = contextStack.wrap(() => func(...args))
-          const resultHierarchy = result.hierarchy
-          let outputHierarchy = resultHierarchy
-          if(overrideHierarchy)
-            outputHierarchy = CallHierarchy.create({
-              operator: hierarchy ?? NameHierarchy.create({ name }),
-              operands: args.map(x => Hierarchy.from(x)),
-              result: resultHierarchy && showOutputInHierarchy ? resultHierarchy : undefined,
-              composable: false,
-              linkedProducts: Hierarchy.from(result).linkedProducts,
-            })
-          return Thing.applyHierarchy(result, outputHierarchy)
+          return Thing.applyHierarchy(result, createHierarchy(result, args))
         },
         {},
         name,
@@ -56,9 +47,25 @@ export const Component = {
         hierarchy,
       },
     ) as Component<I, T>
+
     return that
+
+    async function createHierarchy(result: T, args: I){
+      if(!overrideHierarchy)
+        return result.hierarchy
+      return CallHierarchy.create({
+        operator: await hierarchy ?? NameHierarchy.create({ name }),
+        operands: await Promise.all(args.map(x => Hierarchy.from(x))),
+        result: showOutputInHierarchy ? await result.hierarchy : undefined,
+        composable: false,
+        linkedProducts: (await Hierarchy.from(result)).linkedProducts,
+      })
+    }
   },
-  applyHierarchy: <I extends any[], T extends Thing>(component: Component<I, T>, hierarchy?: Hierarchy) =>
+  applyHierarchy: <I extends any[], T extends Thing>(
+    component: Component<I, T>,
+    hierarchy?: Promisish<Hierarchy | undefined>,
+  ) =>
     Component.create(component.name, component.func, {
       ...component,
       hierarchy,

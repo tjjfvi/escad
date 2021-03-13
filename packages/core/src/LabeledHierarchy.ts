@@ -19,10 +19,10 @@ export const LabeledHierarchy = {
     value,
     linkedProducts,
   }),
-  from: ([label, value]: [string, unknown], raw = false) =>
+  from: async ([label, value]: [string, unknown], raw = false) =>
     LabeledHierarchy.create({
       label,
-      value: Hierarchy.from(value, raw),
+      value: await Hierarchy.from(value, raw),
     }),
   isLabeledHierarchy: checkTypeProperty.string<LabeledHierarchy>("LabeledHierarchy"),
 }
