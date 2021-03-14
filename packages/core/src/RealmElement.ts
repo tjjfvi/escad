@@ -1,22 +1,31 @@
 
 import { Product } from "./Product"
 import { Element } from "./Element"
-import { Component } from "./Component"
-import { Operation } from "./Operation"
+import { Component, GenericComponent } from "./Component"
+import { GenericOperation, Operation } from "./Operation"
 import { Realm } from "./Realm"
 import { ExtensibleFunction } from "./ExtensibleFunction"
 import { ConvertibleTo } from "./Conversions"
-import { RealmComponent } from "./RealmComponent"
+import { RealmComponent, RealmGenericComponent } from "./RealmComponent"
+import { Hkt } from "./Hkt"
 
 export type ConvertibleRealmElement<T extends Product, C> = RealmElement<ConvertibleTo<T>, C>
 
 export type RealmElementOut<T extends Product, Arg, C> =
   [T] extends [infer T_] ? [T_] extends [infer T] ? [T] extends [Product] ?
-    | (Arg extends Element<infer U> ? RealmElement<T | U, C> : never)
-    | (Arg extends Operation<infer I, infer O> ? T extends I ? RealmElement<O, C> : never : never)
-    | (Arg extends Component<infer I, infer O> ? RealmComponent<I, RealmElementOut<T, O, C>, C> : never)
-    | (Arg extends Realm<unknown> ? RealmElement<T, C> : never)
+    | Arg extends Element<infer U> ? RealmElement<T | U, C>
+    : Arg extends GenericOperation<T, infer O> ? RealmElement<Hkt.Output<O, T>, C>
+    : Arg extends Operation<T, infer O> ? RealmElement<O, C>
+    : Arg extends GenericComponent<infer G, infer I, infer O>
+      ? RealmGenericComponent<G, I, Hkt.Compose<G, RealmElementOutHkt<T, C>, O>, C>
+    : Arg extends Component<infer I, infer O> ? RealmComponent<I, RealmElementOut<T, O, C>, C>
+    : Arg extends { type: "Realm" } ? RealmElement<T, C>
+    : never
   : never : never : never
+
+interface RealmElementOutHkt<T extends Product, C> extends Hkt {
+  [Hkt.output]: RealmElementOut<T, Hkt.Input<this>, C>,
+}
 
 export type RealmElement<T extends Product, C> =
   & Element<T>
@@ -38,15 +47,15 @@ export const RealmElement = {
           if(!arg || Realm.isRealm(arg))
             return that
           if(Operation.isOperation(arg))
-            return RealmElement.create(realm, arg(that))
+            return RealmElement.create<any, C>(realm, arg(that))
           if(Component.isComponent(arg))
-            return RealmComponent.create(realm, Component.create(
+            return RealmComponent.create<any, any, C>(realm, Component.create(
               arg.name + "'",
               (...args) => that(arg(...args)),
               { overrideHierarchy: false },
             ))
           if(Element.isElement(arg))
-            return RealmElement.create(realm, Element.concat(that, arg))
+            return RealmElement.create<any, C>(realm, Element.concat(that, arg))
           throw new Error("Invalid argument to RealmElement")
         },
         {

@@ -1,26 +1,29 @@
 
-import { Component } from "./Component"
-import { Operation } from "./Operation"
+import { Component, GenericComponent } from "./Component"
+import { GenericOperation, Operation } from "./Operation"
 import { Element } from "./Element"
 import { Realm } from "./Realm"
 import { RealmElement } from "./RealmElement"
-import { RealmOperation } from "./RealmOperation"
-import { RealmComponent } from "./RealmComponent"
-import { StripRealm, Thing } from "./Thing"
+import { RealmGenericOperation, RealmOperation } from "./RealmOperation"
+import { RealmComponent, RealmGenericComponent } from "./RealmComponent"
+import { Thing } from "./Thing"
 
 export type RealmThing<T extends Thing, C> =
-  | (T extends Element<infer T> ? RealmElement<T, C> : never)
-  | (T extends Component<infer I, infer T> ? RealmComponent<I, StripRealm<T>, C> : never)
-  | (T extends Operation<infer I, infer O> ? RealmOperation<I, O, C> : never)
+  | T extends Element<infer T> ? RealmElement<T, C>
+  : T extends GenericComponent<infer T, infer I, infer O> ? RealmGenericComponent<T, I, O, C>
+  : T extends Component<infer I, infer O> ? RealmComponent<I, O, C>
+  : T extends GenericOperation<infer I, infer O> ? RealmGenericOperation<I, O, C>
+  : T extends Operation<infer I, infer O> ? RealmOperation<I, O, C>
+  : never
 
 export const RealmThing = {
   create: <T extends Thing, C>(realm: Realm<C>, thing: T): RealmThing<T, C> => {
     if(Element.isElement(thing))
-      return RealmElement.create(realm, thing) as never
+      return RealmElement.create<any, C>(realm, thing) as never
     if(Operation.isOperation(thing))
-      return RealmOperation.create(realm, thing) as never
+      return RealmOperation.create<any, any, C>(realm, thing) as never
     if(Component.isComponent(thing))
-      return RealmComponent.create(realm, thing) as never
+      return RealmComponent.create<any, any, C>(realm, thing) as never
     throw new Error("Invalid thing passed to RealmThing.create")
   },
 
