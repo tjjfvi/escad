@@ -26,11 +26,11 @@ export const Realm = {
     const that = Object.assign(
       new ExtensibleFunction(
         (...args) => {
-          if(args.length > 1)
-            return RealmElement.create(that, Element.create(args))
+          if(args.length !== 1)
+            return RealmElement.create<any, C>(that, Element.create(args))
           if(Thing.isThing(args[0]))
-            return RealmThing.create(that, args[0])
-          return RealmElement.create(that, Element.create(args[0]))
+            return RealmThing.create<any, C>(that, args[0])
+          return RealmElement.create<any, C>(that, Element.create(args[0]))
         },
         {
           get: (target, prop) => {

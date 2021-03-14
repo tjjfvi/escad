@@ -1,14 +1,17 @@
 
-import { Component } from "./Component"
-import { Operation } from "./Operation"
+import { Component, GenericComponent } from "./Component"
+import { GenericOperation, Operation } from "./Operation"
 import { Element } from "./Element"
 import { HierarchyProp } from "./Hierarchy"
 
 export type Thing = Element<any> | Component<any[], any> | Operation<any, any>
 export type StripRealm<T extends Thing> =
-  | (T extends Element<infer P> ? Element<P> : never)
-  | (T extends Component<any, any> ? T : never)
-  | (T extends Operation<infer I, infer O> ? Operation<I, O> : never)
+  | T extends Element<infer P> ? Element<P>
+  : T extends GenericComponent<any, any, any> ? T
+  : T extends Component<any, any> ? T
+  : T extends GenericOperation<infer I, infer O> ? GenericOperation<I, O>
+  : T extends Operation<infer I, infer O> ? Operation<I, O>
+  : never
 
 export const Thing = {
   isThing: (value: unknown): value is Thing =>

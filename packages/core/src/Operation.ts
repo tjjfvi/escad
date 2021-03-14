@@ -9,6 +9,7 @@ import { ExtensibleFunction } from "./ExtensibleFunction"
 import { CallHierarchy } from "./CallHierarchy"
 import { NameHierarchy } from "./NameHierarchy"
 import { Promisish } from "./Promisish"
+import { Hkt } from "./Hkt"
 
 export type ConvertibleOperation<I extends Product, O extends Product> = Operation<ConvertibleTo<I>, ConvertibleTo<O>>
 
@@ -75,4 +76,26 @@ export const Operation = {
       hierarchy,
     }),
   isOperation: checkTypeProperty.string<Operation<any, any>>("Operation"),
+}
+
+export type GenericOperation<I extends Product, O extends Hkt<I, Product>> =
+  & Omit<Operation<I, Hkt.Output<O, I>>, "func">
+  & {
+    readonly func: <J extends I>(arg: Element<J>) => Elementish<Hkt.Output<O, J>>,
+    <J extends I>(...args: Elementish<J>[]): Element<Hkt.Output<O, I>>,
+    readonly __generic: undefined,
+  }
+
+export const GenericOperation = {
+  create: <I extends Product, O extends Hkt<I, Product>>(
+    name: string,
+    func: <J extends I>(arg: Element<J>) => Elementish<Hkt.Output<O, J>>,
+    opts?: OperationOptions,
+  ): GenericOperation<I, O> =>
+    Operation.create<I, Hkt.Output<O, I>>(name, func, opts) as never,
+  applyHierarchy: <I extends Product, O extends Hkt<I, Product>>(
+    operation: GenericOperation<I, O>,
+    hierarchy?: Hierarchy,
+  ) =>
+    GenericOperation.create<I, O>(operation.name, operation.func, { ...operation, hierarchy }),
 }

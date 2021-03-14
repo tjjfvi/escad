@@ -1,19 +1,43 @@
 import { ExtensibleFunction } from "./ExtensibleFunction"
 import { Product } from "./Product"
 import { Element, Elementish } from "./Element"
-import { Operation } from "./Operation"
+import { GenericOperation, Operation } from "./Operation"
 import { RealmElement } from "./RealmElement"
-import { Component } from "./Component"
+import { Component, GenericComponent } from "./Component"
 import { Realm } from "./Realm"
 import { RealmThing } from "./RealmThing"
-import { RealmComponent } from "./RealmComponent"
+import { RealmComponent, RealmGenericComponent } from "./RealmComponent"
+import { Hkt } from "./Hkt"
+
+type Assert<T, U extends T> = U
 
 type RealmOperationOut<I extends Product, O extends Product, Arg, C> =
   [I] extends [Product] ? [O] extends [Product] ?
-    | (Arg extends Element<infer I_> ? [I_] extends [I] ? RealmElement<O, C> : never : never)
-    | (Arg extends Operation<infer T, I> ? RealmOperation<T, O, C> : never)
-    | (Arg extends Component<infer A, infer T> ? Component<A, RealmOperationOut<I, O, T, C>> : never)
-    | (Arg extends Realm<unknown> ? RealmOperation<I, O, C> : never)
+    | Arg extends Element<I> ? RealmElement<O, C>
+    : Arg extends GenericOperation<infer T, Assert<Hkt<infer T, I>, infer U>>
+      ? RealmGenericOperation<T, Hkt.Compose<Product, Hkt.Constant<O>, U>, C>
+    : Arg extends Operation<infer T, I> ? RealmOperation<T, O, C>
+    : Arg extends GenericComponent<infer G, infer A, infer T>
+      ? RealmGenericComponent<G, A, Hkt.Compose<G, RealmOperationOutHkt<I, O, C>, T>, C>
+    : Arg extends Component<infer A, infer T> ? Component<A, RealmOperationOut<I, O, T, C>>
+    : Arg extends { type: "Realm" } ? RealmOperation<I, O, C>
+    : never
+  : never : never
+
+interface RealmOperationOutHkt<I extends Product, O extends Product, C> extends Hkt {
+  [Hkt.output]: RealmOperationOut<I, O, Hkt.Input<this>, C>,
+}
+
+type RealmGenericOperationOut<I extends Product, O extends Hkt<I, Product>, Arg, C> =
+  [I] extends [Product] ? [O] extends [Hkt<I, Product>] ?
+    | Arg extends Element<Assert<I, infer J>> ? RealmElement<Hkt.Output<O, J>, C>
+    : Arg extends GenericOperation<infer T, Assert<Hkt<infer T, I>, infer U>>
+      ? RealmGenericOperation<T, Hkt.Compose<Product, O, U>, C>
+    : Arg extends Operation<infer T, Assert<I, infer U>>
+      ? RealmGenericOperation<T, Hkt.Compose<Product, O, Hkt.Constant<U, T>>, C>
+    : Arg extends Component<infer A, infer T> ? Component<A, RealmGenericOperationOut<I, O, T, C>>
+    : Arg extends { type: "Realm" } ? RealmGenericOperation<I, O, C>
+    : never
   : never : never
 
 export type RealmOperation<I extends Product, O extends Product, C> =
@@ -76,3 +100,12 @@ export const RealmOperation = {
       return that
     },
 }
+
+export type RealmGenericOperation<I extends Product, O extends Hkt<I, Product>, C> =
+  & Omit<GenericOperation<I, O>, never>
+  & ExcludeNevers<{ [K in keyof C]: RealmGenericOperationOut<I, O, C[K], C> }>
+  & {
+    _: RealmGenericOperation<I, O, C>,
+    <J extends I>(...args: Elementish<J>[]): RealmElement<Hkt.Output<O, J>, C>,
+    <A>(o: A): RealmGenericOperationOut<I, O, A, C>,
+  }
