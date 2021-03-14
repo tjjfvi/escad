@@ -12,8 +12,10 @@ import { cylinder, cyl } from "./cylinder"
 import { cube } from "./cube"
 import { sphere } from "./sphere"
 import { polyhedron } from "./polyhedron"
+import { convert } from "./convert"
 
 export default {
+  convert,
   tX,
   tY,
   tZ,
