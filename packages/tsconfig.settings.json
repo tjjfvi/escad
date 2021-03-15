@@ -12,6 +12,6 @@
     "jsx": "react"
   },
   "ts-node": {
-    "transpileOnly": true,
-  },
+    "transpileOnly": true
+  }
 }
