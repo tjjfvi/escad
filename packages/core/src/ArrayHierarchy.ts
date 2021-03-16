@@ -10,7 +10,7 @@ export interface ArrayHierarchy extends _Hierarchy {
 export const ArrayHierarchy = {
   create: ({
     children,
-    linkedProducts = children.flatMap(x => x.linkedProducts ?? []),
+    linkedProducts = Hierarchy.flattenLinkedProducts(children),
   }: Omit<ArrayHierarchy, "type">): ArrayHierarchy => ({
     type: "ArrayHierarchy",
     children,
