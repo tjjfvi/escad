@@ -78,12 +78,15 @@ export const Operation = {
   isOperation: checkTypeProperty.string<Operation<any, any>>("Operation"),
 }
 
+declare const __genericOperation__: unique symbol
+
 export type GenericOperation<I extends Product, O extends Hkt<I, Product>> =
   & Omit<Operation<I, Hkt.Output<O, I>>, "func">
   & {
     readonly func: <J extends I>(arg: Element<J>) => Elementish<Hkt.Output<O, J>>,
     <J extends I>(...args: Elementish<J>[]): Element<Hkt.Output<O, I>>,
-    readonly __generic: undefined,
+    // Operation shouldn't be assignable to GenericOperation
+    readonly [__genericOperation__]: never,
   }
 
 export const GenericOperation = {

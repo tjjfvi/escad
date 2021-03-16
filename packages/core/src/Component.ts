@@ -71,12 +71,15 @@ export const Component = {
     }),
 }
 
+declare const __genericComponent__: unique symbol
+
 export type GenericComponent<T, I extends Hkt<T, any[]>, O extends Hkt<T, Thing>> =
   & Omit<Component<Hkt.Output<I, T>, Hkt.Output<O, T>>, "func">
   & {
     readonly func: <U extends T>(...args: Hkt.Output<I, U>) => Hkt.Output<O, U>,
     <U extends T>(...args: Hkt.Output<I, U>): StripRealm<Hkt.Output<O, U>>,
-    readonly __generic: true,
+    // Component shouldn't be assignable to GenericComponent
+    readonly [__genericComponent__]: never,
   }
 
 export const GenericComponent = {
