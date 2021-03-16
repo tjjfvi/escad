@@ -37,7 +37,8 @@ const RangeView = ({ range, source }: { range: Range, source: string }) => {
   const style = rangeInfo.type === "ThemeRangeInfo" ? {
     color: rangeInfo.foreground,
   } : undefined
-  return <span className="RangeView" style={style}>
+  const title = rangeInfo.type === "HoverRangeInfo" ? rangeInfo.hover : undefined
+  return <span className="RangeView" style={style} title={title}>
     {range.children.map((range, i) =>
       <RangeView range={range} source={source} key={i}/>,
     )}
