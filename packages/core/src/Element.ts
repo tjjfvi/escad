@@ -1,5 +1,5 @@
 
-import { Hierarchy } from "./Hierarchy"
+import { Hierarchy, HierarchyProp } from "./Hierarchy"
 import { Product } from "./Product"
 import { ConvertibleTo } from "./Conversions"
 import { checkTypeProperty } from "./checkTypeProperty"
@@ -32,14 +32,14 @@ interface DeepArray<T> extends ReadonlyArray<DeepArray<T> | T> {}
 export interface Element<T extends Product> {
   readonly type: "Element",
   readonly value: Promisish<T | Arrayish<Element<T>>>,
-  readonly hierarchy?: Promisish<Hierarchy | undefined>,
+  readonly hierarchy?: HierarchyProp,
 }
 
 export const Element = {
 
   createPromise: async <T extends Product>(
     elementish: Promisish<Elementish<T>>,
-    hierarchy?: Promisish<Hierarchy | undefined>,
+    hierarchy?: HierarchyProp,
   ): Promise<Element<T>> => {
     let value: T | Arrayish<Element<T>>
 
@@ -77,7 +77,7 @@ export const Element = {
 
   create: <T extends Product>(
     elementish: Promisish<Elementish<T>>,
-    hierarchy?: Promisish<Hierarchy | undefined>,
+    hierarchy?: HierarchyProp,
   ): Element<T> => {
     const elementPromise = Element.createPromise(elementish, hierarchy)
     return {
@@ -122,7 +122,7 @@ export const Element = {
   concat: <T extends Product, U extends Product>(a: Element<T>, b: Element<U>): Element<T | U> =>
     Element.create(Element.concatPromise(a, b)),
 
-  applyHierarchy: <T extends Product>(element: Element<T>, hierarchy?: Promisish<Hierarchy | undefined>): Element<T> =>
+  applyHierarchy: <T extends Product>(element: Element<T>, hierarchy?: HierarchyProp): Element<T> =>
     Element.create(element.value, hierarchy),
 
   isElement: checkTypeProperty.string<Element<Product>>("Element"),

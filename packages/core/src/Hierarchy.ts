@@ -11,6 +11,9 @@ import { LabeledHierarchy } from "./LabeledHierarchy"
 import { ObjectHierarchy } from "./ObjectHierarchy"
 import { NameHierarchy } from "./NameHierarchy"
 import { ValueHierarchy } from "./ValueHierarchy"
+import { Promisish } from "./Promisish"
+
+export type HierarchyProp = Promisish<Hierarchy | undefined>
 
 export interface _Hierarchy {
   readonly type: `${string}Hierarchy`,
