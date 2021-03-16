@@ -31,23 +31,48 @@ async function fetchGrammar(url: string){
   return grammar
 }
 
-export async function getScopeRanges(source: string, path: string){
+const themePromise = fs.readFile(require.resolve("../themes/default.json"), "utf8").then(source => {
+  const theme = JSON.parse(source)
+  registry.setTheme(theme)
+})
+
+export async function getThemeRanges(source: string, path: string){
+  await themePromise
   const grammar = await registry.loadGrammar(`source.${path.split(".").slice(-1)}`)
   if(!grammar) throw new Error("Missing grammar")
   const lines = source.split("\n")
   const ranges: Ranges = []
   let ruleStack = INITIAL
   let totalIndex = 0
+  const colorMap = registry.getColorMap()
   for(const line of lines) {
     const lineTokens = grammar.tokenizeLine(line, ruleStack)
     for(const token of lineTokens.tokens) {
       const { startIndex, endIndex, scopes } = token
+      const themeData =
+        scopes
+          .slice()
+          .reverse()
+          .flatMap(s => (grammar as any).getMetadataForScope(s).themeData)
+          .filter(x => !x.parentScopes || x.parentScopes.every((y: string) => scopes.includes(y)))
+          .reduce((a, b) => ({
+            fontStyle: a.fontStyle === -1 ? b.fontStyle : a.fontStyle,
+            foreground: a.foreground || b.foreground,
+            background: a.background || b.background,
+          }))
+      const fontStyle: number = themeData.fontStyle === -1 ? 0 : themeData.fontStyle
+      const foreground: number = themeData.foreground
+      const background: number = themeData.background
       ranges.push({
         start: totalIndex + startIndex,
         end: totalIndex + endIndex,
         info: [{
-          type: "ScopeRangeInfo",
-          scopes,
+          type: "ThemeRangeInfo",
+          foreground: colorMap[foreground],
+          background: colorMap[background],
+          italic: !!(fontStyle & 1),
+          bold: !!(fontStyle & 2),
+          underline: !!(fontStyle & 4),
         }],
       })
     }

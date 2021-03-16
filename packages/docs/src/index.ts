@@ -2,12 +2,13 @@
 import ts from "typescript"
 import fs from "fs-extra"
 import { getHoverRanges } from "./getHoverRanges"
-import { getScopeRanges } from "./getScopeRanges"
+import { getThemeRanges } from "./getThemeRanges"
 import { getLineRanges } from "./getLineRanges"
 import { intersectRanges } from "./intersectRanges"
 import { Range } from "./Range"
 import flatted from "flatted"
-import { join, relative, dirname } from "path"
+import { join, relative } from "path"
+import { outputStatic } from "./static"
 
 const outDir = join(__dirname, "../out/")
 const rootDir = join(__dirname, "../../core/src/")
@@ -49,11 +50,16 @@ program.getSourceFiles().map(async sourceFile => {
   const source = sourceFile.getText()
   const ranges = (await Promise.all([
     getHoverRanges(path, sourceFile, ls),
-    getScopeRanges(source, path),
+    getThemeRanges(source, path),
     getLineRanges(source),
     [{ start: 0, end: source.length, info: [] }],
   ])).reduce<Range[]>((a, b) => [...intersectRanges([...a], [...b])], [])
-  const outPath = join(outDir, relativePath, "ranges.json")
-  await fs.mkdirp(dirname(outPath))
-  await fs.writeFile(outPath, flatted.stringify(ranges))
+  const outPath = join(outDir, "data", "files", relativePath)
+  await fs.mkdirp(outPath)
+  await Promise.all([
+    await fs.writeFile(join(outPath, "ranges.json"), flatted.stringify(ranges)),
+    await fs.writeFile(join(outPath, "file"), source),
+  ])
 })
+
+outputStatic(outDir)

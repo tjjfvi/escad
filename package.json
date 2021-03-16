@@ -18,7 +18,8 @@
     "playground": "node packages/playground/dist/server/devServer.js",
     "open-errors": "npm run quick-build | grep packages/ | sed -e 's/(.*//' | sort | uniq | xargs code",
     "postinstall": "npm run bootstrap",
-    "build-playground-prod": "npm run force-build && npm run build-playground && node packages/playground/dist/server/buildProduction.js"
+    "build-playground-prod": "npm run force-build && npm run build-playground && node packages/playground/dist/server/buildProduction.js",
+    "static": "node -e 'let e=require(`express`);e().use(e.static(process.argv[1])).listen(process.argv[2]||8080)' --"
   },
   "author": "",
   "license": "ISC",

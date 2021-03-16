@@ -8,7 +8,7 @@ export type Range = {
 export type RangeInfo =
   | NewlineRangeInfo
   | HoverRangeInfo
-  | ScopeRangeInfo
+  | ThemeRangeInfo
   | CollapseRangeInfo
 
 export interface NewlineRangeInfo {
@@ -21,9 +21,13 @@ export interface HoverRangeInfo {
   hover: string,
 }
 
-export interface ScopeRangeInfo {
-  type: "ScopeRangeInfo",
-  scopes: string[],
+export interface ThemeRangeInfo {
+  type: "ThemeRangeInfo",
+  foreground: string | undefined,
+  background: string | undefined,
+  italic: boolean,
+  bold: boolean,
+  underline: boolean,
 }
 
 export interface CollapseRangeInfo {
