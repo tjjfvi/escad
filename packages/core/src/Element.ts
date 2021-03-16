@@ -31,8 +31,8 @@ interface DeepArray<T> extends ReadonlyArray<DeepArray<T> | T> {}
 
 export interface Element<T extends Product> {
   readonly type: "Element",
-  readonly value: Promise<T | Arrayish<Element<T>>>,
-  readonly hierarchy?: Promise<Hierarchy | undefined>,
+  readonly value: Promisish<T | Arrayish<Element<T>>>,
+  readonly hierarchy?: Promisish<Hierarchy | undefined>,
 }
 
 export const Element = {
@@ -70,8 +70,8 @@ export const Element = {
 
     return {
       type: "Element",
-      value: Promise.resolve(value),
-      hierarchy: Promise.resolve(hierarchy),
+      value,
+      hierarchy,
     }
   },
 
