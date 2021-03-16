@@ -87,8 +87,8 @@ export const GenericComponent = {
   ): GenericComponent<T, I, O> =>
     Component.create<Hkt.Output<I, T>, Hkt.Output<O, T>>(name, func, opts) as never,
   applyHierarchy: <T, I extends Hkt<T, any[]>, O extends Hkt<T, Thing>>(
-    Component: GenericComponent<T, I, O>,
+    component: GenericComponent<T, I, O>,
     hierarchy?: Hierarchy,
   ) =>
-    GenericComponent.create<T, I, O>(Component.name, Component.func, { ...Component, hierarchy }),
+    GenericComponent.create<T, I, O>(component.name, component.func, { ...component, hierarchy }),
 }
