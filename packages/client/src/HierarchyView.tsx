@@ -150,7 +150,7 @@ type TreeTextPartProps = {
   className?: string,
 }
 
-function wrapLinkedProducts(linkedProducts: readonly Hash<Product>[] | undefined, tree: Tree): Tree{
+function wrapLinkedProducts(linkedProducts: Hierarchy["linkedProducts"], tree: Tree): Tree{
   if(!linkedProducts || !linkedProducts.length)
     return tree
   return [
