@@ -7,47 +7,69 @@ export function* intersectRanges(rangesA: Ranges, rangesB: Ranges): Iterable<Ran
       return yield* rangesB
     if(!rangesB.length)
       return yield* rangesA
-    if(rangesA[0].start > rangesB[0].start)
-      [rangesA, rangesB] = [rangesB, rangesA]
     const [rangeA] = rangesA
-    if(rangeA.start === rangeA.end) {
+    let [rangeB] = rangesB
+    if(rangeA.end <= rangeB.start) {
       rangesA.shift()
       yield rangeA
       continue
     }
-    let lastInd = rangeA.start
-    while(rangesB.length) {
-      const [rangeB] = rangesB
-      if(lastInd < rangeB.start && lastInd < rangeA.end)
-        yield {
-          start: lastInd,
-          end: Math.min(rangeA.end, rangeB.start),
-          info: rangeA.info,
-        }
-      if(rangeB.start >= rangeA.end)
-        break
+    if(rangeB.end <= rangeA.start) {
       rangesB.shift()
-      yield {
-        start: rangeB.start,
-        end: Math.min(rangeA.end, rangeB.end),
-        info: [...rangeA.info, ...rangeB.info],
-      }
-      lastInd = rangeB.end
-      if(rangeA.end < rangeB.end) {
-        rangesB.unshift({
-          start: rangeA.end,
-          end: rangeB.end,
-          info: rangeB.info,
-        })
-        break
-      }
+      yield rangeB
+      continue
     }
-    if(!rangesB.length && lastInd < rangeA.end)
-      yield {
-        start: lastInd,
-        end: rangeA.end,
-        info: rangeA.info,
-      }
-    rangesA.shift()
+    if(rangeA.start === rangeA.end) {
+      rangesA.shift()
+      rangesB.shift()
+      const [left, right] = splitRange(rangeB, rangeA.start)
+      yield left
+      yield rangeA
+      rangesB.unshift(right)
+      continue
+    }
+    rangesB.shift()
+    if(rangeB.start < rangeA.start) {
+      const [left, right] = splitRange(rangeB, rangeA.start)
+      yield left
+      rangeB = right
+    }
+    if(rangeB.end > rangeA.end) {
+      const [left, right] = splitRange(rangeB, rangeA.end)
+      rangeB = left
+      rangesB.unshift(right)
+    }
+    rangeA.children = [...intersectRanges(rangeA.children, [rangeB])]
   }
+}
+
+function splitRange(range: Range, pos: number){
+  if(pos <= range.start || pos >= range.end)
+    throw new Error("Cannot split range by pos outside of it")
+  const left: Range = {
+    start: range.start,
+    end: pos,
+    info: range.info,
+    children: [],
+  }
+  const right: Range = {
+    start: pos,
+    end: range.end,
+    info: range.info,
+    children: [],
+  }
+  for(const child of range.children) {
+    if(child.end <= pos) {
+      left.children.push(child)
+      continue
+    }
+    if(child.start >= pos) {
+      right.children.push(child)
+      continue
+    }
+    const [leftChild, rightChild] = splitRange(child, pos)
+    left.children.push(leftChild)
+    right.children.push(rightChild)
+  }
+  return [left, right] as const
 }

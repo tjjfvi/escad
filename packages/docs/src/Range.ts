@@ -2,14 +2,21 @@
 export type Range = {
   start: number,
   end: number,
-  info: RangeInfo[],
+  info: RangeInfo,
+  children: Range[],
 }
 
 export type RangeInfo =
+  | NullRangeInfo
   | NewlineRangeInfo
   | HoverRangeInfo
   | ThemeRangeInfo
+  | EllipsisRangeInfo
   | CollapseRangeInfo
+
+export interface NullRangeInfo {
+  type: "NullRangeInfo",
+}
 
 export interface NewlineRangeInfo {
   type: "NewlineRangeInfo",
@@ -30,8 +37,14 @@ export interface ThemeRangeInfo {
   underline: boolean,
 }
 
+export interface EllipsisRangeInfo {
+  type: "EllipsisRangeInfo",
+  row: number,
+}
+
 export interface CollapseRangeInfo {
   type: "CollapseRangeInfo",
+  row: number,
 }
 
 export type Ranges = Range[]

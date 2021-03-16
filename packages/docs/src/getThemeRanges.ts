@@ -66,14 +66,15 @@ export async function getThemeRanges(source: string, path: string){
       ranges.push({
         start: totalIndex + startIndex,
         end: totalIndex + endIndex,
-        info: [{
+        info: {
           type: "ThemeRangeInfo",
           foreground: colorMap[foreground],
           background: colorMap[background],
           italic: !!(fontStyle & 1),
           bold: !!(fontStyle & 2),
           underline: !!(fontStyle & 4),
-        }],
+        },
+        children: [],
       })
     }
     ruleStack = lineTokens.ruleStack

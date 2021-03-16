@@ -1,7 +1,7 @@
 
 import ts from "typescript"
 import fs from "fs-extra"
-import { getHoverRanges } from "./getHoverRanges"
+import { getCollapseRangesForNode, getHoverRangesForNode, getTsRanges } from "./getTsRanges"
 import { getThemeRanges } from "./getThemeRanges"
 import { getLineRanges } from "./getLineRanges"
 import { intersectRanges } from "./intersectRanges"
@@ -47,12 +47,13 @@ program.getSourceFiles().map(async sourceFile => {
   if(!path.startsWith(rootDir))
     return
   const relativePath = relative(rootDir, path)
-  const source = sourceFile.getText()
+  const source = sourceFile.getFullText()
   const ranges = (await Promise.all([
-    getHoverRanges(path, sourceFile, ls),
+    getTsRanges(getCollapseRangesForNode, sourceFile),
+    getTsRanges(getHoverRangesForNode(ls), sourceFile),
     getThemeRanges(source, path),
     getLineRanges(source),
-    [{ start: 0, end: source.length, info: [] }],
+    [{ start: 0, end: source.length, info: { type: "NullRangeInfo" as const }, children: [] }],
   ])).reduce<Range[]>((a, b) => [...intersectRanges([...a], [...b])], [])
   const outPath = join(outDir, "data", "files", relativePath)
   await fs.mkdirp(outPath)

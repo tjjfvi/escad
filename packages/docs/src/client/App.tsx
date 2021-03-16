@@ -10,6 +10,7 @@ export const App = () => {
   const source = usePromise(() => getFile(file))
   if(!ranges || !source)
     return null
+  console.log(ranges)
   return <>
     <RangesView ranges={ranges} source={source}/>
   </>

@@ -7,10 +7,11 @@ export function* getLineRanges(source: string): Iterable<Range>{
     yield {
       start: totalInd,
       end: totalInd,
-      info: [{
+      info: {
         type: "NewlineRangeInfo",
         row,
-      }],
+      },
+      children: [],
     }
     totalInd += line.length + 1
   }

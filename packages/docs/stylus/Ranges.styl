@@ -1,15 +1,23 @@
 
+prefix(prop)
+  -webkit-{prop} slice(arguments, 1)
+  -moz-{prop} slice(arguments, 1)
+  -ms-{prop} slice(arguments, 1)
+  {prop} slice(arguments, 1)
+
 .Ranges
   overflow auto
   width 100%
 
-.RangeView
-  white-space pre
-  font-family Inconsolata, monospace
+  .RangeView
+    white-space pre
+    font-family Inconsolata, monospace
+    prefix user-select text
 
 .Newline
   display inline-block
-  width 50px
+  width 100px
   color $lightgrey
   text-align end
-  padding-right 10px
+  padding-right 20px
+  prefix user-select none
