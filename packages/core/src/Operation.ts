@@ -1,7 +1,7 @@
 
 import { Elementish, Element } from "./Element"
 import { Product } from "./Product"
-import { Hierarchy } from "./Hierarchy"
+import { Hierarchy, HierarchyProp } from "./Hierarchy"
 import { checkTypeProperty } from "./checkTypeProperty"
 import { ConvertibleTo } from "./Conversions"
 import { contextStack } from "./ContextStack"
@@ -23,7 +23,7 @@ export interface Operation<I extends Product, O extends Product> {
 }
 
 export interface OperationOptions {
-  readonly hierarchy?: Promisish<Hierarchy | undefined>,
+  readonly hierarchy?: HierarchyProp,
   readonly overrideHierarchy?: boolean,
   readonly showOutputInHierarchy?: boolean,
 }
@@ -68,7 +68,7 @@ export const Operation = {
   },
   applyHierarchy: <I extends Product, O extends Product>(
     operation: Operation<I, O>,
-    hierarchy?: Promisish<Hierarchy | undefined>,
+    hierarchy?: HierarchyProp,
   ) =>
     Operation.create(operation.name, operation.func, {
       ...operation,

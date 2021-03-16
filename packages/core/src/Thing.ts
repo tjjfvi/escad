@@ -2,8 +2,7 @@
 import { Component } from "./Component"
 import { Operation } from "./Operation"
 import { Element } from "./Element"
-import { Hierarchy } from "./Hierarchy"
-import { Promisish } from "./Promisish"
+import { HierarchyProp } from "./Hierarchy"
 
 export type Thing = Element<any> | Component<any[], any> | Operation<any, any>
 export type StripRealm<T extends Thing> =
@@ -16,7 +15,7 @@ export const Thing = {
     Element.isElement(value)
     || Component.isComponent(value)
     || Operation.isOperation(value),
-  applyHierarchy: <T extends Thing>(thing: T, hierarchy?: Promisish<Hierarchy | undefined>): StripRealm<T> => {
+  applyHierarchy: <T extends Thing>(thing: T, hierarchy?: HierarchyProp): StripRealm<T> => {
     if(Element.isElement(thing))
       return Element.applyHierarchy(thing, hierarchy) as never
     if(Operation.isOperation(thing))
