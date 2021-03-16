@@ -206,7 +206,7 @@ function _hierarchyToTree(hierarchy: Hierarchy): Tree{
     if(!hierarchy.composable)
       return [
         ...hierarchyToTree(hierarchy.operator),
-        ...wrapLinkedProducts(hierarchy.operands.flatMap(x => x.linkedProducts ?? []), [
+        ...wrapLinkedProducts(Hierarchy.flattenLinkedProducts(hierarchy.operands), [
           { text: ["("] },
           {
             children: hierarchy.operands.map(hierarchyToTree),
@@ -248,7 +248,7 @@ function _hierarchyToTree(hierarchy: Hierarchy): Tree{
       { text: ["("] },
       { children: operators, joiner: "∘", state: { open: false }, forceOpenable: true },
       { text: [")"] },
-      ...wrapLinkedProducts(hierarchy.operands.flatMap(x => x.linkedProducts ?? []), [
+      ...wrapLinkedProducts(Hierarchy.flattenLinkedProducts(hierarchy.operands), [
         { text: ["("] },
         {
           children: operands.map(hierarchyToTree),

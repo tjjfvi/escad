@@ -1,6 +1,6 @@
 
 import { checkTypeProperty } from "./checkTypeProperty"
-import { _Hierarchy } from "./Hierarchy"
+import { Hierarchy, _Hierarchy } from "./Hierarchy"
 import { LabeledHierarchy } from "./LabeledHierarchy"
 
 export interface ObjectHierarchy extends _Hierarchy {
@@ -11,7 +11,7 @@ export interface ObjectHierarchy extends _Hierarchy {
 export const ObjectHierarchy = {
   create: ({
     children,
-    linkedProducts = children.flatMap(x => x.linkedProducts ?? []),
+    linkedProducts = Hierarchy.flattenLinkedProducts(children),
   }: Omit<ObjectHierarchy, "type">): ObjectHierarchy => ({
     type: "ObjectHierarchy",
     children,

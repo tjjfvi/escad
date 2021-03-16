@@ -66,5 +66,7 @@ export const Hierarchy = {
       return ArrayHierarchy.from(value, raw)
     return ObjectHierarchy.from(value as Record<string, unknown>, raw)
   },
+  flattenLinkedProducts: (hierarchies: Hierarchy[]) =>
+    hierarchies.flatMap(h => h.linkedProducts ?? []),
 }
 
