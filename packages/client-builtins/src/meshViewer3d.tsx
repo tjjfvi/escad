@@ -7,7 +7,7 @@ import { EdgesGeometry } from "./EdgesGeometry"
 import * as t from "three"
 
 viewerRegistry.register<Mesh, Viewer3dInput>({
-  type: Mesh.productType,
+  type: Mesh,
   context: viewer3d,
   map: product => {
     let arr = new Float32Array(function*(){

@@ -6,7 +6,7 @@ exportTypeRegistry.register<Mesh>({
   id: Id.create(__filename, "@escad/builtins", "ExportType", "MeshBinaryStl", "0"),
   name: "Binary STL",
   extension: ".stl",
-  productType: Mesh.productType,
+  productType: Mesh,
   export: async meshes => {
     const triangles = meshes.flatMap(m => m.faces.flatMap(f => Face.toTriangles(f)))
     const buffer = Buffer.alloc(84 + triangles.length * 50)
@@ -30,7 +30,7 @@ exportTypeRegistry.register<Mesh>({
   id: Id.create(__filename, "@escad/builtins", "ExportType", "MeshAsciiStl", "0"),
   name: "ASCII STL",
   extension: ".stl",
-  productType: Mesh.productType,
+  productType: Mesh,
   export: async meshes => {
     const triangles = meshes.flatMap(m => m.faces.flatMap(f => Face.toTriangles(f)))
     const name = `@escad/builtins/stl/${Hash.create(meshes)}`

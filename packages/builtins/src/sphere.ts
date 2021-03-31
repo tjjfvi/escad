@@ -47,8 +47,8 @@ declare global {
 }
 
 conversionRegistry.register({
-  fromType: Sphere.productType,
-  toType: Mesh.productType,
+  fromType: Sphere,
+  toType: Mesh,
   convert: async (sphere: Sphere): Promise<Mesh> => {
     const { radius, smooth, centering } = sphere
     const sides = Math.max(

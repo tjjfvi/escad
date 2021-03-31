@@ -47,8 +47,8 @@ declare global {
 }
 
 conversionRegistry.register({
-  fromType: TupleProductType.create([UnionMarker.productType, ArrayProductType.create(Bsp.productType)]),
-  toType: Bsp.productType,
+  fromType: TupleProductType.create([UnionMarker, ArrayProductType.create(Bsp)]),
+  toType: Bsp,
   convert: async ({ children: [, c] }: Union<ArrayProduct<Bsp>>): Promise<Bsp> =>
     c.children.reduce((a, b) => {
       a = Bsp.clipTo(a, b, ClipOptions.DropBack | ClipOptions.DropCoplanarBack)

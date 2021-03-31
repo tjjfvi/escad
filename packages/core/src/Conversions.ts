@@ -1,16 +1,21 @@
 
 import { Hash } from "./Hash"
 import { ScopedId } from "./Id"
-import { Product, ProductType } from "./Product"
+import { Product, ProductType, ProductTypeish } from "./Product"
 
 export interface Conversion<A, B> {
   (value: A): B,
 }
 
-export interface ConversionImpl<A extends Product, B extends Product> {
-  readonly convert: (value: A) => Promise<B>,
+export interface ConversionImpl<A extends Product, B extends Product> extends ConversionImplish<A, B> {
   readonly fromType: ProductType<A>,
   readonly toType: ProductType<B>,
+}
+
+export interface ConversionImplish<A extends Product, B extends Product> {
+  readonly convert: (value: A) => Promise<B>,
+  readonly fromType: ProductTypeish<A>,
+  readonly toType: ProductTypeish<B>,
   readonly weight: number,
   readonly id: ScopedId<"Conversion"> | Hash<unknown>,
 }

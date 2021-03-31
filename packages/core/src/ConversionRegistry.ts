@@ -1,6 +1,6 @@
 
 import { ProductType, Product } from "./Product"
-import { ConvertibleTo, ConversionImpl } from "./Conversions"
+import { ConvertibleTo, ConversionImpl, ConversionImplish } from "./Conversions"
 import { MultiHashMap } from "./MultiHashMap"
 import { Hash } from "./Hash"
 import { artifactManager, ArtifactManager } from "./ArtifactManager"
@@ -36,11 +36,15 @@ export class ConversionRegistry {
   private composed = new HashMap<[ProductType, ProductType], ConversionPath | null>()
 
   register<F extends Product, T extends Product>(
-    conversion: ConversionImpl<F, T>,
+    conversion: ConversionImplish<F, T>,
   ): void{
     this.initialComposed.clear()
     this.composed.clear()
-    this.registered.add(conversion)
+    this.registered.add({
+      ...conversion,
+      fromType: ProductType.fromProductTypeish(conversion.fromType),
+      toType: ProductType.fromProductTypeish(conversion.toType),
+    })
   }
 
   has(a: ProductType, b: ProductType): boolean{

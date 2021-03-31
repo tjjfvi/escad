@@ -1,9 +1,9 @@
 import { ScopedId } from "./Id"
-import { Product, ProductType } from "./Product"
+import { Product, ProductTypeish } from "./Product"
 
 export interface ExportType<P extends Product> {
   readonly id: ScopedId<"ExportType">,
-  readonly productType: ProductType<P>,
+  readonly productType: ProductTypeish<P>,
   readonly extension: "" | `.${string}`,
   readonly name: string,
   readonly export: (products: P[]) => Promise<Buffer>,

@@ -44,8 +44,8 @@ declare global {
 }
 
 conversionRegistry.register({
-  fromType: TupleProductType.create([MeldMarker.productType, ArrayProductType.create(Mesh.productType)]),
-  toType: Mesh.productType,
+  fromType: TupleProductType.create([MeldMarker, ArrayProductType.create(Mesh)]),
+  toType: Mesh,
   convert: async ({ children: [, c] }: Meld<ArrayProduct<Mesh>>): Promise<Mesh> =>
     Mesh.create(c.children.flatMap(x => x.faces)),
   weight: 1,

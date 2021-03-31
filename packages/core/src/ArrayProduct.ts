@@ -1,6 +1,6 @@
 
 import { checkTypeProperty } from "./checkTypeProperty"
-import { Product, _Product, ProductType } from "./Product"
+import { Product, _Product, ProductType, ProductTypeish } from "./Product"
 
 export interface ArrayProduct<T extends Product = Product> extends _Product {
   readonly type: "ArrayProduct",
@@ -30,9 +30,9 @@ export interface ArrayProductType<T extends ArrayProduct = ArrayProduct> {
 }
 
 export const ArrayProductType = {
-  create: <T extends Product>(elementType: ProductType<T>): ArrayProductType<ArrayProduct<T>> => ({
+  create: <T extends Product>(elementType: ProductTypeish<T>): ArrayProductType<ArrayProduct<T>> => ({
     type: "ArrayProductType",
-    elementType,
+    elementType: ProductType.fromProductTypeish(elementType),
   }),
   isArrayProductType: checkTypeProperty.string<ArrayProductType>("ArrayProductType"),
 }

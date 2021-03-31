@@ -1,8 +1,8 @@
-import { ConversionRegistry, Product, ProductType } from "@escad/core"
+import { ConversionRegistry, Product, ProductType, ProductTypeish } from "@escad/core"
 
 export interface ProductConsumer<P extends Product, T, C> {
   context: C,
-  type: ProductType<P>,
+  type: ProductTypeish<P>,
   map: (product: P) => T | Promise<T>,
 }
 
@@ -14,7 +14,7 @@ export class ProductConsumerRegistry<C extends ProductConsumer<any, any, any>> {
 
   public *findConsumers(productType: ProductType){
     for(const viewerRegistration of this.registrations.values())
-      if(this.conversionRegistry.has(productType, viewerRegistration.type))
+      if(this.conversionRegistry.has(productType, ProductType.fromProductTypeish(viewerRegistration.type)))
         yield viewerRegistration
   }
 
@@ -26,7 +26,10 @@ export class ProductConsumerRegistry<C extends ProductConsumer<any, any, any>> {
   async mapProduct(context: C["context"], product: Product){
     for(const consumer of this.findConsumers(Product.getProductType(product)))
       if(consumer.context === context)
-        return await consumer.map(await this.conversionRegistry.convertProduct(consumer.type, product))
+        return await consumer.map(await this.conversionRegistry.convertProduct(
+          ProductType.fromProductTypeish(consumer.type),
+          product,
+        ))
   }
 
   *getConsumersForAll(types: Iterable<ProductType>): Iterable<C["context"]>{

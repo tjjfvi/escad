@@ -15,8 +15,8 @@ declare global {
 }
 
 conversionRegistry.register({
-  fromType: Mesh.productType,
-  toType: Bsp.productType,
+  fromType: Mesh,
+  toType: Bsp,
   convert: async (mesh: Mesh): Promise<Bsp> =>
     Bsp.build(null, mesh.faces) ?? Bsp.null(),
   weight: 1,
@@ -24,8 +24,8 @@ conversionRegistry.register({
 })
 
 conversionRegistry.register({
-  fromType: Bsp.productType,
-  toType: Mesh.productType,
+  fromType: Bsp,
+  toType: Mesh,
   convert: async (bsp: Bsp): Promise<Mesh> =>
     Mesh.create(Bsp.allFaces(bsp)),
   weight: 1,
