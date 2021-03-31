@@ -1,4 +1,4 @@
-import { Component, GenericComponent } from "./Component"
+import { Component, GenericComponent, GenericConstraint, _GCU } from "./Component"
 import { ExtensibleFunction } from "./ExtensibleFunction"
 import { Hkt } from "./Hkt"
 import { Realm } from "./Realm"
@@ -29,8 +29,18 @@ export const RealmComponent = {
     },
 }
 
-// eslint-disable-next-line max-len
-export interface RealmGenericComponent<T, I extends Hkt<T, any[]>, O extends Hkt<T, Thing>, C> extends GenericComponent<T, I, O> {
-  <U extends T>(...args: Hkt.Output<I, U>): RealmThing<Hkt.Output<O, U>, C>,
+export interface RealmGenericComponent<
+  T extends GenericConstraint,
+  I extends Hkt<T, any[]>,
+  O extends Hkt<T, Thing>,
+  C,
+> extends GenericComponent<T, I, O> {
+  <
+    U0 extends T[0],
+    U1 extends T[1],
+    U2 extends T[2],
+    U3 extends T[3],
+    U4 extends T[4],
+  >(...args: Hkt.Output<I, _GCU<T, U0, U1, U2, U3, U4>>): RealmThing<Hkt.Output<O, _GCU<T, U0, U1, U2, U3, U4>>, C>,
 }
 
