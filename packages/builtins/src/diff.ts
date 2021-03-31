@@ -48,7 +48,7 @@ declare global {
 conversionRegistry.register({
   fromType: TupleProductType.create([DiffMarker, Bsp, Bsp]),
   toType: Bsp,
-  convert: async ({ children: [, a, b] }: Diff<Bsp, Bsp>): Promise<Bsp> => {
+  convert: async ({ children: [, a, b] }) => {
     b = Bsp.invert(b)
     a = Bsp.clipTo(a, b, ClipOptions.DropFront | ClipOptions.DropCoplanar)
     b = Bsp.clipTo(b, a, ClipOptions.DropFront | ClipOptions.DropCoplanarBack)
