@@ -46,7 +46,7 @@ declare global {
 conversionRegistry.register({
   fromType: TupleProductType.create([MeldMarker, ArrayProductType.create(Mesh)]),
   toType: Mesh,
-  convert: async ({ children: [, c] }: Meld<ArrayProduct<Mesh>>): Promise<Mesh> =>
+  convert: async ({ children: [, c] }) =>
     Mesh.create(c.children.flatMap(x => x.faces)),
   weight: 1,
   id: Id.create(__filename, "@escad/builtins", "Conversion", "Meld", "0"),

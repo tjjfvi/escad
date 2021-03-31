@@ -51,7 +51,7 @@ declare global {
 conversionRegistry.register({
   fromType: Cylinder,
   toType: Mesh,
-  convert: async (cyl: Cylinder): Promise<Mesh> => {
+  convert: async cyl => {
     const { radius, height, smooth, centering } = cyl
     const sides = Math.max(
       2,
