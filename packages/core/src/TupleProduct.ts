@@ -1,6 +1,6 @@
 
 import { checkTypeProperty } from "./checkTypeProperty"
-import { Product, _Product, ProductType } from "./Product"
+import { Product, _Product, ProductType, ProductTypeish } from "./Product"
 
 export interface TupleProduct<T extends readonly Product[] = readonly Product[]> extends _Product {
   readonly type: "TupleProduct",
@@ -14,7 +14,7 @@ export const TupleProduct = {
   }),
   isTupleProduct: checkTypeProperty.string<TupleProduct>("TupleProduct"),
   getTupleProductType: <T extends TupleProduct>(product: T): TupleProductType<T> =>
-    TupleProductType.create(product.children.map(Product.getProductType)) as any,
+    TupleProductType.create(product.children.map(Product.getProductType) as never) as never,
 }
 
 export interface TupleProductType<T extends TupleProduct = TupleProduct> {
@@ -28,13 +28,15 @@ export interface TupleProductType<T extends TupleProduct = TupleProduct> {
 
 type ProductTypeTupleMap<T extends readonly Product[]> =
   { [K in keyof T]: T[K] extends Product ? ProductType<T[K]> : T[K] }
+type ProductTypeishTupleMap<T extends readonly Product[]> =
+  { [K in keyof T]: T[K] extends Product ? ProductTypeish<T[K]> : T[K] }
 
 export const TupleProductType = {
   create: <T extends readonly Product[]>(
-    elementTypes: [...ProductTypeTupleMap<T>],
+    elementTypes: [...ProductTypeishTupleMap<T>],
   ): TupleProductType<TupleProduct<T>> => ({
     type: "TupleProductType",
-    elementTypes,
+    elementTypes: elementTypes.map(productTypeish => ProductType.fromProductTypeish(productTypeish as never)) as never,
   }),
   isTupleProductType: checkTypeProperty.string<TupleProductType>("TupleProductType"),
 }

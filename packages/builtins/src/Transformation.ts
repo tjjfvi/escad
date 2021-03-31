@@ -26,8 +26,8 @@ conversionRegistry.register<Transformation<Mesh>, Mesh>({
         Matrix4.multiplyVector(matrix, vector),
       )),
     )),
-  fromType: TupleProductType.create([Matrix4.productType, Mesh.productType]),
-  toType: Mesh.productType,
+  fromType: TupleProductType.create([Matrix4, Mesh]),
+  toType: Mesh,
   weight: 1,
   id: Id.create(__filename, "@escad/builtins", "Conversion", "Transformation", "0"),
 })

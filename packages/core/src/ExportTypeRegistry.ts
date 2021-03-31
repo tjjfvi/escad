@@ -3,7 +3,7 @@ import { ExportType } from "./ExportType"
 import { artifactManager, ArtifactManager } from "./ArtifactManager"
 import { Id } from "./Id"
 import { ArtifactStore } from "./ArtifactStore"
-import { Product } from "./Product"
+import { Product, ProductType } from "./Product"
 import { conversionRegistry, ConversionRegistry } from "./ConversionRegistry"
 import { HashMap } from "./HashMap"
 
@@ -24,7 +24,7 @@ export class ExportTypeRegistry {
       if(!exportType) return null
       if(!(products instanceof Array) || !products.every(Product.isProduct)) return null
       const convertedProducts = await Promise.all(products.map(p =>
-        this.conversionRegistry.convertProduct(exportType.productType, p),
+        this.conversionRegistry.convertProduct(ProductType.fromProductTypeish(exportType.productType), p),
       ))
       const exported = await exportType.export(convertedProducts)
       await artifactManager.storeRef([id, exportTypeId, products], exported)

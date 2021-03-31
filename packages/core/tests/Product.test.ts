@@ -6,6 +6,7 @@ import {
   Id,
   LeafProduct,
   Product,
+  ProductType,
   TupleProduct,
   TupleProductType,
   UnknownProduct,
@@ -86,11 +87,11 @@ describe.each<readonly [string, () => Product]>([
   })
   describe("Product.isProduct with wrong ProductType", () => {
     test.each([
-      ["ProductC", ProductC.productType],
-      ["ArrayProduct<ProductC>", ArrayProductType.create(ProductC.productType)],
-      ["TupleProduct<[ProductA, ProductC]>", TupleProductType.create([ProductA.productType, ProductC.productType])],
+      ["ProductC", ProductC],
+      ["ArrayProduct<ProductC>", ArrayProductType.create(ProductC)],
+      ["TupleProduct<[ProductA, ProductC]>", TupleProductType.create([ProductA, ProductC])],
     ] as const)("%s", (_, productType) => {
-      expect(Product.isProduct(createProduct(), productType)).toBe(false)
+      expect(Product.isProduct(createProduct(), ProductType.fromProductTypeish<Product>(productType))).toBe(false)
     })
   })
 })

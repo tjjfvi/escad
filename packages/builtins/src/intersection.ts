@@ -47,8 +47,8 @@ declare global {
 }
 
 conversionRegistry.register({
-  fromType: TupleProductType.create([IntersectionMarker.productType, ArrayProductType.create(Bsp.productType)]),
-  toType: Bsp.productType,
+  fromType: TupleProductType.create([IntersectionMarker, ArrayProductType.create(Bsp)]),
+  toType: Bsp,
   convert: async ({ children: [, c] }: Intersection<ArrayProduct<Bsp>>): Promise<Bsp> =>
     c.children.reduce((a, b) => {
       a = Bsp.clipTo(a, b, ClipOptions.DropFront | ClipOptions.DropCoplanarBack)

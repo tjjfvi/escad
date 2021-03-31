@@ -8,9 +8,8 @@ import {
   ProductType,
   Element,
   conversionRegistry,
+  ProductTypeish,
 } from "@escad/core"
-
-type ProductTypeish<T extends Product> = ProductType<T> | { productType: ProductType<T> }
 
 export interface ConvertArgsHkt extends Hkt<[Product]> {
   [Hkt.output]: [productTypeish: ProductTypeish<Hkt.Input<this>[0]>],
@@ -23,7 +22,7 @@ export interface ConvertReturnHkt extends Hkt<[Product]> {
 export const convert = GenericComponent.create<[Product], ConvertArgsHkt, ConvertReturnHkt>(
   "convert",
   <U extends Product>(productTypeish: ProductTypeish<U>) => {
-    const productType = ProductType.isProductType(productTypeish) ? productTypeish : productTypeish.productType
+    const productType = ProductType.fromProductTypeish(productTypeish)
     return Operation.create(
       "convert",
       element => Element.map(element, product =>

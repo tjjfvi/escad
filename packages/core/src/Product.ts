@@ -76,4 +76,8 @@ export const ProductType = {
     || TupleProductType.isTupleProductType(value)
     || ArrayProductType.isArrayProductType(value)
     || UnknownProductType.isUnknownProductType(value),
+  fromProductTypeish: <T extends Product>(productTypeish: ProductTypeish<T>): ProductType<T> =>
+    ProductType.isProductType(productTypeish) ? productTypeish : productTypeish.productType,
 }
+
+export type ProductTypeish<T extends Product> = ProductType<T> | { productType: ProductType<T> }

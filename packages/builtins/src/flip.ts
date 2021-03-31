@@ -47,8 +47,8 @@ conversionRegistry.register<FlipFaces<Mesh>, Mesh>({
     Mesh.create(mesh.faces.map(face =>
       Face.create(face.points.slice().reverse()),
     )),
-  fromType: TupleProductType.create([FlipFacesMarker.productType, Mesh.productType]),
-  toType: Mesh.productType,
+  fromType: TupleProductType.create([FlipFacesMarker, Mesh]),
+  toType: Mesh,
   weight: 1,
   id: Id.create(__filename, "@escad/builtins", "Conversion", "FlipFaces", "0"),
 })

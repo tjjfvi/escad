@@ -41,8 +41,8 @@ declare global {
 }
 
 conversionRegistry.register({
-  fromType: Cube.productType,
-  toType: Mesh.productType,
+  fromType: Cube,
+  toType: Mesh,
   convert: async (cube: Cube): Promise<Mesh> => {
     const { centering, size } = cube
     const center = Vector3.multiplyComponents(centering, Vector3.multiplyScalar(size, .5))
