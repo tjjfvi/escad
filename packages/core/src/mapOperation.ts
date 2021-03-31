@@ -1,11 +1,12 @@
 import { Operation, OperationOptions } from "./Operation"
 import { Product } from "./Product"
-import { Element } from "./Element"
+import { Element, Elementish } from "./Element"
+import { Promisish } from "./Promisish"
 
 export const mapOperation = (
  <I extends Product, O extends Product = I>(
     name: string,
-    func: (i: I) => O,
+    func: (i: I) => Promisish<Elementish<O>>,
     opts: OperationOptions = {},
   ) =>
     Operation.create<I, O>(name, async arg => {
