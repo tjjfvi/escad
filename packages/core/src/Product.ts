@@ -65,9 +65,9 @@ function isProduct(arg: any, productType?: ProductType){
 }
 
 export type ProductType<U extends Product = Product> =
-  | LeafProductType<Extract<U, LeafProduct>>
-  | TupleProductType<Extract<U, TupleProduct>>
-  | ArrayProductType<Extract<U, ArrayProduct>>
+  | LeafProductType<U & LeafProduct>
+  | TupleProductType<U & TupleProduct>
+  | ArrayProductType<U & ArrayProduct>
   | (U extends UnknownProduct ? UnknownProductType : never)
 
 export const ProductType = {

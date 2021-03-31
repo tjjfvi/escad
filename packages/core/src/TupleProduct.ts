@@ -21,13 +21,18 @@ export interface TupleProductType<T extends TupleProduct = TupleProduct> {
   readonly type: "TupleProductType",
   readonly elementTypes: (
     T extends TupleProduct<infer U>
-      ? { [K in keyof U]: U[K] extends Product ? ProductType<U[K]> : never }
+      ? ProductTypeTupleMap<U>
       : never
   ),
 }
 
+type ProductTypeTupleMap<T extends readonly Product[]> =
+  { [K in keyof T]: T[K] extends Product ? ProductType<T[K]> : T[K] }
+
 export const TupleProductType = {
-  create: (elementTypes: ProductType[]): TupleProductType => ({
+  create: <T extends readonly Product[]>(
+    elementTypes: [...ProductTypeTupleMap<T>],
+  ): TupleProductType<TupleProduct<T>> => ({
     type: "TupleProductType",
     elementTypes,
   }),

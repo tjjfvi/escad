@@ -32,7 +32,7 @@ export interface LeafProductType<T extends LeafProduct = LeafProduct> {
 }
 
 export const LeafProductType = {
-  create: (id: ScopedId<"LeafProduct">): LeafProductType => ({
+  create: <T extends LeafProduct>(id: T["type"]): LeafProductType<T> => ({
     type: "LeafProductType",
     id,
   }),

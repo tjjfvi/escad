@@ -30,7 +30,7 @@ export interface ArrayProductType<T extends ArrayProduct = ArrayProduct> {
 }
 
 export const ArrayProductType = {
-  create: (elementType: ProductType): ArrayProductType => ({
+  create: <T extends Product>(elementType: ProductType<T>): ArrayProductType<ArrayProduct<T>> => ({
     type: "ArrayProductType",
     elementType,
   }),
