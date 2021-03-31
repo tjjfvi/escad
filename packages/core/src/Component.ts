@@ -73,23 +73,53 @@ export const Component = {
 
 declare const __genericComponent__: unique symbol
 
-export type GenericComponent<T, I extends Hkt<T, any[]>, O extends Hkt<T, Thing>> =
+export type GenericComponent<T extends GenericConstraint, I extends Hkt<[...T], any[]>, O extends Hkt<[...T], Thing>> =
   & Omit<Component<Hkt.Output<I, T>, Hkt.Output<O, T>>, "func">
   & {
-    readonly func: <U extends T>(...args: Hkt.Output<I, U>) => Hkt.Output<O, U>,
-    <U extends T>(...args: Hkt.Output<I, U>): StripRealm<Hkt.Output<O, U>>,
+    readonly func: <
+      U0 extends T[0],
+      U1 extends T[1],
+      U2 extends T[2],
+      U3 extends T[3],
+      U4 extends T[4],
+  >(...args: Hkt.Output<I, _GCU<T, U0, U1, U2, U3, U4>>) => Hkt.Output<O, _GCU<T, U0, U1, U2, U3, U4>>,
+    <
+      U0 extends T[0],
+      U1 extends T[1],
+      U2 extends T[2],
+      U3 extends T[3],
+      U4 extends T[4],
+    >(...args: Hkt.Output<I, _GCU<T, U0, U1, U2, U3, U4>>): StripRealm<Hkt.Output<O, _GCU<T, U0, U1, U2, U3, U4>>>,
     // Component shouldn't be assignable to GenericComponent
     readonly [__genericComponent__]: never,
   }
 
+export type GenericConstraint = [unknown?, unknown?, unknown?, unknown?, unknown?]
+export type _GCU<
+  T extends GenericConstraint,
+  U0 extends T[0],
+  U1 extends T[1],
+  U2 extends T[2],
+  U3 extends T[3],
+  U4 extends T[4],
+> = {
+  [K in keyof T]: K extends keyof GenericConstraint & `${number}` ? [U0, U1, U2, U3, U4][K] : T[K]
+} & T
+
 export const GenericComponent = {
-  create: <T, I extends Hkt<T, any[]>, O extends Hkt<T, Thing>>(
+  create: <T extends GenericConstraint, I extends Hkt<[...T], any[]>, O extends Hkt<[...T], Thing>>(
     name: string,
-    func: <U extends T>(...args: Hkt.Output<I, U>) => Hkt.Output<O, U>,
+    func: <
+      U0 extends T[0],
+      U1 extends T[1],
+      U2 extends T[2],
+      U3 extends T[3],
+      U4 extends T[4],
+    >(...args: Hkt.Output<I, _GCU<T, U0, U1, U2, U3, U4>>) => Hkt.Output<O, _GCU<T, U0, U1, U2, U3, U4>>,
     opts?: ComponentOpts,
   ): GenericComponent<T, I, O> =>
     Component.create<Hkt.Output<I, T>, Hkt.Output<O, T>>(name, func, opts) as never,
-  applyHierarchy: <T, I extends Hkt<T, any[]>, O extends Hkt<T, Thing>>(
+  applyHierarchy: <T extends GenericConstraint, I extends Hkt<[...T], any[]>, O extends Hkt<[...T], Thing>>(
     component: GenericComponent<T, I, O>,
     hierarchy?: Hierarchy,
   ) =>

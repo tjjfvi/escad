@@ -12,15 +12,15 @@ import {
 
 type ProductTypeish<T extends Product> = ProductType<T> | { productType: ProductType<T> }
 
-export interface ConvertArgsHkt extends Hkt<Product> {
-  [Hkt.output]: [productTypeish: ProductTypeish<Hkt.Input<this>>],
+export interface ConvertArgsHkt extends Hkt<[Product]> {
+  [Hkt.output]: [productTypeish: ProductTypeish<Hkt.Input<this>[0]>],
 }
 
-export interface ConvertReturnHkt extends Hkt<Product> {
-  [Hkt.output]: Operation<ConvertibleTo<Hkt.Input<this>>, Hkt.Input<this>>,
+export interface ConvertReturnHkt extends Hkt<[Product]> {
+  [Hkt.output]: Operation<ConvertibleTo<Hkt.Input<this>[0]>, Hkt.Input<this>[0]>,
 }
 
-export const convert = GenericComponent.create<Product, ConvertArgsHkt, ConvertReturnHkt>(
+export const convert = GenericComponent.create<[Product], ConvertArgsHkt, ConvertReturnHkt>(
   "convert",
   <U extends Product>(productTypeish: ProductTypeish<U>) => {
     const productType = ProductType.isProductType(productTypeish) ? productTypeish : productTypeish.productType
