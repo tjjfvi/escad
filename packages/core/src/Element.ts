@@ -127,12 +127,15 @@ export const Element = {
 
   isElement: checkTypeProperty.string<Element<Product>>("Element"),
 
-  map: <T extends Product, U extends Product>(element: Element<T>, fn: (value: T) => Elementish<U>): Element<U> =>
+  map: <T extends Product, U extends Product>(
+    element: Element<T>,
+    fn: (value: T) => Promisish<Elementish<U>>,
+  ): Element<U> =>
     Element.create(Element.mapPromise(element, fn)),
 
   mapPromise: async <T extends Product, U extends Product>(
     element: Element<T>,
-    fn: (value: T) => Elementish<U>,
+    fn: (value: T) => Promisish<Elementish<U>>,
   ): Promise<Element<U>> => {
     const value = await element.value
 

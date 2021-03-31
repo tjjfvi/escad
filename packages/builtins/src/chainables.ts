@@ -13,8 +13,10 @@ import { cube } from "./cube"
 import { sphere } from "./sphere"
 import { polyhedron } from "./polyhedron"
 import { convert } from "./convert"
+import { attribute } from "./attribute"
 
 export default {
+  attribute,
   convert,
   tX,
   tY,
