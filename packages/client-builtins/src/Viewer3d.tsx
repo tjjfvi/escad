@@ -81,6 +81,7 @@ function onOrientRendererRightClick(event: MouseEvent){
 function onRendererDoubleClick(event: MouseEvent){
   let cam = s.ortho ? orthocamera : camera
   originSphere.scale.set(1, 1, 1).multiplyScalar(cam.position.length() / 100)
+  originSphere.visible = true
   originSphere.updateMatrixWorld()
   let cel = renderer.domElement
   let rect = cel.getBoundingClientRect()
@@ -88,6 +89,7 @@ function onRendererDoubleClick(event: MouseEvent){
   mouse.y = -(((event.clientY - rect.top) / rect.height) * 2 - 1)
   raycaster.setFromCamera(mouse, cam)
   let hits = raycaster.intersectObjects([inputGroup, originSphere], true)
+  originSphere.visible = false
   for(let { object, point } of hits) {
     if(object.type !== "Mesh")
       continue
