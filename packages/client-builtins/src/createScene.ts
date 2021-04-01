@@ -46,15 +46,19 @@ export const createScene = () => {
   orientCamera.position.set(0, 0, 1)
   orientCamera.up = new t.Vector3(0, 0, 1)
   orientCamera.lookAt(0, 0, 0)
-  const [orientCube, orientRaycast] = createOrientCube(() => ortho ? orientOrthocamera : orientCamera, controls)
+  const [orientCube, orientRaycast] = createOrientCube(() => s.ortho ? orientOrthocamera : orientCamera, controls)
   orientScene.add(orientCube)
 
   scene.add(...createLineAxes())
   orientScene.add(...createCylAxes())
 
-  let ortho = false
+  let raycaster = new t.Raycaster()
+  let mouse = new t.Vector2()
+  let originSphere = new t.Mesh(new t.SphereBufferGeometry(1, 100, 100), new t.MeshNormalMaterial())
+  originSphere.visible = false
+  scene.add(originSphere)
 
-  return {
+  const s = {
     scene,
     camera,
     orthocamera,
@@ -69,6 +73,11 @@ export const createScene = () => {
     orientMouse,
     orientCube,
     orientRaycast,
-    ortho,
+    ortho: false,
+    raycaster,
+    mouse,
+    originSphere,
   }
+
+  return s
 }
