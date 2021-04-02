@@ -14,6 +14,7 @@ import { timers } from "./Timer"
 import { UnknownProduct, UnknownProductType } from "./UnknownProduct"
 import { ScopedId } from "./Id"
 import { MarkedProduct, MarkedProductType } from "./MarkedProduct"
+import { AndProduct, AndProductType } from "./AndProduct"
 
 export interface _Product {
   readonly type: string | ScopedId<"LeafProduct">,
@@ -26,6 +27,7 @@ export interface _Product {
     : TupleProduct extends this ? unknown
     : ArrayProduct extends this ? unknown
     : UnknownProduct extends this ? unknown
+    : AndProduct extends this ? unknown
     : _ConvertibleTo<this>
   ),
 }
@@ -36,6 +38,7 @@ export type Product =
   | TupleProduct
   | ArrayProduct
   | UnknownProduct
+  | AndProduct
 
 export const Product = {
   isProduct,
@@ -50,6 +53,8 @@ export const Product = {
       return ArrayProduct.getArrayProductType(product)
     if(UnknownProduct.isUnknownProduct(product))
       return UnknownProductType.create() as ProductType<P>
+    if(AndProduct.isAndProduct(product))
+      return AndProductType.getAndProductType(product)
     throw new Error("Invalid product passed to Product.getProductType")
   }),
 }
@@ -64,6 +69,7 @@ function isProduct(arg: any, productType?: ProductType){
       || TupleProduct.isTupleProduct(arg)
       || ArrayProduct.isArrayProduct(arg)
       || UnknownProduct.isUnknownProduct(arg)
+      || AndProduct.isAndProduct(arg)
     )
     && (!productType || Hash.equal(Product.getProductType(arg), productType))
   )
@@ -74,6 +80,7 @@ export type ProductType<U extends Product = Product> =
   | MarkedProductType<U & MarkedProduct>
   | TupleProductType<U & TupleProduct>
   | ArrayProductType<U & ArrayProduct>
+  | AndProductType<U & AndProduct>
   | (U extends UnknownProduct ? UnknownProductType : never)
 
 export const ProductType = {
@@ -82,7 +89,8 @@ export const ProductType = {
     || MarkedProductType.isMarkedProductType(value)
     || TupleProductType.isTupleProductType(value)
     || ArrayProductType.isArrayProductType(value)
-    || UnknownProductType.isUnknownProductType(value),
+    || UnknownProductType.isUnknownProductType(value)
+    || AndProductType.isAndProductType(value),
   fromProductTypeish: <T extends Product>(productTypeish: ProductTypeish<T>): ProductType<T> =>
     ProductType.isProductType(productTypeish) ? productTypeish : productTypeish.productType,
 }
