@@ -149,15 +149,15 @@ declare global {
 
 type Assert<T, U extends T> = U
 interface ProductA extends LeafProduct {
-  id: Id<"@escad/core", "LeafProduct", "ConversionsTests", "ProductA">,
+  type: Id<"@escad/core", "LeafProduct", "ConversionsTests", "ProductA">,
   a: 5,
 }
 interface ProductB extends LeafProduct {
-  id: Id<"@escad/core", "LeafProduct", "ConversionsTests", "ProductB">,
+  type: Id<"@escad/core", "LeafProduct", "ConversionsTests", "ProductB">,
   b: 5,
 }
 interface ProductC extends LeafProduct {
-  id: Id<"@escad/core", "LeafProduct", "ConversionsTests", "ProductC">,
+  type: Id<"@escad/core", "LeafProduct", "ConversionsTests", "ProductC">,
   c: 5,
 }
 
