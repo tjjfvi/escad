@@ -60,16 +60,10 @@ type U2I<U> = (U extends U ? (u: U) => 0 : never) extends (i: infer I) => 0 ? I 
 
 type Match<T, U> = keyof U extends keyof T ? Pick<T, keyof U> extends U ? true : false : false
 
-type CovariantMergeable<T> = {
-  (): CovariantMergeable<T>,
-  _covariantMergable: true,
-  // x: { x: T },
+type CovariantMergeableEach<T> = T extends CovariantMergeable<unknown> ? T : CovariantMergeable<T>
+interface CovariantMergeable<T> {
+  _covariantMergable: () => T,
 }
-type CovariantMergeableEach<T> = CovariantMergeable<T>
-
-// type asdfgfd<T> = T  extends { x: { x: infer U } } ? U : never
-// type defefs = CovariantMergeable<1> & CovariantMergeable<2>
-// type afs = { x: { x: 1 } } & { x: { x: 2 } } extends never ? true : false
 
 type _ImplicitlyConvertibleTo<A, E=never> = CovariantMergeableEach<A extends A ?
   | Match<A, { type: "TupleProduct" }> extends true
@@ -117,21 +111,17 @@ type _DirectConvertibleTo<T, E = never, C = ConversionsUnion> =
       : never
     : never
 
-export type _ConvertibleTo<T, E=never> =
+export type _ConvertibleTo<T, E=never> = T extends T ? __ConvertibleTo<Omit<T, __convertibleTo>, E> : never
+type __ConvertibleTo<T, E=never> =
   T extends T
     ? __convertibleToOverride extends keyof T
       ? _ConvertibleTo<Unphantom<T[__convertibleToOverride]>>
-      // : Exclude<T, { type: "AndProduct" }>
       : _ImplicitlyConvertibleTo<T, E>
       | (
         T extends E
           ? never
           : _ConvertibleTo<_DirectConvertibleTo<T, E>, E | T | _ImplicitlyConvertibleTo<T, E>>
       )
-      | CovariantMergeable<{
-        [__convertibleTo]?: _ConvertibleTo<T, E> | T[Extract<__convertibleTo, keyof T>],
-        [__convertibleToTransitivityOverride]?: TransitivityOverride.C,
-      }>
     : never
 
 // Preserves type info but does not affect assignability
@@ -174,11 +164,8 @@ interface ProductC extends LeafProduct {
   c: 5,
 }
 
-type adfds = Assert<never, TupleProduct<[ProductA, ProductC]>[__convertibleTo]>
-
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-type Tests<B extends Product, A extends ConvertibleTo<B>, T, U extends T> = [
-  Assert<CovariantMergeable<T>, CovariantMergeable<CovariantMergeable<T>>>,
+type Tests<B extends Product, A extends ConvertibleTo<B>> = [
   Assert<ConvertibleTo<ArrayProduct<ProductA>>, ArrayProduct<ProductB>>,
   Assert<
     ConvertibleTo<ArrayProduct<ProductA>>,
@@ -211,6 +198,10 @@ type Tests<B extends Product, A extends ConvertibleTo<B>, T, U extends T> = [
   Assert<ConvertibleTo<AndProduct<[ProductA, ProductB]>>, ProductB>,
   // @ts-expect-error
   Assert<ConvertibleTo<AndProduct<[ProductC]>>, AndProduct<[ProductB, ProductA]>>,
+  // @ts-expect-error
+  Assert<ConvertibleTo<AndProduct<[ProductA, ProductB]>>, ProductC>,
+  // @ts-expect-error
+  Assert<ConvertibleTo<TupleProduct<[AndProduct<[ProductA, ProductB]>]>>, TupleProduct<[ProductC]>>,
   // @ts-expect-error
   Assert<ConvertibleTo<AndProduct<[ProductC, ProductA]>>, ProductC>,
   // @ts-expect-error

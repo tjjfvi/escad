@@ -19,7 +19,7 @@ import { AndProduct, AndProductType } from "./AndProduct"
 export interface _Product {
   readonly type: string | ScopedId<"LeafProduct">,
   readonly [__convertibleToTransitivityOverride]?: TransitivityOverride.A,
-  // @ts-ignore: This doesn't normally error, but sometimes tsc -b does weird things.
+  // // @ts-ignore: This doesn't normally error, but sometimes tsc -b does weird things.
   readonly [__convertibleTo]?: (
     | __convertibleToOverride extends keyof this ? unknown
     : LeafProduct extends this ? unknown
