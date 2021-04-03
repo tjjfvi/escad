@@ -42,13 +42,6 @@ export type ConversionImpls<C = ConversionsUnion> = (
     : never
 )
 
-export type DirectConvertibleTo<T, C = ConversionsUnion> =
-  C extends Conversion<infer F, infer T2>
-    ? Omit<T2, __convertibleTo> extends T
-      ? Omit<F, __convertibleTo>
-      : never
-    : never
-
 export declare const __convertibleTo: unique symbol
 export declare const __convertibleToOverride: unique symbol
 export declare const __convertibleToTransitivityOverride: unique symbol
@@ -67,8 +60,19 @@ type U2I<U> = (U extends U ? (u: U) => 0 : never) extends (i: infer I) => 0 ? I 
 
 type Match<T, U> = keyof U extends keyof T ? Pick<T, keyof U> extends U ? true : false : false
 
-type _ImplicitlyConvertibleTo<A, E=never> = A extends A ?
-  Match<A, { type: "TupleProduct" }> extends true
+type CovariantMergeable<T> = {
+  (): T | CovariantMergeable<T>,
+  _covariantMergable: true,
+  // x: { x: T },
+}
+type CovariantMergeableEach<T> = CovariantMergeable<T>
+
+// type asdfgfd<T> = T  extends { x: { x: infer U } } ? U : never
+// type defefs = CovariantMergeable<1> & CovariantMergeable<2>
+// type afs = { x: { x: 1 } } & { x: { x: 2 } } extends never ? true : false
+
+type _ImplicitlyConvertibleTo<A, E=never> = CovariantMergeableEach<A extends A ?
+  | Match<A, { type: "TupleProduct" }> extends true
     ? "children" extends keyof A
       ? {
         readonly type: "TupleProduct",
@@ -77,8 +81,9 @@ type _ImplicitlyConvertibleTo<A, E=never> = A extends A ?
         },
       }
       : never
-    : Match<A, { type: "ArrayProduct" }> extends true
-      ? "children" extends keyof A ? number extends keyof A["children"]
+  : Match<A, { type: "ArrayProduct" }> extends true
+    ? "children" extends keyof A
+      ? number extends keyof A["children"]
         ? {
           readonly type: "ArrayProduct",
           readonly children: readonly _ConvertibleTo<A["children"][number]>[],
@@ -87,22 +92,30 @@ type _ImplicitlyConvertibleTo<A, E=never> = A extends A ?
           readonly type: "TupleProduct",
           readonly children: Readonly<Record<number, _ConvertibleTo<A["children"][number]>>>,
         }
-        : never : never
-      : Match<A, { type: "MarkedProduct" }> extends true
-        ? "child" extends keyof A
-          ? {
-            readonly type: "MarkedProduct",
-            readonly child: _ConvertibleTo<A["child"]>,
-          }
-          : never
-        : Match<A, { type: "AndProduct" }> extends true
-          ? "children" extends keyof A
-            ? U2I<(A["children"][number & keyof A["children"]] extends infer T ? T extends T ? {
-                x: _ConvertibleTo<T, E>,
-              } : never : never) | { x: unknown }>["x"]
-            : never
-          : A
-: never
+        : never
+      : never
+  : Match<A, { type: "MarkedProduct" }> extends true
+    ? "child" extends keyof A
+      ? {
+        readonly type: "MarkedProduct",
+        readonly child: _ConvertibleTo<A["child"]>,
+      }
+      : never
+  : Match<A, { type: "AndProduct" }> extends true
+    ? "children" extends keyof A
+      ? U2I<(A["children"][number & keyof A["children"]] extends infer T ? T extends T ? {
+          x: _ConvertibleTo<T, E>,
+        } : never : never) | { x: unknown }>["x"]
+      : never
+  : A
+: never>
+
+type _DirectConvertibleTo<T, E = never, C = ConversionsUnion> =
+  C extends Conversion<infer F, infer T2>
+    ? _ImplicitlyConvertibleTo<Omit<T2, __convertibleTo>, E> extends _ImplicitlyConvertibleTo<T, E>
+      ? Omit<F, __convertibleTo>
+      : never
+    : never
 
 export type _ConvertibleTo<T, E=never> =
   T extends T
@@ -113,12 +126,12 @@ export type _ConvertibleTo<T, E=never> =
       | (
         T extends E
           ? never
-          : _ConvertibleTo<DirectConvertibleTo<_ImplicitlyConvertibleTo<T, E>>, E | T>
+          : _ConvertibleTo<_DirectConvertibleTo<T, E>, E | T | _ImplicitlyConvertibleTo<T, E>>
       )
-      | {
+      | CovariantMergeable<{
         [__convertibleTo]?: _ConvertibleTo<T, E> | T[Extract<__convertibleTo, keyof T>],
         [__convertibleToTransitivityOverride]?: TransitivityOverride.C,
-      }
+      }>
     : never
 
 // Preserves type info but does not affect assignability
@@ -161,11 +174,11 @@ interface ProductC extends LeafProduct {
   c: 5,
 }
 
-type X = _ImplicitlyConvertibleTo<AndProduct<[ProductC, ProductB]>>
+type adfds = Assert<never, TupleProduct<[ProductA, ProductC]>[__convertibleTo]>
 
-type afgs = ProductC & ProductB
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-type Tests<B extends Product, A extends ConvertibleTo<B>> = [
+type Tests<B extends Product, A extends ConvertibleTo<B>, T, U extends T> = [
+  Assert<CovariantMergeable<T>, CovariantMergeable<CovariantMergeable<T>>>,
   Assert<ConvertibleTo<ArrayProduct<ProductA>>, ArrayProduct<ProductB>>,
   Assert<
     ConvertibleTo<ArrayProduct<ProductA>>,
@@ -202,6 +215,10 @@ type Tests<B extends Product, A extends ConvertibleTo<B>> = [
   Assert<ConvertibleTo<AndProduct<[ProductC, ProductA]>>, ProductC>,
   // @ts-expect-error
   Assert<ConvertibleTo<AndProduct<[ProductC, ProductA]>>, ProductA>,
+  // @ts-expect-error
+  Assert<ConvertibleTo<ProductA>, TupleProduct<[ProductA, ProductC, ProductA]>>,
+  // @ts-expect-error
+  Assert<ConvertibleTo<ProductB>, TupleProduct<[ProductA, ProductC, ProductA]>>,
   // @ts-expect-error
   Assert<ConvertibleTo<AndProduct<[ProductA, ProductB]>>, TupleProduct<[ProductA, ProductC, ProductA]>>,
   // @ts-expect-error
