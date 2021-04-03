@@ -61,7 +61,7 @@ type U2I<U> = (U extends U ? (u: U) => 0 : never) extends (i: infer I) => 0 ? I 
 type Match<T, U> = keyof U extends keyof T ? Pick<T, keyof U> extends U ? true : false : false
 
 type CovariantMergeable<T> = {
-  (): T | CovariantMergeable<T>,
+  (): CovariantMergeable<T>,
   _covariantMergable: true,
   // x: { x: T },
 }
