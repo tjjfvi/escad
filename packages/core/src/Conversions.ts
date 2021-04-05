@@ -44,17 +44,8 @@ export type ConversionImpls<C = ConversionsUnion> = (
 
 export declare const __convertibleTo: unique symbol
 export declare const __convertibleToOverride: unique symbol
-export declare const __convertibleToTransitivityOverride: unique symbol
 export type __convertibleTo = typeof __convertibleTo
 export type __convertibleToOverride = typeof __convertibleToOverride
-export type __convertibleToTransitivityOverride = typeof __convertibleToTransitivityOverride
-
-// A is assignable to B, and B is assignable to C, but A is not assignable to C
-export namespace TransitivityOverride {
-  export type A = (x?: true) => never
-  export type B = () => true
-  export type C = (x?: false) => boolean
-}
 
 type U2I<U> = (U extends U ? (u: U) => 0 : never) extends (i: infer I) => 0 ? I : never
 
@@ -99,7 +90,7 @@ type _ImplicitlyConvertibleTo<A, E=never> = CovariantMergeableEach<A extends A ?
     ? "children" extends keyof A
       ? U2I<(A["children"][number & keyof A["children"]] extends infer T ? T extends T ? {
           x: _ConvertibleTo<T, E>,
-        } : never : never) | { x: unknown }>["x"]
+        } : never : never) | { x: unknown }> extends infer T ? T extends { x: infer U } ? U : never : never
       : never
   : A
 : never>
@@ -107,7 +98,7 @@ type _ImplicitlyConvertibleTo<A, E=never> = CovariantMergeableEach<A extends A ?
 type _DirectConvertibleTo<T, E = never, C = ConversionsUnion> =
   C extends Conversion<infer F, infer T2>
     ? _ImplicitlyConvertibleTo<Omit<T2, __convertibleTo>, E> extends _ImplicitlyConvertibleTo<T, E>
-      ? Omit<F, __convertibleTo>
+      ? F
       : never
     : never
 
@@ -129,7 +120,6 @@ export interface Phantom<T> { _: Phantom<T> }
 export type Unphantom<T> = T extends Phantom<infer U> ? U : never
 
 export type ConvertibleTo<T extends Product> = Product & {
-  [__convertibleToTransitivityOverride]?: TransitivityOverride.B,
   [__convertibleToOverride]?: Phantom<T>,
   [__convertibleTo]?: T[__convertibleTo],
 }
