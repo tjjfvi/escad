@@ -8,6 +8,7 @@ import {
   Hierarchy,
   contextStack,
   ObjectParam,
+  ProductType,
 } from "@escad/core"
 import { RunInfo, RendererServerMessenger, LoadInfo } from "@escad/protocol"
 import { Connection, createEmittableAsyncIterable, createMessenger } from "@escad/messages"
@@ -60,7 +61,11 @@ export const createRendererServerMessenger = (
 
     const conversions = [...conversionRegistry.listAll()].map(x => [x.fromType, x.toType] as const)
     const { products, hierarchy } = await render(defaultParams)
-    const exportTypes = [...exportTypeRegistry.listRegistered()].map(x => ({ ...x, export: undefined }))
+    const exportTypes = [...exportTypeRegistry.listRegistered()].map(x => ({
+      ...x,
+      export: undefined,
+      productType: ProductType.fromProductTypeish(x.productType),
+    }))
 
     const loadInfo = {
       conversions,
