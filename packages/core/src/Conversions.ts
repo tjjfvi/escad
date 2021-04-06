@@ -20,27 +20,21 @@ export interface ConversionImplish<A extends Product, B extends Product> {
   readonly id: ScopedId<"Conversion"> | Hash<unknown>,
 }
 
-type Values<T> = T[keyof T]
-
 declare global {
   namespace escad {
-    interface ConversionsObj { }
+    interface ConversionsObj extends Record<string, Conversion<any, any>> { }
   }
 }
 
-export type ConversionsUnion<C = escad.ConversionsObj> = Values<{
-  [K in keyof C]: C[K] extends Conversion<any, any> ? C[K] : ConversionsUnion<C[K]>
-}>
-
-export type ConversionImpls<C = ConversionsUnion> = (
-  C extends Conversion<infer A, infer B>
-    ? A extends Product
-      ? B extends Product
-        ? ConversionImpl<Extract<A, Product>, Extract<B, Product>>
-        : never
+type ConversionsUnion =
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  escad.ConversionsObj extends Record<infer _, infer T>
+    ? T extends T
+      ? Conversion<0, 0> extends T
+        ? never
+        : T
       : never
     : never
-)
 
 export declare const __convertibleTo: unique symbol
 export declare const __convertibleToOverride: unique symbol
@@ -104,7 +98,7 @@ type _ImplicitlyConvertibleTo<A, E=never> = CovariantMergeableEach<A extends A ?
 type _DirectConvertibleTo<T, E = never, C = ConversionsUnion> =
   C extends Conversion<infer F, infer T2>
     ? _ImplicitlyConvertibleTo<Omit<T2, __convertibleTo>, E> extends _ImplicitlyConvertibleTo<T, E>
-      ? F
+      ? Omit<F, __convertibleTo>
       : never
     : never
 
@@ -113,7 +107,7 @@ type __ConvertibleTo<T, E=never> =
   T extends T
     ? __convertibleToOverride extends keyof T
       ? _ConvertibleTo<Unphantom<T[__convertibleToOverride]>>
-      : _ImplicitlyConvertibleTo<T, E>
+      : _ImplicitlyConvertibleTo<T, E | T | _ImplicitlyConvertibleTo<T, E>>
       | _ConvertibleTo<_DirectConvertibleTo<T, E>, E | T | _ImplicitlyConvertibleTo<T, E>>
     : never
 
@@ -128,82 +122,80 @@ export type ConvertibleTo<T extends Product> = Product & {
 
 /* Tests */
 
-import { ArrayProduct, LeafProduct, TupleProduct } from "."
+import escad, { ArrayProduct, LeafProduct, TupleProduct } from "."
 import { AndProduct } from "./AndProduct"
 
 declare global {
   namespace escad {
     interface ConversionsObj {
-      "@escad/core/Conversions":
-        | Conversion<ProductA, ProductB>
-        | Conversion<ProductB, ProductA>
-        | Conversion<ArrayProduct<ProductA>, ProductA>,
+      "@escad/core/Conversions": (
+        | Conversion<P<"A">, P<"B">>
+        | Conversion<P<"B">, P<"A">>
+        | Conversion<ArrayProduct<P<"A">>, P<"A">>
+        // | Conversion<P<"X">, AndProduct<[P<"A">, P<"B">]>>
+        // | Conversion<P<"Y">, P<"X">>
+        | Conversion<AndProduct<[P<"Y">, P<"Z">]>, Q<"X">>
+      ),
     }
   }
 }
 
+type X<T extends string, U extends T> = Assert<P<T>, P<U>>
+
 type Assert<T, U extends T> = U
-interface ProductA extends LeafProduct {
-  type: Id<"@escad/core", "LeafProduct", "ConversionsTests", "ProductA">,
-  a: 5,
+interface P<T extends string> extends LeafProduct {
+  readonly type: Id<"@escad/core", "LeafProduct", "ConversionsTests", T>,
 }
-interface ProductB extends LeafProduct {
-  type: Id<"@escad/core", "LeafProduct", "ConversionsTests", "ProductB">,
-  b: 5,
-}
-interface ProductC extends LeafProduct {
-  type: Id<"@escad/core", "LeafProduct", "ConversionsTests", "ProductC">,
-  c: 5,
+interface Q<T extends string> extends LeafProduct {
+  readonly type: Id<"@escad/core", "LeafProduct", "ConversionsTests", T>,
 }
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type Tests<B extends Product, A extends ConvertibleTo<B>> = [
-  Assert<ConvertibleTo<ArrayProduct<ProductA>>, ArrayProduct<ProductB>>,
+  Assert<ConvertibleTo<ArrayProduct<P<"A">>>, ArrayProduct<P<"B">>>,
   Assert<
-    ConvertibleTo<ArrayProduct<ProductA>>,
-    TupleProduct<[ProductA, TupleProduct<[ProductB, ProductA]>, ArrayProduct<ProductB>]>
+    ConvertibleTo<ArrayProduct<P<"A">>>,
+    TupleProduct<[P<"A">, TupleProduct<[P<"B">, P<"A">]>, ArrayProduct<P<"B">>]>
   >,
-  Assert<ConvertibleTo<ProductA>, ArrayProduct<ConvertibleTo<ProductA>>>,
-  Assert<ConvertibleTo<ProductA>, TupleProduct<ConvertibleTo<ProductA>[]>>,
-  Assert<
-    ConvertibleTo<TupleProduct<[ProductC, ProductA]>>,
-    TupleProduct<[ProductC, TupleProduct<ConvertibleTo<ProductA>[]>]>
-  >,
+  Assert<ConvertibleTo<P<"A">>, ArrayProduct<ConvertibleTo<P<"A">>>>,
+  Assert<ConvertibleTo<P<"A">>, TupleProduct<ConvertibleTo<P<"A">>[]>>,
+  Assert< ConvertibleTo<TupleProduct<[P<"C">, P<"A">]>>, TupleProduct<[P<"C">, TupleProduct<ConvertibleTo<P<"A">>[]>]>>,
   Assert<_ConvertibleTo<A>, _ConvertibleTo<ConvertibleTo<A>>>,
   Assert<ConvertibleTo<A>, ConvertibleTo<ConvertibleTo<A>>>,
   Assert<ConvertibleTo<B>, ConvertibleTo<A>>,
-  Assert<ConvertibleTo<ProductB>, ConvertibleTo<ProductA>>,
-  Assert<ConvertibleTo<ProductB>, ConvertibleTo<ProductA>>,
-  Assert<ConvertibleTo<ProductB>, ConvertibleTo<TupleProduct<[ProductB, ProductA]>>>,
-  Assert<ConvertibleTo<ProductB>, AndProduct<[ProductB, ProductA]>>,
-  Assert<ConvertibleTo<ProductA>, AndProduct<[ProductC, ProductA]>>,
-  Assert<ConvertibleTo<ProductB>, AndProduct<[ProductC, ProductB]>>,
-  Assert<ConvertibleTo<ProductC>, AndProduct<[ProductC, ProductB]>>,
-  Assert<ConvertibleTo<AndProduct<[ProductA, ProductB]>>, AndProduct<[ProductB, ProductA]>>,
-  Assert<ConvertibleTo<AndProduct<[ProductA]>>, AndProduct<[ProductB, ProductA]>>,
-  Assert<ConvertibleTo<AndProduct<[]>>, ProductB>,
-  Assert<ConvertibleTo<AndProduct<[ProductC, ProductA]>>, AndProduct<[ProductA, ProductC]>>,
-  Assert<ConvertibleTo<AndProduct<[ProductA, ProductB]>>, ProductA>,
-  Assert<ConvertibleTo<AndProduct<[ProductA, ProductB]>>, TupleProduct<[ProductA, ProductB, ProductA]>>,
-  Assert<ConvertibleTo<AndProduct<[ProductC]>>, ProductC>,
-  Assert<ConvertibleTo<AndProduct<[ProductA, ProductB]>>, ProductA>,
-  Assert<ConvertibleTo<AndProduct<[ProductA, ProductB]>>, ProductB>,
+  Assert<ConvertibleTo<P<"B">>, ConvertibleTo<P<"A">>>,
+  Assert<ConvertibleTo<P<"B">>, ConvertibleTo<P<"A">>>,
+  Assert<ConvertibleTo<P<"B">>, ConvertibleTo<TupleProduct<[P<"B">, P<"A">]>>>,
+  Assert<ConvertibleTo<P<"B">>, AndProduct<[P<"B">, P<"A">]>>,
+  Assert<ConvertibleTo<P<"A">>, AndProduct<[P<"C">, P<"A">]>>,
+  Assert<ConvertibleTo<P<"B">>, AndProduct<[P<"C">, P<"B">]>>,
+  Assert<ConvertibleTo<P<"C">>, AndProduct<[P<"C">, P<"B">]>>,
+  Assert<ConvertibleTo<AndProduct<[P<"A">, P<"B">]>>, AndProduct<[P<"B">, P<"A">]>>,
+  Assert<ConvertibleTo<AndProduct<[P<"A">]>>, AndProduct<[P<"B">, P<"A">]>>,
+  Assert<ConvertibleTo<AndProduct<[]>>, P<"B">>,
+  Assert<ConvertibleTo<AndProduct<[P<"C">, P<"A">]>>, AndProduct<[P<"A">, P<"C">]>>,
+  Assert<ConvertibleTo<AndProduct<[P<"A">, P<"B">]>>, P<"A">>,
+  Assert<ConvertibleTo<AndProduct<[P<"A">, P<"B">]>>, TupleProduct<[P<"A">, P<"B">, P<"A">]>>,
+  Assert<ConvertibleTo<AndProduct<[P<"C">]>>, P<"C">>,
+  Assert<ConvertibleTo<AndProduct<[P<"A">, P<"B">]>>, P<"A">>,
+  Assert<ConvertibleTo<AndProduct<[P<"A">, P<"B">]>>, P<"B">>,
+  // Assert<ConvertibleTo<P<"X">>, P<"Z">>,
   // @ts-expect-error
-  Assert<ConvertibleTo<AndProduct<[ProductC]>>, AndProduct<[ProductB, ProductA]>>,
+  Assert<ConvertibleTo<AndProduct<[P<"C">]>>, AndProduct<[P<"B">, P<"A">]>>,
   // @ts-expect-error
-  Assert<ConvertibleTo<AndProduct<[ProductA, ProductB]>>, ProductC>,
+  Assert<ConvertibleTo<AndProduct<[P<"A">, P<"B">]>>, P<"C">>,
   // @ts-expect-error
-  Assert<ConvertibleTo<TupleProduct<[AndProduct<[ProductA, ProductB]>]>>, TupleProduct<[ProductC]>>,
+  Assert<ConvertibleTo<TupleProduct<[AndProduct<[P<"A">, P<"B">]>]>>, TupleProduct<[P<"C">]>>,
   // @ts-expect-error
-  Assert<ConvertibleTo<AndProduct<[ProductC, ProductA]>>, ProductC>,
+  Assert<ConvertibleTo<AndProduct<[P<"C">, P<"A">]>>, P<"C">>,
   // @ts-expect-error
-  Assert<ConvertibleTo<AndProduct<[ProductC, ProductA]>>, ProductA>,
+  Assert<ConvertibleTo<AndProduct<[P<"C">, P<"A">]>>, P<"A">>,
   // @ts-expect-error
-  Assert<ConvertibleTo<ProductA>, TupleProduct<[ProductA, ProductC, ProductA]>>,
+  Assert<ConvertibleTo<P<"A">>, TupleProduct<[P<"A">, P<"C">, P<"A">]>>,
   // @ts-expect-error
-  Assert<ConvertibleTo<ProductB>, TupleProduct<[ProductA, ProductC, ProductA]>>,
+  Assert<ConvertibleTo<P<"B">>, TupleProduct<[P<"A">, P<"C">, P<"A">]>>,
   // @ts-expect-error
-  Assert<ConvertibleTo<AndProduct<[ProductA, ProductB]>>, TupleProduct<[ProductA, ProductC, ProductA]>>,
+  Assert<ConvertibleTo<AndProduct<[P<"A">, P<"B">]>>, TupleProduct<[P<"A">, P<"C">, P<"A">]>>,
   // @ts-expect-error
-  Assert<ConvertibleTo<ArrayProduct<ProductA>>, ArrayProduct<ProductC>>,
+  Assert<ConvertibleTo<ArrayProduct<P<"A">>>, ArrayProduct<P<"C">>>,
 ]
