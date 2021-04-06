@@ -58,7 +58,7 @@ export const Product = {
 
 function isProduct(arg: any): arg is Product
 function isProduct<P extends Product>(arg: any, productType: ProductType<P>): arg is P
-function isProduct(arg: any, productType?: ProductType){
+function isProduct(arg: any, productType?: ProductType): boolean{
   return (
     (
       LeafProduct.isLeafProduct(arg)

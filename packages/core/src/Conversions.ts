@@ -56,6 +56,7 @@ interface CovariantMergeable<T> {
   _covariantMergable: () => T,
 }
 
+type _WrappedConvertibleToEach<T, E=never> = T extends T ? [_ConvertibleTo<T, E>] : never
 type _ImplicitlyConvertibleTo<A, E=never> = CovariantMergeableEach<A extends A ?
   | Match<A, { type: "TupleProduct" }> extends true
     ? "children" extends keyof A
@@ -88,9 +89,14 @@ type _ImplicitlyConvertibleTo<A, E=never> = CovariantMergeableEach<A extends A ?
       : never
   : Match<A, { type: "AndProduct" }> extends true
     ? "children" extends keyof A
-      ? U2I<(A["children"][number & keyof A["children"]] extends infer T ? T extends T ? {
-          x: _ConvertibleTo<T, E>,
-        } : never : never) | { x: unknown }> extends infer T ? T extends { x: infer U } ? U : never : never
+      ? number extends keyof A["children"]
+        ? readonly Product[] extends A["children"]
+          ? unknown
+          : U2I<_WrappedConvertibleToEach<A["children"][number], E> | [unknown]>[0]
+        : never
+      // ? A["children"] extends [infer A, ...infer B]
+      //   ? { type: "_defer", value: _ConvertibleTo<A, E> & _ConvertibleTo<{ type: "AndProduct", children: B }> }
+      //   : { type: "_defer", value: _ConvertibleTo<A["children"][0 & keyof A["children"]], E> }
       : never
   : A
 : never>
@@ -102,17 +108,13 @@ type _DirectConvertibleTo<T, E = never, C = ConversionsUnion> =
       : never
     : never
 
-export type _ConvertibleTo<T, E=never> = T extends T ? __ConvertibleTo<Omit<T, __convertibleTo>, E> : never
+export type _ConvertibleTo<T, E=never> = T extends E ? never : __ConvertibleTo<Omit<T, __convertibleTo>, E>
 type __ConvertibleTo<T, E=never> =
   T extends T
     ? __convertibleToOverride extends keyof T
       ? _ConvertibleTo<Unphantom<T[__convertibleToOverride]>>
       : _ImplicitlyConvertibleTo<T, E>
-      | (
-        T extends E
-          ? never
-          : _ConvertibleTo<_DirectConvertibleTo<T, E>, E | T | _ImplicitlyConvertibleTo<T, E>>
-      )
+      | _ConvertibleTo<_DirectConvertibleTo<T, E>, E | T | _ImplicitlyConvertibleTo<T, E>>
     : never
 
 // Preserves type info but does not affect assignability
