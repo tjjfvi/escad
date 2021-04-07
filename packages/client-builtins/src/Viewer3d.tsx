@@ -80,7 +80,7 @@ function onOrientRendererRightClick(event: MouseEvent){
 
 function onRendererDoubleClick(event: MouseEvent){
   let cam = s.ortho ? orthocamera : camera
-  originSphere.scale.set(1, 1, 1).multiplyScalar(cam.position.length() / 100)
+  originSphere.scale.set(1, 1, 1).multiplyScalar(camera.position.length() / 100)
   originSphere.visible = true
   originSphere.updateMatrixWorld()
   let cel = renderer.domElement
