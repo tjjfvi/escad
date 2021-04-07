@@ -15,7 +15,7 @@ export type Realm<C> =
   & { [K in keyof C]: C[K] extends Thing ? RealmThing<C[K], C> : never }
   & {
     _: Realm<C>,
-    (): Realm<C>,
+    (): RealmElement<never, C>,
     <A extends Thing>(a: A): RealmThing<A, C>,
     <T extends Product>(...args: Elementish<T>[]): RealmElement<T, C>,
   }
