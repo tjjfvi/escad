@@ -17,14 +17,14 @@ const cubeId = Id.create(__filename, "@escad/builtins", "LeafProduct", "Cube", "
 export interface Cube extends LeafProduct {
   readonly type: typeof cubeId,
   readonly size: Vector3,
-  readonly centering: Vector3,
+  readonly center: Vector3,
 }
 
 export const Cube = {
-  create: (size: Vector3, centering: Vector3): Cube => ({
+  create: (size: Vector3, center: Vector3): Cube => ({
     type: cubeId,
     size,
-    centering,
+    center,
   }),
   ...createLeafProductUtils<Cube, "Cube">(cubeId, "Cube"),
   id: cubeId,
@@ -44,8 +44,7 @@ conversionRegistry.register({
   fromType: Cube,
   toType: Mesh,
   convert: async cube => {
-    const { centering, size } = cube
-    const center = Vector3.multiplyComponents(centering, Vector3.multiplyScalar(size, .5))
+    const { center, size } = cube
 
     const nx = center.x - size.x / 2
     const ny = center.y - size.y / 2
@@ -93,7 +92,8 @@ export interface CubeArgs extends TripletObj<number> {
 export const cube: Component<[CubeArgs], Element<Cube>> =
   Component.create("cube", args => {
     const size = interpretTriplet(args.size ?? args, 1)
-    const center = interpretTriplet(args.center, 0)
+    const centering = interpretTriplet(args.center, 0)
+    const center = Vector3.multiplyComponents(centering, Vector3.multiplyScalar(size, .5))
 
     return Element.create(Cube.create(size, center))
   }, { showOutputInHierarchy: false })

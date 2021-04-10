@@ -23,16 +23,16 @@ export interface Cylinder extends LeafProduct {
   readonly radius: number,
   readonly height: number,
   readonly smooth: Smooth,
-  readonly centering: Vector3,
+  readonly center: Vector3,
 }
 
 export const Cylinder = {
-  create: (radius: number, height: number, smooth: Smooth, centering: Vector3): Cylinder => ({
+  create: (radius: number, height: number, smooth: Smooth, center: Vector3): Cylinder => ({
     type: cylinderId,
     radius,
     height,
     smooth,
-    centering,
+    center,
   }),
   ...createLeafProductUtils<Cylinder, "Cylinder">(cylinderId, "Cylinder"),
   id: cylinderId,
@@ -52,14 +52,13 @@ conversionRegistry.register({
   fromType: Cylinder,
   toType: Mesh,
   convert: async cyl => {
-    const { radius, height, smooth, centering } = cyl
+    const { radius, height, smooth, center } = cyl
     const sides = Math.max(
       2,
       smooth.sides ?? 0,
       Math.ceil(radius * tau / 2 / (smooth.size ?? Infinity)),
       360 / 2 / (smooth.angle ?? Infinity),
     )
-    const center = Vector3.multiplyComponents(centering, Vector3.create(radius, radius, height / 2))
 
     const h1 = center.z - height / 2
     const h2 = center.z + height / 2
@@ -95,8 +94,10 @@ export interface CylArgs {
 
 export const cylinder: Component<[CylArgs], Element<Cylinder>> =
   Component.create("cyl", (args: CylArgs) => {
-    args.smooth ??= smoothContext.get()
-    return Element.create(Cylinder.create(args.radius, args.height, args.smooth, interpretTriplet(args.center, 0)))
+    const { radius, height, smooth = smoothContext.get() } = args
+    const centering = interpretTriplet(args.center, 0)
+    const center = Vector3.multiplyComponents(centering, Vector3.create(radius, radius, height / 2))
+    return Element.create(Cylinder.create(radius, height, smooth, center))
   }, { showOutputInHierarchy: false })
 
 export const cyl = cylinder
