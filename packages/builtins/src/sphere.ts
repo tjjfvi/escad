@@ -22,15 +22,15 @@ export interface Sphere extends LeafProduct {
   readonly type: typeof sphereId,
   readonly radius: number,
   readonly smooth: Smooth,
-  readonly centering: Vector3,
+  readonly center: Vector3,
 }
 
 export const Sphere = {
-  create: (radius: number, smooth: Smooth, centering: Vector3): Sphere => ({
+  create: (radius: number, smooth: Smooth, center: Vector3): Sphere => ({
     type: sphereId,
     radius,
     smooth,
-    centering,
+    center,
   }),
   ...createLeafProductUtils<Sphere, "Sphere">(sphereId, "Sphere"),
   id: sphereId,
@@ -50,14 +50,13 @@ conversionRegistry.register({
   fromType: Sphere,
   toType: Mesh,
   convert: async sphere => {
-    const { radius, smooth, centering } = sphere
+    const { radius, smooth, center } = sphere
     const sides = Math.max(
       2,
       smooth.sides ?? 0,
       Math.ceil(radius * tau / 2 / (smooth.size ?? Infinity)),
       360 / 2 / (smooth.angle ?? Infinity),
     )
-    const center = Vector3.multiplyScalar(centering, radius)
     const slices = 2 * sides
     const stacks = sides
 
@@ -102,6 +101,8 @@ export const sphere: Component<[SphereArgs], Element<Sphere>> =
   Component.create("sphere", args => {
     if(typeof args === "number")
       args = { radius: args }
-    args.smooth ??= smoothContext.get()
-    return Element.create(Sphere.create(args.radius, args.smooth, interpretTriplet(args.center, 0)))
+    const { radius, smooth = smoothContext.get() } = args
+    const centering = interpretTriplet(args.center, 0)
+    const center = Vector3.multiplyScalar(centering, radius)
+    return Element.create(Sphere.create(radius, smooth, center))
   }, { showOutputInHierarchy: false })
