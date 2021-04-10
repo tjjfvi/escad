@@ -44,6 +44,12 @@ export const Vector3 = {
       a.z * b.x - a.x * b.z,
       a.x * b.y - a.y * b.x,
     ),
+
+  min: (a: Vector3, b: Vector3): Vector3 =>
+    Vector3.create(Math.min(a.x, b.x), Math.min(a.y, b.y), Math.min(a.z, b.z)),
+
+  max: (a: Vector3, b: Vector3): Vector3 =>
+    Vector3.create(Math.max(a.x, b.x), Math.max(a.y, b.y), Math.max(a.z, b.z)),
 }
 
 function _createVector3(x: number, y: number, z: number): Vector3

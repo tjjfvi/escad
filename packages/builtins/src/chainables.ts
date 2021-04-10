@@ -14,8 +14,10 @@ import { sphere } from "./sphere"
 import { polyhedron } from "./polyhedron"
 import { convert } from "./convert"
 import { attribute } from "./attribute"
+import { getBoundingBox } from "./getBoundingBox"
 
 export default {
+  getBoundingBox,
   attribute,
   convert,
   tX,
