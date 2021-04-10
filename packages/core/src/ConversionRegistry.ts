@@ -107,6 +107,9 @@ export class ConversionRegistry {
       TupleProductType.isTupleProductType(a)
       && ArrayProductType.isArrayProductType(b)
     ) || (
+      ArrayProductType.isArrayProductType(a)
+      && ArrayProductType.isArrayProductType(b)
+    ) || (
       UnknownProductType.isUnknownProductType(b)
     )
   }
@@ -149,6 +152,23 @@ export class ConversionRegistry {
         i--
         continue
       }
+
+      if(
+        ArrayProductType.isArrayProductType(fromType)
+        && ArrayProductType.isArrayProductType(toType)
+        && this.has(fromType.elementType, toType.elementType)
+      )
+        path.splice(i, 0, {
+          id: Hash.create([fromType, toType]),
+          fromType,
+          toType,
+          convert: async (product: ArrayProduct) =>
+            ArrayProduct.create(await Promise.all(product.children.map(p =>
+              this.convertProduct(toType.elementType, p),
+            ))),
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          weight: this.weight(this.composed!.get([fromType.elementType, toType.elementType])!),
+        })
 
       if(
         !(TupleProductType.isTupleProductType(fromType))
