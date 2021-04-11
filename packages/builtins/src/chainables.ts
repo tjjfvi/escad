@@ -15,8 +15,10 @@ import { polyhedron } from "./polyhedron"
 import { convert } from "./convert"
 import { attribute } from "./attribute"
 import { getBoundingBox } from "./getBoundingBox"
+import { moveTo } from "./moveTo"
 
 export default {
+  moveTo,
   getBoundingBox,
   attribute,
   convert,
