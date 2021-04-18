@@ -33,9 +33,6 @@ export const HierarchyView = ({ hierarchy }: { hierarchy: Hierarchy }) => {
   </div>
 }
 
-const Arrow = ({ state, onClick }: { state: "open" | "closed" | "leaf", onClick?: () => void }) =>
-  <div className={ "arrow " + state } onClick={onClick}></div>
-
 const arrowWidth = 25
 const characterWidth = 10
 
@@ -59,10 +56,12 @@ const Tree = ({ tree, width }: { tree: Tree, width: number }) => {
         </div>
 
       if(next && "children" in next)
-        return <div className="line" key={i}>
-          <Arrow state="open" onClick={() => (next.state.open = false, update())}/>
-          <TreeText str={part.text}/>
-        </div>
+        return <Line
+          key={i}
+          arrowState="open"
+          text={part.text}
+          onClick={() => (next.state.open = false, update())}
+        />
 
       const expandableSections = getExpandableSections(tree, maxLength, update)
 
@@ -73,22 +72,35 @@ const Tree = ({ tree, width }: { tree: Tree, width: number }) => {
       const relevantSections = expandableSections.slice(sectionsSplitInd)
 
       if(!relevantSections.length)
-        return <div className="line" key={i}>
-          <Arrow state="leaf"/>
-          <TreeText str={part.text}/>
-        </div>
+        return <Line
+          key={i}
+          arrowState="leaf"
+          text={part.text}
+        />
 
-      return <div className="line" key={i}>
-        <Arrow state="closed" onClick={() => {
+      return <Line
+        key={i}
+        arrowState="closed"
+        text={part.text}
+        onClick={() => {
           relevantSections.forEach(x => x.state.open = true)
           update()
-        }}/>
-        <TreeText str={part.text}/>
-      </div>
-    })}
-  </div>
-
+        }}
+      />
+    })}</div>
 }
+
+type LineProps = {
+  arrowState: "leaf" | "open" | "closed",
+  text: TreeText,
+  onClick?: () => void,
+}
+
+const Line = ({ arrowState, text, onClick }: LineProps) =>
+  <div className="line" onDoubleClick={onClick}>
+    <div className={ "arrow " + arrowState } onClick={onClick}></div>
+    <TreeText text={text}/>
+  </div>
 
 const TreeTextPart = ({ children, className, onClick }:TreeTextPartProps) => {
   const handleHover = (e: React.MouseEvent) => {
@@ -112,10 +124,10 @@ const TreeTextPart = ({ children, className, onClick }:TreeTextPartProps) => {
   </span>
 }
 
-const TreeText = ({ str }: { str: TreeText}) => {
+const TreeText = ({ text }: { text: TreeText}) => {
   const state = useContext(ClientState.Context)
   return <span>{
-    str.reduce(([a, b, ...c], d, i) =>
+    text.reduce(([a, b, ...c], d, i) =>
       typeof d === "string"
         ? [[...a, d === ellipsis ? <span className="ellipsis" key={i}>{d}</span> : d], b, ...c]
         : "close" in d
