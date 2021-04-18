@@ -13,33 +13,37 @@ import { Hash } from "./Hash"
 import { timers } from "./Timer"
 import { UnknownProduct, UnknownProductType } from "./UnknownProduct"
 import { ScopedId } from "./Id"
+import { MarkedProduct, MarkedProductType } from "./MarkedProduct"
 
 export interface _Product {
   readonly type: string | ScopedId<"LeafProduct">,
   readonly [__convertibleToTransitivityOverride]?: TransitivityOverride.A,
   // @ts-ignore: This doesn't normally error, but sometimes tsc -b does weird things.
   readonly [__convertibleTo]?: (
-    __convertibleToOverride extends keyof this
-      ? unknown
-      : LeafProduct extends this
-        ? unknown
-        : TupleProduct extends this
-          ? unknown
-          : ArrayProduct extends this
-            ? unknown
-            : UnknownProduct extends this
-              ? unknown
-              : _ConvertibleTo<this>
+    | __convertibleToOverride extends keyof this ? unknown
+    : LeafProduct extends this ? unknown
+    : MarkedProduct extends this ? unknown
+    : TupleProduct extends this ? unknown
+    : ArrayProduct extends this ? unknown
+    : UnknownProduct extends this ? unknown
+    : _ConvertibleTo<this>
   ),
 }
 
-export type Product = LeafProduct | TupleProduct | ArrayProduct | UnknownProduct
+export type Product =
+  | LeafProduct
+  | MarkedProduct
+  | TupleProduct
+  | ArrayProduct
+  | UnknownProduct
 
 export const Product = {
   isProduct,
   getProductType: timers.getProductType.time(<P extends Product>(product: P): ProductType<P> => {
     if(LeafProduct.isLeafProduct(product))
       return LeafProduct.getLeafProductType(product)
+    if(MarkedProduct.isMarkedProduct(product))
+      return MarkedProduct.getMarkedProductType(product)
     if(TupleProduct.isTupleProduct(product))
       return TupleProduct.getTupleProductType(product)
     if(ArrayProduct.isArrayProduct(product))
@@ -56,6 +60,7 @@ function isProduct(arg: any, productType?: ProductType){
   return (
     (
       LeafProduct.isLeafProduct(arg)
+      || MarkedProduct.isMarkedProduct(arg)
       || TupleProduct.isTupleProduct(arg)
       || ArrayProduct.isArrayProduct(arg)
       || UnknownProduct.isUnknownProduct(arg)
@@ -66,6 +71,7 @@ function isProduct(arg: any, productType?: ProductType){
 
 export type ProductType<U extends Product = Product> =
   | LeafProductType<U & LeafProduct>
+  | MarkedProductType<U & MarkedProduct>
   | TupleProductType<U & TupleProduct>
   | ArrayProductType<U & ArrayProduct>
   | (U extends UnknownProduct ? UnknownProductType : never)
@@ -73,6 +79,7 @@ export type ProductType<U extends Product = Product> =
 export const ProductType = {
   isProductType: (value: unknown): value is ProductType =>
     LeafProductType.isLeafProductType(value)
+    || MarkedProductType.isMarkedProductType(value)
     || TupleProductType.isTupleProductType(value)
     || ArrayProductType.isArrayProductType(value)
     || UnknownProductType.isUnknownProductType(value),
