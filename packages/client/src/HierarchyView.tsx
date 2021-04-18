@@ -7,8 +7,6 @@ import {
   ObjectHierarchy,
   NameHierarchy,
   ValueHierarchy,
-  Product,
-  Hash,
 } from "@escad/core"
 import React, { useContext, useRef, useState } from "react"
 import { useObservable } from "rhobo"
