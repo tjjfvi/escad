@@ -1,37 +1,24 @@
 
 import {
   Element,
-  createLeafProductUtils,
   Id,
-  LeafProduct,
   Operation,
   Product,
   TupleProduct,
   ConvertibleTo,
   Conversion,
   conversionRegistry,
-  TupleProductType,
   ArrayProductType,
   ArrayProduct,
+  MarkedProduct,
 } from "@escad/core"
 import { BoundingBox } from "./BoundingBox"
 import { Mesh } from "./Mesh"
 import { Vector3 } from "./Vector3"
 
-const getBoundingBoxMarkerId = Id.create(__filename, "@escad/builtins", "LeafProduct", "GetBoundingBoxMarker", "0")
-
-export interface GetBoundingBoxMarker extends LeafProduct {
-  readonly type: typeof getBoundingBoxMarkerId,
-}
-
-export const GetBoundingBoxMarker = {
-  create: (): GetBoundingBoxMarker => ({ type: getBoundingBoxMarkerId }),
-  ...createLeafProductUtils<GetBoundingBoxMarker, "GetBoundingBoxMarker">(
-    getBoundingBoxMarkerId,
-    "GetBoundingBoxMarker",
-  ),
-  id: getBoundingBoxMarkerId,
-}
+const getBoundingBoxId = Id.create(__filename, "@escad/builtins", "Marker", "GetBoundingBox", "0")
+export type GetBoundingBox<T extends Product> = MarkedProduct<typeof getBoundingBoxId, T>
+export const GetBoundingBox = MarkedProduct.for(getBoundingBoxId)
 
 declare global {
   namespace escad {
@@ -45,9 +32,9 @@ declare global {
 
 conversionRegistry.register({
   id: Id.create(__filename, "@escad/builtins", "Conversion", "GetBoundingBoxMesh", "0"),
-  fromType: TupleProductType.create([GetBoundingBoxMarker, ArrayProductType.create(Mesh)]),
+  fromType: GetBoundingBox.createProductType(ArrayProductType.create(Mesh)),
   toType: BoundingBox,
-  convert: async ({ children: [, { children: meshes }] }) => {
+  convert: async ({ child: { children: meshes } }) => {
     let min, max
     for(const mesh of meshes)
       for(const face of mesh.faces)
@@ -61,12 +48,6 @@ conversionRegistry.register({
   },
   weight: 1,
 })
-
-export type GetBoundingBox<T extends Product> = TupleProduct<readonly [GetBoundingBoxMarker, T]>
-export const GetBoundingBox = {
-  create: <T extends Product>(p: T): GetBoundingBox<T> =>
-    TupleProduct.create([GetBoundingBoxMarker.create(), p]),
-}
 
 export const getBoundingBox = Operation.create("getBoundingBox", async (args: Element<ConvertibleTo<Mesh>>) =>
   GetBoundingBox.create(TupleProduct.create(await Element.toArrayFlat(args))),
