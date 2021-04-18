@@ -73,7 +73,6 @@ type _ImplicitlyConvertibleTo<A> = A extends A ?
         readonly children: {
           readonly [K in keyof A["children"] & (number | `${number}`)]: _ConvertibleTo<A["children"][K]>
         },
-        x?: true,
       }
       : never
     : Match<A, { type: "ArrayProduct" }> extends true
@@ -87,7 +86,14 @@ type _ImplicitlyConvertibleTo<A> = A extends A ?
           readonly children: Readonly<Record<number, _ConvertibleTo<A["children"][number]>>>,
         }
         : never : never
-      : A
+      : Match<A, { type: "MarkedProduct" }> extends true
+        ? "child" extends keyof A
+          ? {
+            readonly type: "MarkedProduct",
+            readonly child: _ConvertibleTo<A["child"]>,
+          }
+          : never
+        : A
 : never
 
 export type _ConvertibleTo<T, E=never> =
