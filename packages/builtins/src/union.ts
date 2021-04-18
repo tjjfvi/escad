@@ -2,39 +2,23 @@
 import {
   TupleProduct,
   Conversion,
-  createLeafProductUtils,
   Id,
-  LeafProduct,
   Product,
   Component,
   conversionRegistry,
-  ArrayProduct,
-  TupleProductType,
   ArrayProductType,
   Element,
   ConvertibleOperation,
   Operation,
   ConvertibleElement,
+  MarkedProduct,
+  ArrayProduct,
 } from "@escad/core"
 import { Bsp, ClipOptions } from "./Bsp"
 
-const unionMarkerId = Id.create(__filename, "@escad/builtins", "LeafProduct", "UnionMarker", "0")
-
-export interface UnionMarker extends LeafProduct {
-  readonly type: typeof unionMarkerId,
-}
-
-export const UnionMarker = {
-  create: (): UnionMarker => ({ type: unionMarkerId }),
-  ...createLeafProductUtils<UnionMarker, "UnionMarker">(unionMarkerId, "UnionMarker"),
-  id: unionMarkerId,
-}
-
-export type Union<T extends Product> = TupleProduct<[UnionMarker, T]>
-export const Union = {
-  create: <T extends Product>(children: T): Union<T> =>
-    TupleProduct.create([UnionMarker.create(), children]),
-}
+const unionId = Id.create(__filename, "@escad/builtins", "Marker", "Union", "0")
+export type Union<T extends Product> = MarkedProduct<typeof unionId, T>
+export const Union = MarkedProduct.for(unionId)
 
 declare global {
   namespace escad {
@@ -47,10 +31,10 @@ declare global {
 }
 
 conversionRegistry.register({
-  fromType: TupleProductType.create([UnionMarker, ArrayProductType.create(Bsp)]),
+  fromType: Union.createProductType(ArrayProductType.create(Bsp)),
   toType: Bsp,
-  convert: async ({ children: [, c] }) =>
-    c.children.reduce((a, b) => {
+  convert: async ({ child: { children } }) =>
+    children.reduce((a, b) => {
       a = Bsp.clipTo(a, b, ClipOptions.DropBack | ClipOptions.DropCoplanarBack)
       b = Bsp.clipTo(b, a, ClipOptions.DropBack | ClipOptions.DropCoplanar)
       return Bsp.build(a, Bsp.allFaces(b)) ?? Bsp.null()

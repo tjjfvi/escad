@@ -2,36 +2,21 @@
 import {
   TupleProduct,
   Conversion,
-  createLeafProductUtils,
   Id,
-  LeafProduct,
   Element,
   conversionRegistry,
   ArrayProduct,
-  TupleProductType,
   ArrayProductType,
   ConvertibleOperation,
   Operation,
+  MarkedProduct,
+  Product,
 } from "@escad/core"
 import { Mesh } from "./Mesh"
 
-const meldMarkerId = Id.create(__filename, "@escad/builtins", "LeafProduct", "MeldMarker", "0")
-
-export interface MeldMarker extends LeafProduct {
-  readonly type: typeof meldMarkerId,
-}
-
-export const MeldMarker = {
-  id: meldMarkerId,
-  create: (): MeldMarker => ({ type: meldMarkerId }),
-  ...createLeafProductUtils<MeldMarker, "MeldMarker">(meldMarkerId, "MeldMarker"),
-}
-
-export type Meld<T extends ArrayProduct | TupleProduct> = TupleProduct<[MeldMarker, T]>
-export const Meld = {
-  create: <T extends ArrayProduct | TupleProduct>(children: T): Meld<T> =>
-    TupleProduct.create([MeldMarker.create(), children]),
-}
+const meldId = Id.create(__filename, "@escad/builtins", "Marker", "Meld", "0")
+export type Meld<T extends Product> = MarkedProduct<typeof meldId, T>
+export const Meld = MarkedProduct.for(meldId)
 
 declare global {
   namespace escad {
@@ -44,10 +29,10 @@ declare global {
 }
 
 conversionRegistry.register({
-  fromType: TupleProductType.create([MeldMarker, ArrayProductType.create(Mesh)]),
+  fromType: Meld.createProductType(ArrayProductType.create(Mesh)),
   toType: Mesh,
-  convert: async ({ children: [, c] }) =>
-    Mesh.create(c.children.flatMap(x => x.faces)),
+  convert: async ({ child: { children } }) =>
+    Mesh.create(children.flatMap(x => x.faces)),
   weight: 1,
   id: Id.create(__filename, "@escad/builtins", "Conversion", "Meld", "0"),
 })

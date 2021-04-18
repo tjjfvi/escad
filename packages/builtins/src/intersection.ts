@@ -2,39 +2,23 @@
 import {
   TupleProduct,
   Conversion,
-  createLeafProductUtils,
   Id,
-  LeafProduct,
   Product,
   Component,
   Element,
   conversionRegistry,
   ArrayProduct,
-  TupleProductType,
   ArrayProductType,
   ConvertibleOperation,
   ConvertibleElementish,
   Operation,
+  MarkedProduct,
 } from "@escad/core"
 import { Bsp, ClipOptions } from "./Bsp"
 
-const intersectionMarkerId = Id.create(__filename, "@escad/builtins", "LeafProduct", "IntersectionMarker", "0")
-
-export interface IntersectionMarker extends LeafProduct {
-  readonly type: typeof intersectionMarkerId,
-}
-
-export const IntersectionMarker = {
-  create: (): IntersectionMarker => ({ type: intersectionMarkerId }),
-  ...createLeafProductUtils<IntersectionMarker, "IntersectionMarker">(intersectionMarkerId, "IntersectionMarker"),
-  id: intersectionMarkerId,
-}
-
-export type Intersection<T extends Product> = TupleProduct<[IntersectionMarker, T]>
-export const Intersection = {
-  create: <T extends Product>(children: T): Intersection<T> =>
-    TupleProduct.create([IntersectionMarker.create(), children]),
-}
+const intersectionId = Id.create(__filename, "@escad/builtins", "Marker", "Intersection", "0")
+export type Intersection<T extends Product> = MarkedProduct<typeof intersectionId, T>
+export const Intersection = MarkedProduct.for(intersectionId)
 
 declare global {
   namespace escad {
@@ -47,10 +31,10 @@ declare global {
 }
 
 conversionRegistry.register({
-  fromType: TupleProductType.create([IntersectionMarker, ArrayProductType.create(Bsp)]),
+  fromType: Intersection.createProductType(ArrayProductType.create(Bsp)),
   toType: Bsp,
-  convert: async ({ children: [, c] }) =>
-    c.children.reduce((a, b) => {
+  convert: async ({ child: { children } }) =>
+    children.reduce((a, b) => {
       a = Bsp.clipTo(a, b, ClipOptions.DropFront | ClipOptions.DropCoplanarBack)
       b = Bsp.clipTo(b, a, ClipOptions.DropFront | ClipOptions.DropCoplanar)
       return Bsp.build(a, Bsp.allFaces(b)) ?? Bsp.null()

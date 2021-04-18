@@ -2,53 +2,38 @@
 import {
   TupleProduct,
   Conversion,
-  createLeafProductUtils,
   Id,
-  LeafProduct,
   Product,
   Element,
   Component,
   conversionRegistry,
-  TupleProductType,
   ConvertibleOperation,
   ConvertibleElementish,
   Operation,
+  MarkedProduct,
+  TupleProductType,
 } from "@escad/core"
 import { Bsp, ClipOptions } from "./Bsp"
 import { Union } from "./union"
 
-const diffMarkerId = Id.create(__filename, "@escad/builtins", "LeafProduct", "DiffMarker", "0")
-
-export interface DiffMarker extends LeafProduct {
-  readonly type: typeof diffMarkerId,
-}
-
-export const DiffMarker = {
-  create: (): DiffMarker => ({ type: diffMarkerId }),
-  ...createLeafProductUtils<DiffMarker, "DiffMarker">(diffMarkerId, "DiffMarker"),
-  id: diffMarkerId,
-}
-
-export type Diff<A extends Product, B extends Product> = TupleProduct<[DiffMarker, A, B]>
-export const Diff = {
-  create: <A extends Product, B extends Product>(a: A, b: B): Diff<A, B> =>
-    TupleProduct.create([DiffMarker.create(), a, b]),
-}
+const diffId = Id.create(__filename, "@escad/builtins", "Marker", "Diff", "0")
+export type Diff<T extends Product> = MarkedProduct<typeof diffId, T>
+export const Diff = MarkedProduct.for(diffId)
 
 declare global {
   namespace escad {
     interface ConversionsObj {
       "@escad/builtins/diff": {
-        computeDiff: Conversion<Diff<Bsp, Bsp>, Bsp>,
+        computeDiff: Conversion<Diff<TupleProduct<readonly [Bsp, Bsp]>>, Bsp>,
       },
     }
   }
 }
 
 conversionRegistry.register({
-  fromType: TupleProductType.create([DiffMarker, Bsp, Bsp]),
+  fromType: Diff.createProductType(TupleProductType.create([Bsp, Bsp])),
   toType: Bsp,
-  convert: async ({ children: [, a, b] }) => {
+  convert: async ({ child: { children: [a, b] } }) => {
     b = Bsp.invert(b)
     a = Bsp.clipTo(a, b, ClipOptions.DropFront | ClipOptions.DropCoplanar)
     b = Bsp.clipTo(b, a, ClipOptions.DropFront | ClipOptions.DropCoplanarBack)
@@ -72,7 +57,7 @@ export const diff: ConvertibleOperation<Bsp, Bsp> =
       return args
     const positive = Union.create(TupleProduct.create(await Element.toArrayFlat(args[0])))
     const negative = Union.create(TupleProduct.create(await Element.toArrayFlat(args.slice(1))))
-    return Diff.create(positive, negative)
+    return Diff.create(TupleProduct.create([positive, negative]))
   }, { showOutputInHierarchy: false })
 
 export const sub: Component<ConvertibleElementish<Bsp>[], ConvertibleOperation<Bsp, Bsp>> =
