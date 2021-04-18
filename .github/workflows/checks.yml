@@ -1,0 +1,33 @@
+
+name: Checks
+on: [push, pull_request]
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: actions/setup-node@v2
+        with:
+          node-version: '14'
+      - name: Cache dependencies
+        uses: actions/cache@v2
+        with:
+          path: ~/.npm
+          key: ${{ runner.os }}-node-${{ hashFiles('package-lock-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-node-
+      - run: npm install
+      - name: Test
+        run: npx jest
+      - name: Lint
+        run: npm run lint-check
+      - name: Build
+        run: npm run build
+      - name: Test for changes
+        run: |
+          STATUS_OUTPUT="$(git status --porcelain)"
+          if [[ ! -z "$STATUS_OUTPUT" ]]; then
+            echo 'Changes exist; did you forget to run `npm run index`?'
+            echo "$STATUS_OUTPUT"
+            false
+          fi
