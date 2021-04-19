@@ -7,7 +7,6 @@ import { Hash } from "./Hash"
 import { Operation } from "./Operation"
 import { ArrayHierarchy } from "./ArrayHierarchy"
 import { CallHierarchy } from "./CallHierarchy"
-import { LabeledHierarchy } from "./LabeledHierarchy"
 import { ObjectHierarchy } from "./ObjectHierarchy"
 import { NameHierarchy } from "./NameHierarchy"
 import { ValueHierarchy } from "./ValueHierarchy"
@@ -22,20 +21,18 @@ export interface _Hierarchy {
 
 export type Hierarchy =
   | ObjectHierarchy
-  | LabeledHierarchy
   | ArrayHierarchy
+  | CallHierarchy
   | NameHierarchy
   | ValueHierarchy
-  | CallHierarchy
 
 export const Hierarchy = {
   isHierarchy: (value: unknown): value is Hierarchy =>
     ObjectHierarchy.isObjectHierarchy(value)
-    || LabeledHierarchy.isLabeledHierarchy(value)
     || ArrayHierarchy.isArrayHierarchy(value)
+    || CallHierarchy.isCallHierarchy(value)
     || NameHierarchy.isNameHierarchy(value)
-    || ValueHierarchy.isValueHierarchy(value)
-    || CallHierarchy.isCallHierarchy(value),
+    || ValueHierarchy.isValueHierarchy(value),
   from: async (value: unknown, raw = false): Promise<Hierarchy> => {
     value = await value
     if(

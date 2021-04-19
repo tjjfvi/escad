@@ -11,7 +11,7 @@ export const HierarchyPane = observer(() => {
   const hierarchy = state.hierarchy()
   if(hierarchy)
     return <Pane right name="Hierarchy">
-      <HierarchyView hierarchy={hierarchy}/>
+      <HierarchyView hierarchy={hierarchy} selectable={true}/>
     </Pane>
   return null
 })
