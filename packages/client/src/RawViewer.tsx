@@ -16,7 +16,7 @@ viewerRegistry.register<UnknownProduct, { product: UnknownProduct }>({
     component: observer(({ inputs }) => {
       const hierarchyPromise = Promise.all(inputs).then(x => Hierarchy.from(x.map(x => x.product.product), true))
       const hierarchy = useFromPromise(hierarchyPromise, NameHierarchy.create({ name: "Loading" }))()
-      return <div className="inner"><HierarchyView hierarchy={hierarchy}/></div>
+      return <div className="inner"><HierarchyView hierarchy={hierarchy} selectable={false}/></div>
     }),
     weight: 0,
   },

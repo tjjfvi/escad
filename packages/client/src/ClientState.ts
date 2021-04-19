@@ -1,6 +1,6 @@
 
 import { ClientServerMessenger } from "@escad/protocol"
-import { observable } from "rhobo"
+import { computed, observable } from "rhobo"
 import {
   ArtifactManager,
   ArtifactStore,
@@ -23,6 +23,7 @@ import {
   mapConnection,
 } from "@escad/messages"
 import { baseStatuses, Status } from "./Status"
+import { HierarchySelection, resolveHierarchySelection } from "./HierarchySelection"
 
 const _ClientStateContext = createContext<ClientState>(null as never)
 
@@ -34,12 +35,23 @@ export class ClientState implements ArtifactStore {
 
   bundleHash = fetch("/bundle.hash").then(r => r.text()).catch(() => null)
   status = observable<Status | null>(baseStatuses.disconnected)
+  sentProductHashes = observable<readonly Hash<Product>[]>([])
+  selection = observable<HierarchySelection>()
   products = observable<Product[]>([])
   exportTypes = observable<ExportTypeInfo[]>([])
   paramDef = observable<ObjectParam<any>>()
   params = observable<Record<string, unknown>>({})
   hierarchy = observable<Hierarchy>()
   sendParams = false
+
+  productHashes = computed(() => {
+    const selection = this.selection()
+    if(!selection) return this.sentProductHashes()
+    const hierarchy = this.hierarchy()
+    if(!hierarchy) return []
+    console.log(selection, hierarchy)
+    return [...resolveHierarchySelection(selection, hierarchy)]
+  })
 
   clientServerMessenger: ClientServerMessenger
 
@@ -58,6 +70,14 @@ export class ClientState implements ArtifactStore {
     }, this.connection)
     this.artifactManager.artifactStores.unshift(this)
     ;[this.triggerParamUpdate, this.onParamUpdate] = createEmittableAsyncIterable<void>()
+    this.productHashes.on("update", async () => {
+      this.products(await Promise.all(this.productHashes().map(async (hash): Promise<Product> => {
+        const product = await this.artifactManager.lookupRaw(hash)
+        if(!product)
+          throw new Error("Could not find Product under hash of " + hash)
+        return product
+      })))
+    })
   }
 
   async listenForBundle(){
@@ -77,12 +97,7 @@ export class ClientState implements ArtifactStore {
   }
 
   public async handleProducts(productHashes: readonly Hash<Product>[]){
-    this.products(await Promise.all(productHashes.map(async (hash): Promise<Product> => {
-      const product = await this.artifactManager.lookupRaw(hash)
-      if(!product)
-        throw new Error("Could not find Product under hash of " + hash)
-      return product
-    })))
+    this.sentProductHashes(productHashes)
   }
 
   private async handleExportTypes(exportTypes?: ExportTypeInfo[]){
