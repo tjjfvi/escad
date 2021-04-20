@@ -1,4 +1,4 @@
-import { Hash, Hierarchy, Product } from "@escad/core"
+import { Hash, HashMap, Hierarchy, Product } from "@escad/core"
 import { getHierarchyPath, HierarchyPath } from "./HierarchyPath"
 
 export interface HierarchySelectionPart {

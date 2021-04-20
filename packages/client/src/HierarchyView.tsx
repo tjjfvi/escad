@@ -111,7 +111,8 @@ const Line = ({ arrowState, text, onClick, selectable }: LineProps) =>
     <TreeText selectable={selectable} text={text}/>
   </div>
 
-const TreeTextPart = ({ children, className, onClick }: TreeTextPartProps) => {
+const TreeTextPart = ({ children, className, onClick, path }: TreeTextPartProps) => {
+  const state = useContext(ClientState.Context)
   const handleHover = (e: React.MouseEvent) => {
     if(!onClick) return
     const value = e.type === "mousemove" && !e.defaultPrevented
@@ -119,8 +120,11 @@ const TreeTextPart = ({ children, className, onClick }: TreeTextPartProps) => {
     e.preventDefault()
   }
   const hovered = useObservable.use(false)
+  state.selection.use()
   return <span {...{
-    className: (className ?? "") + (hovered() ? " hover" : ""),
+    className: (className ?? "")
+    + (hovered() ? " hover " : " ")
+    + (path && (findLast(state.selection() ?? [], x => Hash.equal(x.path, path))?.type ?? "")),
     onClick: e => {
       if(!onClick) return
       e.stopPropagation()
@@ -141,11 +145,12 @@ const TreeText = ({ text, selectable }: { text: TreeText, selectable: boolean })
         ? [[...a, d === ellipsis ? <span className="ellipsis" key={i}>{d}</span> : d], b, ...c]
         : "close" in d
           ? [[...b, ...(
-            d.onClick || d.className
+            d.onClick || d.className || d.path
               ? [
                 <TreeTextPart
                   key={i}
                   onClick={event => d.onClick?.(event, state, selectable)}
+                  path={d.path}
                   className={d.className}
                 >
                   {a}
@@ -166,6 +171,7 @@ type TreeTextPart =
   | {
     close: true,
     onClick?: (event: React.MouseEvent, state: ClientState, selectable: boolean) => void,
+    path?: HierarchyPath,
     className?: string,
   }
 type TreeText = TreeTextPart[]
@@ -187,6 +193,7 @@ type Tree = TreePart[]
 type TreeTextPartProps = {
   children: React.ReactNode,
   onClick?: (event: React.MouseEvent) => void,
+  path?: HierarchyPath,
   className?: string,
 }
 
@@ -219,6 +226,7 @@ function wrapLinkedProducts(
               path,
             }])
         },
+        path,
         className: "link",
       }],
     },
@@ -491,4 +499,10 @@ function length(str: TreeText): number{
 
 function getExpandableSections(tree: Tree, maxLength: number, onUpdate?: () => void){
   return fullyCollapseTree(tree, maxLength, onUpdate, true).filter((x): x is TreePartChildren => "children" in x)
+}
+
+function findLast<T>(array: T[], predicate: (value: T) => boolean){
+  for(let i = array.length - 1; i >= 0; i--)
+    if(predicate(array[i]))
+      return array[i]
 }
