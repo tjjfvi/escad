@@ -1,4 +1,4 @@
-import { Hash, HashMap, Hierarchy, Product } from "@escad/core"
+import { Hash, Hierarchy, Product } from "@escad/core"
 import { getHierarchyPath, HierarchyPath } from "./HierarchyPath"
 
 export interface HierarchySelectionPart {
@@ -8,16 +8,16 @@ export interface HierarchySelectionPart {
 
 export type HierarchySelection = HierarchySelectionPart[]
 
-export function resolveHierarchySelection(selection: HierarchySelection, hierarchy: Hierarchy){
-  const selected = new Set<Hash<Product>>()
-  for(const selectionPart of selection) {
+export function resolveHierarchySelection(hierarchySelection: HierarchySelection, hierarchy: Hierarchy){
+  const selectedProducts = new Set<Hash<Product>>()
+  for(const selectionPart of hierarchySelection) {
     const subHierarchy = getHierarchyPath(selectionPart.path, hierarchy)
     if(!subHierarchy?.linkedProducts) continue
-    for(const hash of subHierarchy.linkedProducts)
+    for(const productHash of subHierarchy.linkedProducts)
       if(selectionPart.type === "include")
-        selected.add(hash)
+        selectedProducts.add(productHash)
       else
-        selected.delete(hash)
+        selectedProducts.delete(productHash)
   }
-  return selected
+  return selectedProducts
 }
