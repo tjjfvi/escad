@@ -327,7 +327,10 @@ function _hierarchyToTree(path: HierarchyPath, hierarchy: Hierarchy, stateMemo: 
             {
               children: hierarchy.operands.map((value, index) =>
                 hierarchyToTree(
-                  [...path, { type: "CallHierarchyPathPart", location: index }],
+                  [...path, {
+                    type: "CallHierarchyPathPart",
+                    location: hierarchy.operands.length === 1 ? "onlyOperand" : index,
+                  }],
                   value,
                   stateMemo,
                 ),
@@ -356,7 +359,7 @@ function _hierarchyToTree(path: HierarchyPath, hierarchy: Hierarchy, stateMemo: 
     let start = true
     while(operands.length === 1 && CallHierarchy.isCallHierarchy(operands[0]) && operands[0].composable) {
       if(!start)
-        curPath = [...path, { type: "CallHierarchyPathPart", location: "onlyOperand" }]
+        curPath = [...curPath, { type: "CallHierarchyPathPart", location: "onlyOperand" }]
       start = false
       const [curHierarchy] = operands
       operands = curHierarchy.operands
@@ -391,7 +394,10 @@ function _hierarchyToTree(path: HierarchyPath, hierarchy: Hierarchy, stateMemo: 
           {
             children: operands.map((value, index) =>
               hierarchyToTree(
-                [...curPath, { type: "CallHierarchyPathPart", location: index }],
+                [...curPath, {
+                  type: "CallHierarchyPathPart",
+                  location: operands.length === 1 ? "onlyOperand" : index,
+                }],
                 value,
                 stateMemo,
               ),
