@@ -11,6 +11,7 @@ import { HashMap } from "./HashMap"
 import { TupleProduct, TupleProductType } from "./TupleProduct"
 import { ArrayProduct, ArrayProductType } from "./ArrayProduct"
 import { UnknownProduct, UnknownProductType } from "./UnknownProduct"
+import { MarkedProduct, MarkedProductType } from "./MarkedProduct"
 
 type ConversionPath = ConversionImpl<any, any>[]
 
@@ -111,6 +112,10 @@ export class ConversionRegistry {
       && ArrayProductType.isArrayProductType(b)
     ) || (
       UnknownProductType.isUnknownProductType(b)
+    ) || (
+      MarkedProductType.isMarkedProductType(a)
+      && MarkedProductType.isMarkedProductType(b)
+      && Id.equal(a.marker, b.marker)
     )
   }
 
@@ -135,6 +140,25 @@ export class ConversionRegistry {
             UnknownProduct.create(product),
           weight: 0,
           id: Hash.create([fromType, toType]),
+        })
+        i++
+        continue
+      }
+
+      if(
+        MarkedProductType.isMarkedProductType(fromType)
+        && MarkedProductType.isMarkedProductType(toType)
+        && Id.equal(fromType.marker, toType.marker)
+        && this.has(fromType.child, toType.child)
+      ) {
+        path.splice(i, 0, {
+          id: Hash.create([fromType, toType]),
+          fromType,
+          toType,
+          convert: async (product: MarkedProduct) =>
+            MarkedProduct.create(product.marker, await this.convertProduct(toType.child, product.child)),
+          // eslint-disable-next-line @typescript-eslint/no-non-null-assertion
+          weight: this.weight(this.composed!.get([fromType.child, toType.child])!),
         })
         i++
         continue
