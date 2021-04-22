@@ -60,22 +60,26 @@ export const createBundlerServerMessenger = (
   }
 }
 
-const literal = (value: string) => {
-  const literal = new stylus.nodes.Literal(value)
-  literal.filename = "globals.styl"
-  return literal
+const hex = (value: number) => {
+  // Webpack deep clones the config, so there can't be a circular reference,
+  // and stylus requires one level of .rgba for normalization.
+  const values = [(value >> 16) % 256, (value >> 8) % 256, (value >> 0) % 256, 1] as const
+  const color = new stylus.nodes.RGBA(...values)
+  color.rgba = new stylus.nodes.RGBA(...values)
+  delete (color as any).rgba.rgba
+  return color
 }
 
 export const stylusGlobals: unknown = {
-  $black: literal("#151820"),
-  $darkgrey: literal("#252830"),
-  $grey: literal("#454850"),
-  $lightgrey: literal("#656870"),
-  $white: literal("#bdc3c7"),
-  $red: literal("#c0392b"),
-  $orange: literal("#d35400"),
-  $yellow: literal("#f1c40f"),
-  $green: literal("#2ecc71"),
-  $blue: literal("#0984e3"),
-  $purple: literal("#8e44ad"),
+  $black: hex(0x151820),
+  $darkgrey: hex(0x252830),
+  $grey: hex(0x454850),
+  $lightgrey: hex(0x656870),
+  $white: hex(0xbdc3c7),
+  $red: hex(0xc0392b),
+  $orange: hex(0xd35400),
+  $yellow: hex(0xf1c40f),
+  $green: hex(0x2ecc71),
+  $blue: hex(0x0984e3),
+  $purple: hex(0x8e44ad),
 }
