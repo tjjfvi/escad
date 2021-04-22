@@ -1,44 +1,78 @@
 
-.Status
+.Statuses
   display inline-flex
-  height 50px
-  border-style solid
-  border-width 5px 0 0 5px
-  border-radius 10px 0 0 0
-  background-color $black
+  flex-direction column
   position absolute
   right 0px
   bottom 0px
+  width 50px
+
+.Status
+  display inline-flex
+  height 55px
+  border-style solid
+  border-width 5px 0 5px 5px
+  background-color $black
   font-size 25px
-  transition transform .4s
-  transform unquote("translate(100%, 0) translate(-50px, 0)")
+  transition transform .5s
+  transform translate(0, 0)
+  margin-bottom -5px
+  width 225px
+
+  border-top-left-radius 10px
+
+  &:not(:last-child)
+    border-bottom-left-radius 10px
 
   border-color $grey
   color $grey
 
   span
+    flex-grow 1
     align-self center
+    display inline-flex
+    justify-content center
     padding-right 7.5px
-    margin-left 45px
+  
+  .icons
+    display inline-flex
+    justify-content center
+    align-items center
+    position relative
+    width 45px
+    height 45px
 
-  svg
+  .icon1
     position absolute
+    width 20px
+    height 20px
+    right 50px
+
+  .icon2
+    position absolute
+    width 100%
     height 100%
 
   &:hover
-    transform none
+    transform translate(-100%, 0) translate(50px, 0)
 
-  &.disconnected
+  &.red
     color $red
     border-color $red
 
-  &.connected
+  &.green
     color $green
     border-color $green
 
-  &.reload
+  &.blue
     color $blue
     border-color $blue
 
   &.clickable
     cursor pointer
+
+@keyframes spin
+  0%
+    transform rotate(0deg)
+  100%
+    transform rotate(360deg)

@@ -22,8 +22,10 @@ import {
   filterConnection,
   mapConnection,
 } from "@escad/messages"
-import { baseStatuses, Status } from "./Status"
+import { StatusSet } from "./Status"
 import { HierarchySelection, resolveHierarchySelection } from "./HierarchySelection"
+import { mdiAccount, mdiArrowUpDown, mdiCheck, mdiClose, mdiCubeOutline, mdiRefresh } from "@mdi/js"
+import { Loading } from "./Loading"
 
 const _ClientStateContext = createContext<ClientState>(null as never)
 
@@ -34,7 +36,62 @@ export class ClientState implements ArtifactStore {
   static Context = _ClientStateContext
 
   bundleHash = fetch("/bundle.hash").then(r => r.text()).catch(() => null)
-  status = observable<Status | null>(baseStatuses.disconnected)
+  serverStatus = observable<"connected" | "disconnected" | "connecting">("disconnected")
+  clientStatus = observable<"current" | "reload">("current")
+  statuses = observable<StatusSet[]>([
+    {
+      name: "Renderer",
+      icon: mdiCubeOutline,
+      statuses: {
+        rendered: {
+          className: "green",
+          name: "Rendered",
+          icon: mdiCheck,
+        },
+      },
+      state: () => "rendered",
+    },
+    {
+      name: "Connection",
+      icon: mdiArrowUpDown,
+      statuses: {
+        connected: {
+          className: "green",
+          name: "Connected",
+          icon: mdiCheck,
+        },
+        disconnected: {
+          className: "red",
+          name: "Disconnected",
+          icon: mdiClose,
+        },
+        connecting: {
+          name: "Connecting",
+          icon: Loading,
+        },
+      },
+      state: this.serverStatus,
+    },
+    {
+      name: "Client",
+      icon: mdiAccount,
+      statuses: {
+        current: {
+          className: "green",
+          name: "Up to Date",
+          icon: mdiCheck,
+        },
+        reload: {
+          className: "blue",
+          name: "Reload",
+          icon: mdiRefresh,
+          onClick: () => window.location.reload(),
+        },
+      },
+      state: this.clientStatus,
+    },
+  ])
+
   sentProductHashes = observable<readonly Hash<Product>[]>([])
   selection = observable<HierarchySelection>()
   products = observable<Product[]>([])
@@ -81,10 +138,18 @@ export class ClientState implements ArtifactStore {
     })
   }
 
+  removeStatusSet(name: string){
+    this.statuses(this.statuses().filter(statusSet => statusSet.name !== name))
+  }
+
+  addStatusSet(statusSet: StatusSet){
+    this.statuses([...this.statuses(), statusSet])
+  }
+
   async listenForBundle(){
     for await (const newBundleHash of this.clientServerMessenger.req.onBundle())
       if(newBundleHash !== await this.bundleHash)
-        this.status(baseStatuses.reload)
+        this.clientStatus("reload")
   }
 
   async listenForInfo(){
@@ -172,15 +237,17 @@ export class WebSocketClientState extends ClientState {
     this.curWs?.send(message as never)
   }
 
-  initWs(){
+  async initWs(){
     if(this.curWs) return
     if(this.disconnectTimeout) clearTimeout(this.disconnectTimeout)
 
+    this.serverStatus("connecting")
+    await new Promise(r => setTimeout(r, 1000))
     const ws = this.curWs = new WebSocket(this.url)
     ws.addEventListener("open", () => {
       if(this.curWs !== ws)
         return ws.close()
-      this.status(baseStatuses.connected)
+      this.serverStatus("connected")
       this.listenForInfo()
       this.listenForBundle()
     })
@@ -196,7 +263,7 @@ export class WebSocketClientState extends ClientState {
     ws.close()
     if(ws !== this.curWs)
       return
-    this.status(baseStatuses.disconnected)
+    this.serverStatus("disconnected")
     this.curWs = undefined
     setTimeout(() => this.initWs(), 5000)
   }

@@ -1,44 +1,49 @@
 
 import "../stylus/Status.styl"
-import { mdiCheck, mdiClose, mdiRefresh } from "@mdi/js"
-import Icon from "@mdi/react"
+import MdiIcon from "@mdi/react"
 import React, { useContext } from "react"
 import { observer } from "rhobo"
 import { ClientState } from "./ClientState"
 
+type Icon = string | ((props: { className?: string }) => React.ReactElement | null)
+const Icon = (props: { icon: Icon, className?: string }) =>
+  typeof props.icon === "string"
+    ? <MdiIcon path={props.icon} className={props.className}/>
+    : <props.icon className={props.className}/>
+
+export interface StatusSet {
+  name: string,
+  icon?: Icon,
+  statuses: Record<string, Status>,
+  state: () => string,
+}
+
 export interface Status {
-  text: string,
   className?: string,
-  icon: string,
+  name: string,
+  icon: Icon,
   onClick?: () => void,
 }
 
-export const baseStatuses = {
-  connected: {
-    text: "Connected",
-    className: "connected",
-    icon: mdiCheck,
-  },
-  disconnected: {
-    text: "Disconnected",
-    className: "disconnected",
-    icon: mdiClose,
-  },
-  reload: {
-    text: "Reload Required",
-    className: "reload",
-    icon: mdiRefresh,
-    onClick: () => window.location.reload(),
-  },
-}
-
-export const Status = observer(() => {
+export const Statuses = observer(() => {
   const state = useContext(ClientState.Context)
-  const status = state.status()
-  if(!status) return null
+  const statuses = state.statuses()
+  return <div className="Statuses">
+    {statuses.map((statusSet, i) => <Status key={i} statusSet={statusSet} />)}
+  </div>
+})
+
+const Status = observer(({ statusSet }: { statusSet: StatusSet }) => {
+  const state = statusSet.state()
+  const status = statusSet.statuses[state]
+  if(!state)
+    throw new Error(`Invalid StatusSet.state "${state}"`)
   const className = "Status " + (status.className ?? "") + (status.onClick ? " clickable" : "")
   return <div className={className} onClick={status.onClick}>
-    <Icon path={status.icon}/>
-    <span>{status.text}</span>
+    <div className="icons">
+      {statusSet.icon && <Icon className="icon1" icon={statusSet.icon}/>}
+      {status.icon && <Icon className="icon2" icon={status.icon}/>}
+    </div>
+    <span>{status.name}</span>
   </div>
 })
