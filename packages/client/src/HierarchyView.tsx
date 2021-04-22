@@ -9,6 +9,7 @@ import {
   Hash,
   Product,
   HashMap,
+  assertNever,
 } from "@escad/core"
 import React, { useContext, useRef, useState } from "react"
 import { useObservable, useValue } from "rhobo"
@@ -489,10 +490,6 @@ function* interleave<T, U>(iterable: Iterable<T>, separator: U): Iterable<T | U>
     yield value
     first = false
   }
-}
-
-function assertNever(value: never): never{
-  throw new Error("Expected never, got " + value)
 }
 
 function length(str: TreeText): number{
