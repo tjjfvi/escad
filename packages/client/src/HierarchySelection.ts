@@ -1,4 +1,4 @@
-import { Hash, Hierarchy, Product } from "@escad/core"
+import { assertNever, Hash, Hierarchy, Product } from "@escad/core"
 import { getHierarchyPath, HierarchyPath } from "./HierarchyPath"
 
 export interface HierarchySelectionPart {
@@ -16,8 +16,10 @@ export function resolveHierarchySelection(hierarchySelection: HierarchySelection
     for(const productHash of subHierarchy.linkedProducts)
       if(selectionPart.type === "include")
         selectedProducts.add(productHash)
-      else
+      else if(selectionPart.type === "exclude")
         selectedProducts.delete(productHash)
+      else
+        assertNever(selectionPart.type)
   }
   return selectedProducts
 }

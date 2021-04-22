@@ -415,7 +415,6 @@ function _hierarchyToTree(path: HierarchyPath, hierarchy: Hierarchy, stateMemo: 
         ]),
     ]
   }
-  console.log(hierarchy)
   assertNever(hierarchy)
 }
 

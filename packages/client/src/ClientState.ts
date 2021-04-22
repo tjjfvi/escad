@@ -44,12 +44,11 @@ export class ClientState implements ArtifactStore {
   hierarchy = observable<Hierarchy>()
   sendParams = false
 
-  productHashes = computed(() => {
+  productHashes = computed<readonly Hash<Product>[]>(() => {
     const selection = this.selection()
     if(!selection) return this.sentProductHashes()
     const hierarchy = this.hierarchy()
     if(!hierarchy) return []
-    console.log(selection, hierarchy)
     return [...resolveHierarchySelection(selection, hierarchy)]
   })
 
@@ -71,12 +70,14 @@ export class ClientState implements ArtifactStore {
     this.artifactManager.artifactStores.unshift(this)
     ;[this.triggerParamUpdate, this.onParamUpdate] = createEmittableAsyncIterable<void>()
     this.productHashes.on("update", async () => {
-      this.products(await Promise.all(this.productHashes().map(async (hash): Promise<Product> => {
-        const product = await this.artifactManager.lookupRaw(hash)
-        if(!product)
-          throw new Error("Could not find Product under hash of " + hash)
-        return product
-      })))
+      this.products(
+        await Promise.all(this.productHashes().map(async hash => {
+          const product = await this.artifactManager.lookupRaw(hash)
+          if(!product)
+            throw new Error("Could not find Product under hash of " + hash)
+          return product
+        })),
+      )
     })
   }
 

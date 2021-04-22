@@ -1,5 +1,5 @@
 
-import { ArrayHierarchy, Hierarchy } from "@escad/core"
+import { ArrayHierarchy, assertNever, Hierarchy } from "@escad/core"
 
 interface ObjectHierarchyPathPart {
   readonly type: "ObjectHierarchyPathPart",
@@ -34,19 +34,41 @@ export function getHierarchyPath(path: HierarchyPath, hierarchy: Hierarchy){
 }
 
 function getHierarchyPathPart(pathPart: HierarchyPathPart, hierarchy: Hierarchy): Hierarchy | null{
+  // Unwraps single-operand CallHierarchy nodes to handle extra operations gracefully
   while(
     hierarchy.type === "CallHierarchy"
     && hierarchy.operands.length === 1
-    && (pathPart.type !== "CallHierarchyPathPart" || typeof pathPart.location === "number")
+    && !(pathPart.type === "CallHierarchyPathPart" && typeof pathPart.location === "string")
   )
     hierarchy = hierarchy.operands[0]
 
+  // Ignores single-operand CallHierarchyPathParts to handle fewer operations gracefully
   if(
     hierarchy.type !== "CallHierarchy"
     && pathPart.type === "CallHierarchyPathPart"
     && pathPart.location === "onlyOperand"
   )
     return hierarchy
+
+  if(
+    pathPart.type === "CallHierarchyPathPart"
+    && hierarchy.type === "CallHierarchy"
+  ) {
+    if(pathPart.location === "result")
+      return hierarchy.result ?? null
+    if(pathPart.location === "operator")
+      return hierarchy.operator
+    if(pathPart.location === "onlyOperand")
+      if(hierarchy.operands.length === 1)
+        return hierarchy.operands[0]
+      else
+        return null
+    if(pathPart.location === "allOperands")
+      return ArrayHierarchy.create({ children: hierarchy.operands })
+    if(typeof pathPart.location === "number")
+      return hierarchy.operands[pathPart.location]
+    assertNever(pathPart.location)
+  }
 
   if(
     pathPart.type === "ObjectHierarchyPathPart"
@@ -61,22 +83,6 @@ function getHierarchyPathPart(pathPart: HierarchyPathPart, hierarchy: Hierarchy)
     && pathPart.index in hierarchy.children
   )
     return hierarchy.children[pathPart.index]
-
-  if(
-    pathPart.type === "CallHierarchyPathPart"
-    && hierarchy.type === "CallHierarchy"
-  ) {
-    if(pathPart.location === "result")
-      return hierarchy.result ?? null
-    if(pathPart.location === "operator")
-      return hierarchy.operator
-    if(pathPart.location === "onlyOperand" && hierarchy.operands.length === 1)
-      return hierarchy.operands[0]
-    if(pathPart.location === "allOperands")
-      return ArrayHierarchy.create({ children: hierarchy.operands })
-    if(typeof pathPart.location === "number")
-      return hierarchy.operands[pathPart.location]
-  }
 
   return null
 }
