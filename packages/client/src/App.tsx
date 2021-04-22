@@ -1,6 +1,6 @@
 
 import React from "react"
-import { Status } from "./Status"
+import { Statuses } from "./Status"
 import { HierarchyPane } from "./HierarchyPane"
 import { ParametersPane } from "./ParametersPane"
 import { Preview } from "./Preview"
@@ -10,6 +10,6 @@ export const App = ({ state }: { state: ClientState }) =>
   <ClientState.Context.Provider value={state}>
     <ParametersPane/>
     <Preview/>
-    <Status/>
+    <Statuses/>
     <HierarchyPane/>
   </ClientState.Context.Provider>

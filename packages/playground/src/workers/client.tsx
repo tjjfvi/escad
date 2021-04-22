@@ -43,17 +43,24 @@ if(isRun) {
   )
 
   const clientState = new ClientState(clientServer, artifactManager)
-  clientState.status(null)
+  clientState.removeStatusSet("Connection")
+  clientState.removeStatusSet("Client")
   clientState.listenForBundle()
   clientState.listenForInfo()
   ReactDOM.render(<App state={clientState}/>, document.getElementById("root"))
 
   fetch("info.json").then(r => r.json()).then(info => {
     if(info.url)
-      clientState.status({
-        text: "Fork",
-        icon: mdiPencil,
-        onClick: () => location.href = info.url,
+      clientState.addStatusSet({
+        name: "Fork",
+        statuses: {
+          fork: {
+            name: "Fork",
+            icon: mdiPencil,
+            onClick: () => location.href = info.url,
+          },
+        },
+        state: () => "fork",
       })
   })
 
@@ -75,12 +82,19 @@ if(!isRun) {
     {},
   brandConnection(baseConnection, "share"),
   )
-  clientState.status({
-    text: "Share",
-    icon: mdiExportVariant,
-    onClick: () => {
-      saveMessenger.req.share()
+  clientState.removeStatusSet("Connection")
+  clientState.addStatusSet({
+    name: "Share",
+    statuses: {
+      share: {
+        name: "Share",
+        icon: mdiExportVariant,
+        onClick: () => {
+          saveMessenger.req.share()
+        },
+      },
     },
+    state: () => "share",
   })
   clientState.listenForInfo()
   clientState.listenForBundle()
