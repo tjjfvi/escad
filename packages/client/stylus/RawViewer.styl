@@ -1,6 +1,16 @@
 
-.Preview.RawViewer > .inner
-  padding-top 55px
-  padding-bottom 150px
-  overflow auto
-  height 100%
+.Preview.RawViewer
+  display inline-flex
+  align-items center
+  justify-content center
+
+  > .Loading
+    --size 100px
+    color $grey
+
+  > .inner
+    padding-top 55px
+    padding-bottom 150px
+    overflow auto
+    height 100%
+    width 100%
