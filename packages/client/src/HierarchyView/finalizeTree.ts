@@ -5,6 +5,7 @@ import { TreeText, TreeTextPart } from "./TreeText"
 
 /**
  * Finishes a `Tree` to be displayed
+ * - Ellipses closed `TreePart.Children`s
  * - Concatentates adjacent `TreePart.Text`s
  * - Applies ranges spanning multiple non-adjacent `TreePart.Text`s to each inner element
  *

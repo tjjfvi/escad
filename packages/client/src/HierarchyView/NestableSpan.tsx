@@ -1,7 +1,5 @@
 
-import React, { useContext } from "react"
-import { useObservable } from "rhobo"
-import { ClientState } from "../ClientState"
+import React, { useState } from "react"
 
 export interface NestableSpanProps {
   className?: string,
@@ -9,25 +7,26 @@ export interface NestableSpanProps {
   children: React.ReactNode,
 }
 
+/**
+ * Correctly handles hover & click logic when nested
+ */
 export const NestableSpan = ({ className, onClick, children }: NestableSpanProps) => {
-  const state = useContext(ClientState.Context)
-  const handleHover = (e: React.MouseEvent) => {
-    if(!onClick) return
-    const value = e.type === "mousemove" && !e.defaultPrevented
-    if(hovered.value !== value) hovered(value)
-    e.preventDefault()
-  }
-  const hovered = useObservable.use(false)
-  state.selection.use()
+  const [hovered, setHovered] = useState(false)
   return <span
-    className={(className ?? "") + (hovered() ? " hover" : " ")}
+    className={(className ?? "") + (hovered ? " hover" : "")}
     onClick={onClick && (event => {
       if(!onClick) return
       event.stopPropagation()
       onClick(event)
     })}
-    onMouseMove={handleHover}
-    onMouseLeave={handleHover}
+    onMouseOver={event => {
+      const newHovered = !handledMoverOverEvents.has(event.nativeEvent)
+      if(hovered !== newHovered) setHovered(newHovered)
+      handledMoverOverEvents.add(event.nativeEvent)
+    }}
+    onMouseLeave={() => hovered && setHovered(false)}
     children={children}
   />
 }
+
+const handledMoverOverEvents = new WeakSet<MouseEvent>()
