@@ -12,10 +12,11 @@ import {
   assertNever,
 } from "@escad/core"
 import React, { useContext, useRef, useState } from "react"
-import { useObservable, useValue } from "rhobo"
+import { observer, useValue } from "rhobo"
 import { ClientState } from "./ClientState"
 import { ResizeSensor } from "css-element-queries"
 import { HierarchyPath } from "./HierarchyPath"
+import { NestableSpan } from "./NestableSpan"
 
 export const HierarchyView = ({ hierarchy, selectable }: { hierarchy: Hierarchy, selectable: boolean }) => {
   const [width, setWidth] = useState<number>(0)
@@ -26,7 +27,7 @@ export const HierarchyView = ({ hierarchy, selectable }: { hierarchy: Hierarchy,
       sensorRef.current?.detach()
       if(!el) return
       const sensor = new ResizeSensor(el, () => {
-        setWidth(el.clientWidth)
+        if(el.clientWidth !== width) setWidth(el.clientWidth)
       })
       sensorRef.current = sensor
     }}
@@ -48,32 +49,33 @@ const Tree = ({ tree, width, selectable }: { tree: Tree, width: number, selectab
   const innerWidth = width - arrowWidth
   const maxLength = innerWidth / characterWidth
 
-  const collapsedTree = fullyCollapseTree(tree, maxLength, update)
-  const joinedCollapsedTree = joinTree(collapsedTree, update)
+  const collapsedTree = collapseTree(tree, maxLength)
+  const joinedCollapsedTree = finalizeTree(collapsedTree)
 
   return <div className="TreeNode">
     {joinedCollapsedTree.map((part, i) => {
       const prev = joinedCollapsedTree[i - 1]
       const next = joinedCollapsedTree[i + 1]
 
-      if("children" in part)
+      if(part.kind === "children")
         return <div className="children" key={i}>
           {part.children.map((y, i) => <Tree selectable={selectable} width={innerWidth} tree={y} key={i}/>)}
         </div>
 
-      if(next && "children" in next)
+      if(next && next.kind === "children")
         return <Line
           key={i}
           selectable={selectable}
           arrowState="open"
           text={part.text}
+          onUpdate={update}
           onClick={() => (next.state.open = false, update())}
         />
 
-      const expandableSections = getExpandableSections(tree, maxLength, update)
+      const expandableSections = getExpandableSections(tree, maxLength)
 
       const sectionsSplitInd =
-        prev && "children" in prev
+        prev?.kind === "children"
           ? expandableSections.findIndex(v => v.state === prev.state) + 1
           : 0
       const relevantSections = expandableSections.slice(sectionsSplitInd)
@@ -84,6 +86,7 @@ const Tree = ({ tree, width, selectable }: { tree: Tree, width: number, selectab
           selectable={selectable}
           arrowState="leaf"
           text={part.text}
+          onUpdate={update}
         />
 
       return <Line
@@ -91,6 +94,7 @@ const Tree = ({ tree, width, selectable }: { tree: Tree, width: number, selectab
         selectable={selectable}
         arrowState="closed"
         text={part.text}
+        onUpdate={update}
         onClick={() => {
           relevantSections.forEach(x => x.state.open = true)
           update()
@@ -103,100 +107,207 @@ type LineProps = {
   arrowState: "leaf" | "open" | "closed",
   text: TreeText,
   onClick?: () => void,
+  onUpdate: () => void,
   selectable: boolean,
 }
 
-const Line = ({ arrowState, text, onClick, selectable }: LineProps) =>
+const Line = ({ arrowState, text, onClick, onUpdate, selectable }: LineProps) =>
   <div className="line" onDoubleClick={onClick}>
     <div className={ "arrow " + arrowState } onClick={onClick}></div>
-    <TreeText selectable={selectable} text={text}/>
+    <TreeText selectable={selectable} text={text} onUpdate={onUpdate}/>
   </div>
 
-const TreeTextPart = ({ children, className, onClick, path }: TreeTextPartProps) => {
+interface TreeTextPartViewProps {
+  children: Array<string | React.ReactElement>,
+  opener: (
+    | TreeTextPart.DummyRangeStart
+    | TreeTextPart.OpenableStart
+    | TreeTextPart.SelectableStart
+  ),
+  onUpdate: () => void,
+  selectable: boolean,
+}
+
+const TreeTextPartView = observer(({ opener, children, onUpdate, selectable }: TreeTextPartViewProps) => {
   const state = useContext(ClientState.Context)
-  const handleHover = (e: React.MouseEvent) => {
-    if(!onClick) return
-    const value = e.type === "mousemove" && !e.defaultPrevented
-    if(hovered.value !== value) hovered(value)
-    e.preventDefault()
+  if(opener.kind === "dummyRangeStart")
+    return <>{children}</>
+  if(opener.kind === "openableStart")
+    return <NestableSpan
+      className="openable"
+      onClick={() => {
+        opener.target.open = true
+        onUpdate()
+      }}
+      children={children}
+    />
+  if(opener.kind === "selectableStart") {
+    if(!selectable)
+      return <>{children}</>
+    const { path } = opener
+    const selectionClass = findLast(state.selection() ?? [], x => Hash.equal(x.path, path))?.type ?? ""
+    return <NestableSpan
+      className={"selectable " + selectionClass}
+      onClick={event => {
+        if(event.ctrlKey || event.metaKey || event.altKey)
+          state.selection([
+            ...(state.selection.value ?? []),
+            {
+              type: event.altKey ? "exclude" : "include",
+              path,
+            },
+          ])
+        else
+          state.selection([{
+            type: "include",
+            path,
+          }])
+      }}
+      children={children}
+    />
   }
-  const hovered = useObservable.use(false)
-  state.selection.use()
-  return <span {...{
-    className: (className ?? "")
-    + (hovered() ? " hover " : " ")
-    + (path && (findLast(state.selection() ?? [], x => Hash.equal(x.path, path))?.type ?? "")),
-    onClick: e => {
-      if(!onClick) return
-      e.stopPropagation()
-      onClick(e)
-    },
-    onMouseMove: handleHover,
-    onMouseLeave: handleHover,
-  }}>
-    {children}
-  </span>
+  assertNever(opener)
+})
+
+const TreeText = ({ text, selectable, onUpdate }: { text: TreeText, selectable: boolean, onUpdate: () => void }) => {
+  type Wrapper = Pick<TreeTextPartViewProps, "children" | "opener">
+  let wrapperStack: Wrapper[] = [{
+    children: [],
+    opener: TreeTextPart.DummyRangeStart(),
+  }]
+  for(const [index, part] of text.entries()) {
+    const currentWrapper = wrapperStack[wrapperStack.length - 1]
+    if(part.kind === "string") {
+      currentWrapper.children.push(part.string)
+      continue
+    }
+    if(part.kind === "ellipsis") {
+      currentWrapper.children.push(<span className="ellipsis" key={index}>{"···"}</span>)
+      continue
+    }
+    if(
+      part.kind === "dummyRangeStart"
+        || part.kind === "openableStart"
+        || part.kind === "selectableStart"
+    ) {
+      wrapperStack.push({
+        children: [],
+        opener: part,
+      })
+      continue
+    }
+    if(part.kind === "rangeEnd") {
+      const previousWrapper = wrapperStack[wrapperStack.length - 2]
+      previousWrapper.children.push(
+        <TreeTextPartView
+          key={index}
+          onUpdate={onUpdate}
+          selectable={selectable}
+          opener={currentWrapper.opener}
+          children={currentWrapper.children}
+        />,
+      )
+      wrapperStack.pop()
+      continue
+    }
+    assertNever(part)
+  }
+  return <span>{wrapperStack[wrapperStack.length - 1].children}</span>
 }
 
-const TreeText = ({ text, selectable }: { text: TreeText, selectable: boolean }) => {
-  const state = useContext(ClientState.Context)
-  return <span>{
-    text.reduce(([a, b, ...c], d, i) =>
-      typeof d === "string"
-        ? [[...a, d === ellipsis ? <span className="ellipsis" key={i}>{d}</span> : d], b, ...c]
-        : "close" in d
-          ? [[...b, ...(
-            d.onClick || d.className || d.path
-              ? [
-                <TreeTextPart
-                  key={i}
-                  onClick={event => d.onClick?.(event, state, selectable)}
-                  path={d.path}
-                  className={d.className}
-                >
-                  {a}
-                </TreeTextPart>,
-              ]
-              : a
-          )], ...c]
-          : [[], a, b, ...c]
-    , [[]] as (string | React.ReactElement)[][])
-  }</span>
-}
+namespace TreeTextPart {
+  // eslint-disable-next-line @typescript-eslint/ban-types
+  export const String = (string: string): String => ({
+    kind: "string",
+    string,
+  })
+  export interface String {
+    readonly kind: "string",
+    readonly string: string,
+  }
 
-const ellipsis = "···"
+  export const Ellipsis = (): Ellipsis => ({
+    kind: "ellipsis",
+  })
+  export interface Ellipsis {
+    readonly kind: "ellipsis",
+  }
+
+  export const DummyRangeStart = (): DummyRangeStart => ({
+    kind: "dummyRangeStart",
+  })
+  export interface DummyRangeStart {
+    readonly kind: "dummyRangeStart",
+  }
+
+  export const SelectableStart = (path: HierarchyPath): SelectableStart => ({
+    kind: "selectableStart",
+    path,
+  })
+  export interface SelectableStart {
+    readonly kind: "selectableStart",
+    readonly path: HierarchyPath,
+  }
+
+  export const OpenableStart = (target: { open: boolean }): OpenableStart => ({
+    kind: "openableStart",
+    target,
+  })
+  export interface OpenableStart {
+    readonly kind: "openableStart",
+    readonly target: { open: boolean },
+  }
+
+  export const RangeEnd = (): RangeEnd => ({
+    kind: "rangeEnd",
+  })
+  export interface RangeEnd {
+    readonly kind: "rangeEnd",
+  }
+}
 
 type TreeTextPart =
-  | string
-  | { open: true }
-  | {
-    close: true,
-    onClick?: (event: React.MouseEvent, state: ClientState, selectable: boolean) => void,
-    path?: HierarchyPath,
-    className?: string,
-  }
+  | TreeTextPart.String
+  | TreeTextPart.Ellipsis
+  | TreeTextPart.DummyRangeStart
+  | TreeTextPart.SelectableStart
+  | TreeTextPart.OpenableStart
+  | TreeTextPart.RangeEnd
+
 type TreeText = TreeTextPart[]
 
-type TreePart =
-  | { readonly text: TreeText }
-  | TreePartChildren
+namespace TreePart {
+  export const Text = (...text: TreeText | [TreeText]): Text => ({
+    kind: "text",
+    text: ([] as TreeText).concat(...text),
+  })
+  export interface Text {
+    readonly kind: "text",
+    readonly text: TreeText,
+  }
 
-type TreePartChildren = {
-  readonly state: { open: boolean },
-  readonly children: readonly Tree[],
-  readonly joiner?: string,
-  readonly forceOpenable?: boolean,
-  readonly forceEllipsis?: boolean,
+  Text.String = (string: string) =>
+    Text(TreeTextPart.String(string))
+
+  export const Children = (data: Omit<Children, "kind">): Children => ({
+    kind: "children",
+    ...data,
+  })
+  export interface Children {
+    readonly kind: "children",
+    readonly state: { open: boolean },
+    readonly children: readonly Tree[],
+    readonly joiner?: string,
+    readonly forceOpenable?: boolean,
+    readonly forceEllipsis?: boolean,
+  }
 }
+
+type TreePart =
+  | TreePart.Text
+  | TreePart.Children
 
 type Tree = TreePart[]
-
-type TreeTextPartProps = {
-  children: React.ReactNode,
-  onClick?: (event: React.MouseEvent) => void,
-  path?: HierarchyPath,
-  className?: string,
-}
 
 function wrapLinkedProducts(
   path: HierarchyPath,
@@ -206,31 +317,9 @@ function wrapLinkedProducts(
   if(!linkedProducts?.length)
     return tree
   return [
-    { text: [{ open: true }] },
+    TreePart.Text(TreeTextPart.SelectableStart(path)),
     ...tree,
-    {
-      text: [{
-        close: true,
-        onClick: (event, state, selectable) => {
-          if(!selectable) return
-          if(event.ctrlKey || event.metaKey || event.altKey)
-            state.selection([
-              ...(state.selection.value ?? []),
-              {
-                type: event.altKey ? "exclude" : "include",
-                path,
-              },
-            ])
-          else
-            state.selection([{
-              type: "include",
-              path,
-            }])
-        },
-        path,
-        className: "link",
-      }],
-    },
+    TreePart.Text(TreeTextPart.RangeEnd()),
   ]
 }
 
@@ -255,62 +344,52 @@ function hierarchyToTree(path: HierarchyPath, hierarchy: Hierarchy, stateMemo: S
 
 function _hierarchyToTree(path: HierarchyPath, hierarchy: Hierarchy, stateMemo: StateMemo): Tree{
   if(NameHierarchy.isNameHierarchy(hierarchy))
-    return [{ text: [hierarchy.name] }]
+    return [TreePart.Text.String(hierarchy.name)]
   if(ValueHierarchy.isValueHierarchy(hierarchy))
-    return [{
-      text: [(
-        hierarchy.value === null
-          ? "null"
-          : typeof hierarchy.value === "object"
-            ? "undefined" in hierarchy.value
-              ? "undefined"
-              : `Symbol(${hierarchy.value ?? ""})`
-            : JSON.stringify(hierarchy.value)
-      )],
-    }]
+    return [TreePart.Text.String(
+      hierarchy.value === null
+        ? "null"
+        : typeof hierarchy.value === "object"
+          ? "undefined" in hierarchy.value
+            ? "undefined"
+            : `Symbol(${hierarchy.value ?? ""})`
+          : JSON.stringify(hierarchy.value),
+    )]
   if(ObjectHierarchy.isObjectHierarchy(hierarchy))
     return [
-      { text: ["{"] },
-      {
+      TreePart.Text.String("{"),
+      TreePart.Children({
         children: Object.entries(hierarchy.children).map(([key, value]) => {
-          const newPath: HierarchyPath = [
-            ...path,
-            {
-              type: "ObjectHierarchyPathPart",
-              key,
-            },
-          ]
+          const newPath: HierarchyPath = [...path, { type: "ObjectHierarchyPathPart", key }]
           return wrapLinkedProducts(newPath, value.linkedProducts, [
-            { text: [key + ": "] },
-            { children: [hierarchyToTree(newPath, value, stateMemo)], state: getState(stateMemo, path, key + ":") },
+            TreePart.Text.String(key),
+            TreePart.Text.String(": "),
+            TreePart.Children({
+              children: [hierarchyToTree(newPath, value, stateMemo)],
+              state: getState(stateMemo, path, key + ":"),
+            }),
           ])
         }),
         joiner: ", ",
         state: getState(stateMemo, path, ""),
-      },
-      { text: ["}"] },
+      }),
+      TreePart.Text.String("}"),
     ]
   if(ArrayHierarchy.isArrayHierarchy(hierarchy))
     return [
-      { text: ["["] },
-      {
+      TreePart.Text.String("["),
+      TreePart.Children({
         children: hierarchy.children.map((value, index) =>
           hierarchyToTree(
-            [
-              ...path,
-              {
-                type: "ArrayHierarchyPathPart",
-                index,
-              },
-            ],
+            [...path, { type: "ArrayHierarchyPathPart", index }],
             value,
             stateMemo,
           ),
         ),
         joiner: ", ",
         state: getState(stateMemo, path, ""),
-      },
-      { text: ["]"] },
+      }),
+      TreePart.Text.String("]"),
     ]
   if(CallHierarchy.isCallHierarchy(hierarchy)) {
     if(!hierarchy.composable)
@@ -320,30 +399,10 @@ function _hierarchyToTree(path: HierarchyPath, hierarchy: Hierarchy, stateMemo: 
           hierarchy.operator,
           stateMemo,
         ),
-        ...wrapLinkedProducts(
-          [...path, { type: "CallHierarchyPathPart", location: "allOperands" }],
-          Hierarchy.flattenLinkedProducts(hierarchy.operands),
-          [
-            { text: ["("] },
-            {
-              children: hierarchy.operands.map((value, index) =>
-                hierarchyToTree(
-                  [...path, {
-                    type: "CallHierarchyPathPart",
-                    location: hierarchy.operands.length === 1 ? "onlyOperand" : index,
-                  }],
-                  value,
-                  stateMemo,
-                ),
-              ),
-              joiner: ", ",
-              state: getState(stateMemo, path, "operands"),
-            },
-            { text: [")"] },
-          ]),
+        ..._callHierarchyOperandsTree(path, hierarchy.operands),
         ...(hierarchy.result ? [
-          { text: [" = "] },
-          {
+          TreePart.Text.String(" = "),
+          TreePart.Children({
             state: getState(stateMemo, path, "result"),
             children: [hierarchyToTree(
               [...path, { type: "CallHierarchyPathPart", location: "result" }],
@@ -351,7 +410,7 @@ function _hierarchyToTree(path: HierarchyPath, hierarchy: Hierarchy, stateMemo: 
               stateMemo,
             )],
             forceEllipsis: true,
-          },
+          }),
         ] : []),
       ]
     const operators: Tree[] = []
@@ -370,8 +429,8 @@ function _hierarchyToTree(path: HierarchyPath, hierarchy: Hierarchy, stateMemo: 
           linkedProducts: curHierarchy.linkedProducts,
         }, stateMemo),
         ...(curHierarchy.result ? [
-          { text: [" -> "] },
-          {
+          TreePart.Text.String(" -> "),
+          TreePart.Children({
             state: getState(stateMemo, curPath, "result"),
             children: [hierarchyToTree(
               [...curPath, { type: "CallHierarchyPathPart", location: "result" }],
@@ -379,130 +438,191 @@ function _hierarchyToTree(path: HierarchyPath, hierarchy: Hierarchy, stateMemo: 
               stateMemo,
             )],
             forceEllipsis: true,
-          },
+          }),
         ] : []),
       ])
     }
     return [
-      { text: ["("] },
-      { children: operators, joiner: "∘", state: getState(stateMemo, path, "operators"), forceOpenable: true },
-      { text: [")"] },
-      ...wrapLinkedProducts(
-        [...curPath, { type: "CallHierarchyPathPart", location: "allOperands" }],
-        Hierarchy.flattenLinkedProducts(operands),
-        [
-          { text: ["("] },
-          {
-            children: operands.map((value, index) =>
-              hierarchyToTree(
-                [...curPath, {
-                  type: "CallHierarchyPathPart",
-                  location: operands.length === 1 ? "onlyOperand" : index,
-                }],
-                value,
-                stateMemo,
-              ),
-            ),
-            joiner: ", ",
-            state: getState(stateMemo, curPath, "result"),
-            forceOpenable: (
-              operands.length === 1
-            && !ArrayHierarchy.isArrayHierarchy(operands[0])
-            && !ObjectHierarchy.isObjectHierarchy(operands[0])
-            ),
-          },
-          { text: [")"] },
-        ]),
+      TreePart.Text.String("("),
+      TreePart.Children({
+        children: operators,
+        joiner: "∘",
+        state: getState(stateMemo, path, "operators"),
+        forceOpenable: true,
+      }),
+      TreePart.Text.String(")"),
+      ..._callHierarchyOperandsTree(curPath, operands),
     ]
   }
   assertNever(hierarchy)
+
+  function _callHierarchyOperandsTree(path: HierarchyPath, operands: Hierarchy[]){
+    return wrapLinkedProducts(
+      [...path, { type: "CallHierarchyPathPart", location: "allOperands" }],
+      Hierarchy.flattenLinkedProducts(operands),
+      [
+        TreePart.Text.String("("),
+        TreePart.Children({
+          children: operands.map((value, index) =>
+            hierarchyToTree(
+              [...path, {
+                type: "CallHierarchyPathPart",
+                location: operands.length === 1 ? "onlyOperand" : index,
+              }],
+              value,
+              stateMemo,
+            ),
+          ),
+          joiner: ", ",
+          state: getState(stateMemo, path, "operands"),
+          forceOpenable: (
+            operands.length === 1
+              && !ArrayHierarchy.isArrayHierarchy(operands[0])
+              && !ObjectHierarchy.isObjectHierarchy(operands[0])
+          ),
+        }),
+        TreePart.Text.String(")"),
+      ],
+    )
+  }
 }
 
-function collapseTree(tree: Tree, onUpdate?: () => void, noSingle = false): Tree{
-  const wrapMaybeForceOpenable = (part: Extract<TreePart, { children: unknown }>, inner: Tree): Tree =>
+function removeSelectableRanges(text: TreeText): TreeText{
+  return text.map(part =>
+    part.kind === "selectableStart"
+      ? TreeTextPart.DummyRangeStart()
+      : part,
+  )
+}
+
+function collapseTreeOnce(tree: Tree, collapseExpandable = true): Tree{
+  const maybeWrapForceOpenable = (part: TreePart.Children, inner: Tree): Tree =>
     part.forceOpenable
       ? [
-        { text: [{ open: true }] },
-        ...inner.map(x => "text" in x ? {
-          text: x.text.map(x =>
-            typeof x === "object" && "close" in x && x.className !== "openable"
-              ? { close: true as const }
-              : x,
-          ),
-        } : x),
-        {
-          text: [{
-            close: true,
-            onClick: () => (part.state.open = true, onUpdate?.()),
-            className: "openable",
-          }],
-        },
+        TreePart.Text(TreeTextPart.OpenableStart(part.state)),
+        ...inner.map(innerPart =>
+          innerPart.kind === "text"
+            ? TreePart.Text(removeSelectableRanges(innerPart.text))
+            : innerPart,
+        ),
+        TreePart.Text(TreeTextPart.RangeEnd()),
       ]
-      : [...inner, { text: [] }]
+      : [...inner, TreePart.Text.String("")] // Increase the length so that we know there's more work to be done
   return tree.flatMap(part => {
-    if("text" in part || part.state.open || part.forceEllipsis)
+    if(part.kind === "text" || part.state.open || part.forceEllipsis)
       return [part]
-    if(part.children.length === 1 && !(noSingle && part.forceOpenable))
-      return wrapMaybeForceOpenable(part, part.children[0])
-    if(!noSingle)
-      return wrapMaybeForceOpenable(part, [...interleave(part.children, { text: [part.joiner ?? ""] })].flat())
+    if(part.children.length === 1 && (collapseExpandable || !part.forceOpenable))
+      return maybeWrapForceOpenable(part, part.children[0])
+    if(collapseExpandable)
+      return maybeWrapForceOpenable(part, interleave(part.children, TreePart.Text.String(part.joiner ?? "")).flat())
     return [part]
   })
 }
 
-function joinTree(tree: Tree, onUpdate?: () => void){
-  const [r, s] = tree.reduce<[Tree, TreeText]>(([a, b], c) =>
-    "text" in c
-      ? [a, [...b, ...c.text]]
-      : c.state.open
-        ? [[...a, { text: b }, c], []]
-        : [a, [...b, { open: true }, ellipsis, {
-          close: true,
-          onClick: () => (c.state.open = true, onUpdate?.()),
-          className: "openable",
-        }]]
-  , [[], []])
-  const t = [...r, { text: s }].filter(x => "children" in x || x.text.some(x => typeof x === "string" && x.length))
-  return t.map(x => !("text" in x) ? x : {
-    text: t.flatMap(y => "text" in y ? x === y ? y.text : y.text.filter(x => typeof x === "object") : []),
-  })
-}
-
-function validTree(tree: Tree, maxLength: number){
-  return joinTree(tree).every(x => "text" in x ? length(x.text) <= maxLength : true)
-}
-
-function fullyCollapseTree(tree: Tree, maxLength: number, onUpdate?: () => void, noSingle = false){
+function collapseTree(tree: Tree, maxLength: number, collapseExpandable = true){
   let last = tree
-  let cur = collapseTree(tree, onUpdate, noSingle)
-  while(cur.length !== last.length && validTree(cur, maxLength)) {
+  let cur = collapseTreeOnce(tree, collapseExpandable)
+  while(cur.length !== last.length && checkTreeWithinMaxLength(cur, maxLength)) {
     last = cur
-    cur = collapseTree(cur, onUpdate, noSingle)
+    cur = collapseTreeOnce(cur, collapseExpandable)
   }
   return last
 }
 
-function* interleave<T, U>(iterable: Iterable<T>, separator: U): Iterable<T | U>{
-  let first = true
-  for(const value of iterable) {
-    if(!first) yield separator
-    yield value
-    first = false
+/**
+ * Finishes a `Tree` to be displayed
+ * - Concatentates adjacent `TreePart.Text`s
+ * - Applies ranges spanning multiple non-adjacent `TreePart.Text`s to each inner element
+ *
+ * Example:
+ * ```
+ * Tree[Text[DummyRangeStart], Text[String], Children, Text[String, RangeEnd], Text[String]]
+ * ```
+ * becomes
+ * ```
+ * Tree[Text[DummyRangeStart, String, RangeEnd], Children, Text[DummyRangeStart, String, RangeEnd, String]]
+ * ```
+ */
+function finalizeTree(originalTree: Tree){
+  let treeAcc: Tree = []
+  let treeTextAcc: TreeText = []
+  let openRanges: TreeText = []
+  for(const treePart of originalTree) {
+    if(treePart.kind === "text") {
+      for(const treeTextPart of treePart.text) {
+        treeTextAcc.push(treeTextPart)
+        if(treeTextPart.kind === "string" || treeTextPart.kind === "ellipsis")
+          continue
+        if(treeTextPart.kind === "rangeEnd") {
+          openRanges.pop()
+          continue
+        }
+        if(
+          treeTextPart.kind === "dummyRangeStart"
+          || treeTextPart.kind === "selectableStart"
+          || treeTextPart.kind === "openableStart"
+        ) {
+          openRanges.push(treeTextPart)
+          continue
+        }
+        assertNever(treeTextPart)
+      }
+      continue
+    }
+    if(!treePart.state.open) {
+      treeTextAcc.push(
+        TreeTextPart.OpenableStart(treePart.state),
+        TreeTextPart.Ellipsis(),
+        TreeTextPart.RangeEnd(),
+      )
+      continue
+    }
+    finishTreeTextAcc()
+    treeAcc.push({ ...treePart })
+  }
+  finishTreeTextAcc()
+
+  return treeAcc
+
+  function finishTreeTextAcc(){
+    for(const {} of openRanges)
+      treeTextAcc.push(TreeTextPart.RangeEnd())
+    treeAcc.push(TreePart.Text(treeTextAcc))
+    treeTextAcc = [...openRanges]
   }
 }
 
-function length(str: TreeText): number{
-  return str.map(x => {
-    if(typeof x === "string")
-      return x.length
-    return 0
-  }).reduce((a, b) => a + b, 0)
+function checkTreeWithinMaxLength(tree: Tree, maxLength: number){
+  return finalizeTree(tree).every(x => x.kind !== "text" || treeTextLength(x.text) <= maxLength)
 }
 
-function getExpandableSections(tree: Tree, maxLength: number, onUpdate?: () => void){
-  return fullyCollapseTree(tree, maxLength, onUpdate, true).filter((x): x is TreePartChildren => "children" in x)
+function treeTextLength(text: TreeText): number{
+  let total = 0
+  for(const part of text)
+    if(part.kind === "string")
+      total += part.string.length
+    else if(part.kind === "ellipsis")
+      total += 2 // The space between the dots is shrunk
+  return total
 }
 
+/** Like [].join, but doesn't concat the elements into strings */
+function interleave<T, U>(iterable: Iterable<T>, separator: U){
+  const arr: Array<T | U> = []
+  let first = true
+  for(const value of iterable) {
+    if(!first) arr.push(separator)
+    arr.push(value)
+    first = false
+  }
+  return arr
+}
+
+function getExpandableSections(tree: Tree, maxLength: number){
+  return collapseTree(tree, maxLength, false).filter((x): x is TreePart.Children => x.kind === "children")
+}
+
+/** Like [].find but it starts from the end */
 function findLast<T>(array: T[], predicate: (value: T) => boolean){
   for(let i = array.length - 1; i >= 0; i--)
     if(predicate(array[i]))
