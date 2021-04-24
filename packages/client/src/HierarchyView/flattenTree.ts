@@ -3,17 +3,24 @@ import { finalizeTree } from "./finalizeTree"
 import { Tree, TreePart } from "./Tree"
 import { TreeTextPart, TreeText } from "./TreeText"
 
-export function collapseTree(tree: Tree, maxLength: number, collapseExpandable = true){
+/**
+ * Equally flattens a tree's children up until it's fully flattened or there's no more room in `maxLength`
+ * @param tree The tree to flatten
+ * @param maxLength The output tree's lines will all be under this length, if possible
+ * @param flattenOpenable
+ *   Whether or not to flatten nodes that should be openable with an arrow. Used in `getExpandableSections`
+ */
+export function flattenTree(tree: Tree, maxLength: number, flattenOpenable = true){
   let last = tree
-  let cur = collapseTreeOnce(tree, collapseExpandable)
+  let cur = flattenTreeOnce(tree, flattenOpenable)
   while(cur.length !== last.length && checkTreeWithinMaxLength(cur, maxLength)) {
     last = cur
-    cur = collapseTreeOnce(cur, collapseExpandable)
+    cur = flattenTreeOnce(cur, flattenOpenable)
   }
   return last
 }
 
-function collapseTreeOnce(tree: Tree, collapseExpandable = true): Tree{
+function flattenTreeOnce(tree: Tree, flattenOpenable = true): Tree{
   const maybeWrapForceOpenable = (part: TreePart.Children, inner: Tree): Tree =>
     part.forceOpenable
       ? [
@@ -29,9 +36,9 @@ function collapseTreeOnce(tree: Tree, collapseExpandable = true): Tree{
   return tree.flatMap(part => {
     if(part.kind === "text" || part.state.open || part.forceEllipsis)
       return [part]
-    if(part.children.length === 1 && (collapseExpandable || !part.forceOpenable))
+    if(part.children.length === 1 && (flattenOpenable || !part.forceOpenable))
       return maybeWrapForceOpenable(part, part.children[0])
-    if(collapseExpandable)
+    if(flattenOpenable)
       return maybeWrapForceOpenable(part, interleave(part.children, TreePart.Text.String(part.joiner ?? "")).flat())
     return [part]
   })

@@ -1,6 +1,6 @@
 
 import React, { useState } from "react"
-import { collapseTree } from "./collapseTree"
+import { flattenTree } from "./flattenTree"
 import { finalizeTree } from "./finalizeTree"
 import { Tree, TreePart } from "./Tree"
 import { TreeText } from "./TreeText"
@@ -15,7 +15,7 @@ export const TreeView = ({ tree, width, selectable }: { tree: Tree, width: numbe
   const innerWidth = width - arrowWidth
   const maxLength = innerWidth / characterWidth
 
-  const collapsedTree = collapseTree(tree, maxLength)
+  const collapsedTree = flattenTree(tree, maxLength)
   const joinedCollapsedTree = finalizeTree(collapsedTree)
 
   return <div className="TreeNode">
@@ -84,5 +84,5 @@ const Line = ({ arrowState, text, onClick, onUpdate, selectable }: LineProps) =>
   </div>
 
 function getExpandableSections(tree: Tree, maxLength: number){
-  return collapseTree(tree, maxLength, false).filter((x): x is TreePart.Children => x.kind === "children")
+  return flattenTree(tree, maxLength, false).filter((x): x is TreePart.Children => x.kind === "children")
 }

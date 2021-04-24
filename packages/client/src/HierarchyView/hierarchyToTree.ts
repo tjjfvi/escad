@@ -14,14 +14,18 @@ import { HierarchyPath } from "../HierarchyPath"
 import { StateMemo, getState } from "./State"
 import { Tree, TreePart } from "./Tree"
 import { TreeTextPart } from "./TreeText"
-const hierarchyTreeMemo = new WeakMap<Hierarchy, Tree>()
 
+/**
+ * Converts a `Hierarchy` to a `Tree`
+ * @param path
+ *   The path to get to this hierarchy from root. For the root call, this is `[]`.
+ *   Controls state memoization as well as selection behavior.
+ * @param hierarchy The hierarchy to convert.
+ * @param stateMemo
+ *   This memoizes the open/close state between multiple `hierarchyToTree` calls (including with different hierarchies).
+ */
 export function hierarchyToTree(path: HierarchyPath, hierarchy: Hierarchy, stateMemo: StateMemo): Tree{
-  const tree =
-    hierarchyTreeMemo.get(hierarchy)
-    ?? wrapLinkedProducts(path, hierarchy.linkedProducts, _hierarchyToTree(path, hierarchy, stateMemo))
-  hierarchyTreeMemo.set(hierarchy, tree)
-  return tree
+  return wrapLinkedProducts(path, hierarchy.linkedProducts, _hierarchyToTree(path, hierarchy, stateMemo))
 }
 
 function wrapLinkedProducts(

@@ -30,6 +30,7 @@ export namespace TreeTextPart {
     readonly kind: "ellipsis",
   }
 
+  // Used to easily filter out ranges
   export const DummyRangeStart = (): DummyRangeStart => ({
     kind: "dummyRangeStart",
   })
