@@ -1,7 +1,7 @@
 
 import React, { useContext } from "react"
 import { useObservable } from "rhobo"
-import { ClientState } from "./ClientState"
+import { ClientState } from "../ClientState"
 
 export interface NestableSpanProps {
   className?: string,
