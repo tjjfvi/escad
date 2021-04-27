@@ -72,6 +72,7 @@ function _hierarchyToTree(path: HierarchyPath, hierarchy: Hierarchy, stateMemo: 
         }),
         joiner: ", ",
         state: getState(stateMemo, path, ""),
+        forceOpenable: true,
       }),
       TreePart.Text.String("}"),
     ]
@@ -88,6 +89,7 @@ function _hierarchyToTree(path: HierarchyPath, hierarchy: Hierarchy, stateMemo: 
         ),
         joiner: ", ",
         state: getState(stateMemo, path, ""),
+        forceOpenable: hierarchy.children.length > 1,
       }),
       TreePart.Text.String("]"),
     ]
@@ -175,10 +177,9 @@ function _hierarchyToTree(path: HierarchyPath, hierarchy: Hierarchy, stateMemo: 
           ),
           joiner: ", ",
           state: getState(stateMemo, path, "operands"),
-          forceOpenable: (
-            operands.length === 1
-              && !ArrayHierarchy.isArrayHierarchy(operands[0])
-              && !ObjectHierarchy.isObjectHierarchy(operands[0])
+          forceOpenable: operands.length !== 1 || !(
+            ArrayHierarchy.isArrayHierarchy(operands[0])
+            || ObjectHierarchy.isObjectHierarchy(operands[0])
           ),
         }),
         TreePart.Text.String(")"),
