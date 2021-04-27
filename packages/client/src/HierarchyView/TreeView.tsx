@@ -38,7 +38,7 @@ export const TreeView = ({ tree, width, selectable }: { tree: Tree, width: numbe
           onClick={() => (next.state.open = false, update())}
         />
 
-      const expandableSections = getExpandableSections(tree, maxLength)
+      const expandableSections = getOpenableSections(tree, maxLength)
 
       const sectionsSplitInd =
         prev?.kind === "children"
@@ -83,6 +83,8 @@ const Line = ({ arrowState, text, onClick, onUpdate, selectable }: LineProps) =>
     <TreeTextView selectable={selectable} text={text} onUpdate={onUpdate}/>
   </div>
 
-function getExpandableSections(tree: Tree, maxLength: number){
-  return flattenTree(tree, maxLength, false).filter((x): x is TreePart.Children => x.kind === "children")
+function getOpenableSections(tree: Tree, maxLength: number){
+  return flattenTree(tree, maxLength, false)
+    .filter((part): part is TreePart.Children => part.kind === "children")
+    .filter(part => part.children.length > 0)
 }
