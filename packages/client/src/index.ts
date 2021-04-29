@@ -5,6 +5,7 @@ import "../stylus/index.styl"
 
 export * from "./App"
 export * from "./ClientState"
+export * from "./Dropdown"
 export * from "./Export"
 export * from "./HierarchyPane"
 export * from "./HierarchyPath"

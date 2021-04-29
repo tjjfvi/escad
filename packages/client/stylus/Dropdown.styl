@@ -1,0 +1,36 @@
+
+.Dropdown
+  display flex
+  align-items center
+  position relative
+  border 3px solid $darkgrey
+  border-radius 5px
+  padding 0 10px
+  cursor pointer
+  height 40px
+  text-align center
+  font-size 17.5px
+  background-color $black
+
+  &:after
+    content ""
+    justify-self end
+    min-width 10px
+    height 10px
+    border 0px solid $darkgrey
+    border-width 0px 2px 2px 0px
+    transform rotate(45deg) translate(-2.5px, -2.5px)
+
+  select
+    appearance none
+    background-color transparent
+    border none
+    padding 0
+    margin 0
+    width 100%
+    font-family inherit
+    font-size inherit
+    cursor inherit
+    line-height inherit
+    outline none
+    color inherit
