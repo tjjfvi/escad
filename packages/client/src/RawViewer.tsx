@@ -19,7 +19,7 @@ viewerRegistry.register<UnknownProduct, { product: UnknownProduct }>({
       const hierarchy = useFromPromise(hierarchyPromise)()
       if(!hierarchy)
         return <Loading/>
-      return <div className="inner"><HierarchyView hierarchy={hierarchy} selectable={false}/></div>
+      return <div className="inner"><HierarchyView hierarchy={hierarchy}/></div>
     }),
     weight: 0,
   },

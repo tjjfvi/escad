@@ -5,9 +5,16 @@ import { useValue } from "rhobo"
 import { ResizeSensor } from "css-element-queries"
 import { StateMemo } from "./State"
 import { TreeView } from "./TreeView"
-import { hierarchyToTree } from "./hierarchyToTree"
+import { hierarchyToTree, HierarchyToTreeEngine } from "./hierarchyToTree"
+import { httDefaultEngine } from "./httDefaultEngine"
 
-export const HierarchyView = ({ hierarchy, selectable }: { hierarchy: Hierarchy, selectable: boolean }) => {
+export interface HierarchyViewProps {
+  hierarchy: Hierarchy,
+  selectable?: boolean,
+  engine?: HierarchyToTreeEngine,
+}
+
+export const HierarchyView = ({ hierarchy, selectable = false, engine = httDefaultEngine }: HierarchyViewProps) => {
   const [width, setWidth] = useState<number>(0)
   const sensorRef = useRef<ResizeSensor>()
   const stateMemo = useValue<StateMemo>(() => new HashMap())
@@ -23,7 +30,7 @@ export const HierarchyView = ({ hierarchy, selectable }: { hierarchy: Hierarchy,
   >
     <TreeView
       width={width}
-      tree={hierarchyToTree([], hierarchy, stateMemo)}
+      tree={hierarchyToTree(engine, hierarchy, stateMemo)}
       selectable={selectable}
     />
   </div>
