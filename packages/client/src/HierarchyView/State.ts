@@ -1,13 +1,19 @@
 
-import { HashMap } from "@escad/core"
 import { HierarchyPath } from "../HierarchyPath"
 
 export type State = { open: boolean }
 
-export type StateMemo = HashMap<readonly [HierarchyPath, string], State>
+export type StateMemo = Map<string, State>
 
 export function getState(stateMemo: StateMemo, path: HierarchyPath, str: string){
-  const key = [path, str] as const
+  const key = path.flatMap(part => [
+    part.type,
+    part.type === "ObjectHierarchyPathPart"
+      ? part.key
+      : part.type === "ArrayHierarchyPathPart"
+        ? part.index
+        : part.location,
+  ]).concat(str).join("//")
   const state = stateMemo.get(key) ?? { open: false }
   stateMemo.set(key, state)
   return state
