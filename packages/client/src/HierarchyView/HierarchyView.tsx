@@ -1,5 +1,5 @@
 
-import { Hierarchy, HashMap } from "@escad/core"
+import { Hierarchy } from "@escad/core"
 import React, { useRef, useState } from "react"
 import { useValue } from "rhobo"
 import { ResizeSensor } from "css-element-queries"
@@ -17,7 +17,7 @@ export interface HierarchyViewProps {
 export const HierarchyView = ({ hierarchy, selectable = false, engine = httDefaultEngine }: HierarchyViewProps) => {
   const [width, setWidth] = useState<number>(0)
   const sensorRef = useRef<ResizeSensor>()
-  const stateMemo = useValue<StateMemo>(() => new HashMap())
+  const stateMemo = useValue<StateMemo>(() => new Map())
   return <div
     ref={el => {
       sensorRef.current?.detach()
