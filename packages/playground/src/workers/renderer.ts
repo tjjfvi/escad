@@ -3,10 +3,10 @@ import { artifactManager, ArtifactStore } from "@escad/core"
 import { workerConnection, brandConnection, createMessenger } from "@escad/messages"
 import { createRendererServerMessenger } from "@escad/renderer"
 
-const artifactMessenger = createMessenger<{/**/}, Required<ArtifactStore>>(
-  {},
-  brandConnection(workerConnection(self as any), "artifacts"),
-).req
+const artifactMessenger = createMessenger<{}, Required<ArtifactStore>, {}>({
+  impl: {},
+  connection: brandConnection(workerConnection(self as any), "artifacts"),
+})
 
 // Prevent sending non-serializable ArtifactManager
 artifactManager.artifactStores.unshift({

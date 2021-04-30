@@ -50,6 +50,8 @@ rules:
     - off
   '@typescript-eslint/class-name-casing':
     - off
+  '@typescript-eslint/ban-types':
+    - off
   '@typescript-eslint/explicit-function-return-type':
     - off
   'react/no-children-prop':

@@ -2,7 +2,6 @@
 import express from "express"
 import expressWs from "express-ws"
 import {
-  createRendererDispatcher,
   createServerBundlerMessenger,
   createServerClientMessenger,
   createServerRendererMessenger,
@@ -12,6 +11,7 @@ import { childProcessConnection, filterConnection, mapConnection } from "@escad/
 import { fork } from "child_process"
 import watch from "node-watch"
 import { BundleOptions } from "../../client/node_modules/@escad/protocol/src"
+import { createServerEmitter } from "@escad/server"
 
 export interface ServerOptions {
   artifactsDir: string,
@@ -43,44 +43,48 @@ export const createServer = async ({ artifactsDir, port, loadFile, loadDir, dev 
   })
   const bundlerMessenger = createServerBundlerMessenger(childProcessConnection(bundlerProcess))
 
-  bundlerMessenger.req.bundle(baseBundleOptions)
+  bundlerMessenger.bundle(baseBundleOptions)
 
-  const rendererMessenger = createRendererDispatcher(3, () => {
+  const createRendererMessenger = async () => {
     const child = fork(require.resolve("./renderer"), {
-      env: { ...process.env, ARTIFACTS_DIR: artifactsDir },
+      env: { ...process.env, ARTIFACTS_DIR: artifactsDir, LOAD_FILE: loadFile },
     })
     return createServerRendererMessenger(childProcessConnection(child))
-  })
+  }
 
-  rendererMessenger.req.load(loadFile)
+  const serverEmitter = createServerEmitter()
+
   watch(loadDir, {
     filter: file => !file.includes("artifacts") && !file.includes("node_modules") && !file.includes("dist"),
   }, () => {
-    rendererMessenger.req.load(loadFile)
+    serverEmitter.emit("reload")
   })
-  ;(async function(){
-    for await (const hash of bundlerMessenger.req.onBundle())
-      console.log(`Bundled client (${hash.slice(0, 32)}...)`)
-  })()
-  ;(async function(){
-    for await (const { clientPlugins } of rendererMessenger.req.onLoad())
-      bundlerMessenger.req.bundle({
-        ...baseBundleOptions,
-        clientPlugins,
-      })
-  })()
+
+  bundlerMessenger.on("bundle", hash => {
+    console.log(`Bundled client (${hash.slice(0, 32)}...)`)
+  })
+
+  bundlerMessenger.bundle(baseBundleOptions)
+
+  serverEmitter.on("clientPlugins", clientPlugins => {
+    bundlerMessenger.bundle({
+      ...baseBundleOptions,
+      clientPlugins,
+    })
+  })
 
   app.ws("/ws", ws => {
-    const messenger = createServerClientMessenger(
-      mapConnection.flatted(filterConnection.string({
+    const messenger = createServerClientMessenger({
+      connection: mapConnection.flatted(filterConnection.string({
         send: msg => ws.send(msg),
         onMsg: cb => ws.on("message", cb),
         offMsg: cb => ws.off("message", cb),
       })),
-      hash => `/artifacts/raw/${hash}`,
-      rendererMessenger,
+      serverEmitter,
+      hashToUrl: hash => `/artifacts/raw/${hash}`,
+      createRendererMessenger,
       bundlerMessenger,
-    )
+    })
     ws.on("close", () => messenger.destroy())
     ws.on("error", () => messenger.destroy())
   })

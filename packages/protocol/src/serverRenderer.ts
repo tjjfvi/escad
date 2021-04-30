@@ -3,26 +3,23 @@ import { ExportTypeInfo, Hash, Hierarchy, ObjectParam, Product, ProductType } fr
 import { Messenger } from "@escad/messages"
 import { PluginRegistration } from "@escad/register-client-plugin"
 
-export interface RunInfo {
+export interface Info {
+  products: readonly Hash<Product>[],
   hierarchy: Hash<Hierarchy> | null,
-  products: Hash<Product>[],
   paramDef: Hash<ObjectParam<any>> | null,
-}
-
-export interface LoadInfo extends RunInfo {
-  clientPlugins: PluginRegistration[],
   conversions: readonly (readonly [ProductType, ProductType])[],
-  exportTypes: ExportTypeInfo[],
+  exportTypes: readonly ExportTypeInfo[],
+  clientPlugins: readonly PluginRegistration[],
 }
 
-export type RendererServerMessengerShape = {
-  onLoad(): AsyncIterable<LoadInfo>,
-  load(path: string): Promise<LoadInfo>,
-  run(params: unknown): Promise<RunInfo>,
+export type RendererServerShape = {
+  run(params?: unknown): Promise<Info>,
   lookupRef(loc: readonly unknown[]): Promise<Hash<unknown>>,
 }
 
-export type ServerRendererMessengerShape = { /**/ }
+export type ServerRendererEvents = {}
 
-export type ServerRendererMessenger = Messenger<ServerRendererMessengerShape, RendererServerMessengerShape>
-export type RendererServerMessenger = Messenger<RendererServerMessengerShape, ServerRendererMessengerShape>
+export type ServerRendererShape = {}
+
+export type ServerRendererMessenger = Messenger<ServerRendererShape, RendererServerShape, ServerRendererEvents>
+export type RendererServerMessenger = Messenger<RendererServerShape, ServerRendererShape, ServerRendererEvents>

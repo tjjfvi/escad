@@ -1,26 +1,22 @@
 
 import { Messenger } from "@escad/messages"
-import { ExportTypeInfo, Hash, Hierarchy, ObjectParam, Product, ProductType } from "@escad/core"
+import { Hash } from "@escad/core"
+import { Info } from "./serverRenderer"
 
-export interface Info {
-  products: Hash<Product>[],
-  hierarchy: Hash<Hierarchy> | null,
-  paramDef: Hash<ObjectParam<any>> | null,
-  conversions?: [ProductType, ProductType][],
-  exportTypes?: ExportTypeInfo[],
-}
-
-export type ServerClientMessengerShape = {
-  ping(period: number): AsyncIterable<void>,
-  info(): AsyncIterable<Info>,
+export type ServerClientShape = {
   lookupRaw(hash: Hash<unknown>): Promise<string>,
   lookupRef(loc: readonly unknown[]): Promise<string>,
-  onBundle(): AsyncIterable<Hash<unknown>>,
+  run(params?: unknown): Promise<Info>,
 }
 
-export type ClientServerMessengerShape = {
-  params(): AsyncIterable<unknown>,
+export type ClientServerShape = {}
+
+export type ServerClientEvents = {
+  ping: [],
+  reload: [],
+  info: [info: Info],
+  bundle: [hash: Hash<unknown>],
 }
 
-export type ServerClientMessenger = Messenger<ServerClientMessengerShape, ClientServerMessengerShape>
-export type ClientServerMessenger = Messenger<ClientServerMessengerShape, ServerClientMessengerShape>
+export type ServerClientMessenger = Messenger<ServerClientShape, ClientServerShape, ServerClientEvents>
+export type ClientServerMessenger = Messenger<ClientServerShape, ServerClientShape, ServerClientEvents>

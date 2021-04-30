@@ -10,35 +10,31 @@ import {
   ObjectParam,
   ProductType,
 } from "@escad/core"
-import { RunInfo, RendererServerMessenger, LoadInfo } from "@escad/protocol"
-import { Connection, createEmittableAsyncIterable, createMessenger } from "@escad/messages"
+import { Info, RendererServerMessenger } from "@escad/protocol"
+import { Connection, createMessenger } from "@escad/messages"
 import { registeredPlugins } from "@escad/register-client-plugin"
 import { lookupRef } from "./lookupRef"
 import { RenderFunction } from "./renderFunction"
 
 export const createRendererServerMessenger = (
   connection: Connection<unknown>,
-  requireFile: (path: string) => unknown = x => require(x),
+  requireFile: () => unknown,
 ) => {
-  const [triggerLoad, onLoad] = createEmittableAsyncIterable<LoadInfo>()
-
-  let run: (params: unknown) => Promise<RunInfo>
-
   const messenger: RendererServerMessenger = createMessenger({
-    onLoad,
-    load,
-    lookupRef,
-    run: params => run(params),
-  }, connection)
+    impl: {
+      run,
+      lookupRef,
+    },
+    connection,
+  })
 
   return messenger
 
-  async function load(path: string){
-    // eslint-disable-next-line @typescript-eslint/no-var-requires
-    const fullExported = requireFile(path)
+  async function run(params?: unknown){
+    const fullExported = requireFile()
 
     if(typeof fullExported !== "object" || !fullExported || !("default" in fullExported))
-      throw new Error(`"${path}" has no default export`)
+      throw new Error("File has no default export")
 
     const exported = fullExported["default" as never] as unknown
 
@@ -50,24 +46,15 @@ export const createRendererServerMessenger = (
     const { defaultValue: defaultParams } = param
     const paramHash = paramDef ? artifactManager.storeRaw(param) : null
 
-    run = async params => {
-      const { products, hierarchy } = await render(params)
-      return {
-        paramDef: await paramHash,
-        products,
-        hierarchy,
-      }
-    }
-
     const conversions = [...conversionRegistry.listAll()].map(x => [x.fromType, x.toType] as const)
-    const { products, hierarchy } = await render(defaultParams)
+    const { products, hierarchy } = await render(params ?? defaultParams)
     const exportTypes = [...exportTypeRegistry.listRegistered()].map(x => ({
       ...x,
       export: undefined,
       productType: ProductType.fromProductTypeish(x.productType),
     }))
 
-    const loadInfo = {
+    const loadInfo: Info = {
       conversions,
       paramDef: await paramHash,
       clientPlugins: [...registeredPlugins],
@@ -75,8 +62,6 @@ export const createRendererServerMessenger = (
       products,
       hierarchy,
     }
-
-    triggerLoad(loadInfo)
 
     return loadInfo
 
