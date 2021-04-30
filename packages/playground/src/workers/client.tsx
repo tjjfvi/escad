@@ -11,10 +11,12 @@ import React from "react"
 import ReactDOM from "react-dom"
 import { App, ClientState } from "@escad/client"
 import { artifactManager, ArtifactStore } from "@escad/core"
-import { createServerClientMessenger, createServerRendererMessenger } from "@escad/server"
+import { createServerClientMessenger } from "@escad/server"
 import { mdiExportVariant, mdiPencil } from "@mdi/js"
 import { InMemoryArtifactStore } from "../utils/InMemoryArtifactStore"
 import { createBlob } from "../utils/createBlob"
+import { ServerRendererMessenger } from "@escad/protocol"
+import { createServerEmitter } from "@escad/server"
 
 const isRun = location.host === "escad.run" || (location.pathname.startsWith("/run"))
 
@@ -23,30 +25,33 @@ if(isRun) {
 
   const artifactStore = new InMemoryArtifactStore()
 
-  const worker = new Worker(createBlob(
+  const workerSource = createBlob(
     `importScripts("${location.origin}/static/bundled/escad.js","${location.href}renderer.bundle.js")`,
-  ))
-
-  createMessenger<Required<ArtifactStore>, {/**/}>(
-    artifactStore,
-    brandConnection(workerConnection(worker), "artifacts"),
   )
 
-  const rendererMessenger = createServerRendererMessenger(
-    mapConnection.log(brandConnection(workerConnection(worker), "renderer")),
-  )
-
-  createServerClientMessenger(
-    mapConnection.log(serverClient),
-    hash => createBlob(artifactStore.raw.get(hash) ?? new Uint8Array(0)),
-    rendererMessenger,
-  )
+  createServerClientMessenger({
+    connection: mapConnection.log(serverClient),
+    hashToUrl: hash => createBlob(artifactStore.raw.get(hash) ?? new Uint8Array(0)),
+    createRendererMessenger: async () => {
+      const worker = new Worker(workerSource)
+      const artifactMessenger = createMessenger<Required<ArtifactStore>, {}, {}>({
+        impl: artifactStore,
+        connection: brandConnection(workerConnection(worker), "artifacts"),
+      })
+      const messenger: ServerRendererMessenger = createMessenger({
+        impl: {},
+        connection: mapConnection.log(brandConnection(workerConnection(worker), "renderer")),
+        onDestroy: [artifactMessenger.destroy],
+      })
+      return messenger
+    },
+    serverEmitter: createServerEmitter(),
+  })
 
   const clientState = new ClientState(clientServer, artifactManager)
   clientState.removeStatusSet("Connection")
   clientState.removeStatusSet("Client")
-  clientState.listenForBundle()
-  clientState.listenForInfo()
+  clientState.connect()
   ReactDOM.render(<App state={clientState}/>, document.getElementById("root"))
 
   fetch("info.json").then(r => r.json()).then(info => {
@@ -63,8 +68,6 @@ if(isRun) {
         state: () => "fork",
       })
   })
-
-  rendererMessenger.req.load("/project/index")
 }
 
 if(!isRun) {
@@ -78,10 +81,10 @@ if(!isRun) {
     (ev: any) => ev.data,
   )
   const clientState = new ClientState(brandConnection(baseConnection, "client"), artifactManager)
-  const saveMessenger = createMessenger<{/**/}, { share(): Promise<void> }>(
-    {},
-  brandConnection(baseConnection, "share"),
-  )
+  const saveMessenger = createMessenger<{}, { share(): Promise<void> }, {}>({
+    impl: {},
+    connection: brandConnection(baseConnection, "share"),
+  })
   clientState.removeStatusSet("Connection")
   clientState.addStatusSet({
     name: "Share",
@@ -90,13 +93,12 @@ if(!isRun) {
         name: "Share",
         icon: mdiExportVariant,
         onClick: () => {
-          saveMessenger.req.share()
+          saveMessenger.share()
         },
       },
     },
     state: () => "share",
   })
-  clientState.listenForInfo()
-  clientState.listenForBundle()
+  clientState.connect()
   ReactDOM.render(<App state={clientState}/>, document.getElementById("root"))
 }

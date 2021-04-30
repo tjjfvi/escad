@@ -1,6 +1,6 @@
 
 import { Compiler, Stats } from "webpack"
-import { Connection, createEmittableAsyncIterable, createMessenger } from "@escad/messages"
+import { Connection, createMessenger } from "@escad/messages"
 import { BundleOptions, BundlerServerMessenger } from "@escad/protocol"
 import { Hash } from "@escad/core"
 import { writeFile } from "fs-extra"
@@ -12,16 +12,18 @@ export const createBundlerServerMessenger = (
   connection: Connection<unknown>,
   createCompiler: (options: BundleOptions, entryPaths: string[]) => Compiler | Promise<Compiler>,
 ): BundlerServerMessenger => {
-  const [emitBundle, onBundle] = createEmittableAsyncIterable<Hash<unknown>>()
-
   let watcher: ReturnType<Compiler["watch"]> | undefined
 
   let lastOptionsHash: Hash<BundleOptions> | undefined
 
-  return createMessenger({
-    bundle,
-    onBundle,
-  }, connection)
+  const messenger: BundlerServerMessenger = createMessenger({
+    impl: {
+      bundle,
+    },
+    connection,
+  })
+
+  return messenger
 
   async function bundle(options: BundleOptions){
     const optionsHash = Hash.create(options)
@@ -48,7 +50,7 @@ export const createBundlerServerMessenger = (
         }
         const bundleHash = Hash.create(result?.compilation.fullHash ?? Math.random())
         writeFile(path.join(options.outDir, "bundle.hash"), bundleHash)
-        emitBundle(bundleHash)
+        messenger.emit("bundle", bundleHash)
         resolve()
       }
 

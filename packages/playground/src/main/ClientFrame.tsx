@@ -4,11 +4,11 @@ import { brandConnection, createMessenger, filterConnection, mapConnection } fro
 import { createServerClientMessenger } from "@escad/server"
 import React, { useState } from "react"
 import { createBlob } from "../utils/createBlob"
-import { bundlerMessenger, rendererMessenger } from "./server"
+import { bundlerMessenger, serverEmitter } from "./server"
 import { getClientURL } from "../utils/getClientURL"
 import { observer } from "rhobo"
 import { loadingStatuses } from "./initialize"
-import { artifactStore } from "./rendererWorker"
+import { artifactStore, createRendererWorker } from "./rendererWorker"
 import fs from "fs"
 
 export const ClientFrame = observer(() => {
@@ -17,7 +17,7 @@ export const ClientFrame = observer(() => {
   const lastWindow = React.useRef<Window>()
   const onNewWindow = React.useRef<() => void>()
   if(!src) {
-    bundlerMessenger.req.onBundle()[Symbol.asyncIterator]().next().then(() => setState({}))
+    bundlerMessenger.once("bundle", () => setState({}))
     return <div className="ClientFrame loading">
       Loading...
       {loadingStatuses().map(({ text }, i) =>
@@ -48,30 +48,33 @@ export const ClientFrame = observer(() => {
           x => x,
           (ev: any) => ev.data,
         )
-        const clientMessenger = createServerClientMessenger(
-          brandConnection(baseConnection, "client"),
-          hash => createBlob(artifactStore.raw.get(hash) ?? Buffer.alloc(0)),
-          rendererMessenger,
-          bundlerMessenger,
-        )
-        const saveMessenger = createMessenger<{ share(): Promise<void> }, {/**/}>({
-          async share(){
-            const isProd = location.hostname === "escad.dev"
-            const createUrl = isProd ? "https://escad.run/create" : "/create"
-            const response = await fetch(createUrl, {
-              method: "POST",
-              body: JSON.stringify({
-                url: location.href,
-                renderer: fs.readFileSync("/out/bundle.js", "utf8"),
-                client: fs.readFileSync("/static/bundle.js", "utf8"),
-              }),
-              headers: {
-                "Content-Type": "application/json",
-              },
-            }).then(r => r.json())
-            location = response.url
+        const clientMessenger = createServerClientMessenger({
+          connection: brandConnection(baseConnection, "client"),
+          hashToUrl:  hash => createBlob(artifactStore.raw.get(hash) ?? Buffer.alloc(0)),
+          createRendererMessenger: createRendererWorker,
+          serverEmitter,
+        })
+        const saveMessenger = createMessenger<{ share(): Promise<void> }, {}, {}>({
+          impl: {
+            async share(){
+              const isProd = location.hostname === "escad.dev"
+              const createUrl = isProd ? "https://escad.run/create" : "/create"
+              const response = await fetch(createUrl, {
+                method: "POST",
+                body: JSON.stringify({
+                  url: location.href,
+                  renderer: fs.readFileSync("/out/bundle.js", "utf8"),
+                  client: fs.readFileSync("/static/bundle.js", "utf8"),
+                }),
+                headers: {
+                  "Content-Type": "application/json",
+                },
+              }).then(r => r.json())
+              location = response.url
+            },
           },
-        }, brandConnection(baseConnection, "share"))
+          connection: brandConnection(baseConnection, "share"),
+        })
         onNewWindow.current = () => {
           clientMessenger.destroy()
           saveMessenger.destroy()

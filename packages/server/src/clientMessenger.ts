@@ -1,42 +1,48 @@
+
 import { Hash } from "@escad/core"
-import { Connection, createMessenger, dedupeAsyncIterable, zipAsyncIterables } from "@escad/messages"
+import { Connection, createMessenger } from "@escad/messages"
 import { ServerBundlerMessenger, ServerClientMessenger } from "@escad/protocol"
 import { ServerRendererMessenger } from "@escad/protocol"
+import { ServerEmitter } from "./serverEmitter"
 
-export const createServerClientMessenger = (
+export const createServerClientMessenger = ({
+  connection,
+  hashToUrl,
+  createRendererMessenger,
+  bundlerMessenger,
+  serverEmitter,
+}: {
   connection: Connection<unknown>,
   hashToUrl: (hash: Hash<unknown>) => string,
-  rendererMessenger: ServerRendererMessenger,
+  createRendererMessenger: () => Promise<ServerRendererMessenger>,
   bundlerMessenger?: ServerBundlerMessenger,
-) => {
+  serverEmitter: ServerEmitter,
+}) => {
+  let renderer = createRendererMessenger()
   const messenger: ServerClientMessenger = createMessenger({
-    async *ping(period){
-      period = Math.min(period, 1000)
-      while(true) {
-        await new Promise(res => setTimeout(res, period))
-        yield
-      }
+    impl: {
+      async lookupRaw(hash){
+        return hashToUrl(hash)
+      },
+      async lookupRef(loc){
+        const hash = await (await renderer).lookupRef(loc)
+        return hashToUrl(hash)
+      },
+      async run(params){
+        (await renderer)?.destroy()
+        renderer = createRendererMessenger()
+        const info = await (await renderer).run(params)
+        serverEmitter.emit("clientPlugins", info.clientPlugins)
+        messenger.emit("info", info)
+        return info
+      },
     },
-    async lookupRaw(hash){
-      return hashToUrl(hash)
-    },
-    async lookupRef(loc){
-      const hash = await rendererMessenger.req.lookupRef(loc)
-      return hashToUrl(hash)
-    },
-    info: dedupeAsyncIterable(info),
-    onBundle: dedupeAsyncIterable(bundlerMessenger?.req.onBundle ?? async function*(){}),
-  }, connection)
+    connection,
+  })
+
+  messenger.emit("reload", serverEmitter.on("reload"))
+  if(bundlerMessenger)
+    messenger.emit("bundle", bundlerMessenger?.on("bundle"))
 
   return messenger
-
-  async function* info(){
-    for await (const [params, loadInfo] of zipAsyncIterables(messenger.req.params(), rendererMessenger.req.onLoad())) {
-      if(!loadInfo) continue
-      if(!params)
-        yield { ...{ ...loadInfo, clientPlugins: undefined } }
-      else
-        yield await rendererMessenger.req.run(params)
-    }
-  }
 }

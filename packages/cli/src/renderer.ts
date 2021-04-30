@@ -9,6 +9,8 @@ import { FsArtifactStore } from "./FsArtifactStore"
 
 const artifactsDir = process.env.ARTIFACTS_DIR
 if(!artifactsDir) throw new Error("Renderer process was not passed environment variable ARTIFACTS_DIR")
+const loadFile = process.env.LOAD_FILE
+if(!loadFile) throw new Error("Renderer process was not passed environment variable LOAD_FILE")
 artifactManager.artifactStores.push(new FsArtifactStore(artifactsDir))
 
-createRendererServerMessenger(parentProcessConnection())
+createRendererServerMessenger(parentProcessConnection(), () => require(loadFile))

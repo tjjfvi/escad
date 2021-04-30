@@ -1,5 +1,5 @@
 
-import { ClientServerMessenger } from "@escad/protocol"
+import { ClientServerMessenger, Info } from "@escad/protocol"
 import { computed, observable } from "rhobo"
 import {
   ArtifactManager,
@@ -10,14 +10,12 @@ import {
   Hierarchy,
   Id,
   Product,
-  ProductType,
 } from "@escad/core"
 import { ObjectParam } from "@escad/core"
 import { createContext } from "react"
 import {
   Connection,
   createConnection,
-  createEmittableAsyncIterable,
   createMessenger,
   filterConnection,
   mapConnection,
@@ -95,7 +93,7 @@ export class ClientState implements ArtifactStore {
   sentProductHashes = observable<readonly Hash<Product>[]>([])
   selection = observable<HierarchySelection>()
   products = observable<Product[]>([])
-  exportTypes = observable<ExportTypeInfo[]>([])
+  exportTypes = observable<readonly ExportTypeInfo[]>([])
   paramDef = observable<ObjectParam<any>>()
   params = observable<Record<string, unknown>>({})
   hierarchy = observable<Hierarchy>()
@@ -111,21 +109,9 @@ export class ClientState implements ArtifactStore {
 
   clientServerMessenger: ClientServerMessenger
 
-  triggerParamUpdate: () => void
-  onParamUpdate: () => AsyncIterable<void>
-
   constructor(public connection: Connection<unknown>, public artifactManager: ArtifactManager){
-    const state = this
-    this.clientServerMessenger = createMessenger({
-      async *params(){
-        yield state.getNullifiedParams()
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-        for await (const _ of state.onParamUpdate())
-          yield state.getNullifiedParams()
-      },
-    }, this.connection)
+    this.clientServerMessenger = createMessenger({ impl: {}, connection: mapConnection.log(this.connection) })
     this.artifactManager.artifactStores.unshift(this)
-    ;[this.triggerParamUpdate, this.onParamUpdate] = createEmittableAsyncIterable<void>()
     this.productHashes.on("update", async () => {
       this.products(
         await Promise.all(this.productHashes().map(async hash => {
@@ -135,6 +121,23 @@ export class ClientState implements ArtifactStore {
           return product
         })),
       )
+    })
+    this.clientServerMessenger.on("reload", async () => {
+      this.clientServerMessenger.run(this.sendParams ? this.params() : null)
+    })
+
+    this.clientServerMessenger.on("bundle", async newBundleHash => {
+      console.log(newBundleHash)
+      if(newBundleHash !== await this.bundleHash)
+        this.clientStatus("reload")
+    })
+
+    this.clientServerMessenger.on("info", info => {
+      this.handleProducts(info.products)
+      this.handleParamDef(info.paramDef)
+      this.handleHierarchy(info.hierarchy)
+      this.handleConversions(info.conversions)
+      this.handleExportTypes(info.exportTypes)
     })
   }
 
@@ -146,40 +149,28 @@ export class ClientState implements ArtifactStore {
     this.statuses([...this.statuses(), statusSet])
   }
 
-  async listenForBundle(){
-    for await (const newBundleHash of this.clientServerMessenger.req.onBundle())
-      if(newBundleHash !== await this.bundleHash)
-        this.clientStatus("reload")
+  connect(){
+    this.clientServerMessenger.emit("reload")
   }
 
-  async listenForInfo(){
-    for await (const info of this.clientServerMessenger.req.info()) {
-      this.handleProducts(info.products)
-      this.handleParamDef(info.paramDef)
-      this.handleHierarchy(info.hierarchy)
-      this.handleConversions(info.conversions)
-      this.handleExportTypes(info.exportTypes)
-    }
-  }
-
-  public async handleProducts(productHashes: readonly Hash<Product>[]){
+  public async handleProducts(productHashes: Info["products"]){
     this.sentProductHashes(productHashes)
   }
 
-  private async handleExportTypes(exportTypes?: ExportTypeInfo[]){
+  private async handleExportTypes(exportTypes: Info["exportTypes"]){
     if(exportTypes)
       this.exportTypes(exportTypes)
   }
 
-  private async handleParamDef(paramDefHash: Hash<ObjectParam<any>> | null){
+  private async handleParamDef(paramDefHash: Info["paramDef"]){
     this.paramDef(paramDefHash ? await this.artifactManager.lookupRaw(paramDefHash) : null)
   }
 
-  private async handleHierarchy(hierarchyHash: Hash<Hierarchy> | null){
+  private async handleHierarchy(hierarchyHash: Info["hierarchy"]){
     this.hierarchy(hierarchyHash ? await this.artifactManager.lookupRaw(hierarchyHash) : null)
   }
 
-  private async handleConversions(conversions?: [ProductType, ProductType][]){
+  private async handleConversions(conversions: Info["conversions"]){
     for(const [fromType, toType] of conversions ?? [])
       if(!conversionRegistry.has(fromType, toType))
         conversionRegistry.register({
@@ -194,7 +185,7 @@ export class ClientState implements ArtifactStore {
   }
 
   lookupRawUrl(hash: Hash<unknown>): Promise<string>{
-    return this.clientServerMessenger.req.lookupRaw(hash)
+    return this.clientServerMessenger.lookupRaw(hash)
   }
 
   async lookupRaw(hash: Hash<unknown>){
@@ -203,7 +194,7 @@ export class ClientState implements ArtifactStore {
   }
 
   lookupRefUrl(loc: readonly unknown[]): Promise<string>{
-    return this.clientServerMessenger.req.lookupRef(loc)
+    return this.clientServerMessenger.lookupRef(loc)
   }
 
   async lookupRef(loc: readonly unknown[]){
@@ -211,8 +202,9 @@ export class ClientState implements ArtifactStore {
     return Buffer.from(await response.arrayBuffer())
   }
 
-  getNullifiedParams(){
-    return Object.keys(this.params()).length ? this.params.value : null
+  triggerParamsUpdate = () => {
+    this.sendParams = true
+    this.clientServerMessenger.run(this.params())
   }
 
 }
@@ -248,8 +240,7 @@ export class WebSocketClientState extends ClientState {
       if(this.curWs !== ws)
         return ws.close()
       this.serverStatus("connected")
-      this.listenForInfo()
-      this.listenForBundle()
+      this.connect()
     })
 
     ws.addEventListener("close", () => this.disconnect(ws))

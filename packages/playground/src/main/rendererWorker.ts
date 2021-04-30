@@ -15,10 +15,10 @@ export const artifactStore = new InMemoryArtifactStore()
 
 const rendererBundlerWorker = new RendererBundlerWorker()
 attachWorkerFs(rendererBundlerWorker)
-const rendererBundlerMessenger = createMessenger<{/**/}, RendererBundlerMessengerShape>(
-  {},
-  brandConnection(workerConnection(rendererBundlerWorker), "rendererBundler"),
-)
+const rendererBundlerMessenger = createMessenger<{}, RendererBundlerMessengerShape, {}>({
+  impl: {},
+  connection: brandConnection(workerConnection(rendererBundlerWorker), "rendererBundler"),
+})
 
 let firstTime = true
 export const createRendererWorker = async (): Promise<ServerRendererMessenger> => {
@@ -27,17 +27,17 @@ export const createRendererWorker = async (): Promise<ServerRendererMessenger> =
     return new Promise(() => {}) // Can't bundle atm, never resolves
   }
   return addLoadingStatus("Bundling renderer", async () => {
-    await rendererBundlerMessenger.req.bundle()
+    await rendererBundlerMessenger.bundle()
     const bundleUrl = createBlob(fs.readFileSync("/out/bundle.js"), "text/javascript")
     const rendererUrl = createBlob(
       Buffer.from(`importScripts("${location.origin}/bundled/escad.js","${bundleUrl}")`),
       "test/javascript",
     )
     const worker = new Worker(rendererUrl)
-    const artifactMessenger = createMessenger<Required<ArtifactStore>, {/**/}>(
-      artifactStore,
-      brandConnection(workerConnection(worker), "artifacts"),
-    )
+    const artifactMessenger = createMessenger<Required<ArtifactStore>, {}, {}>({
+      impl: artifactStore,
+      connection: brandConnection(workerConnection(worker), "artifacts"),
+    })
     return createServerRendererMessenger(
       {
         ...brandConnection(workerConnection(worker), "renderer"),

@@ -7,15 +7,18 @@ export interface BundleOptions {
   outDir: string,
   coreClientPath: string,
   watch?: boolean,
-  clientPlugins: PluginRegistration[],
+  clientPlugins: readonly PluginRegistration[],
 }
 
-export type ServerBundlerMessengerShape = { /**/ }
+export type ServerBundlerShape = { /**/ }
 
-export type BundlerServerMessengerShape = {
+export type BundlerServerShape = {
   bundle(options: BundleOptions): Promise<void>,
-  onBundle(): AsyncIterable<Hash<unknown>>,
 }
 
-export type ServerBundlerMessenger = Messenger<ServerBundlerMessengerShape, BundlerServerMessengerShape>
-export type BundlerServerMessenger = Messenger<BundlerServerMessengerShape, ServerBundlerMessengerShape>
+export type ServerBundlerEvents = {
+  bundle: [hash: Hash<unknown>],
+}
+
+export type ServerBundlerMessenger = Messenger<ServerBundlerShape, BundlerServerShape, ServerBundlerEvents>
+export type BundlerServerMessenger = Messenger<BundlerServerShape, ServerBundlerShape, ServerBundlerEvents>

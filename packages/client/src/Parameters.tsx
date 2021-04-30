@@ -1,6 +1,6 @@
 import { IdView } from "./IdView"
 import { Observable, Writeable } from "rhobo"
-import React, { useContext } from "react"
+import React, { useContext, useEffect } from "react"
 import { HashMap, Id, Parameter } from "@escad/core"
 import { ClientState } from "./ClientState"
 
@@ -20,8 +20,12 @@ export const registerParameter = async <T, P extends Parameter<T>>(registration:
 
 export const ParameterView = <T, >({ parameter, value }: { parameter: Parameter<T>, value: Observable<T> }) => {
   const state = useContext(ClientState.Context)
-  value.off("update", state.triggerParamUpdate)
-  value.on("update", state.triggerParamUpdate)
+  useEffect(() => {
+    value.on("update", state.triggerParamsUpdate)
+    return () => {
+      value.off("update", state.triggerParamsUpdate)
+    }
+  })
   const parameterRegistration = parameterRegistrations.get(parameter.type)
   if(!parameterRegistration)
     return <div className="Parameter none">

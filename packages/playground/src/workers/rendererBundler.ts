@@ -57,21 +57,24 @@ const run = promisify(compiler.run.bind(compiler))
 const writeFile = promisify(fs.writeFile)
 const readFile = promisify(fs.readFile)
 
-createMessenger<RendererBundlerMessengerShape, {/**/}>({
-  bundle: async () => {
-    await fsPromise
-    const orig = await readFile("/project/index.ts", "utf8")
-    const transpiled = transpileModule(orig, {
-      compilerOptions: {
-        strict: true,
-        esModuleInterop: true,
-        target: ScriptTarget.ES2019,
-        downlevelIteration: true,
-        moduleResolution: ModuleResolutionKind.NodeJs,
-        module: ModuleKind.CommonJS,
-      },
-    }).outputText
-    await writeFile("/project/index.js", transpiled)
-    await run()
+createMessenger<RendererBundlerMessengerShape, {}, {}>({
+  impl: {
+    bundle: async () => {
+      await fsPromise
+      const orig = await readFile("/project/index.ts", "utf8")
+      const transpiled = transpileModule(orig, {
+        compilerOptions: {
+          strict: true,
+          esModuleInterop: true,
+          target: ScriptTarget.ES2019,
+          downlevelIteration: true,
+          moduleResolution: ModuleResolutionKind.NodeJs,
+          module: ModuleKind.CommonJS,
+        },
+      }).outputText
+      await writeFile("/project/index.js", transpiled)
+      await run()
+    },
   },
-}, brandConnection(workerConnection(self as any), "rendererBundler"))
+  connection: brandConnection(workerConnection(self as any), "rendererBundler"),
+})
