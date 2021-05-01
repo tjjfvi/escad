@@ -36,6 +36,7 @@ export class ClientState implements ArtifactStore {
   bundleHash = fetch("/bundle.hash").then(r => r.text()).catch(() => null)
   serverStatus = observable<"connected" | "disconnected" | "connecting">("disconnected")
   clientStatus = observable<"current" | "bundling" | "reload">("current")
+  rendererStatus = observable(0)
   statuses = observable<StatusSet[]>([
     {
       name: "Renderer",
@@ -46,8 +47,12 @@ export class ClientState implements ArtifactStore {
           name: "Rendered",
           icon: mdiCheck,
         },
+        rendering: {
+          name: "Rendering",
+          icon: Loading,
+        },
       },
-      state: () => "rendered",
+      state: computed(() => this.rendererStatus() ? "rendering" : "rendered"),
     },
     {
       name: "Connection",
@@ -116,6 +121,7 @@ export class ClientState implements ArtifactStore {
   constructor(public connection: Connection<unknown>, public artifactManager: ArtifactManager){
     this.clientServerMessenger = createMessenger({ impl: {}, connection: logConnection(this.connection) })
     this.artifactManager.artifactStores.unshift(this)
+
     this.productHashes.on("update", async () => {
       this.products(
         await Promise.all(this.productHashes().map(async hash => {
@@ -126,8 +132,12 @@ export class ClientState implements ArtifactStore {
         })),
       )
     })
+
     this.clientServerMessenger.on("reload", async () => {
-      this.clientServerMessenger.run(this.sendParams ? this.params() : null)
+      this.wrapRendering(async () => {
+        this.clientServerMessenger.run(this.sendParams ? this.params() : null)
+        await this.clientServerMessenger.once("info")
+      })
     })
 
     this.clientServerMessenger.on("bundleStart", async () => {
@@ -191,26 +201,37 @@ export class ClientState implements ArtifactStore {
   }
 
   lookupRawUrl(hash: Hash<unknown>): Promise<string>{
-    return this.clientServerMessenger.lookupRaw(hash)
+    return this.wrapRendering(() => this.clientServerMessenger.lookupRaw(hash))
   }
 
   async lookupRaw(hash: Hash<unknown>){
-    const response = await fetch(await this.lookupRawUrl(hash))
-    return Buffer.from(await response.arrayBuffer())
+    return this.wrapRendering(async () => {
+      const response = await fetch(await this.lookupRawUrl(hash))
+      return Buffer.from(await response.arrayBuffer())
+    })
   }
 
   lookupRefUrl(loc: readonly unknown[]): Promise<string>{
-    return this.clientServerMessenger.lookupRef(loc)
+    return this.wrapRendering(() => this.clientServerMessenger.lookupRef(loc))
   }
 
   async lookupRef(loc: readonly unknown[]){
-    const response = await fetch(await this.lookupRefUrl(loc))
-    return Buffer.from(await response.arrayBuffer())
+    return this.wrapRendering(async () => {
+      const response = await fetch(await this.lookupRefUrl(loc))
+      return Buffer.from(await response.arrayBuffer())
+    })
+  }
+
+  async wrapRendering<T>(fn: () => Promise<T>){
+    this.rendererStatus(this.rendererStatus.value + 1)
+    const result = await fn()
+    this.rendererStatus(this.rendererStatus.value - 1)
+    return result
   }
 
   triggerParamsUpdate = () => {
     this.sendParams = true
-    this.clientServerMessenger.run(this.params())
+    this.clientServerMessenger.emit("reload")
   }
 
 }
