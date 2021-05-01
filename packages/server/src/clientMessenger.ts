@@ -29,7 +29,7 @@ export const createServerClientMessenger = ({
         return hashToUrl(hash)
       },
       async run(params){
-        (await renderer)?.destroy()
+        renderer.then(r => r.destroy(true))
         renderer = createRendererMessenger()
         const info = await (await renderer).run(params)
         serverEmitter.emit("clientPlugins", info.clientPlugins)
