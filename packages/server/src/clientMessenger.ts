@@ -41,8 +41,10 @@ export const createServerClientMessenger = ({
   })
 
   messenger.emit("reload", serverEmitter.on("reload"))
-  if(bundlerMessenger)
-    messenger.emit("bundle", bundlerMessenger?.on("bundle"))
+  if(bundlerMessenger) {
+    messenger.emit("bundleStart", bundlerMessenger.on("bundleStart"))
+    messenger.emit("bundleFinish", bundlerMessenger.on("bundleFinish"))
+  }
 
   return messenger
 }

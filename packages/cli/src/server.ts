@@ -60,7 +60,7 @@ export const createServer = async ({ artifactsDir, port, loadFile, loadDir, dev 
     serverEmitter.emit("reload")
   })
 
-  bundlerMessenger.on("bundle", hash => {
+  bundlerMessenger.on("bundleFinish", hash => {
     console.log(`Bundled client (${hash.slice(0, 32)}...)`)
   })
 

@@ -17,7 +17,8 @@ export type BundlerServerShape = {
 }
 
 export type ServerBundlerEvents = {
-  bundle: [hash: Hash<unknown>],
+  bundleStart: [],
+  bundleFinish: [hash: Hash<unknown>],
 }
 
 export type ServerBundlerMessenger = Messenger<ServerBundlerShape, BundlerServerShape, ServerBundlerEvents>

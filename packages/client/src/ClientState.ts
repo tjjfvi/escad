@@ -35,7 +35,7 @@ export class ClientState implements ArtifactStore {
 
   bundleHash = fetch("/bundle.hash").then(r => r.text()).catch(() => null)
   serverStatus = observable<"connected" | "disconnected" | "connecting">("disconnected")
-  clientStatus = observable<"current" | "reload">("current")
+  clientStatus = observable<"current" | "bundling" | "reload">("current")
   statuses = observable<StatusSet[]>([
     {
       name: "Renderer",
@@ -78,6 +78,10 @@ export class ClientState implements ArtifactStore {
           className: "green",
           name: "Up to Date",
           icon: mdiCheck,
+        },
+        bundling: {
+          name: "Bundling",
+          icon: Loading,
         },
         reload: {
           className: "blue",
@@ -126,10 +130,12 @@ export class ClientState implements ArtifactStore {
       this.clientServerMessenger.run(this.sendParams ? this.params() : null)
     })
 
-    this.clientServerMessenger.on("bundle", async newBundleHash => {
-      console.log(newBundleHash)
-      if(newBundleHash !== await this.bundleHash)
-        this.clientStatus("reload")
+    this.clientServerMessenger.on("bundleStart", async () => {
+      this.clientStatus("bundling")
+    })
+
+    this.clientServerMessenger.on("bundleFinish", async newBundleHash => {
+      this.clientStatus(newBundleHash === await this.bundleHash ? "current" : "reload")
     })
 
     this.clientServerMessenger.on("info", info => {
