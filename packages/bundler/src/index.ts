@@ -38,6 +38,10 @@ export const createBundlerServerMessenger = (
 
     const compiler = await createCompiler(options, entryPaths)
 
+    compiler.hooks.beforeCompile.tap("@escad/bundler", () => {
+      messenger.emit("bundleStart")
+    })
+
     // @ts-ignore: fix for running in browser
     compiler.inputFileSystem.join = fs.join
 
@@ -50,7 +54,7 @@ export const createBundlerServerMessenger = (
         }
         const bundleHash = Hash.create(result?.compilation.fullHash ?? Math.random())
         writeFile(path.join(options.outDir, "bundle.hash"), bundleHash)
-        messenger.emit("bundle", bundleHash)
+        messenger.emit("bundleFinish", bundleHash)
         resolve()
       }
 

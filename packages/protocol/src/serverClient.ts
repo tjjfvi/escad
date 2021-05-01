@@ -14,7 +14,8 @@ export type ClientServerShape = {}
 export type ServerClientEvents = {
   reload: [],
   info: [info: Info],
-  bundle: [hash: Hash<unknown>],
+  bundleStart: [],
+  bundleFinish: [hash: Hash<unknown>],
 }
 
 export type ServerClientMessenger = Messenger<ServerClientShape, ClientServerShape, ServerClientEvents>

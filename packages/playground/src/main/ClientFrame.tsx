@@ -17,7 +17,7 @@ export const ClientFrame = observer(() => {
   const lastWindow = React.useRef<Window>()
   const onNewWindow = React.useRef<() => void>()
   if(!src) {
-    bundlerMessenger.once("bundle", () => setState({}))
+    bundlerMessenger.once("bundleFinish", () => setState({}))
     return <div className="ClientFrame loading">
       Loading...
       {loadingStatuses().map(({ text }, i) =>
