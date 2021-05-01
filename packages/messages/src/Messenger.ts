@@ -10,7 +10,7 @@ export type Messenger<
   E extends EventsShape
 > = T & {
   impl: F,
-  destroy(): void,
+  destroy(awaitCompletion?: boolean): void,
   emit<K extends keyof E>(event: K, iterable: AsyncIterable<E[K]>): void,
   emit<K extends keyof E>(event: K, ...args: E[K]): void,
   on<K extends keyof E>(event: K, callback: (...args: E[K]) => void): () => void,
@@ -30,6 +30,7 @@ export const createMessenger = (
     onDestroy?: Array<() => void>,
   }): Messenger<F, T, E> => {
     let idN = 0
+    let currentPromises = new Set<Promise<unknown>>()
     let resolveMap: Record<number, (value: any) => void> = Object.create(null)
     let eventMap: Record<string, Set<(...args: any[]) => void>> = Object.create(null)
     let destroyed = false
@@ -53,7 +54,10 @@ export const createMessenger = (
       {
         impl,
         then: undefined,
-        destroy(){
+        async destroy(awaitCompletion?: boolean){
+          if(awaitCompletion)
+            while(currentPromises.size)
+              await Promise.all(currentPromises)
           destroyed = true
           resolveMap = Object.create(null)
           eventMap = Object.create(null)
@@ -162,13 +166,20 @@ export const createMessenger = (
     return result
 
     function recvPromise(id: number){
-      return new Promise(resolve => resolveMap[id] = resolve)
+      return addPromiseToCurrentPromises(new Promise(resolve => resolveMap[id] = resolve))
     }
 
     function sendPromise(id: number, promise: Promise<unknown>){
+      addPromiseToCurrentPromises(promise)
       promise.then(value =>
         !destroyed && connection.send(["resolve", id, null, value]),
       )
+    }
+
+    function addPromiseToCurrentPromises(promise: Promise<unknown>){
+      currentPromises.add(promise)
+      promise.then(() => currentPromises.delete(promise))
+      return promise
     }
   }
 )
