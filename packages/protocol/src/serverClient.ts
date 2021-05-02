@@ -12,7 +12,6 @@ export type ServerClientShape = {
 export type ClientServerShape = {}
 
 export type ServerClientEvents = {
-  ping: [],
   reload: [],
   info: [info: Info],
   bundle: [hash: Hash<unknown>],
