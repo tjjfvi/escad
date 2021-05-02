@@ -61,7 +61,7 @@ Array [
     Array [
       "call",
       3,
-      "reallyDumbPromiseResolve",
+      "bouncingPromiseResolve",
       2,
       10,
     ],
@@ -71,7 +71,7 @@ Array [
     Array [
       "event",
       -1,
-      "heyWereHavingAReallyDumbPromiseResolveParty",
+      "promiseResolveBounced",
       2,
       10,
     ],
@@ -81,7 +81,7 @@ Array [
     Array [
       "call",
       2,
-      "reallyDumbPromiseResolve",
+      "bouncingPromiseResolve",
       2,
       9,
     ],
@@ -91,7 +91,7 @@ Array [
     Array [
       "event",
       -1,
-      "heyWereHavingAReallyDumbPromiseResolveParty",
+      "promiseResolveBounced",
       2,
       9,
     ],
@@ -101,7 +101,7 @@ Array [
     Array [
       "call",
       4,
-      "reallyDumbPromiseResolve",
+      "bouncingPromiseResolve",
       2,
       8,
     ],
@@ -111,7 +111,7 @@ Array [
     Array [
       "event",
       -1,
-      "heyWereHavingAReallyDumbPromiseResolveParty",
+      "promiseResolveBounced",
       2,
       8,
     ],
@@ -121,7 +121,7 @@ Array [
     Array [
       "call",
       3,
-      "reallyDumbPromiseResolve",
+      "bouncingPromiseResolve",
       2,
       7,
     ],
@@ -131,7 +131,7 @@ Array [
     Array [
       "event",
       -1,
-      "heyWereHavingAReallyDumbPromiseResolveParty",
+      "promiseResolveBounced",
       2,
       7,
     ],
@@ -141,7 +141,7 @@ Array [
     Array [
       "call",
       5,
-      "reallyDumbPromiseResolve",
+      "bouncingPromiseResolve",
       2,
       6,
     ],
@@ -151,7 +151,7 @@ Array [
     Array [
       "event",
       -1,
-      "heyWereHavingAReallyDumbPromiseResolveParty",
+      "promiseResolveBounced",
       2,
       6,
     ],
@@ -161,7 +161,7 @@ Array [
     Array [
       "call",
       4,
-      "reallyDumbPromiseResolve",
+      "bouncingPromiseResolve",
       2,
       5,
     ],
@@ -171,7 +171,7 @@ Array [
     Array [
       "event",
       -1,
-      "heyWereHavingAReallyDumbPromiseResolveParty",
+      "promiseResolveBounced",
       2,
       5,
     ],
@@ -181,7 +181,7 @@ Array [
     Array [
       "call",
       6,
-      "reallyDumbPromiseResolve",
+      "bouncingPromiseResolve",
       2,
       4,
     ],
@@ -191,7 +191,7 @@ Array [
     Array [
       "event",
       -1,
-      "heyWereHavingAReallyDumbPromiseResolveParty",
+      "promiseResolveBounced",
       2,
       4,
     ],
@@ -201,7 +201,7 @@ Array [
     Array [
       "call",
       5,
-      "reallyDumbPromiseResolve",
+      "bouncingPromiseResolve",
       2,
       3,
     ],
@@ -211,7 +211,7 @@ Array [
     Array [
       "event",
       -1,
-      "heyWereHavingAReallyDumbPromiseResolveParty",
+      "promiseResolveBounced",
       2,
       3,
     ],
@@ -221,7 +221,7 @@ Array [
     Array [
       "call",
       7,
-      "reallyDumbPromiseResolve",
+      "bouncingPromiseResolve",
       2,
       2,
     ],
@@ -231,7 +231,7 @@ Array [
     Array [
       "event",
       -1,
-      "heyWereHavingAReallyDumbPromiseResolveParty",
+      "promiseResolveBounced",
       2,
       2,
     ],
@@ -241,7 +241,7 @@ Array [
     Array [
       "call",
       6,
-      "reallyDumbPromiseResolve",
+      "bouncingPromiseResolve",
       2,
       1,
     ],
@@ -251,7 +251,7 @@ Array [
     Array [
       "event",
       -1,
-      "heyWereHavingAReallyDumbPromiseResolveParty",
+      "promiseResolveBounced",
       2,
       1,
     ],
@@ -261,17 +261,7 @@ Array [
     Array [
       "call",
       8,
-      "reallyDumbPromiseResolve",
-      2,
-      0,
-    ],
-  ],
-  Array [
-    "b->a",
-    Array [
-      "event",
-      -1,
-      "heyWereHavingAReallyDumbPromiseResolveParty",
+      "bouncingPromiseResolve",
       2,
       0,
     ],

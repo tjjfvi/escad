@@ -2,11 +2,11 @@ import { Connection, createMessenger, Messenger, createConnectionPair } from "..
 
 type TestShape = {
   promiseResolve: <T>(value: T) => Promise<T>,
-  reallyDumbPromiseResolve: <T>(value: T, count: number) => Promise<T>,
+  bouncingPromiseResolve: <T>(value: T, count: number) => Promise<T>,
 }
 
 type TestEvents = {
-  heyWereHavingAReallyDumbPromiseResolveParty: [value: unknown, count: number],
+  promiseResolveBounced: [value: unknown, count: number],
 }
 
 type TestMessenger = Messenger<TestShape, TestShape, TestEvents>
@@ -15,11 +15,11 @@ const createTestMessenger = (connection: Connection<unknown>) => {
   const messenger: TestMessenger = createMessenger({
     impl: {
       promiseResolve: value => Promise.resolve(value),
-      async reallyDumbPromiseResolve(value, count){
-        messenger.emit("heyWereHavingAReallyDumbPromiseResolveParty", value, count)
-        if(count <= 0)
+      async bouncingPromiseResolve(value, count){
+        if(count === 0)
           return value
-        return messenger.reallyDumbPromiseResolve(value, count - 1)
+        messenger.emit("promiseResolveBounced", value, count)
+        return messenger.bouncingPromiseResolve(value, count - 1)
       },
     },
     connection,
@@ -41,19 +41,19 @@ test("", async () => {
   const eventFn2 = jest.fn()
   const eventFn3 = jest.fn()
   const eventFn4 = jest.fn()
-  msgrA.on("heyWereHavingAReallyDumbPromiseResolveParty", eventFn1)
-  msgrB.on("heyWereHavingAReallyDumbPromiseResolveParty", eventFn2)
-  msgrB.once("heyWereHavingAReallyDumbPromiseResolveParty", eventFn3)
+  msgrA.on("promiseResolveBounced", eventFn1)
+  msgrB.on("promiseResolveBounced", eventFn2)
+  msgrB.once("promiseResolveBounced", eventFn3)
   ;(async () => {
-    for await (const event of msgrA.on("heyWereHavingAReallyDumbPromiseResolveParty"))
+    for await (const event of msgrA.on("promiseResolveBounced"))
       eventFn4(event)
   })()
-  expect(msgrA.once("heyWereHavingAReallyDumbPromiseResolveParty")).resolves.toStrictEqual([2, 10])
-  expect(await msgrA.reallyDumbPromiseResolve(2, 10)).toBe(2)
-  expect(eventFn1).toHaveBeenCalledTimes(11)
-  expect(eventFn2).toHaveBeenCalledTimes(11)
+  expect(msgrA.once("promiseResolveBounced")).resolves.toStrictEqual([2, 10])
+  expect(await msgrA.bouncingPromiseResolve(2, 10)).toBe(2)
+  expect(eventFn1).toHaveBeenCalledTimes(10)
+  expect(eventFn2).toHaveBeenCalledTimes(10)
   expect(eventFn3).toHaveBeenCalledTimes(1)
-  expect(eventFn4).toHaveBeenCalledTimes(11)
+  expect(eventFn4).toHaveBeenCalledTimes(10)
   b.send(1234)
   b.send(null)
   b.send({})
