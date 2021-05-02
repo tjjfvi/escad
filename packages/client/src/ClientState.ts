@@ -15,10 +15,10 @@ import { ObjectParam } from "@escad/core"
 import { createContext } from "react"
 import {
   Connection,
-  createConnection,
   createMessenger,
-  filterConnection,
-  mapConnection,
+  logConnection,
+  createConnectionPair,
+  serializeConnection,
 } from "@escad/messages"
 import { StatusSet } from "./Status"
 import { HierarchySelection, resolveHierarchySelection } from "./HierarchySelection"
@@ -110,7 +110,7 @@ export class ClientState implements ArtifactStore {
   clientServerMessenger: ClientServerMessenger
 
   constructor(public connection: Connection<unknown>, public artifactManager: ArtifactManager){
-    this.clientServerMessenger = createMessenger({ impl: {}, connection: mapConnection.log(this.connection) })
+    this.clientServerMessenger = createMessenger({ impl: {}, connection: logConnection(this.connection) })
     this.artifactManager.artifactStores.unshift(this)
     this.productHashes.on("update", async () => {
       this.products(
@@ -211,22 +211,19 @@ export class ClientState implements ArtifactStore {
 
 export class WebSocketClientState extends ClientState {
 
-  emit: (value: unknown) => void
-  curWs: WebSocket | undefined
+  emit: (value: string) => void
+  curWs?: WebSocket
   disconnectTimeout: any
   url: string
 
   constructor(url: string, artifactManager: ArtifactManager){
-    const wsConnection = createConnection(msg => this.send(msg))
-    const connection = mapConnection.flatted(filterConnection.string(wsConnection))
+    const [a, b] = createConnectionPair<string, unknown>()
+    b.onMsg(message => this.curWs?.send(message))
+    const connection = serializeConnection(a)
     super(connection, artifactManager)
-    this.emit = wsConnection.emit
+    this.emit = b.send
     this.url = url
     this.initWs()
-  }
-
-  send(message: unknown){
-    this.curWs?.send(message as never)
   }
 
   async initWs(){

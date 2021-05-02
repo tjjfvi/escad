@@ -26,7 +26,7 @@ export const createMessenger = (
     onDestroy,
   }: {
     impl: F,
-    connection: Connection<unknown>,
+    connection: Connection<unknown[], unknown>,
     onDestroy?: Array<() => void>,
   }): Messenger<F, T, E> => {
     let idN = 0
@@ -57,7 +57,7 @@ export const createMessenger = (
           destroyed = true
           resolveMap = Object.create(null)
           eventMap = Object.create(null)
-          connection.offMsg(handler)
+          offMsg()
           connection.destroy?.()
           onDestroy?.forEach(x => x())
         },
@@ -158,7 +158,7 @@ export const createMessenger = (
         }
       }
     }
-    connection.onMsg(handler)
+    const offMsg = connection.onMsg(handler)
     return result
 
     function recvPromise(id: number){

@@ -1,8 +1,8 @@
 
-import { brandConnection, noopConnection } from "../src"
+import { brandConnection, createConnectionPair } from "../src"
 
 test("", () => {
-  const [_a, b] = noopConnection<unknown>()
+  const [_a, b] = createConnectionPair()
   const a = brandConnection(_a, "testBrand")
   const fn = jest.fn()
   a.onMsg(fn)

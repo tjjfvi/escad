@@ -7,7 +7,7 @@ import {
   createServerRendererMessenger,
 } from "@escad/server"
 import path from "path"
-import { childProcessConnection, filterConnection, mapConnection } from "@escad/messages"
+import { childProcessConnection, serializeConnection } from "@escad/messages"
 import { fork } from "child_process"
 import watch from "node-watch"
 import { BundleOptions } from "../../client/node_modules/@escad/protocol/src"
@@ -75,11 +75,10 @@ export const createServer = async ({ artifactsDir, port, loadFile, loadDir, dev 
 
   app.ws("/ws", ws => {
     const messenger = createServerClientMessenger({
-      connection: mapConnection.flatted(filterConnection.string({
+      connection: serializeConnection({
         send: msg => ws.send(msg),
-        onMsg: cb => ws.on("message", cb),
-        offMsg: cb => ws.off("message", cb),
-      })),
+        onMsg: cb => (ws.on("message", cb), () => ws.off("message", cb)),
+      }),
       serverEmitter,
       hashToUrl: hash => `/artifacts/raw/${hash}`,
       createRendererMessenger,

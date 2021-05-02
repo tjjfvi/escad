@@ -2,24 +2,12 @@
 import { Connection } from "./Connection"
 
 export const filterConnection =
-  <T, U extends T>(connection: Connection<T>, filter: (v: T) => v is U): Connection<U> => {
-    const cbMap = new Map<(v: U) => void, (v: T) => void>()
-    return ({
-      send: connection.send,
-      onMsg: origCb => {
-        const newCb = cbMap.get(origCb) ?? ((v: T) => filter(v) && origCb(v))
-        cbMap.set(origCb, newCb)
-        return connection.onMsg(newCb)
-      },
-      offMsg: origCb => {
-        const cb = cbMap.get(origCb)
-        if(cb)
-          connection.offMsg(cb)
-      },
-      destroy: connection.destroy,
-    })
-  }
+  <T, U0, U1 extends U0>(connection: Connection<T, U0>, filter: (v: U0) => v is U1): Connection<T, U1> => ({
+    send: connection.send,
+    onMsg: origCb => connection.onMsg(v => filter(v) && origCb(v)),
+    destroy: connection.destroy,
+  })
 
 /* istanbul ignore next: covered by types */
-filterConnection.string = <T>(connection: Connection<T>): Connection<string & T> =>
-  filterConnection<T, string & T>(connection, (v): v is string & T => typeof v === "string")
+filterConnection.string = <T>(connection: Connection<T, unknown>): Connection<T, string> =>
+  filterConnection(connection, (v): v is string & T => typeof v === "string")
