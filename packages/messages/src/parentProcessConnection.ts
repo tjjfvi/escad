@@ -7,7 +7,9 @@ export const parentProcessConnection = (): Connection<unknown> => {
     throw new Error("Expected to be called in a subprocess with an IPC channel")
   return {
     send: msg => process.send?.(msg),
-    onMsg: cb => process.on("message", cb),
-    offMsg: cb => process.off("message", cb),
+    onMsg: cb => {
+      process.on("message", cb)
+      return () => process.off("message", cb)
+    },
   }
 }

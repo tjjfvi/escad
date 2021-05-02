@@ -1,7 +1,6 @@
 
-export interface Connection<T> {
+export interface Connection<T, U = T> {
   send: (value: T) => void,
-  onMsg: (cb: (value: T) => void) => void,
-  offMsg: (cb: (value: T) => void) => void,
+  onMsg: (cb: (value: U) => void) => () => void,
   destroy?: () => void,
 }

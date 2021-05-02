@@ -9,7 +9,6 @@ export const createEventEmitter = <E extends EventsShape>(): EventEmitter<E> =>
     impl: {},
     connection: {
       send: () => {},
-      onMsg: () => {},
-      offMsg: () => {},
+      onMsg: () => () => {},
     },
   })

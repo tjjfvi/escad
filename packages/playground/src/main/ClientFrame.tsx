@@ -1,6 +1,6 @@
 
 import "../../stylus/ClientFrame.styl"
-import { brandConnection, createMessenger, filterConnection, mapConnection } from "@escad/messages"
+import { brandConnection, createMessenger, filterConnection, transformConnection } from "@escad/messages"
 import { createServerClientMessenger } from "@escad/server"
 import React, { useState } from "react"
 import { createBlob } from "../utils/createBlob"
@@ -39,11 +39,13 @@ export const ClientFrame = observer(() => {
       if(childWindow !== lastWindow.current) {
         onNewWindow.current?.()
         lastWindow.current = childWindow
-        const baseConnection = mapConnection(
+        const baseConnection = transformConnection(
           filterConnection({
             send: msg => childWindow.postMessage(msg, "*"),
-            onMsg: cb => window.addEventListener("message", cb),
-            offMsg: cb => window.removeEventListener("message", cb),
+            onMsg: cb => {
+              window.addEventListener("message", cb)
+              return () => window.removeEventListener("message", cb)
+            },
           }, (ev: any): ev is unknown => ev.origin === location.origin),
           x => x,
           (ev: any) => ev.data,

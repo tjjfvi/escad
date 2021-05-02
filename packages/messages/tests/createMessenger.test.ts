@@ -1,4 +1,4 @@
-import { Connection, createMessenger, Messenger, noopConnection } from "../src"
+import { Connection, createMessenger, Messenger, createConnectionPair } from "../src"
 
 type TestShape = {
   promiseResolve: <T>(value: T) => Promise<T>,
@@ -28,7 +28,7 @@ const createTestMessenger = (connection: Connection<unknown>) => {
 }
 
 test("", async () => {
-  const [a, b] = noopConnection<unknown>()
+  const [a, b] = createConnectionPair()
   const fn = jest.fn()
   a.onMsg(x => fn("b->a", x))
   b.onMsg(x => fn("a->b", x))

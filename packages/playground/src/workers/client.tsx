@@ -3,8 +3,9 @@ import {
   brandConnection,
   createMessenger,
   filterConnection,
-  mapConnection,
-  noopConnection,
+  logConnection,
+  createConnectionPair,
+  transformConnection,
   workerConnection,
 } from "@escad/messages"
 import React from "react"
@@ -21,7 +22,7 @@ import { createServerEmitter } from "@escad/server"
 const isRun = location.host === "escad.run" || (location.pathname.startsWith("/run"))
 
 if(isRun) {
-  const [serverClient, clientServer] = noopConnection()
+  const [serverClient, clientServer] = createConnectionPair()
 
   const artifactStore = new InMemoryArtifactStore()
 
@@ -30,7 +31,7 @@ if(isRun) {
   )
 
   createServerClientMessenger({
-    connection: mapConnection.log(serverClient),
+    connection: logConnection(serverClient),
     hashToUrl: hash => createBlob(artifactStore.raw.get(hash) ?? new Uint8Array(0)),
     createRendererMessenger: async () => {
       const worker = new Worker(workerSource)
@@ -40,7 +41,7 @@ if(isRun) {
       })
       const messenger: ServerRendererMessenger = createMessenger({
         impl: {},
-        connection: mapConnection.log(brandConnection(workerConnection(worker), "renderer")),
+        connection: logConnection(brandConnection(workerConnection(worker), "renderer")),
         onDestroy: [artifactMessenger.destroy],
       })
       return messenger
@@ -71,11 +72,13 @@ if(isRun) {
 }
 
 if(!isRun) {
-  const baseConnection = mapConnection(
+  const baseConnection = transformConnection(
     filterConnection({
       send: msg => window.parent.postMessage(msg, "*"),
-      onMsg: cb => window.addEventListener("message", cb),
-      offMsg: cb => window.removeEventListener("message", cb),
+      onMsg: cb => {
+        window.addEventListener("message", cb)
+        return () => window.removeEventListener("message", cb)
+      },
     }, (ev: any): ev is unknown => ev.origin === location.origin),
     x => x,
     (ev: any) => ev.data,

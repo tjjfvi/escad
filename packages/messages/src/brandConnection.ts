@@ -1,11 +1,11 @@
 
 import { Connection } from "./Connection"
 import { filterConnection } from "./filterConnection"
-import { mapConnection } from "./mapConnection"
+import { transformConnection } from "./transformConnection"
 
 export const brandConnection =
-  (connection: Connection<unknown>, brand: string): Connection<unknown> =>
-    mapConnection(
+  (connection: Connection<{ brand: string, value: unknown }, unknown>, brand: string): Connection<unknown> =>
+    transformConnection(
       filterConnection(
         connection,
         (v): v is { brand: string, value: unknown } =>
