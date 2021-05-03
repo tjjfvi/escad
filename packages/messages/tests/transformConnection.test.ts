@@ -1,7 +1,7 @@
 
 import { transformConnection, createConnectionPair } from "../src"
 
-test("mapConnection", () => {
+test("", () => {
   const [_a, b] = createConnectionPair<string>()
   const a = transformConnection(_a, x => x + "", x => +x)
   const fn = jest.fn()
