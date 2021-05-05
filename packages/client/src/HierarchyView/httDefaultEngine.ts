@@ -8,10 +8,10 @@ import { Tree, TreePart } from "./Tree"
 export const httDefaultEngine: HierarchyToTreeEngine = {
 
   NameHierarchy: ({ hierarchy }) =>
-    [TreePart.Text.String(hierarchy.name)],
+    [TreePart.Line.String(hierarchy.name)],
 
   ValueHierarchy: ({ hierarchy }) =>
-    [TreePart.Text.String(
+    [TreePart.Line.String(
       hierarchy.value === null
         ? "null"
         : typeof hierarchy.value === "object"
@@ -23,14 +23,14 @@ export const httDefaultEngine: HierarchyToTreeEngine = {
 
   ObjectHierarchy: ({ path, hierarchy, stateMemo, hierarchyToTree }) =>
     [
-      TreePart.Text.String("{"),
-      TreePart.Children({
+      TreePart.Line.String("{"),
+      TreePart.Block({
         children: Object.entries(hierarchy.children).map(([key, value]) => {
           const newPath: HierarchyPath = [...path, { type: "ObjectHierarchyPathPart", key }]
           return wrapTreeSelectable(newPath, value.linkedProducts, [
-            TreePart.Text.String(key),
-            TreePart.Text.String(": "),
-            TreePart.Children({
+            TreePart.Line.String(key),
+            TreePart.Line.String(": "),
+            TreePart.Block({
               children: [hierarchyToTree({ path: newPath, hierarchy: value })],
               state: getState(stateMemo, path, key + ":"),
             }),
@@ -40,13 +40,13 @@ export const httDefaultEngine: HierarchyToTreeEngine = {
         state: getState(stateMemo, path, ""),
         forceOpenable: true,
       }),
-      TreePart.Text.String("}"),
+      TreePart.Line.String("}"),
     ],
 
   ArrayHierarchy: ({ path, hierarchy, stateMemo, hierarchyToTree }) =>
     [
-      TreePart.Text.String("["),
-      TreePart.Children({
+      TreePart.Line.String("["),
+      TreePart.Block({
         children: hierarchy.children.map((value, index) =>
           hierarchyToTree({
             path: [...path, { type: "ArrayHierarchyPathPart", index }],
@@ -57,7 +57,7 @@ export const httDefaultEngine: HierarchyToTreeEngine = {
         state: getState(stateMemo, path, ""),
         forceOpenable: hierarchy.children.length > 1,
       }),
-      TreePart.Text.String("]"),
+      TreePart.Line.String("]"),
     ],
 
   CallHierarchy: ({ path, hierarchy, stateMemo, hierarchyToTree }) => {
@@ -69,8 +69,8 @@ export const httDefaultEngine: HierarchyToTreeEngine = {
         }),
         ..._callHierarchyOperandsTree(path, hierarchy.operands),
         ...(hierarchy.result ? [
-          TreePart.Text.String(" = "),
-          TreePart.Children({
+          TreePart.Line.String(" = "),
+          TreePart.Block({
             state: getState(stateMemo, path, "result"),
             children: [hierarchyToTree({
               path: [...path, { type: "CallHierarchyPathPart", location: "result" }],
@@ -99,8 +99,8 @@ export const httDefaultEngine: HierarchyToTreeEngine = {
           },
         }),
         ...(curHierarchy.result ? [
-          TreePart.Text.String(" -> "),
-          TreePart.Children({
+          TreePart.Line.String(" -> "),
+          TreePart.Block({
             state: getState(stateMemo, curPath, "result"),
             children: [hierarchyToTree({
               path: [...curPath, { type: "CallHierarchyPathPart", location: "result" }],
@@ -112,14 +112,14 @@ export const httDefaultEngine: HierarchyToTreeEngine = {
       ])
     }
     return [
-      TreePart.Text.String("("),
-      TreePart.Children({
+      TreePart.Line.String("("),
+      TreePart.Block({
         children: operators,
         joiner: "∘",
         state: getState(stateMemo, path, "operators"),
         forceOpenable: true,
       }),
-      TreePart.Text.String(")"),
+      TreePart.Line.String(")"),
       ..._callHierarchyOperandsTree(curPath, operands),
     ]
 
@@ -128,8 +128,8 @@ export const httDefaultEngine: HierarchyToTreeEngine = {
         [...path, { type: "CallHierarchyPathPart", location: "allOperands" }],
         Hierarchy.flattenLinkedProducts(operands),
         [
-          TreePart.Text.String("("),
-          TreePart.Children({
+          TreePart.Line.String("("),
+          TreePart.Block({
             children: operands.map((value, index) =>
               hierarchyToTree({
                 path: [...path, {
@@ -146,7 +146,7 @@ export const httDefaultEngine: HierarchyToTreeEngine = {
               || ObjectHierarchy.isObjectHierarchy(operands[0])
             ),
           }),
-          TreePart.Text.String(")"),
+          TreePart.Line.String(")"),
         ],
       )
     }

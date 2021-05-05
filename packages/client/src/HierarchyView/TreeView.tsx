@@ -23,12 +23,12 @@ export const TreeView = ({ tree, width, selectable }: { tree: Tree, width: numbe
       const prev = joinedCollapsedTree[i - 1]
       const next = joinedCollapsedTree[i + 1]
 
-      if(part.kind === "children")
-        return <div className="children" key={i}>
+      if(part.kind === "block")
+        return <div className="block" key={i}>
           {part.children.map((y, i) => <TreeView selectable={selectable} width={innerWidth} tree={y} key={i}/>)}
         </div>
 
-      if(next && next.kind === "children")
+      if(next && next.kind === "block")
         return <Line
           key={i}
           selectable={selectable}
@@ -41,7 +41,7 @@ export const TreeView = ({ tree, width, selectable }: { tree: Tree, width: numbe
       const expandableSections = getOpenableSections(tree, maxLength)
 
       const sectionsSplitInd =
-        prev?.kind === "children"
+        prev?.kind === "block"
           ? expandableSections.findIndex(v => v.state === prev.state) + 1
           : 0
       const relevantSections = expandableSections.slice(sectionsSplitInd)
@@ -85,6 +85,6 @@ const Line = ({ arrowState, text, onClick, onUpdate, selectable }: LineProps) =>
 
 function getOpenableSections(tree: Tree, maxLength: number){
   return flattenTree(tree, maxLength, false)
-    .filter((part): part is TreePart.Children => part.kind === "children")
+    .filter((part): part is TreePart.Block => part.kind === "block")
     .filter(part => part.children.length > 0)
 }

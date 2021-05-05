@@ -23,15 +23,15 @@ export const httSimpleEngine: HierarchyToTreeEngine = {
 
   ObjectHierarchy: ({ hierarchy, path, stateMemo, hierarchyToTree }) =>
     [
-      TreePart.Text.String("{"),
-      TreePart.Children({
+      TreePart.Line.String("{"),
+      TreePart.Block({
         children: Object.entries(hierarchy.children).map(([key, value]) => {
           const newPath: HierarchyPath = [...path, { type: "ObjectHierarchyPathPart", key }]
           const child = hierarchyToTree({ hierarchy: value, path: newPath })
           return wrapTreeSelectable(newPath, value.linkedProducts, [
-            TreePart.Text.String(key),
+            TreePart.Line.String(key),
             ...(child.length ? [
-              TreePart.Text.String(": "),
+              TreePart.Line.String(": "),
               ...child,
             ] : []),
           ])
@@ -40,7 +40,7 @@ export const httSimpleEngine: HierarchyToTreeEngine = {
         state: getState(stateMemo, path, ""),
         forceOpenable: true,
       }),
-      TreePart.Text.String("}"),
+      TreePart.Line.String("}"),
     ],
 
   CallHierarchy: ({ hierarchy, path, stateMemo, hierarchyToTree }) =>
@@ -68,7 +68,7 @@ function httSimpleEngineArray(children: Tree[], state: State){
   if(children.length === 1)
     return children[0]
   return [
-    TreePart.Children({
+    TreePart.Block({
       children,
       state,
       joiner: ", ",

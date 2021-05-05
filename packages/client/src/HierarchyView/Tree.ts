@@ -5,28 +5,28 @@ import { TreeText, TreeTextPart } from "./TreeText"
 export type Tree = TreePart[]
 
 export type TreePart =
-  | TreePart.Text
-  | TreePart.Children
+  | TreePart.Line
+  | TreePart.Block
 
 export namespace TreePart {
-  export const Text = (...text: TreeText | [TreeText]): Text => ({
-    kind: "text",
+  export const Line = (...text: TreeText | [TreeText]): Line => ({
+    kind: "line",
     text: ([] as TreeText).concat(...text),
   })
-  export interface Text {
-    readonly kind: "text",
+  export interface Line {
+    readonly kind: "line",
     readonly text: TreeText,
   }
 
-  Text.String = (string: string) =>
-    Text(TreeTextPart.String(string))
+  Line.String = (string: string) =>
+    Line(TreeTextPart.String(string))
 
-  export const Children = (data: Omit<Children, "kind">): Children => ({
-    kind: "children",
+  export const Block = (data: Omit<Block, "kind">): Block => ({
+    kind: "block",
     ...data,
   })
-  export interface Children {
-    readonly kind: "children",
+  export interface Block {
+    readonly kind: "block",
     readonly state: State,
     readonly children: readonly Tree[],
     readonly joiner?: string,
