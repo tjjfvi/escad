@@ -3,7 +3,7 @@ import { Hash, Product, Hierarchy } from "@escad/core"
 import { HierarchyPath } from "../HierarchyPath"
 import { StateMemo } from "./State"
 import { Tree, TreePart } from "./Tree"
-import { TreeTextPart } from "./TreeText"
+import { TreeTextPart, TreeTextRange } from "./TreeText"
 
 /**
  * Converts a `Hierarchy` to a `Tree`
@@ -71,7 +71,7 @@ export function wrapTreeSelectable(
   if(!linkedProducts?.length || !tree.length)
     return tree
   return [
-    TreePart.Line(TreeTextPart.SelectableStart(path)),
+    TreePart.Line(TreeTextPart.RangeStart(TreeTextRange.Selectable(path))),
     ...tree,
     TreePart.Line(TreeTextPart.RangeEnd()),
   ]

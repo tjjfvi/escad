@@ -7,9 +7,7 @@ export type TreeText = TreeTextPart[]
 export type TreeTextPart =
   | TreeTextPart.String
   | TreeTextPart.Ellipsis
-  | TreeTextPart.DummyRangeStart
-  | TreeTextPart.SelectableStart
-  | TreeTextPart.OpenableStart
+  | TreeTextPart.RangeStart
   | TreeTextPart.RangeEnd
 
 export namespace TreeTextPart {
@@ -23,37 +21,22 @@ export namespace TreeTextPart {
     readonly string: string,
   }
 
-  export const Ellipsis = (): Ellipsis => ({
+  export const Ellipsis = (target: State): Ellipsis => ({
     kind: "ellipsis",
+    target,
   })
   export interface Ellipsis {
     readonly kind: "ellipsis",
-  }
-
-  // Used to easily filter out ranges
-  export const DummyRangeStart = (): DummyRangeStart => ({
-    kind: "dummyRangeStart",
-  })
-  export interface DummyRangeStart {
-    readonly kind: "dummyRangeStart",
-  }
-
-  export const SelectableStart = (path: HierarchyPath): SelectableStart => ({
-    kind: "selectableStart",
-    path,
-  })
-  export interface SelectableStart {
-    readonly kind: "selectableStart",
-    readonly path: HierarchyPath,
-  }
-
-  export const OpenableStart = (target: State): OpenableStart => ({
-    kind: "openableStart",
-    target,
-  })
-  export interface OpenableStart {
-    readonly kind: "openableStart",
     readonly target: State,
+  }
+
+  export const RangeStart = (range: TreeTextRange): RangeStart => ({
+    kind: "rangeStart",
+    range,
+  })
+  export interface RangeStart {
+    readonly kind: "rangeStart",
+    readonly range: TreeTextRange,
   }
 
   export const RangeEnd = (): RangeEnd => ({
@@ -61,5 +44,27 @@ export namespace TreeTextPart {
   })
   export interface RangeEnd {
     readonly kind: "rangeEnd",
+  }
+}
+
+export type TreeTextRange =
+  | TreeTextRange.Selectable
+  | TreeTextRange.Dummy
+
+export namespace TreeTextRange {
+  export const Dummy = (): Dummy => ({
+    kind: "dummy",
+  })
+  export interface Dummy {
+    readonly kind: "dummy",
+  }
+
+  export const Selectable = (path: HierarchyPath): Selectable => ({
+    kind: "selectable",
+    path,
+  })
+  export interface Selectable {
+    readonly kind: "selectable",
+    readonly path: HierarchyPath,
   }
 }
