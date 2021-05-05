@@ -4,7 +4,7 @@ import React, { useContext } from "react"
 import { observer } from "rhobo"
 import { ClientState } from "../ClientState"
 import { NestableSpan } from "./NestableSpan"
-import { TreeText, TreeTextPart } from "./TreeText"
+import { TreeText, TreeTextRange } from "./TreeText"
 
 export interface TreeTextViewProps {
   text: TreeText,
@@ -13,10 +13,13 @@ export interface TreeTextViewProps {
 }
 
 export const TreeTextView = ({ text, selectable, onUpdate }: TreeTextViewProps) => {
-  type Wrapper = Pick<TreeTextPartViewProps, "children" | "opener">
+  type Wrapper = {
+    children: Array<string | React.ReactElement>,
+    range: TreeTextRange,
+  }
   let wrapperStack: Wrapper[] = [{
     children: [],
-    opener: TreeTextPart.DummyRangeStart(),
+    range: TreeTextRange.Dummy(),
   }]
   for(const [index, part] of text.entries()) {
     const currentWrapper = wrapperStack[wrapperStack.length - 1]
@@ -25,17 +28,23 @@ export const TreeTextView = ({ text, selectable, onUpdate }: TreeTextViewProps) 
       continue
     }
     if(part.kind === "ellipsis") {
-      currentWrapper.children.push(<span className="ellipsis" key={index}>{"···"}</span>)
+      currentWrapper.children.push(
+        <NestableSpan
+          key={index}
+          className="openable ellipsis"
+          onClick={() => {
+            opener.target.open = true
+            onUpdate()
+          }}
+          children={"···"}
+        />,
+      )
       continue
     }
-    if(
-      part.kind === "dummyRangeStart"
-        || part.kind === "openableStart"
-        || part.kind === "selectableStart"
-    ) {
+    if(part.kind === "rangeStart") {
       wrapperStack.push({
         children: [],
-        opener: part,
+        range: part.range,
       })
       continue
     }
@@ -46,7 +55,7 @@ export const TreeTextView = ({ text, selectable, onUpdate }: TreeTextViewProps) 
           key={index}
           onUpdate={onUpdate}
           selectable={selectable}
-          opener={currentWrapper.opener}
+          range={currentWrapper.range}
           children={currentWrapper.children}
         />,
       )
@@ -59,33 +68,20 @@ export const TreeTextView = ({ text, selectable, onUpdate }: TreeTextViewProps) 
 }
 
 interface TreeTextPartViewProps {
-  children: Array<string | React.ReactElement>,
-  opener: (
-    | TreeTextPart.DummyRangeStart
-    | TreeTextPart.OpenableStart
-    | TreeTextPart.SelectableStart
-  ),
+  children: React.ReactNode,
+  range: TreeTextRange,
   onUpdate: () => void,
   selectable: boolean,
 }
 
-const TreeTextPartView = observer(({ opener, children, onUpdate, selectable }: TreeTextPartViewProps) => {
+const TreeTextPartView = observer(({ range, children, selectable }: TreeTextPartViewProps) => {
   const state = useContext(ClientState.Context)
-  if(opener.kind === "dummyRangeStart")
+  if(range.kind === "dummy")
     return <>{children}</>
-  if(opener.kind === "openableStart")
-    return <NestableSpan
-      className="openable"
-      onClick={() => {
-        opener.target.open = true
-        onUpdate()
-      }}
-      children={children}
-    />
-  if(opener.kind === "selectableStart") {
+  if(range.kind === "selectable") {
     if(!selectable)
       return <>{children}</>
-    const { path } = opener
+    const { path } = range
     const selectionClass = findLast(state.selection() ?? [], x => Hash.equal(x.path, path))?.type ?? ""
     return <NestableSpan
       className={"selectable " + selectionClass}
@@ -107,7 +103,7 @@ const TreeTextPartView = observer(({ opener, children, onUpdate, selectable }: T
       children={children}
     />
   }
-  assertNever(opener)
+  assertNever(range)
 })
 
 /** Like [].find but it starts from the end */

@@ -22,7 +22,7 @@ import { treeTextLength } from "./treeTextLength"
 export function finalizeTree(originalTree: Tree){
   let treeAcc: Tree = []
   let treeTextAcc: TreeText = []
-  let openRanges: TreeText = []
+  let openRanges: TreeTextPart.RangeStart[] = []
   for(const treePart of originalTree) {
     if(treePart.kind === "line") {
       for(const treeTextPart of treePart.text) {
@@ -33,11 +33,7 @@ export function finalizeTree(originalTree: Tree){
           openRanges.pop()
           continue
         }
-        if(
-          treeTextPart.kind === "dummyRangeStart"
-          || treeTextPart.kind === "selectableStart"
-          || treeTextPart.kind === "openableStart"
-        ) {
+        if(treeTextPart.kind === "rangeStart") {
           openRanges.push(treeTextPart)
           continue
         }
@@ -47,9 +43,7 @@ export function finalizeTree(originalTree: Tree){
     }
     if(!treePart.state.open) {
       treeTextAcc.push(
-        TreeTextPart.OpenableStart(treePart.state),
-        TreeTextPart.Ellipsis(),
-        TreeTextPart.RangeEnd(),
+        TreeTextPart.Ellipsis(treePart.state),
       )
       continue
     }
