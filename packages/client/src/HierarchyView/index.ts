@@ -13,4 +13,5 @@ export * from "./flattenTree"
 export * from "./hierarchyToTree"
 export * from "./httDefaultEngine"
 export * from "./httSimpleEngine"
+export * from "./treeTextLength"
 
