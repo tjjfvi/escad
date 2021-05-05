@@ -1,7 +1,7 @@
 
 import { finalizeTree } from "./finalizeTree"
 import { Tree, TreePart } from "./Tree"
-import { TreeText } from "./TreeText"
+import { treeTextLength } from "./treeTextLength"
 
 /**
  * Equally flattens a tree's children up until it's fully flattened or there's no more room in `maxLength`
@@ -33,16 +33,6 @@ export function flattenTree(tree: Tree, maxLength: number, flattenOpenable = tru
 
 function checkTreeWithinMaxLength(tree: Tree, maxLength: number){
   return finalizeTree(tree).every(x => x.kind !== "text" || treeTextLength(x.text) <= maxLength)
-}
-
-function treeTextLength(text: TreeText): number{
-  let total = 0
-  for(const part of text)
-    if(part.kind === "string")
-      total += part.string.length
-    else if(part.kind === "ellipsis")
-      total += 2 // The space between the dots is shrunk
-  return total
 }
 
 /** Similar to [].join */
