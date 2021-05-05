@@ -71,8 +71,8 @@ export function wrapTreeSelectable(
   if(!linkedProducts?.length || !tree.length)
     return tree
   return [
-    TreePart.Text(TreeTextPart.SelectableStart(path)),
+    TreePart.Line(TreeTextPart.SelectableStart(path)),
     ...tree,
-    TreePart.Text(TreeTextPart.RangeEnd()),
+    TreePart.Line(TreeTextPart.RangeEnd()),
   ]
 }

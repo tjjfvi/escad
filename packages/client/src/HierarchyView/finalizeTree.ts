@@ -6,17 +6,17 @@ import { treeTextLength } from "./treeTextLength"
 
 /**
  * Finishes a `Tree` to be displayed
- * - Ellipses closed `TreePart.Children`s
- * - Concatentates adjacent `TreePart.Text`s
- * - Applies ranges spanning multiple non-adjacent `TreePart.Text`s to each inner element
+ * - Ellipses closed `TreePart.Block`s
+ * - Concatentates adjacent `TreePart.Line`s
+ * - Applies ranges spanning multiple non-adjacent `TreePart.Line`s to each inner element
  *
  * Example:
  * ```
- * Tree[Text[DummyRangeStart], Text[String], Children, Text[String, RangeEnd], Text[String]]
+ * Tree[Line[DummyRangeStart], Line[String], Block, Line[String, RangeEnd], Line[String]]
  * ```
  * becomes
  * ```
- * Tree[Text[DummyRangeStart, String, RangeEnd], Children, Text[DummyRangeStart, String, RangeEnd, String]]
+ * Tree[Line[DummyRangeStart, String, RangeEnd], Block, Line[DummyRangeStart, String, RangeEnd, String]]
  * ```
  */
 export function finalizeTree(originalTree: Tree){
@@ -24,7 +24,7 @@ export function finalizeTree(originalTree: Tree){
   let treeTextAcc: TreeText = []
   let openRanges: TreeText = []
   for(const treePart of originalTree) {
-    if(treePart.kind === "text") {
+    if(treePart.kind === "line") {
       for(const treeTextPart of treePart.text) {
         treeTextAcc.push(treeTextPart)
         if(treeTextPart.kind === "string" || treeTextPart.kind === "ellipsis")
@@ -64,7 +64,7 @@ export function finalizeTree(originalTree: Tree){
     for(const {} of openRanges)
       treeTextAcc.push(TreeTextPart.RangeEnd())
     if(treeTextLength(treeTextAcc))
-      treeAcc.push(TreePart.Text(treeTextAcc))
+      treeAcc.push(TreePart.Line(treeTextAcc))
     treeTextAcc = [...openRanges]
   }
 }

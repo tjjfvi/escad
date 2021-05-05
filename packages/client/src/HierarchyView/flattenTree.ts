@@ -16,11 +16,11 @@ export function flattenTree(tree: Tree, maxLength: number, flattenOpenable = tru
     let changed = false
     for(const part of tree) {
       const flattened =
-        part.kind === "children"
+        part.kind === "block"
         && !part.state.open
         && !part.forceEllipsis
         && (flattenOpenable || !part.forceOpenable)
-          ? interleaveFlat(part.children, TreePart.Text.String(part.joiner ?? ""))
+          ? interleaveFlat(part.children, TreePart.Line.String(part.joiner ?? ""))
           : null // no change
       newTree.push(...(flattened ?? [part]))
       changed ||= !!flattened
@@ -32,7 +32,7 @@ export function flattenTree(tree: Tree, maxLength: number, flattenOpenable = tru
 }
 
 function checkTreeWithinMaxLength(tree: Tree, maxLength: number){
-  return finalizeTree(tree).every(x => x.kind !== "text" || treeTextLength(x.text) <= maxLength)
+  return finalizeTree(tree).every(x => x.kind === "block" || treeTextLength(x.text) <= maxLength)
 }
 
 /** Similar to [].join */
