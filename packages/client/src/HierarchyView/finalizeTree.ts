@@ -2,6 +2,7 @@
 import { assertNever } from "@escad/core"
 import { Tree, TreePart } from "./Tree"
 import { TreeText, TreeTextPart } from "./TreeText"
+import { treeTextLength } from "./treeTextLength"
 
 /**
  * Finishes a `Tree` to be displayed
@@ -62,7 +63,8 @@ export function finalizeTree(originalTree: Tree){
   function finishTreeTextAcc(){
     for(const {} of openRanges)
       treeTextAcc.push(TreeTextPart.RangeEnd())
-    treeAcc.push(TreePart.Text(treeTextAcc))
+    if(treeTextLength(treeTextAcc))
+      treeAcc.push(TreePart.Text(treeTextAcc))
     treeTextAcc = [...openRanges]
   }
 }
