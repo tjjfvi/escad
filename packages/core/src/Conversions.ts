@@ -50,6 +50,20 @@ interface CovariantMergeable<T> {
   _covariantMergable: () => T,
 }
 
+// A is assignable to B, and B is assignable to C, but A is not assignable to C
+export namespace TransitivityOverride {
+  export type A = (x?: true) => never
+  export type B = () => true
+  export type C = (x?: false) => boolean
+}
+
+// X<A> is always assignable to X<B>, but X<A>|Y<A> is only assignable to Y<B> iff A is assignable to B
+export namespace CrossAssignable {
+  export type Undo<T> = T extends [TransitivityOverride.A, infer U] ? U : never
+  export type X<T> = [TransitivityOverride.A, T] | [TransitivityOverride.B, unknown]
+  export type Y<T> = [TransitivityOverride.A, T] | [TransitivityOverride.C, unknown]
+}
+
 type _WrappedConvertibleToEach<T, E=never> = T extends T ? [_ConvertibleTo<T, E>] : never
 type _ImplicitlyConvertibleTo<A, E=never> = CovariantMergeableEach<A extends A ?
   | Match<A, { type: "TupleProduct" }> extends true
@@ -117,7 +131,7 @@ export type Unphantom<T> = T extends Phantom<infer U> ? U : never
 
 export type ConvertibleTo<T extends Product> = Product & {
   [__convertibleToOverride]?: Phantom<T>,
-  [__convertibleTo]?: T[__convertibleTo],
+  [__convertibleTo]?: CrossAssignable.Y<CrossAssignable.Undo<T[__convertibleTo]>>,
 }
 
 /* Tests */
@@ -142,6 +156,9 @@ declare global {
 
 type X<T extends string, U extends T> = Assert<P<T>, P<U>>
 
+type asdf = CrossAssignable.Undo<P<"A">[__convertibleTo]>
+type asadf = ConvertibleTo<P<"A">>[__convertibleTo]
+
 type Assert<T, U extends T> = U
 interface P<T extends string> extends LeafProduct {
   readonly type: Id<"@escad/core", "LeafProduct", "ConversionsTests", T>,
@@ -152,6 +169,7 @@ interface Q<T extends string> extends LeafProduct {
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 type Tests<B extends Product, A extends ConvertibleTo<B>> = [
+  Assert<ConvertibleTo<P<"A">>, P<"A">>,
   Assert<ConvertibleTo<ArrayProduct<P<"A">>>, ArrayProduct<P<"B">>>,
   Assert<
     ConvertibleTo<ArrayProduct<P<"A">>>,

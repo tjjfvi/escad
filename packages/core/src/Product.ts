@@ -13,6 +13,7 @@ import { UnknownProduct, UnknownProductType } from "./UnknownProduct"
 import { ScopedId } from "./Id"
 import { MarkedProduct, MarkedProductType } from "./MarkedProduct"
 import { AndProduct, AndProductType } from "./AndProduct"
+import { CrossAssignable } from "."
 
 export interface _Product {
   readonly type: string | ScopedId<"LeafProduct">,
@@ -25,7 +26,7 @@ export interface _Product {
     : ArrayProduct extends this ? unknown
     : UnknownProduct extends this ? unknown
     : AndProduct extends this ? unknown
-    : _ConvertibleTo<this>
+    : CrossAssignable.X<_ConvertibleTo<this>>
   ),
 }
 
