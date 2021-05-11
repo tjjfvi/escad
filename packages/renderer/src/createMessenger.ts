@@ -32,8 +32,10 @@ export const createRendererServerMessenger = (
 
   let lastEmitLogPromise = Promise.resolve<unknown>(undefined)
   logger.onLog(async log => {
-    if(!log)
+    if(!log) {
+      await lastEmitLogPromise
       messenger.emit("log", null)
+    }
     else {
       // Preserves log ordering and avoids race conditions where
       // the client requests the log before the file is written
@@ -48,7 +50,7 @@ export const createRendererServerMessenger = (
   return messenger
 
   async function run(params?: unknown){
-    logger.log(null)
+    logger.clear()
 
     const fullExported = requireFile()
 

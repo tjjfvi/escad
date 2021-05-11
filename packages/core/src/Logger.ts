@@ -15,6 +15,10 @@ export class Logger {
     this.listeners.forEach(fn => fn(log))
   }
 
+  clear(){
+    this.log(null)
+  }
+
   onLog(listener: (value: Log | null) => void){
     this.listeners.add(listener)
     return () => void this.listeners.delete(listener)
