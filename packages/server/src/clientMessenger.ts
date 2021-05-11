@@ -18,20 +18,22 @@ export const createServerClientMessenger = ({
   bundlerMessenger?: ServerBundlerMessenger,
   serverEmitter: ServerEmitter,
 }) => {
-  let renderer: Promise<ServerRendererMessenger>
+  let currentRendererProm: Promise<ServerRendererMessenger>
+  reloadRenderer()
   const messenger: ServerClientMessenger = createMessenger({
     impl: {
       async lookupRaw(hash){
         return hashToUrl(hash)
       },
       async lookupRef(loc){
-        const hash = await (await renderer).lookupRef(loc)
+        const renderer = await getRenderer()
+        const hash = await renderer.lookupRef(loc)
         return hashToUrl(hash)
       },
       async run(params){
-        renderer.then(r => r.destroy(true))
-        renderer = createRendererMessenger()
-        const info = await (await renderer).run(params)
+        reloadRenderer()
+        const renderer = await getRenderer()
+        const info = await renderer.run(params)
         serverEmitter.emit("clientPlugins", info.clientPlugins)
         messenger.emit("info", info)
         return info
@@ -39,7 +41,6 @@ export const createServerClientMessenger = ({
     },
     connection,
   })
-  createRenderer()
 
   messenger.emit("reload", serverEmitter.on("reload"))
   if(bundlerMessenger) {
@@ -49,10 +50,18 @@ export const createServerClientMessenger = ({
 
   return messenger
 
-  async function createRenderer(){
-    renderer?.then(r => r.destroy(true))
-    renderer = createRendererMessenger()
-    messenger.emit("log", (await renderer).on("log"))
-    return await renderer
+  async function getRenderer(){
+    let lastRendererProm, renderer
+    do renderer = await (lastRendererProm = currentRendererProm)
+    while(lastRendererProm !== currentRendererProm) // Some time has passed, so there may be a new renderer
+    return renderer
+  }
+
+  function reloadRenderer(){
+    currentRendererProm?.then(r => r.destroy(true))
+    currentRendererProm = createRendererMessenger().then(renderer => {
+      messenger.emit("log", renderer.on("log"))
+      return renderer
+    })
   }
 }
