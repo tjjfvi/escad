@@ -2,39 +2,34 @@
 import { Hierarchy, Logger, HierarchyLog, StringLog, LogLevel } from "@escad/core"
 
 export const hookConsole = (console: Console, logger: Logger) => {
-  const log = console.log.bind(console)
-  console.log = (...args: unknown[]) => {
-    log(...args)
-    standardLog(args, "log")
+  const consoleLog = console.log.bind(console)
+  const overridenLog = console.log = (...args: unknown[]) => {
+    consoleLog(...args)
+    baseLog(args, "log")
   }
-
-  const warn = console.warn.bind(console)
+  const consoleWarn = console.warn.bind(console)
   console.warn = (...args: unknown[]) => {
-    warn(...args)
-    standardLog(args, "warn")
+    consoleWarn(...args)
+    baseLog(args, "warn")
   }
-
-  const error = console.error.bind(console)
+  const consoleError = console.error.bind(console)
   console.error = (...args: unknown[]) => {
-    error(...args)
-    standardLog(args, "error")
+    consoleError(...args)
+    baseLog(args, "error")
   }
-
-  const clear = console.clear.bind(console)
+  const consoleClear = console.clear.bind(console)
   console.clear = () => {
-    clear()
-    logger.log(null)
+    consoleClear()
+    logger.clear()
   }
-
-  const timeEnd = console.timeEnd.bind(console)
+  const consoleTimeEnd = console.timeEnd.bind(console)
   console.timeEnd = (label?: string) => {
-    const overridenLog = console.log
-    console.log = log
-    timeEnd(label)
+    console.log = consoleLog
+    consoleTimeEnd(label)
     console.log = overridenLog
   }
 
-  async function standardLog(messages: unknown[], level: LogLevel){
+  async function baseLog(messages: unknown[], level: LogLevel){
     if(messages.every(msg =>
       typeof msg === "string"
       || typeof msg === "boolean"

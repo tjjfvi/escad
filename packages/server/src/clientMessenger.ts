@@ -39,7 +39,7 @@ export const createServerClientMessenger = ({
     },
     connection,
   })
-  renderer = createRenderer()
+  createRenderer()
 
   messenger.emit("reload", serverEmitter.on("reload"))
   if(bundlerMessenger) {

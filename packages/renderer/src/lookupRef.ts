@@ -3,7 +3,7 @@ import { Hash, artifactManager, Id, ConversionRegistry, ExportTypeRegistry } fro
 
 export async function lookupRef(loc: readonly unknown[]){
   const type = getRefType(loc)
-  const timerName = type ? `${type} ${Hash.create(loc).slice(0, 32)}...` : undefined
+  const timerName = type ? `${type} ${Hash.create(loc).slice(0, 16)}...` : undefined
   if(type) console.time(timerName)
   const artifact = await artifactManager.lookupRef(loc)
   const artifactHash = await artifactManager.storeRaw(artifact)

@@ -19,15 +19,15 @@ export default renderFunction(
     }),
   },
   ({ outerSize, hollow: { enabled: hollow, innerSize } }) => {
-    console.log("hi")
-    console.log({ outerSize, hollow, innerSize })
+    console.log("Example of output from project `console.log`:")
+    console.log("Arguments:", { outerSize, hollow, innerSize })
     const main = escad.cube({ size: outerSize })
     const inner = escad.cube({ size: innerSize })
     const corner = escad.cube({ size: outerSize, center: false })
     const final = main
       ._(hollow ? escad.sub(inner) : escad)
       .sub(corner)
-    console.log({ main, inner, corner, final })
+    console.log("Resulting:", { main, inner, corner, final })
     return final
   },
 )
