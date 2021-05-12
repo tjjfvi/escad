@@ -18,8 +18,13 @@ import { boundingBox } from "./getBoundingBox"
 import { moveTo, moveToX, moveToY, moveToZ } from "./moveTo"
 import { shift, shiftX, shiftY, shiftZ } from "./shift"
 import { reflect, reflectX, reflectY, reflectZ } from "./reflect"
+import { mirror, mirrorX, mirrorY, mirrorZ } from "./mirror"
 
 export default {
+  mirror,
+  mirrorX,
+  mirrorY,
+  mirrorZ,
   reflect,
   reflectX,
   reflectY,
