@@ -14,10 +14,11 @@ import {
   TupleProductType,
 } from "@escad/core"
 import { BoundingBox } from "./BoundingBox"
-import { getBoundingBox } from "./getBoundingBox"
+import { _boundingBox } from "./getBoundingBox"
 import { Matrix4 } from "./Matrix4"
 import { Mesh } from "./Mesh"
 import { Transform, Transformation } from "./Transformation"
+import { Vector3 } from "./Vector3"
 
 const moveToId = Id.create(__filename, "@escad/builtins", "Marker", "MoveTo", "0")
 export type MoveTo<T extends Product> = MarkedProduct<typeof moveToId, T>
@@ -25,41 +26,57 @@ export const MoveTo = MarkedProduct.for(moveToId)
 
 const moveToArgsId = Id.create(__filename, "@escad/builtins", "LeafProduct", "MoveToArgs", "0")
 
-type Axis = "x" | "y" | "z"
-
-export interface MoveToArgs extends LeafProduct {
+export interface MoveToArgs extends
+  LeafProduct,
+  Partial<Record<"x" | "y" | "z", -1 | 0 | 1 | [toEdge: number, shift: number]>>
+{
   readonly type: typeof moveToArgsId,
-  readonly axis: Axis,
-  readonly toEdge: number,
-  readonly shift: number,
 }
 
 export const MoveToArgs = {
-  create: (axis: Axis, toEdge: number, shift: number): MoveToArgs => ({
+  create: (args: Omit<MoveToArgs, "type">): MoveToArgs => ({
     type: moveToArgsId,
-    axis,
-    toEdge,
-    shift,
+    ...args,
   }),
   id: moveToArgsId,
   ...createLeafProductUtils<MoveToArgs, "MoveToArgs">(moveToArgsId, "MoveToArgs"),
 }
 
+export type MoveToTarget = Element<ConvertibleTo<Mesh>> | Partial<Vector3> | number
+
 export const moveTo = Component.create(
   "moveTo",
-  (target: Element<ConvertibleTo<Mesh>>, axis: "x" | "y" | "z", toEdge = 0, shift = 0) =>
-    mapOperation(
+  (target: MoveToTarget, args: Omit<MoveToArgs, "type">) => {
+    if(typeof target === "number") target = { x: target, y: target, z: target }
+    const targetBox = Element.isElement(target)
+      ? _boundingBox(target)
+      : BoundingBox.fromVector3(Vector3.create(target.x ?? 0, target.y ?? 0, target.z ?? 0))
+    return mapOperation<ConvertibleTo<Mesh>, ConvertibleTo<Transformation<Mesh>>>(
       "moveTo",
-      async (source: ConvertibleTo<Mesh>): Promise<ConvertibleTo<Transformation<Mesh>>> =>
+      async (source, allSource) =>
         Transform.create(TupleProduct.create([
           MoveTo.create(TupleProduct.create([
-            MoveToArgs.create(axis, toEdge, shift),
-            (await Element.toArrayFlat(getBoundingBox(source)))[0],
-            (await Element.toArrayFlat(getBoundingBox(target)))[0],
+            MoveToArgs.create(args),
+            await _boundingBox(allSource),
+            await targetBox,
           ] as const)),
           source,
         ] as const)),
-    ),
+    )
+  },
+)
+
+export const moveToX = Component.create("moveToX",
+  (target: MoveToTarget, toEdge = 0, shift: number = -Math.sign(toEdge)) =>
+    moveTo(target, { x: [toEdge, shift] }),
+)
+export const moveToY = Component.create("moveToY",
+  (target: MoveToTarget, toEdge = 0, shift: number = -Math.sign(toEdge)) =>
+    moveTo(target, { y: [toEdge, shift] }),
+)
+export const moveToZ = Component.create("moveToZ",
+  (target: MoveToTarget, toEdge = 0, shift: number = -Math.sign(toEdge)) =>
+    moveTo(target, { z: [toEdge, shift] }),
 )
 
 declare global {
@@ -79,14 +96,19 @@ conversionRegistry.register({
   fromType: MoveTo.createProductType(TupleProductType.create([MoveToArgs, BoundingBox, BoundingBox])),
   toType: Matrix4,
   convert: async ({ child: { children: [args, sourceBox, targetBox] } }) => {
-    const { axis } = args
-    const sourceCenter = sourceBox.center[axis]
-    const sourceSize = sourceBox.size[axis]
-    const targetCenter = targetBox.center[axis]
-    const targetSize = targetBox.size[axis]
-    const targetPos = targetCenter + args.toEdge * targetSize
-    const displacement = targetPos - sourceCenter + args.shift * sourceSize
-    const displacementVector = { x: 0, y: 0, z: 0, [axis]: displacement }
+    const displacementVector = { x: 0, y: 0, z: 0 }
+    for(const axis of ["x", "y", "z"] as const) {
+      const spec = args[axis]
+      if(spec === undefined) continue
+      const [toEdge, shift] = typeof spec === "number" ? [spec, -spec] : spec
+      const sourceCenter = sourceBox.center[axis]
+      const sourceSize = sourceBox.size[axis]
+      const targetCenter = targetBox.center[axis]
+      const targetSize = targetBox.size[axis]
+      const targetPos = targetCenter + toEdge * targetSize / 2
+      const displacement = targetPos - sourceCenter + shift * sourceSize / 2
+      displacementVector[axis] = displacement
+    }
     return Matrix4.translate(displacementVector.x, displacementVector.y, displacementVector.z)
   },
   weight: 1,
