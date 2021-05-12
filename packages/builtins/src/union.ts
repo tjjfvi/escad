@@ -46,10 +46,10 @@ conversionRegistry.register({
 export const union: ConvertibleOperation<Bsp, Bsp> =
   Operation.create("union", async el =>
     Union.create(TupleProduct.create(await Element.toArrayFlat(el)))
-  , { showOutputInHierarchy: false })
+  , { showOutput: false })
 
 export const add: Component<ConvertibleElement<Bsp>[], ConvertibleOperation<Bsp, Bsp>> =
   Component.create("add", (...el) =>
     Operation.create("add", el2 => union(el2, el), { overrideHierarchy: false })
-  , { showOutputInHierarchy: false })
+  , { showOutput: false })
 

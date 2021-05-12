@@ -52,5 +52,6 @@ export const attribute = GenericComponent.create<[Product, string], AttributeArg
     const value: unknown = path.split(".").reduce<any>((obj, part) => obj[part], product)
     const wrappedValue = Product.isProduct(value) ? value : ValueWrapperProduct.create(rawProduct)
     return wrappedValue as any
-  }),
+  }, { showOutput: false }),
+  { showOutput: false },
 )

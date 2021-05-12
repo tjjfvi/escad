@@ -28,6 +28,8 @@ export const convert = GenericComponent.create<[Product], ConvertArgsHkt, Conver
       element => Element.map(element, product =>
         Element.create(conversionRegistry.convertProduct(productType, product)),
       ),
+      { showOutput: false },
     )
   },
+  { showOutput: false },
 )

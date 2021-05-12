@@ -62,21 +62,29 @@ export const moveTo = Component.create(
           ] as const)),
           source,
         ] as const)),
+      { showOutput: false },
     )
   },
+  { showOutput: false },
 )
 
-export const moveToX = Component.create("moveToX",
+export const moveToX = Component.create(
+  "moveToX",
   (target: MoveToTarget, toEdge: number = 0, shift: number = -Math.sign(toEdge)) =>
     moveTo(target, { x: [toEdge, shift] }),
+  { showOutput: false },
 )
-export const moveToY = Component.create("moveToY",
+export const moveToY = Component.create(
+  "moveToY",
   (target: MoveToTarget, toEdge: number = 0, shift: number = -Math.sign(toEdge)) =>
     moveTo(target, { y: [toEdge, shift] }),
+  { showOutput: false },
 )
-export const moveToZ = Component.create("moveToZ",
+export const moveToZ = Component.create(
+  "moveToZ",
   (target: MoveToTarget, toEdge: number = 0, shift: number = -Math.sign(toEdge)) =>
     moveTo(target, { z: [toEdge, shift] }),
+  { showOutput: false },
 )
 
 declare global {

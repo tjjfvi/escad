@@ -105,4 +105,4 @@ export const sphere: Component<[SphereArgs], Element<Sphere>> =
     const shift = interpretTriplet(args.shift, 0)
     const center = Vector3.multiplyScalar(shift, radius)
     return Element.create(Sphere.create(radius, smooth, center))
-  }, { showOutputInHierarchy: false })
+  }, { showOutput: false })

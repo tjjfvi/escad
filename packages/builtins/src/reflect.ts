@@ -13,11 +13,17 @@ export const reflect = Component.create("reflect", (axis: "x" | "y" | "z", cente
     ),
     Matrix4.translate(-translate.x, -translate.y, translate.z),
   )
-  return mapOperation("reflect", (leaf: ConvertibleTo<Mesh>) =>
-    FlipFaces.create(Transform.create(TupleProduct.create([matrix, leaf] as const))),
+  return mapOperation(
+    "reflect",
+    (leaf: ConvertibleTo<Mesh>) =>
+      FlipFaces.create(Transform.create(TupleProduct.create([matrix, leaf] as const))),
+    { showOutput: false },
   )
-})
+}, { showOutput: false })
 
-export const reflectX = Component.create("reflectX", (center: number = 0) => reflect("x", center))
-export const reflectY = Component.create("reflectY", (center: number = 0) => reflect("y", center))
-export const reflectZ = Component.create("reflectZ", (center: number = 0) => reflect("z", center))
+export const reflectX =
+  Component.create("reflectX", (center: number = 0) => reflect("x", center), { showOutput: false })
+export const reflectY =
+  Component.create("reflectY", (center: number = 0) => reflect("y", center), { showOutput: false })
+export const reflectZ =
+  Component.create("reflectZ", (center: number = 0) => reflect("z", center), { showOutput: false })

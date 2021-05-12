@@ -50,16 +50,16 @@ export const rotate: Component<RotateArgs, ConvertibleOperation<Mesh, Transforma
       "rotate",
       leaf =>
         Transform.create(TupleProduct.create([m, leaf] as const)),
-      { showOutputInHierarchy: false },
+      { showOutput: false },
     )
-  }, { showOutputInHierarchy: false })
+  }, { showOutput: false })
 
 export const rX: Component<[number], ConvertibleOperation<Mesh, Transformation<Mesh>>> =
-  Component.create("rX", (n: number) => rotate({ x: n }), { showOutputInHierarchy: false })
+  Component.create("rX", (n: number) => rotate({ x: n }), { showOutput: false })
 export const rY: Component<[number], ConvertibleOperation<Mesh, Transformation<Mesh>>> =
-  Component.create("rY", (n: number) => rotate({ y: n }), { showOutputInHierarchy: false })
+  Component.create("rY", (n: number) => rotate({ y: n }), { showOutput: false })
 export const rZ: Component<[number], ConvertibleOperation<Mesh, Transformation<Mesh>>> =
-  Component.create("rZ", (n: number) => rotate({ z: n }), { showOutputInHierarchy: false })
+  Component.create("rZ", (n: number) => rotate({ z: n }), { showOutput: false })
 
 export const rotateX = rX
 export const rotateY = rY

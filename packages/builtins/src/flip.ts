@@ -38,4 +38,4 @@ conversionRegistry.register<FlipFaces<Mesh>, Mesh>({
 })
 
 export const flip: Operation<ConvertibleTo<Mesh>, FlipFaces<ConvertibleTo<Mesh>>> =
-  mapOperation("flip", FlipFaces.create, { showOutputInHierarchy: false })
+  mapOperation("flip", FlipFaces.create, { showOutput: false })
