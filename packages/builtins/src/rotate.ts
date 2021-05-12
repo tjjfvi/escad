@@ -1,7 +1,7 @@
 
 import { Matrix4 } from "./Matrix4"
-import { Component, mapOperation, ConvertibleOperation } from "@escad/core"
-import { Transformation } from "./Transformation"
+import { Component, mapOperation, ConvertibleOperation, TupleProduct } from "@escad/core"
+import { Transform, Transformation } from "./Transformation"
 import { Mesh } from "./Mesh"
 
 const tau = Math.PI * 2
@@ -46,7 +46,12 @@ export const rotate: Component<RotateArgs, ConvertibleOperation<Mesh, Transforma
 
     let m = Matrix4.multiply(Matrix4.multiply(Matrix4.rotateX(x), Matrix4.rotateY(y)), Matrix4.rotateZ(z))
 
-    return mapOperation("rotate", leaf => Transformation.create(m, leaf), { showOutputInHierarchy: false })
+    return mapOperation(
+      "rotate",
+      leaf =>
+        Transform.create(TupleProduct.create([m, leaf] as const)),
+      { showOutputInHierarchy: false },
+    )
   }, { showOutputInHierarchy: false })
 
 export const rX: Component<[number], ConvertibleOperation<Mesh, Transformation<Mesh>>> =

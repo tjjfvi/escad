@@ -17,7 +17,7 @@ import { BoundingBox } from "./BoundingBox"
 import { getBoundingBox } from "./getBoundingBox"
 import { Matrix4 } from "./Matrix4"
 import { Mesh } from "./Mesh"
-import { Transformation } from "./Transformation"
+import { Transform, Transformation } from "./Transformation"
 
 const moveToId = Id.create(__filename, "@escad/builtins", "Marker", "MoveTo", "0")
 export type MoveTo<T extends Product> = MarkedProduct<typeof moveToId, T>
@@ -51,14 +51,14 @@ export const moveTo = Component.create(
     mapOperation(
       "moveTo",
       async (source: ConvertibleTo<Mesh>): Promise<ConvertibleTo<Transformation<Mesh>>> =>
-        TupleProduct.create([
+        Transform.create(TupleProduct.create([
           MoveTo.create(TupleProduct.create([
             MoveToArgs.create(axis, toEdge, shift),
             (await Element.toArrayFlat(getBoundingBox(source)))[0],
             (await Element.toArrayFlat(getBoundingBox(target)))[0],
           ] as const)),
           source,
-        ] as const),
+        ] as const)),
     ),
 )
 
