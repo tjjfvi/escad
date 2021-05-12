@@ -16,6 +16,7 @@ import { convert } from "./convert"
 import { attribute } from "./attribute"
 import { boundingBox } from "./getBoundingBox"
 import { moveTo, moveToX, moveToY, moveToZ } from "./moveTo"
+import { shift, shiftX, shiftY, shiftZ } from "./shift"
 
 export default {
   moveTo,
@@ -23,6 +24,10 @@ export default {
   moveToY,
   moveToZ,
   boundingBox,
+  shift,
+  shiftX,
+  shiftY,
+  shiftZ,
   attribute,
   convert,
   tX,
