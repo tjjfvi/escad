@@ -17,8 +17,13 @@ import { attribute } from "./attribute"
 import { boundingBox } from "./getBoundingBox"
 import { moveTo, moveToX, moveToY, moveToZ } from "./moveTo"
 import { shift, shiftX, shiftY, shiftZ } from "./shift"
+import { reflect, reflectX, reflectY, reflectZ } from "./reflect"
 
 export default {
+  reflect,
+  reflectX,
+  reflectY,
+  reflectZ,
   moveTo,
   moveToX,
   moveToY,
