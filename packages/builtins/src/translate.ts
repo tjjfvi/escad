@@ -1,8 +1,8 @@
 
 import { Matrix4 } from "./Matrix4"
 import { Mesh } from "./Mesh"
-import { mapOperation, Component, ConvertibleOperation } from "@escad/core"
-import { Transformation } from "./Transformation"
+import { mapOperation, Component, ConvertibleOperation, TupleProduct } from "@escad/core"
+import { Transform, Transformation } from "./Transformation"
 
 export type TranslateArgs =
   | [number, number, number]
@@ -18,7 +18,7 @@ export const translate: Component<TranslateArgs, ConvertibleOperation<Mesh, Tran
 
     return mapOperation(
       "translate",
-      mesh => Transformation.create(matrix, mesh),
+      mesh => Transform.create(TupleProduct.create([matrix, mesh] as const)),
       { showOutputInHierarchy: false },
     )
   }, { showOutputInHierarchy: false })

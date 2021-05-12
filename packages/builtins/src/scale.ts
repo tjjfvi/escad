@@ -1,7 +1,7 @@
 
 import { Matrix4 } from "./Matrix4"
-import { Component, mapOperation, ConvertibleOperation } from "@escad/core"
-import { Transformation } from "./Transformation"
+import { Component, mapOperation, ConvertibleOperation, TupleProduct } from "@escad/core"
+import { Transform } from "./Transformation"
 import { FlipFaces } from "./flip"
 import { Mesh } from "./Mesh"
 
@@ -26,7 +26,7 @@ export const scale: Component<ScaleArgs, ConvertibleOperation<Mesh, Mesh>> =
     let shouldFlip = sign === -1
 
     return mapOperation("scale", leaf => {
-      let transformed = Transformation.create(matrix, leaf)
+      let transformed = Transform.create(TupleProduct.create([matrix, leaf] as const))
       return shouldFlip ?  FlipFaces.create(transformed) : transformed
     }, { showOutputInHierarchy: false })
   }, { showOutputInHierarchy: false })
