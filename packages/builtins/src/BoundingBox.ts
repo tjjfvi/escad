@@ -21,6 +21,7 @@ export const BoundingBox = {
     center: Vector3.multiplyScalar(Vector3.add(min, max), .5),
     size: Vector3.subtract(max, min),
   }),
+  fromVector3: (vector: Vector3) => BoundingBox.create(vector, vector),
   ...createLeafProductUtils<BoundingBox, "BoundingBox">(boundingBoxId, "BoundingBox"),
 }
 

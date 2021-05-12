@@ -14,12 +14,15 @@ import { sphere } from "./sphere"
 import { polyhedron } from "./polyhedron"
 import { convert } from "./convert"
 import { attribute } from "./attribute"
-import { getBoundingBox } from "./getBoundingBox"
-import { moveTo } from "./moveTo"
+import { boundingBox } from "./getBoundingBox"
+import { moveTo, moveToX, moveToY, moveToZ } from "./moveTo"
 
 export default {
   moveTo,
-  getBoundingBox,
+  moveToX,
+  moveToY,
+  moveToZ,
+  boundingBox,
   attribute,
   convert,
   tX,
