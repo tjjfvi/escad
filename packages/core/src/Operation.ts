@@ -19,21 +19,21 @@ export interface Operation<I extends Product, O extends Product> {
   readonly name: string,
   readonly hierarchy?: Hierarchy,
   readonly overrideHierarchy?: boolean,
-  readonly showOutputInHierarchy?: boolean,
+  readonly showOutput?: boolean,
   (...args: Elementish<I>[]): Element<O>,
 }
 
 export interface OperationOptions {
   readonly hierarchy?: HierarchyProp,
   readonly overrideHierarchy?: boolean,
-  readonly showOutputInHierarchy?: boolean,
+  readonly showOutput?: boolean,
 }
 
 export const Operation = {
   create: <I extends Product, O extends Product>(
     name: string,
     func: (arg: Element<I>) => Promisish<Elementish<O>>,
-    { hierarchy, overrideHierarchy = true, showOutputInHierarchy = true }: OperationOptions = {},
+    { hierarchy, overrideHierarchy = true, showOutput = true }: OperationOptions = {},
   ): Operation<I, O> => {
     const that = Object.assign(
       new ExtensibleFunction(
@@ -49,7 +49,7 @@ export const Operation = {
         func,
         hierarchy,
         overrideHierarchy,
-        showOutputInHierarchy,
+        showOutput,
       },
     ) as Operation<I, O>
 
@@ -61,7 +61,7 @@ export const Operation = {
       return CallHierarchy.create({
         operator: await hierarchy ?? NameHierarchy.create({ name }),
         operands: await Promise.all(args.map(x => Hierarchy.from(x))),
-        result: showOutputInHierarchy ? await result.hierarchy : undefined,
+        result: showOutput ? await result.hierarchy : undefined,
         composable: true,
         linkedProducts: (await Hierarchy.from(result)).linkedProducts,
       })

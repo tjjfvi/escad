@@ -28,15 +28,15 @@ export const scale: Component<ScaleArgs, ConvertibleOperation<Mesh, Mesh>> =
     return mapOperation("scale", leaf => {
       let transformed = Transform.create(TupleProduct.create([matrix, leaf] as const))
       return shouldFlip ?  FlipFaces.create(transformed) : transformed
-    }, { showOutputInHierarchy: false })
-  }, { showOutputInHierarchy: false })
+    }, { showOutput: false })
+  }, { showOutput: false })
 
 export const sX: Component<[number], ConvertibleOperation<Mesh, Mesh>> =
-  Component.create("sX", (n: number) => scale({ x: n }), { showOutputInHierarchy: false })
+  Component.create("sX", (n: number) => scale({ x: n }), { showOutput: false })
 export const sY: Component<[number], ConvertibleOperation<Mesh, Mesh>> =
-  Component.create("sY", (n: number) => scale({ y: n }), { showOutputInHierarchy: false })
+  Component.create("sY", (n: number) => scale({ y: n }), { showOutput: false })
 export const sZ: Component<[number], ConvertibleOperation<Mesh, Mesh>> =
-  Component.create("sZ", (n: number) => scale({ z: n }), { showOutputInHierarchy: false })
+  Component.create("sZ", (n: number) => scale({ z: n }), { showOutput: false })
 
 export const scaleX = sX
 export const scaleY = sY

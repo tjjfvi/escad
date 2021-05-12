@@ -98,6 +98,6 @@ export const cylinder: Component<[CylArgs], Element<Cylinder>> =
     const shift = interpretTriplet(args.shift, 0)
     const center = Vector3.multiplyComponents(shift, Vector3.create(radius, radius, height / 2))
     return Element.create(Cylinder.create(radius, height, smooth, center))
-  }, { showOutputInHierarchy: false })
+  }, { showOutput: false })
 
 export const cyl = cylinder

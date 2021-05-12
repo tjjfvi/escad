@@ -96,5 +96,5 @@ export const cube: Component<[CubeArgs], Element<Cube>> =
     const center = Vector3.multiplyComponents(shift, Vector3.multiplyScalar(size, .5))
 
     return Element.create(Cube.create(size, center))
-  }, { showOutputInHierarchy: false })
+  }, { showOutput: false })
 

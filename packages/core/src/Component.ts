@@ -14,14 +14,14 @@ export interface Component<I extends any[], O extends Thing> {
   readonly name: string,
   readonly hierarchy?: HierarchyProp,
   readonly overrideHierarchy?: boolean,
-  readonly showOutputInHierarchy?: boolean,
+  readonly showOutput?: boolean,
   (...args: I): StripRealm<O>,
 }
 
 export interface ComponentOpts {
   readonly hierarchy?: HierarchyProp,
   readonly overrideHierarchy?: boolean,
-  readonly showOutputInHierarchy?: boolean,
+  readonly showOutput?: boolean,
 }
 
 export const Component = {
@@ -29,7 +29,7 @@ export const Component = {
   create: <I extends any[], O extends Thing>(
     name: string,
     func: (...args: I) => O,
-    { hierarchy, overrideHierarchy = true, showOutputInHierarchy = true }: ComponentOpts = {},
+    { hierarchy, overrideHierarchy = true, showOutput = true }: ComponentOpts = {},
   ): Component<I, O> => {
     const that = Object.assign(
       new ExtensibleFunction(
@@ -45,6 +45,7 @@ export const Component = {
         func,
         overrideHierarchy,
         hierarchy,
+        showOutput,
       },
     ) as Component<I, O>
     return that
@@ -55,7 +56,7 @@ export const Component = {
       return CallHierarchy.create({
         operator: await hierarchy ?? NameHierarchy.create({ name }),
         operands: await Promise.all(args.map(x => Hierarchy.from(x))),
-        result: showOutputInHierarchy ? await result.hierarchy : undefined,
+        result: showOutput ? await result.hierarchy : undefined,
         composable: false,
         linkedProducts: (await Hierarchy.from(result)).linkedProducts,
       })
