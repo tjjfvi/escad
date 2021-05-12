@@ -19,8 +19,10 @@ import { moveTo, moveToX, moveToY, moveToZ } from "./moveTo"
 import { shift, shiftX, shiftY, shiftZ } from "./shift"
 import { reflect, reflectX, reflectY, reflectZ } from "./reflect"
 import { mirror, mirrorX, mirrorY, mirrorZ } from "./mirror"
+import { label } from "./label"
 
 export default {
+  label,
   mirror,
   mirrorX,
   mirrorY,
