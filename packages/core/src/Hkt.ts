@@ -21,4 +21,8 @@ export declare namespace Hkt {
   }
 
   interface Constant<T, I = unknown> extends Hkt<I, T> {}
+
+  interface Identity<T = unknown> extends Hkt<T, T> {
+    [output]: Input<this>,
+  }
 }
