@@ -50,6 +50,7 @@ export const createServer = async ({ artifactsDir, port, ip = "::", loadFile, lo
     const child = fork(require.resolve("./renderer"), {
       env: { ...process.env, ARTIFACTS_DIR: artifactsDir, LOAD_FILE: loadFile },
     })
+    console.log(`New renderer process: ${child.pid}`)
     return createServerRendererMessenger(childProcessConnection(child))
   }
 
