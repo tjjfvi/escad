@@ -1,5 +1,4 @@
 
-import { Hash } from "@escad/core"
 import { Connection, createMessenger } from "@escad/messages"
 import { ServerBundlerMessenger, ServerClientMessenger } from "@escad/protocol"
 import { ServerRendererMessenger } from "@escad/protocol"
@@ -7,13 +6,11 @@ import { ServerEmitter } from "./serverEmitter"
 
 export const createServerClientMessenger = ({
   connection,
-  hashToUrl,
   createRendererMessenger,
   bundlerMessenger,
   serverEmitter,
 }: {
   connection: Connection<unknown>,
-  hashToUrl: (hash: Hash<unknown>) => string,
   createRendererMessenger: () => Promise<ServerRendererMessenger>,
   bundlerMessenger?: ServerBundlerMessenger,
   serverEmitter: ServerEmitter,
@@ -22,13 +19,10 @@ export const createServerClientMessenger = ({
   reloadRenderer()
   const messenger: ServerClientMessenger = createMessenger({
     impl: {
-      async lookupRaw(hash){
-        return hashToUrl(hash)
-      },
       async lookupRef(loc){
         const renderer = await getRenderer()
         const hash = await renderer.lookupRef(loc)
-        return hashToUrl(hash)
+        return hash
       },
       async run(params){
         reloadRenderer()

@@ -39,5 +39,5 @@ serverEmitter.on("clientPlugins", clientPlugins => {
 })
 
 export const reloadRenderer = () => {
-  serverEmitter.emit("reload")
+  serverEmitter.emit("changeObserved")
 }

@@ -3,12 +3,11 @@ import "../../stylus/ClientFrame.styl"
 import { brandConnection, createMessenger, filterConnection, transformConnection } from "@escad/messages"
 import { createServerClientMessenger } from "@escad/server"
 import React, { useState } from "react"
-import { createBlob } from "../utils/createBlob"
 import { bundlerMessenger, serverEmitter } from "./server"
 import { getClientURL } from "../utils/getClientURL"
 import { observer } from "rhobo"
 import { loadingStatuses } from "./initialize"
-import { artifactStore, createRendererWorker } from "./rendererWorker"
+import { createRendererWorker } from "./rendererWorker"
 import fs from "fs"
 
 export const ClientFrame = observer(() => {
@@ -52,7 +51,6 @@ export const ClientFrame = observer(() => {
         )
         const clientMessenger = createServerClientMessenger({
           connection: brandConnection(baseConnection, "client"),
-          hashToUrl:  hash => createBlob(artifactStore.raw.get(hash) ?? Buffer.alloc(0)),
           createRendererMessenger: createRendererWorker,
           serverEmitter,
         })

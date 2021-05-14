@@ -87,7 +87,6 @@ export const createServer = async ({ artifactsDir, port, ip = "::", loadFile, lo
         },
       })),
       serverEmitter,
-      hashToUrl: hash => `/artifacts/raw/${hash}`,
       createRendererMessenger,
       bundlerMessenger,
     })
