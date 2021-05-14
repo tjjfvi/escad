@@ -11,6 +11,7 @@ export type Messenger<
 > = T & {
   impl: F,
   destroy(awaitCompletion?: boolean): void,
+  retryAll(): void,
   emit<K extends keyof E>(event: K, iterable: AsyncIterable<E[K]>): void,
   emit<K extends keyof E>(event: K, ...args: E[K]): void,
   on<K extends keyof E>(event: K, callback: (...args: E[K]) => void): () => void,
@@ -33,6 +34,7 @@ export const createMessenger = (
     let currentPromises = new Set<Promise<unknown>>()
     let resolveMap: Record<number, (value: any) => void> = Object.create(null)
     let eventMap: Record<string, Set<(...args: any[]) => void>> = Object.create(null)
+    let retryMessages = new Set<unknown[]>()
     let destroyed = false
     const other: T = new Proxy(Object.create(null), {
       get: (target, prop) => {
@@ -44,8 +46,13 @@ export const createMessenger = (
           return
         return target[prop] = (...args: any[]) => {
           const id = ++idN
-          connection.send(["call", id, prop, ...args])
-          return recvPromise(id)
+          const message = ["call", id, prop, ...args]
+          connection.send(message)
+          retryMessages.add(message)
+          return recvPromise(id).then(value => {
+            retryMessages.delete(message)
+            return value
+          })
         }
       },
     })
@@ -54,6 +61,12 @@ export const createMessenger = (
       {
         impl,
         then: undefined,
+        retryAll(){
+          if(destroyed)
+            throw new Error("Attempted to retryAll on destroyed messenger")
+          for(const message of retryMessages)
+            connection.send(message)
+        },
         async destroy(awaitCompletion?: boolean){
           if(awaitCompletion)
             while(currentPromises.size)
@@ -64,6 +77,7 @@ export const createMessenger = (
           offMsg()
           connection.destroy?.()
           onDestroy?.forEach(x => x())
+          retryMessages.clear()
         },
         emit(event: string, ...args: readonly any[]){
           if(

@@ -51,6 +51,11 @@ export class ClientState implements ArtifactStore {
           name: "Rendering",
           icon: Loading,
         },
+        awaiting: {
+          className: "inactive",
+          name: "Awaiting",
+          icon: Loading,
+        },
         unknown: {
           className: "inactive",
           name: "Unknown",
@@ -58,7 +63,8 @@ export class ClientState implements ArtifactStore {
         },
       },
       state: computed(() => {
-        if(this.serverStatus() !== "connected") return "unknown"
+        if(this.serverStatus() !== "connected")
+          return this.renderJobsPending() ? "awaiting" : "unknown"
         return this.renderJobsPending() ? "rendering" : "rendered"
       }),
     },
@@ -228,6 +234,7 @@ export class ClientState implements ArtifactStore {
 
   connect(){
     this.logs([])
+    this.clientServerMessenger.retryAll()
     this.clientServerMessenger.emit("changeObserved")
   }
 
