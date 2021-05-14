@@ -33,7 +33,6 @@ if(isRun) {
 
   createServerClientMessenger({
     connection: logConnection(serverClient),
-    hashToUrl: hash => createBlob(artifactStore.raw.get(hash) ?? new Uint8Array(0)),
     createRendererMessenger: async () => {
       const worker = new Worker(workerSource)
       const artifactMessenger = createMessenger<Required<ArtifactStore>, {}, {}>({
@@ -50,7 +49,11 @@ if(isRun) {
     serverEmitter: createServerEmitter(),
   })
 
-  const clientState = new ClientState(clientServer, artifactManager)
+  const clientState = new ClientState(
+    clientServer,
+    artifactManager,
+    hash => createBlob(artifactStore.raw.get(hash) ?? new Uint8Array(0)),
+  )
   clientState.removeStatusSet("Connection")
   clientState.removeStatusSet("Client")
   clientState.connect()
@@ -84,7 +87,7 @@ if(!isRun) {
     x => x,
     (ev: any) => ev.data,
   )
-  const clientState = new ClientState(brandConnection(baseConnection, "client"), artifactManager)
+  const clientState = new ClientState(brandConnection(baseConnection, "client"), artifactManager, () => "todo")
   const saveMessenger = createMessenger<{}, { share(): Promise<void> }, {}>({
     impl: {},
     connection: brandConnection(baseConnection, "share"),

@@ -34,11 +34,11 @@ export const Export = observer(() => {
 })
 
 async function exportProducts(state: ClientState, exportType: ExportTypeInfo){
-  const url = await state.lookupRefUrl([
+  const url = state.hashToUrl(await state.lookupRefHash([
     ExportTypeRegistry.artifactStoreId,
     exportType.id,
     state.products.value,
-  ])
+  ]))
   console.log(url)
   download(url, "export" + exportType.extension)
 }

@@ -163,7 +163,11 @@ export class ClientState implements ArtifactStore {
 
   clientServerMessenger: ClientServerMessenger
 
-  constructor(public connection: Connection<unknown>, public artifactManager: ArtifactManager){
+  constructor(
+    public connection: Connection<unknown>,
+    public artifactManager: ArtifactManager,
+    public hashToUrl: (hash: Hash<unknown>) => string,
+  ){
     this.clientServerMessenger = createMessenger({ impl: {}, connection: logConnection(this.connection) })
     this.artifactManager.artifactStores.unshift(this)
 
@@ -244,24 +248,22 @@ export class ClientState implements ArtifactStore {
     this.hierarchy(hierarchyHash ? await this.artifactManager.lookupRaw(hierarchyHash) : null)
   }
 
-  lookupRawUrl(hash: Hash<unknown>): Promise<string>{
-    return this.wrapRendering(() => this.clientServerMessenger.lookupRaw(hash))
-  }
-
   async lookupRaw(hash: Hash<unknown>){
     return this.wrapRendering(async () => {
-      const response = await fetch(await this.lookupRawUrl(hash))
+      console.log("lookupRaw", hash)
+      const response = await fetch(this.hashToUrl(hash))
       return Buffer.from(await response.arrayBuffer())
     })
   }
 
-  lookupRefUrl(loc: readonly unknown[]): Promise<string>{
+  lookupRefHash(loc: readonly unknown[]): Promise<Hash<unknown>>{
     return this.wrapRendering(() => this.clientServerMessenger.lookupRef(loc))
   }
 
   async lookupRef(loc: readonly unknown[]){
     return this.wrapRendering(async () => {
-      const response = await fetch(await this.lookupRefUrl(loc))
+      const hash = await this.lookupRefHash(loc)
+      const response = await fetch(this.hashToUrl(hash))
       return Buffer.from(await response.arrayBuffer())
     })
   }
@@ -287,11 +289,11 @@ export class WebSocketClientState extends ClientState {
   disconnectTimeout: any
   url: string
 
-  constructor(url: string, artifactManager: ArtifactManager){
+  constructor(url: string, artifactManager: ArtifactManager, hashToUrl: ClientState["hashToUrl"]){
     const [a, b] = createConnectionPair<string, unknown>()
     b.onMsg(message => this.curWs?.send(message))
     const connection = serializeConnection(a)
-    super(connection, artifactManager)
+    super(connection, artifactManager, hashToUrl)
     this.emit = b.send
     this.url = url
     this.initWs()

@@ -4,8 +4,7 @@ import { Hash, Log } from "@escad/core"
 import { Info } from "./serverRenderer"
 
 export type ServerClientShape = {
-  lookupRaw(hash: Hash<unknown>): Promise<string>,
-  lookupRef(loc: readonly unknown[]): Promise<string>,
+  lookupRef(loc: readonly unknown[]): Promise<Hash<unknown>>,
   run(params?: unknown): Promise<Info>,
 }
 
