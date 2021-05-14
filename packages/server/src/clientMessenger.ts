@@ -42,7 +42,7 @@ export const createServerClientMessenger = ({
     connection,
   })
 
-  messenger.emit("reload", serverEmitter.on("reload"))
+  messenger.emit("changeObserved", serverEmitter.on("changeObserved"))
   if(bundlerMessenger) {
     messenger.emit("bundleStart", bundlerMessenger.on("bundleStart"))
     messenger.emit("bundleFinish", bundlerMessenger.on("bundleFinish"))

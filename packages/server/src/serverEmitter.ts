@@ -3,7 +3,7 @@ import { createEventEmitter, EventEmitter } from "@escad/messages"
 import { PluginRegistration } from "@escad/register-client-plugin"
 
 export type ServerEmitter = EventEmitter<{
-  reload: [],
+  changeObserved: [],
   clientPlugins: [plugins: readonly PluginRegistration[]],
 }>
 

@@ -178,7 +178,7 @@ export class ClientState implements ArtifactStore {
       )
     })
 
-    this.clientServerMessenger.on("reload", async () => {
+    this.clientServerMessenger.on("changeObserved", async () => {
       this.wrapRendering(async () => {
         const runParams = this.sendParams ? this.params() : null
         console.log("Run with params:", { runParams })
@@ -224,7 +224,7 @@ export class ClientState implements ArtifactStore {
 
   connect(){
     this.logs([])
-    this.clientServerMessenger.emit("reload")
+    this.clientServerMessenger.emit("changeObserved")
   }
 
   public async handleProducts(productHashes: Info["products"]){
@@ -275,7 +275,7 @@ export class ClientState implements ArtifactStore {
 
   triggerParamsUpdate = () => {
     this.sendParams = true
-    this.clientServerMessenger.emit("reload")
+    this.clientServerMessenger.emit("changeObserved")
   }
 
 }
