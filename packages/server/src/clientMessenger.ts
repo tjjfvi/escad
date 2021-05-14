@@ -51,6 +51,7 @@ export const createServerClientMessenger = ({
   return messenger
 
   async function getRenderer(){
+    console.log("Getting renderer")
     let lastRendererProm, renderer
     do renderer = await (lastRendererProm = currentRendererProm)
     while(lastRendererProm !== currentRendererProm) // Some time has passed, so there may be a new renderer
@@ -58,9 +59,12 @@ export const createServerClientMessenger = ({
   }
 
   function reloadRenderer(){
+    console.log("Reloading renderer")
     currentRendererProm?.then(r => r.destroy(true))
     currentRendererProm = createRendererMessenger().then(renderer => {
       messenger.emit("log", renderer.on("log"))
+      renderer.on("renderStart", () => console.log("Render started"))
+      renderer.on("renderFinish", () => console.log("Render finished"))
       return renderer
     })
   }

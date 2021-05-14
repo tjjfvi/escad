@@ -18,6 +18,8 @@ export type RendererServerShape = {
 
 export type ServerRendererEvents = {
   log: [log: Hash<Log> | null],
+  renderStart: [],
+  renderFinish: [],
 }
 
 export type ServerRendererShape = {}

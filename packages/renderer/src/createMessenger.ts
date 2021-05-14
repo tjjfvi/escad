@@ -50,6 +50,7 @@ export const createRendererServerMessenger = (
   return messenger
 
   async function run(params?: unknown){
+    messenger.emit("renderStart")
     logger.clear()
 
     const fullExported = requireFile()
@@ -85,6 +86,7 @@ export const createRendererServerMessenger = (
       products,
       hierarchy,
     }
+    messenger.emit("renderFinish")
 
     return loadInfo
 
