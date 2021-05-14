@@ -60,7 +60,7 @@ export const createServer = async ({ artifactsDir, port, ip = "::", loadFile, lo
     filter: file => !file.includes("artifacts") && !file.includes("node_modules") && !file.includes("dist"),
   }, (event, filePath) => {
     console.log(`Watched file ${filePath} ${event}d`)
-    serverEmitter.emit("reload")
+    serverEmitter.emit("changeObserved")
   })
 
   bundlerMessenger.on("bundleStart", () => {

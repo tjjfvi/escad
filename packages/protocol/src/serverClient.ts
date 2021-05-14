@@ -12,7 +12,7 @@ export type ServerClientShape = {
 export type ClientServerShape = {}
 
 export type ServerClientEvents = {
-  reload: [],
+  changeObserved: [],
   info: [info: Info],
   bundleStart: [],
   bundleFinish: [hash: Hash<unknown>],
