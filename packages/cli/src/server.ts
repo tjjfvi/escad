@@ -39,13 +39,6 @@ export const createServer = async ({ artifactsDir, port, ip = "::", loadFile, lo
     watch: dev,
   }
 
-  const bundlerProcess = fork(require.resolve("./bundler"), {
-    env: { ...process.env, DEV_MODE: dev + "" },
-  })
-  const bundlerMessenger = createServerBundlerMessenger(childProcessConnection(bundlerProcess))
-
-  bundlerMessenger.bundle(baseBundleOptions)
-
   const createRendererMessenger = async () => {
     const child = fork(require.resolve("./renderer"), {
       env: { ...process.env, ARTIFACTS_DIR: artifactsDir, LOAD_FILE: loadFile },
@@ -53,6 +46,18 @@ export const createServer = async ({ artifactsDir, port, ip = "::", loadFile, lo
     console.log(`New renderer process: ${child.pid}`)
     return createServerRendererMessenger(childProcessConnection(child))
   }
+
+  const loadInfo = await (await createRendererMessenger()).loadFile()
+
+  const bundlerProcess = fork(require.resolve("./bundler"), {
+    env: { ...process.env, DEV_MODE: dev + "" },
+  })
+  const bundlerMessenger = createServerBundlerMessenger(childProcessConnection(bundlerProcess))
+
+  bundlerMessenger.bundle({
+    ...baseBundleOptions,
+    clientPlugins: loadInfo.clientPlugins,
+  })
 
   const serverEmitter = createServerEmitter()
 

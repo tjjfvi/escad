@@ -10,7 +10,7 @@ import {
   ProductType,
   Logger,
 } from "@escad/core"
-import { Info, RendererServerMessenger } from "@escad/protocol"
+import { RenderInfo, RendererServerMessenger, LoadFileInfo } from "@escad/protocol"
 import { Connection, createMessenger } from "@escad/messages"
 import { registeredPlugins } from "@escad/register-client-plugin"
 import { lookupRef } from "./lookupRef"
@@ -25,6 +25,7 @@ export const createRendererServerMessenger = (
   const messenger: RendererServerMessenger = createMessenger({
     impl: {
       run,
+      loadFile,
       lookupRef,
     },
     connection,
@@ -55,42 +56,27 @@ export const createRendererServerMessenger = (
     messenger.emit("renderStart")
     logger.clear()
 
-    const fullExported = requireFile()
+    const loadInfo: LoadFileInfo = await loadFile()
 
-    if(typeof fullExported !== "object" || !fullExported || !("default" in fullExported))
-      throw new Error("File has no default export")
-
-    const exported = fullExported["default" as never] as unknown
-
-    if(typeof exported !== "function" && !(exported instanceof RenderFunction))
-      throw new Error("Expected export type of function or RenderFunction")
-
-    const [func, _paramDef] = exported instanceof RenderFunction ? [exported.func, exported.paramDef] : [exported, null]
-    const paramDef = ObjectParam.create(_paramDef ?? {})
+    const { func, paramDef } = loadInfo
     const { defaultValue: defaultParams } = paramDef
-    const paramDefHash = _paramDef ? artifactManager.storeRaw(paramDef) : null
+    const paramDefHash = paramDef ? artifactManager.storeRaw(paramDef) : null
 
     const renderParams = params ?? defaultParams
     console.log(`Rendering with ${renderParams === defaultParams ? "default" : "custom"} params:`)
     console.log(renderParams)
     const { products, hierarchy } = await render(renderParams)
     console.log("Rendered")
-    const exportTypes = [...exportTypeRegistry.listRegistered()].map(x => ({
-      ...x,
-      export: undefined,
-      productType: ProductType.fromProductTypeish(x.productType),
-    }))
 
-    const loadInfo: Info = {
+    const renderInfo: RenderInfo = {
+      ...loadInfo,
       paramDef: await paramDefHash,
-      clientPlugins: [...registeredPlugins],
-      exportTypes,
       products,
       hierarchy,
     }
     messenger.emit("renderFinish")
 
-    return loadInfo
+    return renderInfo
 
     async function render(params: unknown){
       let result
@@ -111,6 +97,41 @@ export const createRendererServerMessenger = (
       ))
       const hierarchy = await artifactManager.storeRaw(await Hierarchy.from(el))
       return { products, hierarchy }
+    }
+  }
+
+  async function loadFile(){
+    {
+      const fullExported = requireFile()
+
+      if(typeof fullExported !== "object" || !fullExported || !("default" in fullExported))
+        throw new Error("File has no default export")
+
+      const exported = fullExported["default" as never] as unknown
+
+      if(typeof exported !== "function" && !(exported instanceof RenderFunction))
+        throw new Error("Expected export type of function or RenderFunction")
+
+      const [func, _paramDef] =
+        exported instanceof RenderFunction
+          ? [exported.func, exported.paramDef]
+          : [exported, null]
+      const paramDef = ObjectParam.create(_paramDef ?? {})
+
+      const exportTypes = [...exportTypeRegistry.listRegistered()].map(x => ({
+        ...x,
+        export: undefined,
+        productType: ProductType.fromProductTypeish(x.productType),
+      }))
+
+      const loadInfo: LoadFileInfo = {
+        paramDef,
+        clientPlugins: [...registeredPlugins],
+        exportTypes,
+        func,
+      }
+
+      return loadInfo
     }
   }
 

@@ -1,5 +1,5 @@
 
-import { ClientServerMessenger, Info } from "@escad/protocol"
+import { ClientServerMessenger, RenderInfo } from "@escad/protocol"
 import { computed, observable } from "rhobo"
 import {
   ArtifactManager,
@@ -238,20 +238,20 @@ export class ClientState implements ArtifactStore {
     this.clientServerMessenger.emit("changeObserved")
   }
 
-  public async handleProducts(productHashes: Info["products"]){
+  public async handleProducts(productHashes: RenderInfo["products"]){
     this.sentProductHashes(productHashes)
   }
 
-  private async handleExportTypes(exportTypes: Info["exportTypes"]){
+  private async handleExportTypes(exportTypes: RenderInfo["exportTypes"]){
     if(exportTypes)
       this.exportTypes(exportTypes)
   }
 
-  private async handleParamDef(paramDefHash: Info["paramDef"]){
+  private async handleParamDef(paramDefHash: RenderInfo["paramDef"]){
     this.paramDef(paramDefHash ? await this.artifactManager.lookupRaw(paramDefHash) : null)
   }
 
-  private async handleHierarchy(hierarchyHash: Info["hierarchy"]){
+  private async handleHierarchy(hierarchyHash: RenderInfo["hierarchy"]){
     this.hierarchy(hierarchyHash ? await this.artifactManager.lookupRaw(hierarchyHash) : null)
   }
 
