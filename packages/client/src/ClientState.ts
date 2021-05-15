@@ -214,14 +214,17 @@ export class ClientState implements ArtifactStore {
 
     this.clientServerMessenger.on("log", logHash => {
       if(!logHash)
-        return this.logs([])
-      this.logs([...this.logs(), (async () => {
-        const log = await this.artifactManager.lookupRaw(logHash)
-        if(!log)
-          throw new Error(`Could not find log under hash of ${logHash}`)
-        return log
-      })()])
+        this.logs([])
+      else
+        this.logs([...this.logs(), this.lookupLog(logHash)])
     })
+  }
+
+  async lookupLog(logHash:Hash<Log>){
+    const log = await this.artifactManager.lookupRaw(logHash)
+    if(!log)
+      throw new Error(`Could not find log under hash of ${logHash}`)
+    return log
   }
 
   removeStatusSet(name: string){
