@@ -86,14 +86,14 @@ conversionRegistry.register({
 
 export interface CubeArgs extends TripletObj {
   size?: Triplet,
-  center?: Triplet,
+  shift?: Triplet,
 }
 
 export const cube: Component<[CubeArgs], Element<Cube>> =
   Component.create("cube", args => {
     const size = interpretTriplet(args.size ?? args, 1)
-    const centering = interpretTriplet(args.center, 0)
-    const center = Vector3.multiplyComponents(centering, Vector3.multiplyScalar(size, .5))
+    const shift = interpretTriplet(args.shift, 0)
+    const center = Vector3.multiplyComponents(shift, Vector3.multiplyScalar(size, .5))
 
     return Element.create(Cube.create(size, center))
   }, { showOutputInHierarchy: false })

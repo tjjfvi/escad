@@ -88,15 +88,15 @@ conversionRegistry.register({
 export interface CylArgs {
   radius: number,
   height: number,
-  center?: Triplet,
+  shift?: Triplet,
   smooth?: Smooth,
 }
 
 export const cylinder: Component<[CylArgs], Element<Cylinder>> =
   Component.create("cyl", (args: CylArgs) => {
     const { radius, height, smooth = smoothContext.get() } = args
-    const centering = interpretTriplet(args.center, 0)
-    const center = Vector3.multiplyComponents(centering, Vector3.create(radius, radius, height / 2))
+    const shift = interpretTriplet(args.shift, 0)
+    const center = Vector3.multiplyComponents(shift, Vector3.create(radius, radius, height / 2))
     return Element.create(Cylinder.create(radius, height, smooth, center))
   }, { showOutputInHierarchy: false })
 
