@@ -1,102 +1,49 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-type F<K, V> = (k: K) => V
-type FA<K, V> = (k: K) => Promise<V>
+if(!("WeakRef" in global))
+  throw new Error("The environment does not support WeakRef")
 
-export class WeakCacheBasic<K, V> {
+export class WeakCache<K, V> {
 
-  private asyncCache: Map<K, Promise<V>>
+  private cache = new Map<K, WeakRef<V & object>>()
+  private asyncCache = new Map<K, Promise<V>>()
+  private finalizationRegistry = new FinalizationRegistry(key => {
+    this.cache.delete(key)
+  })
 
-  protected static readonly notFound = Symbol()
-  protected readonly notFound: typeof WeakCacheBasic.notFound = WeakCacheBasic.notFound
-
-  constructor(){
-    this.asyncCache = new Map<K, Promise<V>>()
+  get(key: K, func: (key: K) => V): V{
+    const value = this.cache.get(key)?.deref()
+    if(value === undefined)
+      return this.set(key, func(key))
+    return value
   }
 
-  _get(key: K): V | typeof WeakCacheBasic.notFound{
-    key
-    return this.notFound
+  getAsync(key: K, func: (key: K) => Promise<V>): Promise<V>{
+    const cachedValue = this.cache.get(key)?.deref()
+    if(cachedValue !== undefined)
+      return Promise.resolve(cachedValue)
+    const asyncCachedValue = this.asyncCache.get(key)
+    if(asyncCachedValue !== undefined)
+      return asyncCachedValue
+    return this.setAsync(key, func(key))
   }
 
-  get(key: K, func: F<K, V>): V{
-    let v = this._get(key)
-    if(v === this.notFound)
-      return this.set(key, func)
-    return v
+  set(key: K, value: V): V{
+    if(value && typeof value === "object") {
+      this.cache.set(key, new WeakRef(value as V & object))
+      this.finalizationRegistry.register(value as V & object, key)
+    }
+    return value
   }
 
-  async getAsync(key: K, func: FA<K, V>): Promise<V>{
-    let val = this._get(key)
-    if(val !== this.notFound)
-      return val
-    if(this.asyncCache.has(key))
-      // @ts-ignore
-      return await this.asyncCache.get(key)
-    return await this.setAsync(key, func)
-  }
-
-  set(key: K, func: F<K, V>): V{
-    return func(key)
-  }
-
-  async setAsync(key: K, func: FA<K, V>): Promise<V>{
-    let prom = (async (): Promise<V> => {
-      let val = await func(key)
+  setAsync(key: K, promise: Promise<V>): Promise<V>{
+    const thennedPromise = promise.then(value => {
       this.asyncCache.delete(key)
-      this.set(key, () => val)
-      return val
-    })()
-    this.asyncCache.set(key, prom)
-    return await prom
+      this.set(key, value)
+      return value
+    })
+    this.asyncCache.set(key, thennedPromise)
+    return thennedPromise
   }
 
 }
-
-export let WeakCache = WeakCacheBasic
-
-const FinReg = (
-  typeof FinalizationRegistry !== "undefined"
-    ? FinalizationRegistry
-    // @ts-ignore
-    : typeof FinalizationGroup !== "undefined"
-      // @ts-ignore
-      ? FinalizationGroup
-      : null
-)
-
-if("WeakRef" in global && FinReg)
-  WeakCache = class WeakCache<K, V> extends WeakCacheBasic<K, V> {
-
-    private cache: Map<K, WeakRef<V & object>> = new Map()
-    private cleanup: any
-
-    constructor(){
-      super()
-      this.cleanup = new FinReg(this.finalize)
-    }
-
-    _get(key: K){
-      let ref = this.cache.get(key)
-      if(!ref)
-        return this.notFound
-      const cached = ref.deref()
-      return cached === undefined ? this.notFound : (cached as V)
-    }
-
-    private finalize = (iterator: Iterable<K>) => {
-      // @ts-ignore
-      for(const key of iterator)
-        this.cache.delete(key)
-    }
-
-    set(key: K, func: F<K, V>): V{
-      const fresh = func(key)
-      if(fresh && typeof fresh === "object") {
-        this.cache.set(key, new WeakRef<V & object>(fresh as V & object))
-        this.cleanup.register(fresh, key)
-      }
-      return fresh
-    }
-
-  }
