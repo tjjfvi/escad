@@ -27,4 +27,5 @@ export * from "./Status"
 export * from "./StringLog"
 export * from "./Viewer"
 export * from "./ViewerRegistry"
+export * from "./usePromise"
 
