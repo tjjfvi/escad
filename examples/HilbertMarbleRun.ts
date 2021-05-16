@@ -1,5 +1,7 @@
 
-import escad, { Operation, Mesh, Vector3 } from "../src/core"
+import escad, { ConvertibleTo, Operation } from "../packages/core/dist"
+import { Mesh, Vector3 } from "../packages/builtins/dist"
+import "../packages/builtins/register"
 
 export default () => {
 
@@ -51,31 +53,32 @@ export default () => {
 
   const supportHeight = (i: number) => 4 ** (i + 1) * (cos(trackAngle) * segmentLength) + wallThickness * 5
 
-  const hilbertCurve = (iterations = 0) => new Operation<Mesh, Mesh>("hilbertCurve", children => {
-    let curve = hilbertCurvePath(iterations)
-    let xy = sin(trackAngle) * -cylinderLength
-    let z = cos(trackAngle) * cylinderLength
+  const hilbertCurve = (iterations = 0) =>
+    Operation.create<ConvertibleTo<Mesh>, ConvertibleTo<Mesh>>("hilbertCurve", children => {
+      let curve = hilbertCurvePath(iterations)
+      let xy = sin(trackAngle) * -cylinderLength
+      let z = cos(trackAngle) * cylinderLength
 
-    return curve.map((l, i) => {
-      let p = lerp(l[0], l[1], .5)
-      let dir = l[0].map((A, i) => A - l[1][i])
-      let rot = dir[1] === 1
-        ? -90
-        : dir[1] === -1
-          ? 90
-          : dir[0] === 1
-            ? 0
-            : dir[0] === -1
-              ? 180
-              : null
-      if(rot === null)
-        throw new Error("Weird direction")
+      return curve.map((l, i) => {
+        let p = lerp(l[0], l[1], .5)
+        let dir = l[0].map((A, i) => A - l[1][i])
+        let rot = dir[1] === 1
+          ? -90
+          : dir[1] === -1
+            ? 90
+            : dir[0] === 1
+              ? 0
+              : dir[0] === -1
+                ? 180
+                : null
+        if(rot === null)
+          throw new Error("Weird direction")
 
-      return children.rotateZ(rot).translate([xy * p[0], xy * p[1], z * (curve.length - 1 - i)])
+        return escad(children).rotateZ(rot).translate([xy * p[0], xy * p[1], z * (curve.length - 1 - i)])
+      })
     })
-  })
 
-  const track = () => {
+  const track = (() => {
     let r = radius + wallThickness
     let height = supportHeight(iterations)
     let width = sin(trackAngle) * segmentLength + wallThickness * 2
@@ -85,19 +88,19 @@ export default () => {
 
     return [
       e.union(
-        e.cube({ d: [cubeWidth, r * 2, height] }),
-        e.cyl({ r, height: Math.abs(height) }).translate([cubeWidth / 2, 0, 0]),
-        e.cyl({ r, height: Math.abs(height) }).translate([-cubeWidth / 2, 0, 0]),
+        e.cube({ size: [cubeWidth, r * 2, height] }),
+        e.cyl({ radius: r, height: Math.abs(height) }).translate([cubeWidth / 2, 0, 0]),
+        e.cyl({ radius: r, height: Math.abs(height) }).translate([-cubeWidth / 2, 0, 0]),
       ).translate([0, 0, -height / 2]).sub(
         e.polyhedron([
-          new Vector3(+dropLength / 2, +r + 1, -dropHeight),
-          new Vector3(-dropLength / 2, +r + 1, 1),
-          new Vector3(+dropLength / 2, -r - 1, -dropHeight),
-          new Vector3(-dropLength / 2, -r - 1, 1),
-          new Vector3(+width / 2, +r + 1, 1),
-          new Vector3(+width / 2, -r - 1, 1),
-          new Vector3(+width / 2, +r + 1, -dropHeight),
-          new Vector3(+width / 2, -r - 1, -dropHeight),
+          Vector3.create(+dropLength / 2, +r + 1, -dropHeight),
+          Vector3.create(-dropLength / 2, +r + 1, 1),
+          Vector3.create(+dropLength / 2, -r - 1, -dropHeight),
+          Vector3.create(-dropLength / 2, -r - 1, 1),
+          Vector3.create(+width / 2, +r + 1, 1),
+          Vector3.create(+width / 2, -r - 1, 1),
+          Vector3.create(+width / 2, +r + 1, -dropHeight),
+          Vector3.create(+width / 2, -r - 1, -dropHeight),
         ], [
           [4, 6, 0, 1],
           [3, 2, 7, 5],
@@ -108,22 +111,22 @@ export default () => {
         ]).rotateZ(180),
       ),
       e.union(
-        e.cyl({ r: radius, h: cylinderLength }),
-        e.sphere({ r: radius, slices: 20 }).translate([0, 0, cylinderLength / 2]),
-        e.sphere({ r: radius, slices: 20 }).translate([0, 0, -cylinderLength / 2]),
+        e.cyl({ radius, height: cylinderLength }),
+        e.sphere({ radius, smooth: { sides: 20 } }).translate([0, 0, cylinderLength / 2]),
+        e.sphere({ radius, smooth: { sides: 20 } }).translate([0, 0, -cylinderLength / 2]),
       ).rotate(0, trackAngle, 0),
     ]
-  }
+  })()
 
   let size = -radius - wallThickness + (2 ** iterations + .25) * (segmentLength / 2 + wallThickness)
 
   let pos = e
-    .union(hilbertCurve(iterations)(track()[0]))
+    .union(hilbertCurve(iterations)(track[0]))
     .translate([size, size, radius + wallThickness * 2])
-    .sub(e.cube({ s: 10000 }).translateZ(-5000))
+    .sub(e.cube({ size: 10000 }).translateZ(-5000))
 
   let neg = e
-    .union(hilbertCurve(iterations)(track()[1]))
+    .union(hilbertCurve(iterations)(track[1]))
     .translate([size, size, radius + wallThickness * 2])
 
   return e.diff(pos, neg)
