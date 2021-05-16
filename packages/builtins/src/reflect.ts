@@ -3,7 +3,7 @@ import { Mesh, Transform } from "."
 import { FlipFaces } from "./flip"
 import { Matrix4 } from "./Matrix4"
 
-export const reflect = Component.create("reflect", (axis: "x" | "y" | "z", center = 0) => {
+export const reflect = Component.create("reflect", (axis: "x" | "y" | "z", center: number = 0) => {
   const scale = { x: 1, y: 1, z: 1, [axis]: -1 }
   const translate = { x: 0, y: 0, z: 0, [axis]: center }
   const matrix = Matrix4.multiply(
@@ -18,6 +18,6 @@ export const reflect = Component.create("reflect", (axis: "x" | "y" | "z", cente
   )
 })
 
-export const reflectX = Component.create("reflectX", (center = 0) => reflect("x", center))
-export const reflectY = Component.create("reflectY", (center = 0) => reflect("y", center))
-export const reflectZ = Component.create("reflectZ", (center = 0) => reflect("z", center))
+export const reflectX = Component.create("reflectX", (center: number = 0) => reflect("x", center))
+export const reflectY = Component.create("reflectY", (center: number = 0) => reflect("y", center))
+export const reflectZ = Component.create("reflectZ", (center: number = 0) => reflect("z", center))
