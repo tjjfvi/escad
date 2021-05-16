@@ -14,17 +14,19 @@ import { timers } from "./Timer"
 import { UnknownProduct, UnknownProductType } from "./UnknownProduct"
 import { ScopedId } from "./Id"
 import { MarkedProduct, MarkedProductType } from "./MarkedProduct"
+import { HashProduct, HashProductType } from "./HashProduct"
 
 export interface _Product {
   readonly type: string | ScopedId<"LeafProduct">,
   readonly [__convertibleToTransitivityOverride]?: TransitivityOverride.A,
-  // @ts-ignore: This doesn't normally error, but sometimes tsc -b does weird things.
+  /** @ts-ignore **/
   readonly [__convertibleTo]?: (
     | __convertibleToOverride extends keyof this ? unknown
     : LeafProduct extends this ? unknown
     : MarkedProduct extends this ? unknown
     : TupleProduct extends this ? unknown
     : ArrayProduct extends this ? unknown
+    : HashProduct extends this ? unknown
     : UnknownProduct extends this ? unknown
     : _ConvertibleTo<this>
   ),
@@ -35,6 +37,7 @@ export type Product =
   | MarkedProduct
   | TupleProduct
   | ArrayProduct
+  | HashProduct
   | UnknownProduct
 
 export const Product = {
@@ -48,6 +51,8 @@ export const Product = {
       return TupleProduct.getTupleProductType(product)
     if(ArrayProduct.isArrayProduct(product))
       return ArrayProduct.getArrayProductType(product)
+    if(HashProduct.isHashProduct(product))
+      return HashProduct.getHashProductType(product)
     if(UnknownProduct.isUnknownProduct(product))
       return UnknownProductType.create() as ProductType<P>
     throw new Error("Invalid product passed to Product.getProductType")
@@ -63,6 +68,7 @@ function isProduct(arg: any, productType?: ProductType){
       || MarkedProduct.isMarkedProduct(arg)
       || TupleProduct.isTupleProduct(arg)
       || ArrayProduct.isArrayProduct(arg)
+      || HashProduct.isHashProduct(arg)
       || UnknownProduct.isUnknownProduct(arg)
     )
     && (!productType || Hash.equal(Product.getProductType(arg), productType))
@@ -74,6 +80,7 @@ export type ProductType<U extends Product = Product> =
   | MarkedProductType<U & MarkedProduct>
   | TupleProductType<U & TupleProduct>
   | ArrayProductType<U & ArrayProduct>
+  | HashProductType<U & HashProduct>
   | (U extends UnknownProduct ? UnknownProductType : never)
 
 export const ProductType = {
@@ -82,6 +89,7 @@ export const ProductType = {
     || MarkedProductType.isMarkedProductType(value)
     || TupleProductType.isTupleProductType(value)
     || ArrayProductType.isArrayProductType(value)
+    || HashProductType.isHashProductType(value)
     || UnknownProductType.isUnknownProductType(value),
   fromProductTypeish: <T extends Product>(productTypeish: ProductTypeish<T>): ProductType<T> =>
     ProductType.isProductType(productTypeish) ? productTypeish : productTypeish.productType,

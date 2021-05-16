@@ -1,5 +1,5 @@
 
-import { Hash } from "./Hash"
+import { Hash, __hash } from "./Hash"
 import { ScopedId } from "./Id"
 import { Product, ProductType, ProductTypeish } from "./Product"
 
@@ -66,7 +66,7 @@ export namespace TransitivityOverride {
 type Match<T, U> = keyof U extends keyof T ? Pick<T, keyof U> extends U ? true : false : false
 
 type _ImplicitlyConvertibleTo<A> = A extends A ?
-  Match<A, { type: "TupleProduct" }> extends true
+  | Match<A, { type: "TupleProduct" }> extends true
     ? "children" extends keyof A
       ? {
         readonly type: "TupleProduct",
@@ -75,33 +75,38 @@ type _ImplicitlyConvertibleTo<A> = A extends A ?
         },
       }
       : never
-    : Match<A, { type: "ArrayProduct" }> extends true
-      ? "children" extends keyof A ? number extends keyof A["children"]
-        ? {
-          readonly type: "ArrayProduct",
-          readonly children: readonly _ConvertibleTo<A["children"][number]>[],
-        }
-        | {
-          readonly type: "TupleProduct",
-          readonly children: Readonly<Record<number, _ConvertibleTo<A["children"][number]>>>,
-        }
-        : never : never
-      : Match<A, { type: "MarkedProduct" }> extends true
-        ? "child" extends keyof A
-          ? {
-            readonly type: "MarkedProduct",
-            readonly child: _ConvertibleTo<A["child"]>,
-          }
-          : never
-        : A
+  : Match<A, { type: "ArrayProduct" }> extends true
+    ? "children" extends keyof A ? number extends keyof A["children"]
+      ? {
+        readonly type: "ArrayProduct",
+        readonly children: readonly _ConvertibleTo<A["children"][number]>[],
+      }
+      | {
+        readonly type: "TupleProduct",
+        readonly children: Readonly<Record<number, _ConvertibleTo<A["children"][number]>>>,
+      }
+      : never : never
+  : Match<A, { type: "MarkedProduct" }> extends true
+    ? "child" extends keyof A
+      ? {
+        readonly type: "MarkedProduct",
+        readonly child: _ConvertibleTo<A["child"]>,
+      }
+      : never
+  : Match<A, { type: "HashProduct" }> extends true
+    ? "hash" extends keyof A
+      ? __hash extends keyof A["hash"]
+        ? _ConvertibleTo<Omit<A["hash"][__hash], __convertibleTo>>
+        : never
+      : never
+  : A
 : never
 
 export type _ConvertibleTo<T, E=never> =
   T extends T
     ? __convertibleToOverride extends keyof T
       ? _ConvertibleTo<Unphantom<T[__convertibleToOverride]>>
-      : T
-      | _ImplicitlyConvertibleTo<T>
+      : _ImplicitlyConvertibleTo<T>
       | (
         T extends E
           ? never
