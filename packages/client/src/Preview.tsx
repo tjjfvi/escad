@@ -1,6 +1,6 @@
 
 import "../stylus/Preview.styl"
-import React, { useContext, useEffect, useState } from "react"
+import React, { useContext, useEffect } from "react"
 import { viewerRegistry } from "./ViewerRegistry"
 import { observer, useObservable } from "rhobo"
 import { Product } from "@escad/core"
@@ -8,25 +8,28 @@ import { Export } from "./Export"
 import { Viewer } from "./Viewer"
 import { ClientState } from "./ClientState"
 import { Loading } from "./Loading"
+import { usePromise } from "./usePromise"
 
 export const Preview = observer(() => {
   const state = useContext(ClientState.Context)
   const products = state.products.use()()
   const viewerObs = useObservable.use<Viewer<any>>()
-  const productTypes = products.map(Product.getProductType)
-  const [viewers, setViewers] = useState<Viewer<any>[] | null>(null)
-
-  useEffect(() => {
-    setViewers(null)
-    viewerRegistry.getContextsForAll(productTypes).then(viewers =>
-      setViewers(viewers?.sort((a, b) => b.weight - a.weight)),
-    )
+  const viewers = usePromise(async () => {
+    const productTypes = products.map(Product.getProductType)
+    state.viewerStatus("converting")
+    const unsortedViewers = await viewerRegistry.getContextsForAll(productTypes)
+    return unsortedViewers?.sort((a, b) => b.weight - a.weight)
   }, [products])
 
-  if(!products.length)
+  useEffect(() => {
+  }, [products])
+
+  if(!products.length)   {
+    state.viewerStatus("displayed")
     return <div className="Preview none">
       <span className="header">No products to display.</span>
     </div>
+  }
 
   if(!viewers)
     return <div className="Preview loading">
@@ -44,8 +47,11 @@ export const Preview = observer(() => {
       <span className="header">No viewers found for these products.</span>
     </div>
 
+  state.viewerStatus("converting")
+  const inputs = products.map(product => viewerRegistry.mapProduct(viewer, product))
+  Promise.all(inputs).then(() => state.viewerStatus("displayed"))
   return <div className={"Preview " + (viewer.className ?? "")}>
-    <viewer.component inputs={products.map(product => viewerRegistry.mapProduct(viewer, product))}/>
+    <viewer.component inputs={inputs}/>
     <div className="menubar">
       <div>
         {viewers.map((v, i) =>

@@ -21,8 +21,8 @@ import {
 } from "@escad/messages"
 import { StatusSet } from "./Status"
 import { HierarchySelection, resolveHierarchySelection } from "./HierarchySelection"
-import { mdiAccount, mdiArrowUpDown, mdiCheck, mdiClose, mdiCubeOutline, mdiRefresh } from "@mdi/js"
 import { Loading } from "./Loading"
+import { mdi } from "./Icon"
 
 const _ClientStateContext = createContext<ClientState>(null as never)
 
@@ -33,39 +33,51 @@ export class ClientState implements ArtifactStore {
   bundleHash = fetch("/bundle.hash").then(r => r.text()).catch(() => null)
   serverStatus = observable<"connected" | "disconnected" | "connecting">("disconnected")
   clientStatus = observable<"current" | "bundling" | "reload">("current")
-  rendererStatus = observable(0)
+  renderJobsPending = observable(0)
+  rendererStatus = observable<"unknown" | "running" | "ready">("unknown")
+  viewerStatus = observable<"converting" | "displayed">("displayed")
   statuses = observable<StatusSet[]>([
     {
       name: "Renderer",
-      icon: mdiCubeOutline,
+      icon: mdi.cubeOutline,
       statuses: {
         rendered: {
-          className: "green",
+          className: "good",
           name: "Rendered",
-          icon: mdiCheck,
+          icon: mdi.check,
         },
         rendering: {
+          className: "active",
           name: "Rendering",
           icon: Loading,
         },
+        unknown: {
+          className: "inactive",
+          name: "Unknown",
+          icon: mdi.help,
+        },
       },
-      state: computed(() => this.rendererStatus() ? "rendering" : "rendered"),
+      state: computed(() => {
+        if(this.serverStatus() !== "connected") return "unknown"
+        return this.renderJobsPending() ? "rendering" : "rendered"
+      }),
     },
     {
       name: "Connection",
-      icon: mdiArrowUpDown,
+      icon: mdi.arrowUpDown,
       statuses: {
         connected: {
-          className: "green",
+          className: "good",
           name: "Connected",
-          icon: mdiCheck,
+          icon: mdi.check,
         },
         disconnected: {
-          className: "red",
+          className: "bad",
           name: "Disconnected",
-          icon: mdiClose,
+          icon: mdi.close,
         },
         connecting: {
+          className: "unknown",
           name: "Connecting",
           icon: Loading,
         },
@@ -74,25 +86,60 @@ export class ClientState implements ArtifactStore {
     },
     {
       name: "Client",
-      icon: mdiAccount,
+      icon: mdi.account,
       statuses: {
         current: {
-          className: "green",
+          className: "good",
           name: "Up to Date",
-          icon: mdiCheck,
+          icon: mdi.check,
         },
         bundling: {
+          className: "unknown",
           name: "Bundling",
           icon: Loading,
         },
         reload: {
-          className: "blue",
+          className: "attention",
           name: "Reload",
-          icon: mdiRefresh,
+          icon: mdi.refresh,
           onClick: () => window.location.reload(),
         },
+        unknown: {
+          className: "inactive",
+          name: "Unknown",
+          icon: mdi.help,
+        },
       },
-      state: this.clientStatus,
+      state: computed(() => {
+        if(this.serverStatus() !== "connected") return "unknown"
+        return this.clientStatus()
+      }),
+    },
+    {
+      name: "Viewer",
+      icon: mdi.axisArrow,
+      statuses: {
+        displayed: {
+          className: "good",
+          name: "Displayed",
+          icon: mdi.check,
+        },
+        converting: {
+          className: "active",
+          name: "Converting",
+          icon: Loading,
+        },
+        awaiting: {
+          className: "inactive",
+          name: "Awaiting",
+          icon: Loading,
+        },
+      },
+      state: computed(() => {
+        if(this.viewerStatus() === "displayed" || this.serverStatus() === "connected")
+          return this.viewerStatus()
+        return "awaiting"
+      }),
     },
   ])
 
@@ -220,9 +267,9 @@ export class ClientState implements ArtifactStore {
   }
 
   async wrapRendering<T>(fn: () => Promise<T>){
-    this.rendererStatus(this.rendererStatus.value + 1)
+    this.renderJobsPending(this.renderJobsPending.value + 1)
     const result = await fn()
-    this.rendererStatus(this.rendererStatus.value - 1)
+    this.renderJobsPending(this.renderJobsPending.value - 1)
     return result
   }
 

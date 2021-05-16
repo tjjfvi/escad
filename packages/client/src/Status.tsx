@@ -1,21 +1,15 @@
 
 import "../stylus/Status.styl"
-import MdiIcon from "@mdi/react"
 import React, { useContext } from "react"
-import { observer } from "rhobo"
+import { observer, Readable } from "rhobo"
 import { ClientState } from "./ClientState"
-
-type Icon = string | ((props: { className?: string }) => React.ReactElement | null)
-const Icon = (props: { icon: Icon, className?: string }) =>
-  typeof props.icon === "string"
-    ? <MdiIcon path={props.icon} className={props.className}/>
-    : <props.icon className={props.className}/>
+import { Icon } from "./Icon"
 
 export interface StatusSet {
   name: string,
   icon?: Icon,
   statuses: Record<string, Status>,
-  state: () => string,
+  state: Readable<string>,
 }
 
 export interface Status {
@@ -29,14 +23,14 @@ export const Statuses = observer(() => {
   const state = useContext(ClientState.Context)
   const statuses = state.statuses()
   return <div className="Statuses">
-    {statuses.map((statusSet, i) => <Status key={i} statusSet={statusSet} />)}
+    {statuses.map(statusSet => <Status key={statusSet.name} statusSet={statusSet} />)}
   </div>
 })
 
-const Status = observer(({ statusSet }: { statusSet: StatusSet }) => {
-  const state = statusSet.state()
+const Status = ({ statusSet }: { statusSet: StatusSet }) => {
+  const state = statusSet.state.use()()
   const status = statusSet.statuses[state]
-  if(!state)
+  if(!status)
     throw new Error(`Invalid StatusSet.state "${state}"`)
   const className = "Status " + (status.className ?? "") + (status.onClick ? " clickable" : "")
   return <div className={className} onClick={status.onClick}>
@@ -46,4 +40,4 @@ const Status = observer(({ statusSet }: { statusSet: StatusSet }) => {
     </div>
     <span>{status.name}</span>
   </div>
-})
+}
