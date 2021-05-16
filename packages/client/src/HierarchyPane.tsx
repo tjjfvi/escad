@@ -8,14 +8,14 @@ import { Pane } from "./Pane"
 import { Dropdown } from "./Dropdown"
 
 export const HierarchyPane = observer(() => {
-  const engine = useObservable<HierarchyToTreeEngine>(httDetailedEngine)
+  const engine = useObservable<HierarchyToTreeEngine>(httOutlineEngine)
   const state = useContext(ClientState.Context)
   const hierarchy = state.hierarchy()
   if(hierarchy)
     return <Pane right name="Hierarchy">
       <Dropdown value={engine} options={{
-        "Detailed": httDetailedEngine,
         "Outline": httOutlineEngine,
+        "Detailed": httDetailedEngine,
       }}/>
       <HierarchyView hierarchy={hierarchy} selectable={true} engine={engine()}/>
     </Pane>
