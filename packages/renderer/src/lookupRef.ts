@@ -1,5 +1,5 @@
 
-import { Hash, artifactManager, Id, ConversionRegistry, ExportTypeRegistry } from "@escad/core"
+import { Hash, artifactManager, Id, ConversionRegistry, ExportTypeRegistry, Product } from "@escad/core"
 
 export async function lookupRef(loc: readonly unknown[]){
   const type = getRefType(loc)
@@ -13,7 +13,7 @@ export async function lookupRef(loc: readonly unknown[]){
 
 function getRefType(loc: readonly unknown[]): string | undefined{
   if(Id.isId(loc[0]) && Id.equal(loc[0], ConversionRegistry.artifactStoreId))
-    return "Convert"
+    return Product.isProduct(loc[1]) ? "Convert" : "Compose"
   if(Id.isId(loc[0]) && Id.equal(loc[0], ExportTypeRegistry.artifactStoreId))
     return "Export"
 }
