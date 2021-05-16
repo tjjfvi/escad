@@ -17,7 +17,7 @@ export class FsArtifactStore implements ArtifactStore {
 
   async storeRaw(hash: Hash<unknown>, buffer: Buffer){
     const path = await this.getPathRaw(hash)
-    await writeFile(path, buffer)
+    await writeFile(path, buffer, { flag: "wx" }).catch(error => void error)
   }
 
   async storeRef(loc: readonly unknown[], hash: Hash<unknown>){
