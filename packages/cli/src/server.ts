@@ -7,7 +7,7 @@ import {
   createServerRendererMessenger,
 } from "@escad/server"
 import path from "path"
-import { childProcessConnection, serializeConnection } from "@escad/messages"
+import { childProcessConnection, logConnection, serializeConnection } from "@escad/messages"
 import { fork } from "child_process"
 import watch from "node-watch"
 import { BundleOptions } from "../../client/node_modules/@escad/protocol/src"
@@ -57,15 +57,17 @@ export const createServer = async ({ artifactsDir, port, ip = "::", loadFile, lo
 
   watch(loadDir, {
     filter: file => !file.includes("artifacts") && !file.includes("node_modules") && !file.includes("dist"),
-  }, () => {
+  }, (event, filePath) => {
+    console.log(`Watched file ${filePath} ${event}d`)
     serverEmitter.emit("reload")
   })
 
-  bundlerMessenger.on("bundleFinish", hash => {
-    console.log(`Bundled client (${hash.slice(0, 32)}...)`)
+  bundlerMessenger.on("bundleStart", () => {
+    console.log("Bundle client start")
   })
-
-  bundlerMessenger.bundle(baseBundleOptions)
+  bundlerMessenger.on("bundleFinish", hash => {
+    console.log(`Bundle client finish (${hash.slice(0, 32)}...)`)
+  })
 
   serverEmitter.on("clientPlugins", clientPlugins => {
     bundlerMessenger.bundle({
@@ -76,10 +78,13 @@ export const createServer = async ({ artifactsDir, port, ip = "::", loadFile, lo
 
   app.ws("/ws", ws => {
     const messenger = createServerClientMessenger({
-      connection: serializeConnection({
+      connection: logConnection(serializeConnection({
         send: msg => ws.send(msg),
-        onMsg: cb => (ws.on("message", cb), () => ws.off("message", cb)),
-      }),
+        onMsg: cb => {
+          ws.on("message", cb)
+          return () => ws.off("message", cb)
+        },
+      })),
       serverEmitter,
       hashToUrl: hash => `/artifacts/raw/${hash}`,
       createRendererMessenger,
