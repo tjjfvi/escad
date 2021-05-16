@@ -11,6 +11,7 @@ import { ObjectHierarchy } from "./ObjectHierarchy"
 import { NameHierarchy } from "./NameHierarchy"
 import { ValueHierarchy } from "./ValueHierarchy"
 import { Promisish } from "./Promisish"
+import { HashProduct } from "./HashProduct"
 
 export type HierarchyProp = Promisish<Hierarchy | undefined>
 
@@ -54,12 +55,12 @@ export const Hierarchy = {
       if(LeafProduct.isLeafProduct(value))
         return NameHierarchy.create({
           name: `<${value.type.full}>`,
-          linkedProducts: [Hash.create(value)],
+          linkedProducts: [Hash.create(await HashProduct.fromProduct(value))],
         })
       if(Product.isProduct(value))
         return NameHierarchy.create({
           name: `<${value.type}>`,
-          linkedProducts: [Hash.create(value)],
+          linkedProducts: [Hash.create(await HashProduct.fromProduct(value))],
         })
     }
     if(value instanceof Array)

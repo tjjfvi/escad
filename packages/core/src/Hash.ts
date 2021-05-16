@@ -23,7 +23,9 @@ export const Hash = {
     Hash.create(value) === hash,
 }
 
-export type Hash<T> = string & { __hash__: T }
+export declare const __hash: unique symbol
+export type __hash = typeof __hash
+export type Hash<T> = string & { [__hash]: T }
 
 declare class NonExhaustive {
 
