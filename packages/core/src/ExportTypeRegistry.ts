@@ -5,7 +5,7 @@ import { Id } from "./Id"
 import { ArtifactStore } from "./ArtifactStore"
 import { Product, ProductType } from "./Product"
 import { conversionRegistry, ConversionRegistry } from "./ConversionRegistry"
-import { HashMap } from "./HashMap"
+import { IdMap } from "./IdMap"
 
 export class ExportTypeRegistry {
 
@@ -13,7 +13,7 @@ export class ExportTypeRegistry {
     this.artifactManager.artifactStores.push(this.artifactStore)
   }
 
-  private registered = new HashMap<Id, ExportType<any>>()
+  private registered = new IdMap<ExportType<any>>()
 
   static readonly artifactStoreId = Id.create(__filename, "@escad/core", "ArtifactStore", "ExportTypeRegistry", "0")
   readonly artifactStore: ArtifactStore = {
