@@ -1,4 +1,4 @@
-#!/usr/bin/env node --harmony-weak-refs
+#!/usr/bin/env node
 
 import commander from "commander"
 
