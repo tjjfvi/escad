@@ -6,40 +6,39 @@ export interface ProductConsumer<P extends Product, T, C> {
   map: (product: P) => T | Promise<T>,
 }
 
-export class ProductConsumerRegistry<C extends ProductConsumer<any, any, any>> {
+export class ProductConsumerRegistry<P extends Product, T, C> {
 
   constructor(public conversionRegistry: ConversionRegistry){}
 
-  registrations = new Set<C>()
+  registrations = new Set<ProductConsumer<P, T, C>>()
 
-  public *findConsumers(productType: ProductType){
-    for(const viewerRegistration of this.registrations.values())
-      if(this.conversionRegistry.has(productType, ProductType.fromProductTypeish(viewerRegistration.type)))
-        yield viewerRegistration
+  public findConsumers(productType: ProductType){
+    return [...this.registrations.values()].map(async viewerRegistration =>
+      await this.conversionRegistry.has(productType, ProductType.fromProductTypeish(viewerRegistration.type))
+        ? viewerRegistration
+        : null,
+    )
   }
 
-  private *findContexts(productType: ProductType){
-    for(const consumer of this.findConsumers(productType))
-      yield consumer.context
+  async mapProduct(context: C, product: Product){
+    const consumers = await Promise.all(this.findConsumers(Product.getProductType(product)))
+    const consumer = consumers.find(consumer => consumer?.context === context)
+    if(!consumer) return null
+    return await consumer.map(await this.conversionRegistry.convertProduct(
+      ProductType.fromProductTypeish(consumer.type),
+      product,
+    ))
   }
 
-  async mapProduct(context: C["context"], product: Product){
-    for(const consumer of this.findConsumers(Product.getProductType(product)))
-      if(consumer.context === context)
-        return await consumer.map(await this.conversionRegistry.convertProduct(
-          ProductType.fromProductTypeish(consumer.type),
-          product,
-        ))
-  }
-
-  *getConsumersForAll(types: Iterable<ProductType>): Iterable<C["context"]>{
-    const displayss = [...types].map(t => new Set(this.findContexts(t)))
-    main: for(const display of displayss.shift() ?? []) {
-      for(const set of displayss)
-        if(!set.has(display))
-          continue main
-      yield display
-    }
+  async getContextsForAll(types: Iterable<ProductType>){
+    const contextss = await Promise.all([...types].map(async t =>
+      new Set(await Promise.all(this.findConsumers(t).map(async x => (await x)?.context))),
+    ))
+    const results = []
+    for(const context of contextss.pop() ?? [])
+      if(context && contextss.every(set => set.has(context)))
+        results.push(context)
+    return results
   }
 
 }

@@ -5,6 +5,15 @@
   flex 1
   position relative
 
+  &.loading
+    display inline-flex
+    align-items center
+    justify-content center
+
+    > .Loading
+      --size 100px
+      color $grey
+
   &.none
     display flex
     align-items center

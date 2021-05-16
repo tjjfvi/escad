@@ -68,7 +68,6 @@ export const createRendererServerMessenger = (
     const { defaultValue: defaultParams } = param
     const paramHash = paramDef ? artifactManager.storeRaw(param) : null
 
-    const conversions = [...conversionRegistry.listAll()].map(x => [x.fromType, x.toType] as const)
     const { products, hierarchy } = await render(params ?? defaultParams)
     const exportTypes = [...exportTypeRegistry.listRegistered()].map(x => ({
       ...x,
@@ -77,7 +76,6 @@ export const createRendererServerMessenger = (
     }))
 
     const loadInfo: Info = {
-      conversions,
       paramDef: await paramHash,
       clientPlugins: [...registeredPlugins],
       exportTypes,
