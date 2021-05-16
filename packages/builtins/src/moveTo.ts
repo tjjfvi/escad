@@ -67,15 +67,15 @@ export const moveTo = Component.create(
 )
 
 export const moveToX = Component.create("moveToX",
-  (target: MoveToTarget, toEdge = 0, shift: number = -Math.sign(toEdge)) =>
+  (target: MoveToTarget, toEdge: number = 0, shift: number = -Math.sign(toEdge)) =>
     moveTo(target, { x: [toEdge, shift] }),
 )
 export const moveToY = Component.create("moveToY",
-  (target: MoveToTarget, toEdge = 0, shift: number = -Math.sign(toEdge)) =>
+  (target: MoveToTarget, toEdge: number = 0, shift: number = -Math.sign(toEdge)) =>
     moveTo(target, { y: [toEdge, shift] }),
 )
 export const moveToZ = Component.create("moveToZ",
-  (target: MoveToTarget, toEdge = 0, shift: number = -Math.sign(toEdge)) =>
+  (target: MoveToTarget, toEdge: number = 0, shift: number = -Math.sign(toEdge)) =>
     moveTo(target, { z: [toEdge, shift] }),
 )
 
