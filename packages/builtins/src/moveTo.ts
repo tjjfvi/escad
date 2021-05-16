@@ -12,6 +12,8 @@ import {
   Element,
   TupleProduct,
   TupleProductType,
+  HashProduct,
+  Promisish,
 } from "@escad/core"
 import { BoundingBox } from "./BoundingBox"
 import { _boundingBox } from "./getBoundingBox"
@@ -48,7 +50,7 @@ export const moveTo = Component.create(
   "moveTo",
   (target: MoveToTarget, args: Omit<MoveToArgs, "type">) => {
     if(typeof target === "number") target = { x: target, y: target, z: target }
-    const targetBox = Element.isElement(target)
+    const targetBox: Promisish<ConvertibleTo<BoundingBox>> = Element.isElement(target)
       ? _boundingBox(target)
       : BoundingBox.fromVector3(Vector3.create(target.x ?? 0, target.y ?? 0, target.z ?? 0))
     return mapOperation<ConvertibleTo<Mesh>, ConvertibleTo<Transformation<Mesh>>>(
@@ -60,7 +62,7 @@ export const moveTo = Component.create(
             await _boundingBox(allSource),
             await targetBox,
           ] as const)),
-          source,
+          await HashProduct.fromProduct(source),
         ] as const)),
       { showOutput: false },
     )
