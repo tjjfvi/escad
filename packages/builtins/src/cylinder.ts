@@ -88,7 +88,7 @@ conversionRegistry.register({
 export interface CylArgs {
   radius: number,
   height: number,
-  center?: Triplet<number | boolean>,
+  center?: Triplet,
   smooth?: Smooth,
 }
 

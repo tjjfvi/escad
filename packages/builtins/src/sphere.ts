@@ -94,7 +94,7 @@ conversionRegistry.register({
 type SphereArgs = number | {
   radius: number,
   smooth?: Smooth,
-  center?: Triplet<number | boolean>,
+  center?: Triplet,
 }
 
 export const sphere: Component<[SphereArgs], Element<Sphere>> =

@@ -84,9 +84,9 @@ conversionRegistry.register({
   id: Id.create(__filename, "@escad/builtins", "Conversion", "CubeMesh", "0"),
 })
 
-export interface CubeArgs extends TripletObj<number> {
-  size?: Triplet<number>,
-  center?: Triplet<number | boolean>,
+export interface CubeArgs extends TripletObj {
+  size?: Triplet,
+  center?: Triplet,
 }
 
 export const cube: Component<[CubeArgs], Element<Cube>> =
