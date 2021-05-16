@@ -1,7 +1,6 @@
 
 import {
   artifactManager,
-  conversionRegistry,
   exportTypeRegistry,
   Product,
   Element,
@@ -63,12 +62,16 @@ export const createRendererServerMessenger = (
     if(typeof exported !== "function" && !(exported instanceof RenderFunction))
       throw new Error("Expected export type of function or RenderFunction")
 
-    const [func, paramDef] = exported instanceof RenderFunction ? [exported.func, exported.paramDef] : [exported, null]
-    const param = ObjectParam.create(paramDef ?? {})
-    const { defaultValue: defaultParams } = param
-    const paramHash = paramDef ? artifactManager.storeRaw(param) : null
+    const [func, _paramDef] = exported instanceof RenderFunction ? [exported.func, exported.paramDef] : [exported, null]
+    const paramDef = ObjectParam.create(_paramDef ?? {})
+    const { defaultValue: defaultParams } = paramDef
+    const paramDefHash = _paramDef ? artifactManager.storeRaw(paramDef) : null
 
-    const { products, hierarchy } = await render(params ?? defaultParams)
+    const renderParams = params ?? defaultParams
+    console.log(`Rendering with ${renderParams === defaultParams ? "default" : "custom"} params:`)
+    console.log(renderParams)
+    const { products, hierarchy } = await render(renderParams)
+    console.log("Rendered")
     const exportTypes = [...exportTypeRegistry.listRegistered()].map(x => ({
       ...x,
       export: undefined,
@@ -76,7 +79,7 @@ export const createRendererServerMessenger = (
     }))
 
     const loadInfo: Info = {
-      paramDef: await paramHash,
+      paramDef: await paramDefHash,
       clientPlugins: [...registeredPlugins],
       exportTypes,
       products,

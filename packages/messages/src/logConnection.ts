@@ -10,7 +10,7 @@ export const logConnection = <T>(connection: Connection<T>): Connection<T> =>
       return value
     },
     value => {
-      console.log("recb", ...([] as unknown[]).concat(value))
+      console.log("recv", ...([] as unknown[]).concat(value))
       return value
     },
   )

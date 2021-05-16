@@ -133,7 +133,9 @@ export class ClientState implements ArtifactStore {
 
     this.clientServerMessenger.on("reload", async () => {
       this.wrapRendering(async () => {
-        this.clientServerMessenger.run(this.sendParams ? this.params() : null)
+        const runParams = this.sendParams ? this.params() : null
+        console.log("Run with params:", { runParams })
+        this.clientServerMessenger.run(runParams)
         await this.clientServerMessenger.once("info")
       })
     })
