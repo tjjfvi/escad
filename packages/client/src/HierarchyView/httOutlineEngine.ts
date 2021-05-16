@@ -4,14 +4,14 @@ import { HierarchyToTreeEngine, wrapTreeSelectable } from "./hierarchyToTree"
 import { getState, State } from "./State"
 import { Tree, TreePart } from "./Tree"
 
-export const httSimpleEngine: HierarchyToTreeEngine = {
+export const httOutlineEngine: HierarchyToTreeEngine = {
 
   NameHierarchy: () => [],
 
   ValueHierarchy: () => [],
 
   ArrayHierarchy: ({ hierarchy, path, stateMemo, hierarchyToTree }) =>
-    httSimpleEngineArray(
+    httOutlineEngineArray(
       hierarchy.children.map((child, index) =>
         hierarchyToTree({
           path: [...path, { type: "ArrayHierarchyPathPart", index }],
@@ -45,7 +45,7 @@ export const httSimpleEngine: HierarchyToTreeEngine = {
 
   CallHierarchy: ({ hierarchy, path, stateMemo, hierarchyToTree }) =>
     hierarchy.composable
-      ? httSimpleEngineArray(
+      ? httOutlineEngineArray(
         hierarchy.operands.map((child, index) =>
           hierarchyToTree({
             path: [...path, {
@@ -61,7 +61,7 @@ export const httSimpleEngine: HierarchyToTreeEngine = {
 
 }
 
-function httSimpleEngineArray(children: Tree[], state: State){
+function httOutlineEngineArray(children: Tree[], state: State){
   children = children.filter(c => c.length)
   if(!children.length)
     return []

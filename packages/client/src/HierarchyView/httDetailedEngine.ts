@@ -5,7 +5,7 @@ import { HierarchyPath } from "../HierarchyPath"
 import { HierarchyToTreeEngine, wrapTreeSelectable } from "./hierarchyToTree"
 import { Tree, TreePart } from "./Tree"
 
-export const httDefaultEngine: HierarchyToTreeEngine = {
+export const httDetailedEngine: HierarchyToTreeEngine = {
 
   NameHierarchy: ({ hierarchy }) =>
     [TreePart.Line.String(hierarchy.name)],
