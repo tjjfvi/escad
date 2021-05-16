@@ -12,6 +12,7 @@ import {
   ArrayProduct,
   MarkedProduct,
   Elementish,
+  HashProduct,
 } from "@escad/core"
 import { BoundingBox } from "./BoundingBox"
 import { Mesh } from "./Mesh"
@@ -51,7 +52,9 @@ conversionRegistry.register({
 })
 
 export const _boundingBox = async (args: Element<ConvertibleTo<Mesh>>) =>
-  GetBoundingBox.create(TupleProduct.create(await Element.toArrayFlat(args)))
+  GetBoundingBox.create(TupleProduct.create(
+    await Element.toArrayFlat(Element.map(args, (x): Promise<ConvertibleTo<Mesh>> => HashProduct.fromProduct(x))),
+  ))
 
 export const boundingBox = Operation.create("boundingBox", _boundingBox, { showOutput: false })
 
