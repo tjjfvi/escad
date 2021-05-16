@@ -6,7 +6,7 @@ import { ResizeSensor } from "css-element-queries"
 import { StateMemo } from "./State"
 import { TreeView } from "./TreeView"
 import { hierarchyToTree, HierarchyToTreeEngine } from "./hierarchyToTree"
-import { httDefaultEngine } from "./httDefaultEngine"
+import { httDetailedEngine } from "./httDetailedEngine"
 
 export interface HierarchyViewProps {
   hierarchy: Hierarchy,
@@ -14,7 +14,7 @@ export interface HierarchyViewProps {
   engine?: HierarchyToTreeEngine,
 }
 
-export const HierarchyView = ({ hierarchy, selectable = false, engine = httDefaultEngine }: HierarchyViewProps) => {
+export const HierarchyView = ({ hierarchy, selectable = false, engine = httDetailedEngine }: HierarchyViewProps) => {
   const [width, setWidth] = useState<number>(0)
   const sensorRef = useRef<ResizeSensor>()
   const stateMemo = useValue<StateMemo>(() => new Map())
