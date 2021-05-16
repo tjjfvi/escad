@@ -30,12 +30,14 @@ export const createRendererServerMessenger = (
     connection,
   })
 
-  let lastEmitLogPromise = Promise.resolve<unknown>(undefined)
+  let lastEmitLogPromise : Promise<unknown> = Promise.resolve()
   logger.onLog(async log => {
-    if(!log) {
-      await lastEmitLogPromise
-      messenger.emit("log", null)
-    }
+    console.log(log)
+    if(!log)
+      lastEmitLogPromise = lastEmitLogPromise.then(() => {
+        messenger.emit("log", null)
+      })
+
     else {
       // Preserves log ordering and avoids race conditions where
       // the client requests the log before the file is written

@@ -1,7 +1,7 @@
 
 import { artifactManager, ArtifactStore, logger } from "@escad/core"
 import { workerConnection, brandConnection, createMessenger } from "@escad/messages"
-import { createRendererServerMessenger, hookConsole } from "@escad/renderer"
+import { createRendererServerMessenger } from "@escad/renderer"
 
 const artifactMessenger = createMessenger<{}, Required<ArtifactStore>, {}>({
   impl: {},
@@ -21,5 +21,3 @@ createRendererServerMessenger(
   () => require("/project/index.js"),
   logger,
 )
-
-hookConsole(console, logger)

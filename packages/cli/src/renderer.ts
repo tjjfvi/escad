@@ -4,7 +4,7 @@ require("ts-node").register()
 
 import { artifactManager, logger } from "@escad/core"
 import { parentProcessConnection } from "@escad/messages"
-import { createRendererServerMessenger, hookConsole } from "@escad/renderer"
+import { createRendererServerMessenger } from "@escad/renderer"
 import { FsArtifactStore } from "./FsArtifactStore"
 
 const artifactsDir = process.env.ARTIFACTS_DIR
@@ -14,5 +14,3 @@ if(!loadFile) throw new Error("Renderer process was not passed environment varia
 artifactManager.artifactStores.unshift(new FsArtifactStore(artifactsDir))
 
 createRendererServerMessenger(parentProcessConnection(), () => require(loadFile), logger)
-
-hookConsole(console, logger)
