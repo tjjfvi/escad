@@ -23,7 +23,7 @@ export default renderFunction(
     console.log("Arguments:", { outerSize, hollow, innerSize })
     const main = escad.cube({ size: outerSize })
     const inner = escad.cube({ size: innerSize })
-    const corner = escad.cube({ size: outerSize, center: 1 })
+    const corner = escad.cube({ size: outerSize, shift: 1 })
     const final = main
       ._(hollow ? escad.sub(inner) : escad)
       .sub(corner)

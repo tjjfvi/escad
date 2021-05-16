@@ -94,7 +94,7 @@ conversionRegistry.register({
 type SphereArgs = number | {
   radius: number,
   smooth?: Smooth,
-  center?: Triplet,
+  shift?: Triplet,
 }
 
 export const sphere: Component<[SphereArgs], Element<Sphere>> =
@@ -102,7 +102,7 @@ export const sphere: Component<[SphereArgs], Element<Sphere>> =
     if(typeof args === "number")
       args = { radius: args }
     const { radius, smooth = smoothContext.get() } = args
-    const centering = interpretTriplet(args.center, 0)
-    const center = Vector3.multiplyScalar(centering, radius)
+    const shift = interpretTriplet(args.shift, 0)
+    const center = Vector3.multiplyScalar(shift, radius)
     return Element.create(Sphere.create(radius, smooth, center))
   }, { showOutputInHierarchy: false })
