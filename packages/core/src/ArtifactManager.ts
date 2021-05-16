@@ -6,7 +6,8 @@ import { timers } from "./Timer"
 
 export class ArtifactManager {
 
-  private cache = new WeakCache<unknown, unknown>()
+  private excludeStoresCaches = new WeakMap<ReadonlySet<ArtifactStore>, WeakCache<Hash<unknown>, unknown>>()
+  private defaultCache = new WeakCache<Hash<unknown>, unknown>()
 
   artifactStores: ArtifactStore[] = []
 
@@ -33,12 +34,13 @@ export class ArtifactManager {
     const artifact = await artifactPromise
     const artifactHash = Hash.create(artifact)
 
-    this.cache.set(artifactHash, () => artifact)
+    this.getCache(excludeStores).set(artifactHash, artifact)
 
     let serialized
-    await Promise.all(this.artifactStores.map(async s =>
-      !excludeStores?.has(s) && await s.storeRaw?.(artifactHash, serialized ??= this.serialize(artifact), this),
-    ))
+    await Promise.all(this.artifactStores.map(s => {
+      if(!excludeStores?.has(s))
+        return s.storeRaw?.(artifactHash, serialized ??= this.serialize(artifact), this)
+    }))
 
     return artifactHash
   }
@@ -48,10 +50,10 @@ export class ArtifactManager {
     artifactPromise: T | Promise<T>,
     excludeStores?: ReadonlySet<ArtifactStore>,
   ){
+    this.getCache(excludeStores).setAsync(Hash.create(loc), Promise.resolve(artifactPromise))
+
     const artifact = await artifactPromise
     const artifactHash = Hash.create(artifact)
-
-    this.cache.set(loc, () => artifact)
 
     await Promise.all<any>([
       this.storeRaw(artifact, excludeStores),
@@ -64,35 +66,49 @@ export class ArtifactManager {
     return artifactHash
   }
 
-  async lookupRaw<T>(
+  lookupRaw<T>(
     hash: Hash<T>,
     excludeStores?: ReadonlySet<ArtifactStore>,
-  ): Promise<T | null>{
-    for(const store of this.artifactStores)
-      if(!excludeStores?.has(store)) {
-        const buffer = await store.lookupRaw?.(hash, this)
-        if(!buffer) continue
-        const artifact = this.deserialize(buffer)
-        if(Hash.check(hash, artifact))
-          return artifact
-      }
-    return null
+  ){
+    return this.getCache(excludeStores).getAsync(hash, async (): Promise<T | null> => {
+      for(const store of this.artifactStores)
+        if(!excludeStores?.has(store)) {
+          const buffer = await store.lookupRaw?.(hash, this)
+          if(!buffer) continue
+          const artifact = this.deserialize(buffer)
+          if(Hash.check(hash, artifact))
+            return artifact
+        }
+      return null
+    }) as Promise<T | null>
   }
 
-  async lookupRef(
+  lookupRef(
     loc: readonly unknown[],
     excludeStores?: ReadonlySet<ArtifactStore>,
   ){
-    for(const store of this.artifactStores)
-      if(!excludeStores?.has(store)) {
-        const buffer = await store.lookupRef?.(loc, this)
-        if(buffer) {
-          const artifact = this.deserialize(buffer)
-          await this.storeRaw(artifact, excludeStores)
-          return this.deserialize(buffer)
+    return this.getCache(excludeStores).getAsync(Hash.create(loc), async () => {
+      for(const store of this.artifactStores)
+        if(!excludeStores?.has(store)) {
+          const buffer = await store.lookupRef?.(loc, this)
+          if(buffer) {
+            const artifact = this.deserialize(buffer)
+            await this.storeRaw(artifact, excludeStores)
+            return artifact
+          }
         }
-      }
-    return null
+      return null
+    })
+  }
+
+  private getCache(excludeStores?: ReadonlySet<ArtifactStore>){
+    if(!excludeStores?.size)
+      return this.defaultCache
+    const existing = this.excludeStoresCaches.get(excludeStores)
+    if(existing) return existing
+    const cache = new WeakCache<Hash<unknown>, unknown>()
+    this.excludeStoresCaches.set(excludeStores, cache)
+    return cache
   }
 
 }
