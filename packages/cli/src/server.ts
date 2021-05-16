@@ -16,12 +16,13 @@ import { createServerEmitter } from "@escad/server"
 export interface ServerOptions {
   artifactsDir: string,
   port: number,
+  ip: string,
   loadFile: string,
   loadDir: string,
   dev: boolean,
 }
 
-export const createServer = async ({ artifactsDir, port, loadFile, loadDir, dev }: ServerOptions) => {
+export const createServer = async ({ artifactsDir, port, ip = "::", loadFile, loadDir, dev }: ServerOptions) => {
   const { app } = expressWs(express())
 
   const staticDir = path.join(__dirname, "../static/")
@@ -88,7 +89,7 @@ export const createServer = async ({ artifactsDir, port, loadFile, loadDir, dev 
     ws.on("error", () => messenger.destroy())
   })
 
-  const httpServer = app.listen(port, () => {
+  const httpServer = app.listen(port, ip, () => {
     const address = httpServer.address()
     const addressString =
     typeof address === "object" && address

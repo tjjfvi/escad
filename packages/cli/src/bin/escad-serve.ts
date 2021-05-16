@@ -8,7 +8,8 @@ import { createServer } from "../server"
 ;(() => {
   commander
     .usage("[options] <file>")
-    .option("-p, --port <port>", "port to host server on", "8080")
+    .option("-p, --port <port>", "port to listen on", "8080")
+    .option("--ip <address>", "IP address to listen on", "::")
     .option("-d, --watch-dir <dir>", "directory to watch (default: basedir of <file>)")
     .option("--artifacts <dir>", "artifact directory", path.join(os.tmpdir(), "escad-artifacts"))
     .option("--clean", "clean artifacts directory")
@@ -18,7 +19,8 @@ import { createServer } from "../server"
   if(commander.args.length !== 1)
     return commander.outputHelp()
 
-  let { port, watchDir, artifacts: artifactsDir, clean, dev } = commander.opts()
+  console.log(commander.opts())
+  let { port, ip, watchDir, artifacts: artifactsDir, clean, dev } = commander.opts()
   artifactsDir = path.resolve(artifactsDir)
   let [file] = commander.args
 
@@ -31,6 +33,7 @@ import { createServer } from "../server"
   createServer({
     artifactsDir,
     port: +port,
+    ip,
     loadFile,
     loadDir,
     dev,
