@@ -13,11 +13,12 @@ import ReactDOM from "react-dom"
 import { App, ClientState } from "@escad/client"
 import { artifactManager, ArtifactStore } from "@escad/core"
 import { createServerClientMessenger } from "@escad/server"
-import { mdiExportVariant, mdiPencil } from "@mdi/js"
 import { InMemoryArtifactStore } from "../utils/InMemoryArtifactStore"
 import { createBlob } from "../utils/createBlob"
 import { ServerRendererMessenger } from "@escad/protocol"
 import { createServerEmitter } from "@escad/server"
+import { mdi } from "@escad/client"
+import { observable } from "rhobo"
 
 const isRun = location.host === "escad.run" || (location.pathname.startsWith("/run"))
 
@@ -62,11 +63,11 @@ if(isRun) {
         statuses: {
           fork: {
             name: "Fork",
-            icon: mdiPencil,
+            icon: mdi.pencil,
             onClick: () => location.href = info.url,
           },
         },
-        state: () => "fork",
+        state: observable("fork"),
       })
   })
 }
@@ -94,13 +95,13 @@ if(!isRun) {
     statuses: {
       share: {
         name: "Share",
-        icon: mdiExportVariant,
+        icon: mdi.exportVariant,
         onClick: () => {
           saveMessenger.share()
         },
       },
     },
-    state: () => "share",
+    state: observable("share"),
   })
   clientState.connect()
   ReactDOM.render(<App state={clientState}/>, document.getElementById("root"))

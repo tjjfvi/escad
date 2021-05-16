@@ -52,21 +52,28 @@
     position absolute
     width 100%
     height 100%
+  
+  .icon2.mdi.help
+    transform scale(.8)
 
   &:hover
     transform translate(-100%, 0) translate(50px, 0)
 
-  &.red
-    color $red
-    border-color $red
-
-  &.green
+  &.good
     color $green
     border-color $green
 
-  &.blue
+  &.active
     color $blue
     border-color $blue
+
+  &.bad
+    color $red
+    border-color $red
+
+  &.attention
+    color $yellow
+    border-color $yellow
 
   &.clickable
     cursor pointer
