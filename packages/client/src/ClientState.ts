@@ -4,11 +4,9 @@ import { computed, observable } from "rhobo"
 import {
   ArtifactManager,
   ArtifactStore,
-  conversionRegistry,
   ExportTypeInfo,
   Hash,
   Hierarchy,
-  Id,
   Product,
   Log,
 } from "@escad/core"
@@ -27,8 +25,6 @@ import { mdiAccount, mdiArrowUpDown, mdiCheck, mdiClose, mdiCubeOutline, mdiRefr
 import { Loading } from "./Loading"
 
 const _ClientStateContext = createContext<ClientState>(null as never)
-
-const stubConversionId = Id.create(__filename, "@escad/client", "Conversion", "StubConversion", "0")
 
 export class ClientState implements ArtifactStore {
 
@@ -154,7 +150,6 @@ export class ClientState implements ArtifactStore {
       this.handleProducts(info.products)
       this.handleParamDef(info.paramDef)
       this.handleHierarchy(info.hierarchy)
-      this.handleConversions(info.conversions)
       this.handleExportTypes(info.exportTypes)
     })
 
@@ -198,20 +193,6 @@ export class ClientState implements ArtifactStore {
 
   private async handleHierarchy(hierarchyHash: Info["hierarchy"]){
     this.hierarchy(hierarchyHash ? await this.artifactManager.lookupRaw(hierarchyHash) : null)
-  }
-
-  private async handleConversions(conversions: Info["conversions"]){
-    for(const [fromType, toType] of conversions ?? [])
-      if(!conversionRegistry.has(fromType, toType))
-        conversionRegistry.register({
-          fromType,
-          toType,
-          convert: () => {
-            throw new Error("Stub conversion erroneously called")
-          },
-          weight: Infinity,
-          id: stubConversionId,
-        })
   }
 
   lookupRawUrl(hash: Hash<unknown>): Promise<string>{

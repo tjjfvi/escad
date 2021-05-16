@@ -1,23 +1,21 @@
 
 import { conversionRegistry, ExportTypeInfo, ExportTypeRegistry, Product } from "@escad/core"
 import React, { useContext } from "react"
-import { observer } from "rhobo"
+import { observer, useFromProm } from "rhobo"
 import { ClientState } from "./ClientState"
-import { ProductConsumer, ProductConsumerRegistry } from "./ProductConsumerRegistry"
-
-type ExportTypeProductConsumer<P extends Product> = ProductConsumer<P, P, ExportTypeInfo>
+import { ProductConsumerRegistry } from "./ProductConsumerRegistry"
 
 export const Export = observer(() => {
   const state = useContext(ClientState.Context)
-  const consumerRegistry = new ProductConsumerRegistry<ExportTypeProductConsumer<any>>(conversionRegistry)
+  const consumerRegistry = new ProductConsumerRegistry<Product, Product, ExportTypeInfo>(conversionRegistry)
   consumerRegistry.registrations = new Set(state.exportTypes().map(e => ({
     type: e.productType,
     context: e,
     map: x => x,
   })))
   const productTypes = state.products().map(Product.getProductType)
-  const exportTypes = [...consumerRegistry.getConsumersForAll(productTypes)]
-  if(exportTypes.length)
+  const exportTypes = useFromProm(consumerRegistry.getContextsForAll(productTypes))()
+  if(exportTypes?.length)
     return (
       <div>
         {

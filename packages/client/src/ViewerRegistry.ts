@@ -5,7 +5,7 @@ import { ProductConsumer, ProductConsumerRegistry } from "./ProductConsumerRegis
 
 export type ViewerRegistration<P extends Product, T extends ViewerInput> = ProductConsumer<P, T, Viewer<T>>
 
-export class ViewerRegistry extends ProductConsumerRegistry<ViewerRegistration<any, any>> {
+export class ViewerRegistry extends ProductConsumerRegistry<any, any, Viewer<any>> {
 
   register<P extends Product, T extends ViewerInput>(registration: ViewerRegistration<P, T>){
     this.registrations.add(registration)

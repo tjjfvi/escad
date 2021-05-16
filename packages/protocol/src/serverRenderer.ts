@@ -1,5 +1,5 @@
 
-import { ExportTypeInfo, Hash, Hierarchy, ObjectParam, Product, ProductType, Log } from "@escad/core"
+import { ExportTypeInfo, Hash, Hierarchy, ObjectParam, Product, Log } from "@escad/core"
 import { Messenger } from "@escad/messages"
 import { PluginRegistration } from "@escad/register-client-plugin"
 
@@ -7,7 +7,6 @@ export interface Info {
   products: readonly Hash<Product>[],
   hierarchy: Hash<Hierarchy> | null,
   paramDef: Hash<ObjectParam<any>> | null,
-  conversions: readonly (readonly [ProductType, ProductType])[],
   exportTypes: readonly ExportTypeInfo[],
   clientPlugins: readonly PluginRegistration[],
 }
