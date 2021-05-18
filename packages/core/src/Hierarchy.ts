@@ -11,6 +11,7 @@ import { NameHierarchy } from "./NameHierarchy"
 import { ValueHierarchy } from "./ValueHierarchy"
 import { Promisish } from "./Promisish"
 import { HashProduct } from "./HashProduct"
+import { artifactManager } from "./ArtifactManager"
 
 export type HierarchyProp = Promisish<Hierarchy | undefined>
 
@@ -51,11 +52,14 @@ export const Hierarchy = {
         return await value.hierarchy ?? Hierarchy.from(value.value)
       if(Component.isComponent(value) || Operation.isOperation(value))
         return await value.hierarchy ?? NameHierarchy.create({ name: value.name })
-      if(Product.isProduct(value))
+      if(Product.isProduct(value)) {
+        let product = HashProduct.fromProduct(value)
+        let hash = await artifactManager.storeRaw(product)
         return NameHierarchy.create({
           name: `<${value.type}>`,
-          linkedProducts: [Hash.create(HashProduct.fromProduct(value))],
+          linkedProducts: [hash],
         })
+      }
     }
     if(value instanceof Array)
       return ArrayHierarchy.from(value, raw)
