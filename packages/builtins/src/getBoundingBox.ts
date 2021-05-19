@@ -18,7 +18,7 @@ import { BoundingBox } from "./BoundingBox"
 import { Mesh } from "./Mesh"
 import { Vector3 } from "./Vector3"
 
-const getBoundingBoxId = Id.create(__filename, "@escad/builtins", "Marker", "GetBoundingBox", "0")
+const getBoundingBoxId = Id.create(__filename, "@escad/builtins", "Marker", "GetBoundingBox")
 export type GetBoundingBox<T extends Product> = MarkedProduct<typeof getBoundingBoxId, T>
 export const GetBoundingBox = MarkedProduct.for(getBoundingBoxId)
 
@@ -33,7 +33,7 @@ declare global {
 }
 
 conversionRegistry.register({
-  id: Id.create(__filename, "@escad/builtins", "Conversion", "GetBoundingBoxMesh", "0"),
+  id: Id.create(__filename, "@escad/builtins", "Conversion", "GetBoundingBoxMesh"),
   fromType: GetBoundingBox.createProductType(ArrayProductType.create(Mesh)),
   toType: BoundingBox,
   convert: async ({ child: { children: meshes } }) => {
