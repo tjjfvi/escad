@@ -15,7 +15,7 @@ export class ExportTypeRegistry {
 
   private registered = new IdMap<ExportType<any>>()
 
-  static readonly artifactStoreId = Id.create(__filename, "@escad/core", "ArtifactStore", "ExportTypeRegistry", "0")
+  static readonly artifactStoreId = Id.create(__filename, "@escad/core", "ArtifactStore", "ExportTypeRegistry")
   readonly artifactStore: ArtifactStore = {
     lookupRef: async ([id, exportTypeId, products], artifactManager) => {
       if(!Id.isId(id) || !Id.equal(id, ExportTypeRegistry.artifactStoreId)) return null

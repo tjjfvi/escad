@@ -33,7 +33,7 @@ test("", async () => {
   const artifacts = [
     { isTestArtifact: true },
     Buffer.from(Hash.create("test"), "hex"),
-    Id.create(__filename, "@escad/core", "Test", "ArtifactTest", "0"),
+    Id.create(__filename, "@escad/core", "Test", "ArtifactTest"),
   ]
   for(const artifact of artifacts) {
     await artifactManager.lookupRaw(Hash.create(artifact))
