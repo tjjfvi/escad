@@ -12,7 +12,7 @@ index 537610d..32ed4c1 100644
 +      // 'pacote-version': pacoteVersion,
 +      // 'pacote-req-type': 'packument',
 +      // 'pacote-pkg-id': `registry:${this.spec.name}`,
-       accept: this.fullMetadata ? fullDoc : corgiDoc,
+       accept: thisMetadata ? fullDoc : corgiDoc,
      }
    }
 diff --git a/node_modules/pacote/lib/remote.js b/node_modules/pacote/lib/remote.js

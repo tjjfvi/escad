@@ -39,7 +39,6 @@ test("checkTypeProperty.id", () => {
   const testId = Id.create(__filename, "@escad/core", "Test", "ctpi")
   const wrongId = Id.create(__filename, "@escad/core", "Test", "ctpiw")
   expect(checkTypeProperty.id(testId)({ type: testId })).toBe(true)
-  expect(checkTypeProperty.id(testId)({ type: { ...testId } })).toBe(true)
   expect(checkTypeProperty.id(testId)({ type: "wrong" })).toBe(false)
   expect(checkTypeProperty.id(testId)({ type: wrongId })).toBe(false)
 })
