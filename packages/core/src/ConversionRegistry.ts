@@ -11,7 +11,6 @@ import { ArrayProduct, ArrayProductType } from "./ArrayProduct"
 import { UnknownProduct, UnknownProductType } from "./UnknownProduct"
 import { MarkedProduct, MarkedProductType } from "./MarkedProduct"
 import { HashProduct, HashProductType } from "./HashProduct"
-import { IdMap } from "./IdMap"
 
 type ConversionPath = ConversionImpl<any, any>[]
 
@@ -24,7 +23,7 @@ export class ConversionRegistry {
   static readonly artifactStoreId = Id.create(__filename, "@escad/core", "ArtifactStore", "ConversionRegistry")
   readonly artifactStore: ArtifactStore = {
     lookupRef: async ([id, toType, from]) => {
-      if(!Id.isId(id) || !Id.equal(id, ConversionRegistry.artifactStoreId)) return null
+      if(id !== ConversionRegistry.artifactStoreId) return null
       if(!ProductType.isProductType(toType)) return null
       if(Product.isProduct(from))
         return this.convertProduct(toType, from)
@@ -35,9 +34,9 @@ export class ConversionRegistry {
 
   readonly excludeStores: ReadonlySet<ArtifactStore> = new Set([this.artifactStore])
 
-  private readonly registered = new IdMap<ConversionImpl<any, any>>()
+  private readonly registered = new Map<Id, ConversionImpl<any, any>>()
 
-  register<F extends Product, T extends Product>(conversion: ConversionImplish<F, T> & { id: object }): void{
+  register<F extends Product, T extends Product>(conversion: ConversionImplish<F, T>): void{
     this.registered.set(conversion.id, {
       ...conversion,
       fromType: ProductType.fromProductTypeish(conversion.fromType),
@@ -129,7 +128,7 @@ export class ConversionRegistry {
       || true
         && MarkedProductType.isMarkedProductType(fromType)
         && MarkedProductType.isMarkedProductType(toType)
-        && Id.equal(fromType.marker, toType.marker)
+        && fromType.marker === toType.marker
       || true
         && TupleProductType.isTupleProductType(fromType)
         && ArrayProductType.isArrayProductType(toType)
@@ -191,7 +190,7 @@ export class ConversionRegistry {
     if(
       MarkedProductType.isMarkedProductType(fromType)
       && MarkedProductType.isMarkedProductType(toType)
-      && Id.equal(fromType.marker, toType.marker)
+      && fromType.marker === toType.marker
     ) {
       const subPath = await this.compose(fromType.child, toType.child)
       return subPath && {
@@ -324,7 +323,7 @@ export class ConversionRegistry {
         const { fromType, toType, id } = rehydrated
         if(Id.isId(id)) {
           const registered = this.registered.get(id)
-          if(!registered) throw new Error(`Could not find conversion with id ${id.full}`)
+          if(!registered) throw new Error(`Could not find conversion with id ${id}`)
           Object.assign(rehydrated, registered)
         }
         else {

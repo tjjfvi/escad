@@ -1,24 +1,21 @@
 
 import { posix as path } from "path"
-import { checkTypeProperty } from "./checkTypeProperty"
 
 // Import read-pkg-up if in node, do nothing in webpack & co
 const nodeRequire = eval("typeof require === \"undefined\" ? () => {} : require")
 const readPkgUp: typeof import("read-pkg-up") | undefined = nodeRequire("read-pkg-up")
 
-const ids = new Map<string, Id>()
+const ids = new Set<string>()
 
-export interface Id<
+export declare const __id: unique symbol
+export type __id = typeof __id
+export type Id<
   P extends string = string,
   S extends string = string,
   N extends string = string,
-> {
-  readonly type: "Id",
-  readonly packageName: P,
-  readonly scope: S,
-  readonly name: N,
-  readonly full: string,
-}
+> = string & { [__id]: [P, S, N] | undefined }
+
+export const idRegex = /^(?<packageName>(?:@[\w-]+\/)?[\w-]+)\/(?<scope>\w+)\/(?<name>\w+)$/
 
 export type ScopedId<S extends string> = Id<string, S, string>
 
@@ -29,6 +26,9 @@ export const Id = {
     scope: S,
     name: N,
   ): Id<P, S, N> => {
+    const id = `${packageName}/${scope}/${name}`
+    if(!idRegex.test(id))
+      throw new Error("Invalid id passed to Id.create: " + id)
     if(readPkgUp) {
       const result = readPkgUp.sync({ cwd: path.dirname(filepath) })
       if(!result)
@@ -39,19 +39,23 @@ export const Id = {
           `Id.create: packageName mismatch; ${packageJsonName} attempted to create an id under ${packageName}`,
         )
     }
-    const full = `${packageName}/${scope}/${name}`
-    if(ids.has(full))
-      throw new Error(`Duplicate ids created under ${full}`)
-    const id: Id<P, S, N> = {
-      type: "Id",
-      packageName,
-      scope,
-      name,
-      full,
-    }
-    ids.set(full, id)
-    return id
+    if(ids.has(id))
+      throw new Error(`Duplicate ids created under ${id}`)
+    ids.add(id)
+    return id as Id<P, S, N>
   },
-  isId: checkTypeProperty.string<Id>("Id"),
-  equal: (a: Id, b: Id) => a.full === b.full,
+  tryParse: (id: string) => {
+    const match = idRegex.exec(id)
+    if(!match?.groups) return null
+    return match.groups as Record<"packageName" | "scope" | "name", string>
+  },
+  parse: <P extends string, S extends string, N extends string>(
+    id: Id<P, S, N>,
+  ) => {
+    const result = Id.tryParse(id)
+    if(!result)
+      throw new Error("Invalid id passed to Id.parse")
+    return result as { packageName: P, scope: S, name: N }
+  },
+  isId: (id: unknown): id is Id => typeof id === "string" && idRegex.test(id),
 }
