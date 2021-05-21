@@ -3,12 +3,19 @@ import crypto from "crypto"
 import { timers } from "./Timer"
 import { $unknown } from "@escad/serial"
 
+const hashMemo = new WeakMap<object, Hash<any>>()
 export const Hash = {
   create: timers.hash.time(<T>(obj: T): Hash<T> => {
+    if(typeof obj === "object" && obj) {
+      const memoedHash = hashMemo.get(obj as never)
+      if(memoedHash) return memoedHash
+    }
     const hasher = crypto.createHash("sha256")
     for(const part of $unknown.serialize(obj))
       hasher.update(part)
     const hash = hasher.digest("hex") as Hash<T>
+    if(typeof obj === "object" && obj)
+      hashMemo.set(obj as never, hash)
     return hash
   }),
   equal: (a: unknown, b: unknown) => {
