@@ -1,12 +1,15 @@
 
 import crypto from "crypto"
 import { timers } from "./Timer"
+import { $unknown } from "@escad/serial"
 
 export const Hash = {
   create: timers.hash.time(<T>(obj: T): Hash<T> => {
-    const hash = crypto.createHash("sha256")
-    hash.update(timers.stringifyHash.time(JSON.stringify)(obj))
-    return hash.digest("hex") as Hash<T>
+    const hasher = crypto.createHash("sha256")
+    for(const part of $unknown.serialize(obj))
+      hasher.update(part)
+    const hash = hasher.digest("hex") as Hash<T>
+    return hash
   }),
   equal: (a: unknown, b: unknown) => {
     if(a === b)

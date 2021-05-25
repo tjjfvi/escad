@@ -11,6 +11,7 @@ import { ArrayProduct, ArrayProductType } from "./ArrayProduct"
 import { UnknownProduct, UnknownProductType } from "./UnknownProduct"
 import { MarkedProduct, MarkedProductType } from "./MarkedProduct"
 import { HashProduct, HashProductType } from "./HashProduct"
+import { WrappedValue } from "./WrappedValue"
 
 type ConversionPath = ConversionImpl<any, any>[]
 
@@ -26,9 +27,10 @@ export class ConversionRegistry {
       if(id !== ConversionRegistry.artifactStoreId) return null
       if(!ProductType.isProductType(toType)) return null
       if(Product.isProduct(from))
-        return this.convertProduct(toType, from)
+        return WrappedValue.create(this.convertProduct(toType, from))
       if(ProductType.isProductType(from))
-        return this.compose(from, toType)
+        return WrappedValue.create(this.compose(from, toType))
+      return null
     },
   }
 

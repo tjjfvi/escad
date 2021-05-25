@@ -92,7 +92,7 @@ export const ProductType = {
     || HashProductType.isHashProductType(value)
     || UnknownProductType.isUnknownProductType(value),
   fromProductTypeish: <T extends Product>(productTypeish: ProductTypeish<T>): ProductType<T> =>
-    ProductType.isProductType(productTypeish) ? productTypeish : productTypeish.productType,
+    ProductType.isProductType(productTypeish) ? productTypeish : productTypeish?.productType,
 }
 
 export type ProductTypeish<T extends Product> = ProductType<T> | { productType: ProductType<T> }
