@@ -14,6 +14,7 @@ export interface BoundingBox extends LeafProduct {
 }
 
 export const BoundingBox = {
+  id: boundingBoxId,
   create: (min: Vector3, max: Vector3): BoundingBox => ({
     type: boundingBoxId,
     min,
