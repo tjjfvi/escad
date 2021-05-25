@@ -3,11 +3,9 @@ import { Hash, Id, ArtifactStore, WrappedValue, $wrappedValue } from "@escad/cor
 import { join, dirname } from "path"
 import fs from "fs"
 import { promisify } from "util"
-import { v4 as uuidv4 } from "uuid"
 import stream, { Readable } from "stream"
 
 const symlink = promisify(fs.symlink)
-const rename = promisify(fs.rename)
 const mkdir = promisify(fs.mkdir)
 const pipeline = promisify(stream.pipeline)
 
@@ -27,17 +25,12 @@ export class FsArtifactStore implements ArtifactStore {
   async storeRef(loc: readonly unknown[], hash: Hash<unknown>){
     const fromPath = await this.getPathRef(loc)
     const toPath = await this.getPathRaw(hash)
-    const tmpPath = await this.getPathTmp()
-    await symlink(toPath, tmpPath)
-    await rename(tmpPath, fromPath)
+    await symlink(toPath, fromPath).catch(() => null)
   }
 
   async lookupRaw(hash: Hash<unknown>){
     const path = await this.getPathRaw(hash)
-    return await $wrappedValue.deserializeAsyncStream(fs.createReadStream(path)).catch(e => {
-      console.log(e)
-      return null
-    })
+    return await $wrappedValue.deserializeAsyncStream(fs.createReadStream(path)).catch(() => null)
   }
 
   async lookupRef(loc: readonly unknown[]){
@@ -45,16 +38,9 @@ export class FsArtifactStore implements ArtifactStore {
     return await $wrappedValue.deserializeAsyncStream(fs.createReadStream(path)).catch(() => null)
   }
 
-  private async getPathTmp(){
-    const id = uuidv4()
-    const path = join(this.rootDir, id)
-    await mkdir(dirname(path), { recursive: true })
-    return path
-  }
-
   private async getPathRaw(hash: Hash<unknown>){
     const path = join(this.rootDir, "raw", hash)
-    await mkdir(dirname(path), { recursive: true })
+    this.mkdirp(dirname(path))
     return path
   }
 
@@ -62,6 +48,10 @@ export class FsArtifactStore implements ArtifactStore {
     const path = join(this.rootDir, ...loc.map(x => Id.isId(x) ? x.replace(/\//g, "-") : Hash.create(x)))
     await mkdir(dirname(path), { recursive: true })
     return path
+  }
+
+  private async mkdirp(path: string){
+    await mkdir(path, { recursive: true })
   }
 
 }
