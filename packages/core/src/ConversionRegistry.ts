@@ -170,7 +170,7 @@ export class ConversionRegistry {
         fromType: resolvedToType,
         toType,
         convert: async (product: Product) =>
-          await HashProduct.fromProduct(
+          HashProduct.fromProduct(
             await this.executeConversionPath(product, subPath),
             this.artifactManager,
           ),

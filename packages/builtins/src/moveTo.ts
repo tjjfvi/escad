@@ -62,7 +62,7 @@ export const moveTo = Component.create(
             await _boundingBox(allSource),
             await targetBox,
           ] as const)),
-          await HashProduct.fromProduct(source),
+          HashProduct.fromProduct(source),
         ] as const)),
       { showOutput: false },
     )
