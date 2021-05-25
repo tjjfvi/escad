@@ -112,9 +112,7 @@ export class ConversionRegistry {
       const part = await this.finishPathSegment(fromType, toType)
       if(!part) return null
 
-      const id = Hash.create([part.fromType, part.toType])
-
-      path.splice(i, 0, { ...part, id })
+      path.splice(i, 0, part)
       i--
     }
 
@@ -316,6 +314,8 @@ export class ConversionRegistry {
 
   private rehydrateConversionMemo = new WeakMap<Omit<ConversionImpl<any, any>, "convert">, ConversionImpl<any, any>>()
   private rehydrateConversion(conversion: Omit<ConversionImpl<any, any>, "convert">): ConversionImpl<any, any>{
+    if("convert" in conversion && typeof conversion["convert"] === "function")
+      return conversion
     const existing = this.rehydrateConversionMemo.get(conversion)
     if(existing) return existing
     const rehydrated: ConversionImpl<any, any> = {
@@ -323,7 +323,7 @@ export class ConversionRegistry {
       // This function will get replaced when called
       convert: async (product: Product): Promise<Product> => {
         const { fromType, toType, id } = rehydrated
-        if(Id.isId(id)) {
+        if(id) {
           const registered = this.registered.get(id)
           if(!registered) throw new Error(`Could not find conversion with id ${id}`)
           Object.assign(rehydrated, registered)

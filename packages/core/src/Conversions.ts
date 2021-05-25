@@ -1,5 +1,5 @@
 
-import { Hash, __hash } from "./Hash"
+import { __hash } from "./Hash"
 import { ScopedId } from "./Id"
 import { Product, ProductType, ProductTypeish } from "./Product"
 
@@ -12,7 +12,7 @@ export interface ConversionImpl<A extends Product, B extends Product> {
   readonly fromType: ProductType<A>,
   readonly toType: ProductType<B>,
   readonly weight: number,
-  readonly id: ScopedId<"Conversion"> | Hash<unknown>,
+  readonly id?: ScopedId<"Conversion">,
 }
 
 export interface ConversionImplish<A extends Product, B extends Product> {
