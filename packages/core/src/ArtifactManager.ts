@@ -7,8 +7,8 @@ import { Counter, Timer } from "./Timer"
 
 export class ArtifactManager {
 
-  private excludeStoresCaches = new WeakMap<ReadonlySet<ArtifactStore>, WeakCache<Hash<unknown>, unknown>>()
-  private defaultCache = new WeakCache<string, unknown>()
+  private excludeStoresCaches = new WeakMap<ReadonlySet<ArtifactStore>, WeakCache<Hash<unknown>, WrappedValue | null>>()
+  private defaultCache = new WeakCache<string, WrappedValue | null>()
 
   artifactStores: ArtifactStore[] = []
 
@@ -29,7 +29,7 @@ export class ArtifactManager {
     this.timers.storeRaw.start()
     const artifactHash = Hash.create(artifact)
 
-    this.getCache(excludeStores).set(artifactHash, artifact)
+    this.getCache(excludeStores).set(artifactHash, WrappedValue.create(artifact))
 
     await Promise.all(this.artifactStores.map(async s => {
       if(!excludeStores?.has(s))
@@ -45,7 +45,10 @@ export class ArtifactManager {
     artifactPromise: T | Promise<T>,
     excludeStores?: ReadonlySet<ArtifactStore>,
   ){
-    this.getCache(excludeStores).setAsync(this.getRefCacheKey(loc), Promise.resolve(artifactPromise))
+    this.getCache(excludeStores).setAsync(
+      this.getRefCacheKey(loc),
+      Promise.resolve(WrappedValue.create(artifactPromise)),
+    )
     const artifact = await artifactPromise
 
     this.timers.storeRef.start()
@@ -64,29 +67,47 @@ export class ArtifactManager {
     return artifactHash
   }
 
-  lookupRaw<T>(
+  async lookupRaw<T>(
+    hash: Hash<T>,
+    excludeStores?: ReadonlySet<ArtifactStore>,
+  ){
+    const result = await this.lookupRawWrapped(hash, excludeStores)
+    if(result) return result.value
+    return null
+  }
+
+  lookupRawWrapped<T>(
     hash: Hash<T>,
     excludeStores?: ReadonlySet<ArtifactStore>,
   ){
     this.timers.lookupRaw.calls.increment()
     return this.getCache(excludeStores).getAsync(
       hash,
-      this.timers.lookupRaw.timeFn(async (): Promise<T | null> => {
+      this.timers.lookupRaw.timeFn(async (): Promise<WrappedValue<T> | null> => {
         for(const store of this.artifactStores)
           if(!excludeStores?.has(store)) {
             const artifact = await store.lookupRaw?.(hash, this)
             if(artifact && Hash.check(hash, artifact.value))
-              return artifact.value
+              return artifact as WrappedValue<T>
           }
         return null
       }),
-    ) as Promise<T | null>
+    ) as Promise<WrappedValue<T> | null>
   }
 
-  lookupRef(
+  async lookupRef(
     loc: readonly unknown[],
     excludeStores?: ReadonlySet<ArtifactStore>,
   ){
+    const result = await this.lookupRefWrapped(loc, excludeStores)
+    if(result) return result.value
+    return null
+  }
+
+  lookupRefWrapped(
+    loc: readonly unknown[],
+    excludeStores?: ReadonlySet<ArtifactStore>,
+  ): Promise<WrappedValue | null>{
     this.timers.lookupRef.calls.increment()
     return this.getCache(excludeStores).getAsync(
       this.getRefCacheKey(loc),
@@ -96,7 +117,7 @@ export class ArtifactManager {
             const artifact = await store.lookupRef?.(loc, this)
             if(artifact) {
               await this.storeRaw(artifact.value, excludeStores)
-              return artifact.value
+              return artifact
             }
           }
         return null
@@ -104,12 +125,24 @@ export class ArtifactManager {
     )
   }
 
+  async computeRef<T>(
+    loc: readonly unknown[],
+    func: () => Promise<T>,
+    excludeStores?: ReadonlySet<ArtifactStore>,
+  ){
+    const stored = await this.lookupRefWrapped(loc, excludeStores)
+    if(stored) return stored.value as T
+    const result = func()
+    this.storeRef(loc, result, excludeStores)
+    return await result
+  }
+
   private getCache(excludeStores?: ReadonlySet<ArtifactStore>){
     if(!excludeStores?.size)
       return this.defaultCache
     const existing = this.excludeStoresCaches.get(excludeStores)
     if(existing) return existing
-    const cache = new WeakCache<Hash<unknown>, unknown>()
+    const cache = new WeakCache<Hash<unknown>, WrappedValue>()
     this.excludeStoresCaches.set(excludeStores, cache)
     return cache
   }
