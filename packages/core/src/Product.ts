@@ -10,11 +10,11 @@ import {
   TransitivityOverride,
 } from "./Conversions"
 import { Hash } from "./Hash"
-import { timers } from "./Timer"
 import { UnknownProduct, UnknownProductType } from "./UnknownProduct"
 import { ScopedId } from "./Id"
 import { MarkedProduct, MarkedProductType } from "./MarkedProduct"
 import { HashProduct, HashProductType } from "./HashProduct"
+import { Timer } from "./Timer"
 
 export interface _Product {
   readonly type: string | ScopedId<"LeafProduct">,
@@ -42,7 +42,7 @@ export type Product =
 
 export const Product = {
   isProduct,
-  getProductType: timers.getProductType.time(<P extends Product>(product: P): ProductType<P> => {
+  getProductType: Timer.create().timeFn(<P extends Product>(product: P): ProductType<P> => {
     if(LeafProduct.isLeafProduct(product))
       return LeafProduct.getLeafProductType(product)
     if(MarkedProduct.isMarkedProduct(product))

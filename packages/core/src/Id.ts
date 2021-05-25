@@ -1,5 +1,6 @@
 
 import { posix as path } from "path"
+import { Timer } from "./Timer"
 
 // Import read-pkg-up if in node, do nothing in webpack & co
 const nodeRequire = eval("typeof require === \"undefined\" ? () => {} : require")
@@ -57,5 +58,5 @@ export const Id = {
       throw new Error("Invalid id passed to Id.parse")
     return result as { packageName: P, scope: S, name: N }
   },
-  isId: (id: unknown): id is Id => typeof id === "string" && idRegex.test(id),
+  isId: Timer.create().timeFn((id: unknown): id is Id => typeof id === "string" && idRegex.test(id)),
 }
