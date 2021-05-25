@@ -51,51 +51,49 @@ export class ConversionRegistry {
   }
 
   private async compose(fromType: ProductType, toType: ProductType): Promise<ConversionPath | null>{
-    const stored = await this.artifactManager.lookupRef(
+    const result = await this.artifactManager.computeRef(
       [ConversionRegistry.artifactStoreId, toType, fromType],
+      async () => {
+        let bestPath = null as ConversionPath | null
+        const promises = []
+
+        const tasks = [{
+          type: fromType,
+          prior: [] as ConversionPath,
+        }]
+
+        while(tasks.length) {
+          const { type, prior } = tasks.pop()!
+          if(prior.some(c => Hash.equal(c.fromType, type)))
+            continue
+
+          if(this.maybeImplicitlyConvertibleTo(type, toType))
+            promises.push(
+              this.finishPath(fromType, prior, toType).then(path => {
+                if(!bestPath || path && this.weight(path) <= this.weight(bestPath))
+                  bestPath = path
+              }),
+            )
+
+          else
+            for(const conversion of this.registered.values())
+              if(this.maybeImplicitlyConvertibleTo(type, conversion.fromType))
+                tasks.push({
+                  type: conversion.toType,
+                  prior: [...prior, conversion],
+                })
+        }
+
+        await Promise.all(promises)
+
+        return bestPath
+      },
       this.excludeStores,
     )
 
-    if(stored)
-      return this.rehydrateConversionPath(stored as ConversionPath)
+    if(!result) return null
 
-    let bestPath: ConversionPath | null = null
-    const promises = []
-
-    const tasks = [{
-      type: fromType,
-      prior: [] as ConversionPath,
-    }]
-
-    while(tasks.length) {
-      const { type, prior } = tasks.pop()!
-      if(prior.some(c => Hash.equal(c.fromType, type)))
-        continue
-
-      if(this.maybeImplicitlyConvertibleTo(type, toType))
-        promises.push(
-          this.finishPath(fromType, prior, toType).then(path => {
-            if(!bestPath || path && this.weight(path) <= this.weight(bestPath))
-              bestPath = path
-          }),
-        )
-
-      else
-        for(const conversion of this.registered.values())
-          if(this.maybeImplicitlyConvertibleTo(type, conversion.fromType))
-            tasks.push({
-              type: conversion.toType,
-              prior: [...prior, conversion],
-            })
-    }
-
-    await this.artifactManager.storeRef(
-      [ConversionRegistry.artifactStoreId, toType, fromType],
-      Promise.all(promises).then(() => bestPath),
-      this.excludeStores,
-    )
-
-    return bestPath
+    return this.rehydrateConversionPath(result)
   }
 
   private async finishPath(initialFromType: ProductType, path: ConversionPath | null, finalToType: ProductType){
@@ -261,37 +259,20 @@ export class ConversionRegistry {
   private async executeConversionPath(product: Product, conversions: ConversionPath){
     if(!conversions.length) return product
 
-    const toType = conversions[conversions.length - 1].toType
-    const ref = [ConversionRegistry.artifactStoreId, toType, product]
-
-    const stored = await this.artifactManager.lookupRef(ref, this.excludeStores)
-
-    if(stored)
-      return stored as Product
-
-    const result = this._executeConversionPath(product, conversions)
-
-    await this.artifactManager.storeRef(ref, result, this.excludeStores)
-
-    return await result
-  }
-
-  private async _executeConversionPath(product: Product, conversions: ConversionPath){
-    for(const conversion of conversions) {
-      const { toType } = conversion
-      const ref = [ConversionRegistry.artifactStoreId, toType, product]
-      const stored = await this.artifactManager.lookupRef(ref, this.excludeStores)
-      if(stored) {
-        product = stored as Product
-        continue
-      }
-      const result = conversion.convert(product)
-      await this.artifactManager.storeRef(ref, result, this.excludeStores)
-      product = await result
-      continue
-    }
-
-    return product
+    return await this.artifactManager.computeRef(
+      [ConversionRegistry.artifactStoreId, conversions[conversions.length - 1].toType, product],
+      async () => {
+        let currentProduct = product
+        for(const conversion of conversions)
+          currentProduct = await artifactManager.computeRef(
+            [ConversionRegistry.artifactStoreId, conversion.toType, currentProduct],
+            async () => conversion.convert(currentProduct),
+            this.excludeStores,
+          )
+        return currentProduct
+      },
+      this.excludeStores,
+    )
   }
 
   async convertProduct<T extends Product, F extends ConvertibleTo<T>>(
