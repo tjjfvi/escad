@@ -93,7 +93,7 @@ export const createRendererServerMessenger = (
       }
       const el = Element.create<Product>(result)
       const products = await Promise.all((await Element.toArrayFlat(el)).map(async product =>
-        artifactManager.storeRaw(await HashProduct.fromProduct(product)),
+        artifactManager.storeRaw(HashProduct.fromProduct(product)),
       ))
       const hierarchy = await artifactManager.storeRaw(await Hierarchy.from(el))
       return { products, hierarchy }

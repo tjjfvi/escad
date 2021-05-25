@@ -54,7 +54,7 @@ export const Hierarchy = {
       if(Product.isProduct(value))
         return NameHierarchy.create({
           name: `<${value.type}>`,
-          linkedProducts: [Hash.create(await HashProduct.fromProduct(value))],
+          linkedProducts: [Hash.create(HashProduct.fromProduct(value))],
         })
     }
     if(value instanceof Array)
