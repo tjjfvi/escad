@@ -25,6 +25,9 @@ import { StatusSet } from "./Status"
 import { HierarchySelection, resolveHierarchySelection } from "./HierarchySelection"
 import { Loading } from "./Loading"
 import { mdi } from "./Icon"
+import crypto from "crypto"
+
+const lookupRawRetryTimer = 500
 
 const _ClientStateContext = createContext<ClientState>(null as never)
 
@@ -260,10 +263,25 @@ export class ClientState implements ArtifactStore {
     this.hierarchy(hierarchyHash ? await this.artifactManager.lookupRaw(hierarchyHash) : null)
   }
 
-  async lookupRaw(hash: Hash<unknown>){
+  async lookupRaw(hash: Hash<unknown>): Promise<WrappedValue<unknown> | null>{
     return this.wrapRendering(async () => {
       console.log("lookupRaw", hash)
-      return $wrappedValue.deserializeAsyncStream(fetchStream(this.hashToUrl(hash))).catch(() => null)
+      const stream = fetchStream(this.hashToUrl(hash))
+      const hasher = crypto.createHash("sha256")
+      const wrappedStream = (async function*(){
+        for await (const part of stream) {
+          hasher.update(part)
+          yield part
+        }
+      })()
+      const result = $wrappedValue.deserializeAsyncStream(wrappedStream)
+
+      return result.catch(async () => {
+        for await (const {} of wrappedStream); // Finish hashing the stream
+        if(hasher.digest("hex") === hash) return null
+        await new Promise(r => setTimeout(r, lookupRawRetryTimer))
+        return this.lookupRaw(hash) // Try again
+      })
     })
   }
 
