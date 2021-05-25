@@ -5,6 +5,7 @@ import { Id } from "./Id"
 import { ArtifactStore } from "./ArtifactStore"
 import { Product, ProductType } from "./Product"
 import { conversionRegistry, ConversionRegistry } from "./ConversionRegistry"
+import { WrappedValue } from "./WrappedValue"
 
 export class ExportTypeRegistry {
 
@@ -26,7 +27,7 @@ export class ExportTypeRegistry {
       ))
       const exported = await exportType.export(convertedProducts)
       await artifactManager.storeRef([id, exportTypeId, products], exported)
-      return exported
+      return WrappedValue.create(exported)
     },
   }
 

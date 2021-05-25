@@ -1,23 +1,27 @@
 
-import { Hash, Id, ArtifactStore } from "@escad/core"
+import { Hash, Id, ArtifactStore, WrappedValue, $wrappedValue } from "@escad/core"
 import { join, dirname } from "path"
 import fs from "fs"
 import { promisify } from "util"
 import { v4 as uuidv4 } from "uuid"
+import stream, { Readable } from "stream"
 
-const writeFile = promisify(fs.writeFile)
 const symlink = promisify(fs.symlink)
 const rename = promisify(fs.rename)
-const readFile = promisify(fs.readFile)
 const mkdir = promisify(fs.mkdir)
+const pipeline = promisify(stream.pipeline)
 
 export class FsArtifactStore implements ArtifactStore {
 
   constructor(public rootDir: string){}
 
-  async storeRaw(hash: Hash<unknown>, buffer: Buffer){
+  async storeRaw(hash: Hash<unknown>, value: WrappedValue){
     const path = await this.getPathRaw(hash)
-    await writeFile(path, buffer, { flag: "wx" }).catch(error => void error)
+    const writeStream = fs.createWriteStream(path, { flags: "wx" })
+    pipeline(
+      Readable.from($wrappedValue.serialize(value)),
+      writeStream,
+    ).catch(() => null)
   }
 
   async storeRef(loc: readonly unknown[], hash: Hash<unknown>){
@@ -30,12 +34,15 @@ export class FsArtifactStore implements ArtifactStore {
 
   async lookupRaw(hash: Hash<unknown>){
     const path = await this.getPathRaw(hash)
-    return await readFile(path).catch(() => null)
+    return await $wrappedValue.deserializeAsyncStream(fs.createReadStream(path)).catch(e => {
+      console.log(e)
+      return null
+    })
   }
 
   async lookupRef(loc: readonly unknown[]){
     const path = await this.getPathRef(loc)
-    return await readFile(path).catch(() => null)
+    return await $wrappedValue.deserializeAsyncStream(fs.createReadStream(path)).catch(() => null)
   }
 
   private async getPathTmp(){

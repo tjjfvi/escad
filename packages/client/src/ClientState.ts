@@ -9,6 +9,8 @@ import {
   Hierarchy,
   Product,
   Log,
+  $wrappedValue,
+  WrappedValue,
 } from "@escad/core"
 import { ObjectParam } from "@escad/core"
 import { createContext } from "react"
@@ -261,8 +263,7 @@ export class ClientState implements ArtifactStore {
   async lookupRaw(hash: Hash<unknown>){
     return this.wrapRendering(async () => {
       console.log("lookupRaw", hash)
-      const response = await fetch(this.hashToUrl(hash))
-      return Buffer.from(await response.arrayBuffer())
+      return $wrappedValue.deserializeAsyncStream(fetchStream(this.hashToUrl(hash))).catch(() => null)
     })
   }
 
@@ -273,8 +274,7 @@ export class ClientState implements ArtifactStore {
   async lookupRef(loc: readonly unknown[]){
     return this.wrapRendering(async () => {
       const hash = await this.lookupRefHash(loc)
-      const response = await fetch(this.hashToUrl(hash))
-      return Buffer.from(await response.arrayBuffer())
+      return this.lookupRaw(hash)
     })
   }
 
@@ -339,4 +339,16 @@ export class WebSocketClientState extends ClientState {
     setTimeout(() => this.initWs(), 5000)
   }
 
+}
+
+async function* fetchStream(input: RequestInfo, init?: RequestInit){
+  const response = await fetch(input, init)
+  if(!response.ok) throw new Error(`${response.status}`)
+  if(!response.body) throw new Error("Missing body")
+  const reader = response.body.getReader()
+  while(true) {
+    const result = await reader.read()
+    if(result.value) yield result.value
+    if(result.done) return
+  }
 }

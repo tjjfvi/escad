@@ -12,6 +12,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@escad/serial": "^0.0.0",
     "@escad/core": "^0.0.0",
     "@escad/server": "^0.0.0",
     "@escad/client": "^0.0.0",

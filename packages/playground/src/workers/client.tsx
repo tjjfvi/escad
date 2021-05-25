@@ -52,6 +52,7 @@ if(isRun) {
   const clientState = new ClientState(
     clientServer,
     artifactManager,
+    // @ts-ignore: todo
     hash => createBlob(artifactStore.raw.get(hash) ?? new Uint8Array(0)),
   )
   clientState.removeStatusSet("Connection")
