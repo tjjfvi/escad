@@ -1,11 +1,11 @@
 
 import crypto from "crypto"
-import { timers } from "./Timer"
+import { Timer } from "./Timer"
 import { $unknown } from "@escad/serial"
 
 const hashMemo = new WeakMap<object, Hash<any>>()
 export const Hash = {
-  create: timers.hash.time(<T>(obj: T): Hash<T> => {
+  create: Timer.create().timeFn(<T>(obj: T): Hash<T> => {
     if(typeof obj === "object" && obj) {
       const memoedHash = hashMemo.get(obj as never)
       if(memoedHash) return memoedHash
