@@ -9,6 +9,7 @@ import {
   ObjectParam,
   ProductType,
   Logger,
+  $wrappedValue,
 } from "@escad/core"
 import { RenderInfo, RendererServerMessenger, LoadFileInfo } from "@escad/protocol"
 import { Connection, createMessenger } from "@escad/messages"
@@ -29,6 +30,14 @@ export const createRendererServerMessenger = (
       lookupRef,
     },
     connection,
+  })
+
+  artifactManager.artifactStores.push({
+    lookupRaw: async hash => {
+      const result = await messenger.lookupRaw(hash)
+      if(!result) return null
+      return $wrappedValue.deserialize(result)
+    },
   })
 
   let lastEmitLogPromise : Promise<unknown> = Promise.resolve()

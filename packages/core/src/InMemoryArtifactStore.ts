@@ -1,5 +1,8 @@
 
-import { ArtifactStore, Hash, HashMap, WrappedValue } from "@escad/core"
+import { ArtifactStore } from "./ArtifactStore"
+import { Hash } from "./Hash"
+import { HashMap } from "./HashMap"
+import { WrappedValue } from "./WrappedValue"
 
 export class InMemoryArtifactStore implements ArtifactStore {
 
@@ -11,6 +14,7 @@ export class InMemoryArtifactStore implements ArtifactStore {
   }
 
   async lookupRaw(hash: Hash<unknown>){
+    console.log(this.raw)
     return this.raw.get(hash) ?? null
   }
 

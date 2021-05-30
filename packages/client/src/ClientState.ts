@@ -179,7 +179,17 @@ export class ClientState implements ArtifactStore {
     public artifactManager: ArtifactManager,
     public hashToUrl: (hash: Hash<unknown>) => string,
   ){
-    this.clientServerMessenger = createMessenger({ impl: {}, connection: logConnection(this.connection) })
+    const excludeStores = new Set([this])
+    this.clientServerMessenger = createMessenger({
+      impl: {
+        lookupRaw: async hash => {
+          const result = await this.artifactManager.lookupRawWrapped(hash, excludeStores)
+          if(!result) return null
+          return [...$wrappedValue.serialize(result)]
+        },
+      },
+      connection: logConnection(this.connection),
+    })
     this.artifactManager.artifactStores.unshift(this)
 
     this.productHashes.on("update", async () => {
@@ -274,7 +284,7 @@ export class ClientState implements ArtifactStore {
           yield part
         }
       })()
-      const result = $wrappedValue.deserializeAsyncStream(wrappedStream)
+      const result = $wrappedValue.deserializeAsync(wrappedStream)
 
       return result.catch(async () => {
         for await (const {} of wrappedStream); // Finish hashing the stream
@@ -286,7 +296,11 @@ export class ClientState implements ArtifactStore {
   }
 
   lookupRefHash(loc: readonly unknown[]): Promise<Hash<unknown>>{
-    return this.wrapRendering(() => this.clientServerMessenger.lookupRef(loc))
+    return this.wrapRendering(async () =>
+      this.clientServerMessenger.lookupRef(await Promise.all(loc.map(x =>
+        this.artifactManager.storeRaw(x),
+      ))),
+    )
   }
 
   async lookupRef(loc: readonly unknown[]){
@@ -312,13 +326,13 @@ export class ClientState implements ArtifactStore {
 
 export class WebSocketClientState extends ClientState {
 
-  emit: (value: string) => void
+  emit: (value: Uint8Array) => void
   curWs?: WebSocket
   disconnectTimeout: any
   url: string
 
   constructor(url: string, artifactManager: ArtifactManager, hashToUrl: ClientState["hashToUrl"]){
-    const [a, b] = createConnectionPair<string, unknown>()
+    const [a, b] = createConnectionPair<Uint8Array, unknown>()
     b.onMsg(message => this.curWs?.send(message))
     const connection = serializeConnection(a)
     super(connection, artifactManager, hashToUrl)
@@ -340,11 +354,12 @@ export class WebSocketClientState extends ClientState {
       this.serverStatus("connected")
       this.connect()
     })
+    ws.binaryType = "arraybuffer"
 
     ws.addEventListener("close", () => this.disconnect(ws))
     ws.addEventListener("error", () => this.disconnect(ws))
-    ws.addEventListener("message", msg => {
-      this.emit(msg.data)
+    ws.addEventListener("message", async ({ data }) => {
+      this.emit(new Uint8Array(data))
     })
   }
 

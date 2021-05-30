@@ -19,6 +19,7 @@
     "@escad/renderer": "^0.0.0",
     "@escad/bundler": "^0.0.0",
     "@escad/messages": "^0.0.0",
+    "@escad/protocol": "^0.0.0",
     "commander": "^7.0.0",
     "express": "^4.17.1",
     "express-ws": "^4.0.0",

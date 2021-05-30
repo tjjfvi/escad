@@ -30,12 +30,12 @@ export class FsArtifactStore implements ArtifactStore {
 
   async lookupRaw(hash: Hash<unknown>){
     const path = await this.getPathRaw(hash)
-    return await $wrappedValue.deserializeAsyncStream(fs.createReadStream(path)).catch(() => null)
+    return await $wrappedValue.deserializeAsync(fs.createReadStream(path)).catch(() => null)
   }
 
   async lookupRef(loc: readonly unknown[]){
     const path = await this.getPathRef(loc)
-    return await $wrappedValue.deserializeAsyncStream(fs.createReadStream(path)).catch(() => null)
+    return await $wrappedValue.deserializeAsync(fs.createReadStream(path)).catch(() => null)
   }
 
   private async getPathRaw(hash: Hash<unknown>){
