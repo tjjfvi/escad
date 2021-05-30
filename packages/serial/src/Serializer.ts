@@ -1,7 +1,7 @@
 import { BufferInfo } from "./BufferInfo"
 
 export type Serialization = Generator<Uint8Array, void, void>
-export type Deserialization<T> = Generator<void, T, Uint8Array>
+export type Deserialization<T> = Generator<undefined, T, Uint8Array>
 
 type SerializationContext = {
   chunkSize: number,
@@ -15,6 +15,10 @@ type DeserializationContext = {
   offset: number,
 }
 
+export interface SerializeOptions {
+  chunkSize?: number,
+}
+
 export class Serializer<T> {
 
   private static serializationContext?: SerializationContext
@@ -26,30 +30,6 @@ export class Serializer<T> {
   constructor({ s, d }: { s: (value: T) => Serialization, d: () => Deserialization<T> }){
     this.s = s
     this.d = d
-  }
-
-  *serialize(value: T, { chunkSize = 2 ** 16 }: { chunkSize?: number } = {}): Generator<Uint8Array, void, void>{
-    const context: SerializationContext = {
-      chunkSize,
-      chunk: BufferInfo.create(new Uint8Array(chunkSize)),
-      offset: 0,
-    }
-
-    const oldContext = Serializer.serializationContext
-    Serializer.serializationContext = context
-    const iterator = this.s(value)
-    Serializer.serializationContext = oldContext
-
-    while(true) {
-      const oldContext = Serializer.serializationContext
-      Serializer.serializationContext = context
-      const result = iterator.next()
-      Serializer.serializationContext = oldContext
-      if(!result.done) yield result.value
-      else break
-    }
-
-    yield Serializer._finishSerializeChunk(context)
   }
 
   static *write(length: number, fn: (buffer: BufferInfo) => void): Serialization{
@@ -66,39 +46,6 @@ export class Serializer<T> {
     context.offset = length
     context.chunk = BufferInfo.create(new Uint8Array(Math.max(context.chunkSize, length)), 0)
     fn(context.chunk)
-  }
-
-  private static _finishSerializeChunk(context: SerializationContext){
-    return new Uint8Array(context.chunk.buffer.buffer, context.chunk.buffer.byteOffset, context.offset)
-  }
-
-  *deserialize(): Generator<void, T, Uint8Array | undefined>{
-    const context: DeserializationContext = {
-      chunks: [],
-      totalLength: 0,
-      offset: 0,
-    }
-
-    const oldContext = Serializer.deserializationContext
-    Serializer.deserializationContext = context
-    const iterator = this.d()
-    let result = iterator.next()
-    Serializer.deserializationContext = oldContext
-
-    while(!result.done) {
-      const nextValue = yield undefined
-      if(!nextValue)
-        throw new Error("Unexpected end of input")
-      const oldContext = Serializer.deserializationContext
-      Serializer.deserializationContext = context
-      result = iterator.next(nextValue)
-      Serializer.deserializationContext = oldContext
-    }
-
-    if(context.totalLength > context.offset || !!(yield undefined))
-      throw new Error("Unexpected extraneous data")
-
-    return result.value
   }
 
   static *read<T>(length: number, fn: (buffer: BufferInfo) => T): Deserialization<T>{
@@ -141,8 +88,70 @@ export class Serializer<T> {
     }
   }
 
-  deserializeStream(stream: Iterable<Uint8Array>){
-    const writable = this.deserialize()
+  *serialize(value: T, { chunkSize = 2 ** 16 }: SerializeOptions = {}): Generator<Uint8Array, void, void>{
+    const context: SerializationContext = {
+      chunkSize,
+      chunk: BufferInfo.create(new Uint8Array(chunkSize)),
+      offset: 0,
+    }
+
+    const oldContext = Serializer.serializationContext
+    Serializer.serializationContext = context
+    const iterator = this.s(value)
+    Serializer.serializationContext = oldContext
+
+    while(true) {
+      const oldContext = Serializer.serializationContext
+      Serializer.serializationContext = context
+      const result = iterator.next()
+      Serializer.serializationContext = oldContext
+      if(!result.done) yield result.value
+      else break
+    }
+
+    yield Serializer._finishSerializeChunk(context)
+  }
+
+  // istanbul ignore next: trivial
+  *serializeStream(iterable: Iterable<T>, options: SerializeOptions = {}){
+    for(const value of iterable)
+      yield* this.serialize(value, options)
+  }
+
+  // istanbul ignore next: trivial
+  async *serializeStreamAsync(iterable: AsyncIterable<T>, options: SerializeOptions = {}){
+    for await (const value of iterable)
+      yield* this.serialize(value, options)
+  }
+
+  private *_deserialize(
+    context: DeserializationContext = { chunks: [], totalLength: 0, offset: 0 },
+    allowPartial = false,
+  ): Generator<undefined, T, Uint8Array | undefined>{
+    const oldContext = Serializer.deserializationContext
+    Serializer.deserializationContext = context
+    const iterator = this.d()
+    let result = iterator.next()
+    Serializer.deserializationContext = oldContext
+
+    while(!result.done) {
+      const nextValue = yield undefined
+      if(!nextValue)
+        throw new Error("Unexpected end of input")
+      const oldContext = Serializer.deserializationContext
+      Serializer.deserializationContext = context
+      result = iterator.next(nextValue)
+      Serializer.deserializationContext = oldContext
+    }
+
+    if(!allowPartial && (context.totalLength > context.offset || !!(yield undefined)))
+      throw new Error("Unexpected extraneous data")
+
+    return result.value
+  }
+
+  deserialize(stream: Iterable<Uint8Array>): T{
+    const writable = this._deserialize()
 
     let nextValue = undefined
     let result = writable.next()
@@ -158,8 +167,8 @@ export class Serializer<T> {
   }
 
   // istanbul ignore next: Same logic as above
-  async deserializeAsyncStream(stream: AsyncIterable<Uint8Array>){
-    const writable = this.deserialize()
+  async deserializeAsync(stream: AsyncIterable<Uint8Array>): Promise<T>{
+    const writable = this._deserialize()
 
     let nextValue = undefined
     let result = writable.next()
@@ -172,6 +181,53 @@ export class Serializer<T> {
     }
 
     return result.value
+  }
+
+  private *_deserializeStream(): Generator<undefined | { value: T }, void, Uint8Array | undefined>{
+    const context: DeserializationContext = { chunks: [], totalLength: 0, offset: 0 }
+    let nextValue: { value: T } | undefined
+    while(true) {
+      const next = yield nextValue
+      if(!next) return
+      context.chunks.push(BufferInfo.create(next))
+      context.totalLength += next.length
+      nextValue = { value: yield* this._deserialize(context, true) }
+    }
+  }
+
+  *deserializeStream(stream: Iterable<Uint8Array>): Iterable<T>{
+    const writable = this._deserializeStream()
+
+    let nextValue = undefined
+    let result = writable.next()
+    let streamIterator = stream[Symbol.iterator]()
+
+    while(!result.done) {
+      if(result.value) yield result.value.value
+      const streamResult = streamIterator.next()
+      nextValue = streamResult.done ? undefined : streamResult.value
+      result = writable.next(nextValue)
+    }
+  }
+
+  // istanbul ignore next: Same logic as above
+  async *deserializeStreamAsync(stream: AsyncIterable<Uint8Array>): AsyncIterable<T>{
+    const writable = this._deserializeStream()
+
+    let nextValue = undefined
+    let result = writable.next()
+    let streamIterator = stream[Symbol.asyncIterator]()
+
+    while(!result.done) {
+      if(result.value) yield result.value.value
+      const streamResult = await streamIterator.next()
+      nextValue = streamResult.done ? undefined : streamResult.value
+      result = writable.next(nextValue)
+    }
+  }
+
+  private static _finishSerializeChunk(context: SerializationContext){
+    return new Uint8Array(context.chunk.buffer.buffer, context.chunk.buffer.byteOffset, context.offset)
   }
 
 }
