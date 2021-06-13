@@ -17,12 +17,12 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-node-
       - run: npm install
+      - name: Build
+        run: npm run build
       - name: Test
         run: npx jest
       - name: Lint
         run: npm run lint-check
-      - name: Build
-        run: npm run build
       - name: Test for changes
         run: |
           STATUS_OUTPUT="$(git status --porcelain)"
