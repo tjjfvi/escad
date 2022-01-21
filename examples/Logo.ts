@@ -24,7 +24,6 @@ export default renderFunction(
     const main = escad.cube({ size: outerSize })
     const inner = escad.cube({ size: innerSize })
     const corner = escad.cube({ size: outerSize, shift: 1 })
-    // @ts-ignore
     const final = main
       ._(hollow ? escad.sub(inner) : escad)
       .sub(corner)
