@@ -1,8 +1,8 @@
 import "../stylus/ObjectParam.styl"
-import { ObjectParam, Parameter } from "@escad/core"
-import React from "react"
-import { observer } from "rhobo"
-import { NameDesc, ParameterView, registerParameter } from "./Parameters"
+import { ObjectParam, Parameter } from "../core/mod.ts"
+import React from "react.ts"
+import { observer } from "rhobo.ts"
+import { NameDesc, ParameterView, registerParameter } from "./Parameters.ts"
 
 registerParameter<Record<string, unknown>, ObjectParam<Record<string, Parameter<any>>>>({
   id: ObjectParam.id,

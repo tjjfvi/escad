@@ -1,5 +1,5 @@
 
-import { Hash, artifactManager, ConversionRegistry, ExportTypeRegistry, Product } from "@escad/core"
+import { Hash, artifactManager, ConversionRegistry, ExportTypeRegistry, Product } from "../core/mod.ts"
 
 export async function lookupRef(locHashes: readonly Hash<unknown>[]){
   console.log(locHashes)

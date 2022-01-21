@@ -1,7 +1,7 @@
 
-import { Face } from "./Face"
-import { Vector3 } from "./Vector3"
-import { createLeafProductUtils, Id, LeafProduct } from "@escad/core"
+import { Face } from "./Face.ts"
+import { Vector3 } from "./Vector3.ts"
+import { createLeafProductUtils, Id, LeafProduct } from "../core/mod.ts"
 
 const meshId = Id.create(__filename, "@escad/builtins", "LeafProduct", "Mesh")
 

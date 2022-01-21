@@ -1,7 +1,7 @@
 
-import { Messenger } from "@escad/messages"
-import { Hash, Log } from "@escad/core"
-import { RenderInfo } from "./serverRenderer"
+import { Messenger } from "../messages/mod.ts"
+import { Hash, Log } from "../core/mod.ts"
+import { RenderInfo } from "./serverRenderer.ts"
 
 export type ServerClientShape = {
   lookupRef(loc: readonly Hash<unknown>[]): Promise<Hash<unknown>>,

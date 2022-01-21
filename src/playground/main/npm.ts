@@ -1,8 +1,8 @@
 
-import { installProjectPromise } from "./initialize"
+import { installProjectPromise } from "./initialize.ts"
 // @ts-ignore
 import Arborist = require("@npmcli/arborist")
-import { escadPackageTgzs } from "../utils/escadPackages"
+import { escadPackageTgzs } from "../utils/escadPackages.ts"
 
 let deps: string[] = []
 let currentOperation: Promise<unknown> = installProjectPromise

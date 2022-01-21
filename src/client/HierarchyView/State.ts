@@ -1,5 +1,5 @@
 
-import { HierarchyPath } from "../HierarchyPath"
+import { HierarchyPath } from "../HierarchyPath.ts"
 
 export type State = { open: boolean }
 

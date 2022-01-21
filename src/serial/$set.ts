@@ -1,5 +1,5 @@
-import { $uint32le } from "./$number"
-import { Serializer } from "./Serializer"
+import { $uint32le } from "./$number.ts"
+import { Serializer } from "./Serializer.ts"
 
 export const $set = <T>($value: Serializer<T>) => new Serializer<Set<T>>({
   *s(set){

@@ -1,5 +1,5 @@
 
-import { transformConnection, createConnectionPair } from "../src"
+import { transformConnection, createConnectionPair } from "../src.ts"
 
 test("", () => {
   const [_a, b] = createConnectionPair<string>()

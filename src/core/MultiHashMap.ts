@@ -1,6 +1,6 @@
 
-import { HashMap } from "./HashMap"
-import { HashSet } from "./HashSet"
+import { HashMap } from "./HashMap.ts"
+import { HashSet } from "./HashSet.ts"
 
 export class MultiHashMap<K, V> {
 

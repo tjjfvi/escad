@@ -1,5 +1,5 @@
-import { $unknown, Serializer } from "@escad/serial"
-import { WrappedValue } from "../WrappedValue"
+import { $unknown, Serializer } from "../serial/mod.ts"
+import { WrappedValue } from "../WrappedValue.ts"
 
 export const $wrappedValue = new Serializer<WrappedValue>({
   s: ({ value }) => $unknown.s(value),

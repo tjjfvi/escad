@@ -14,13 +14,13 @@ import {
   TupleProductType,
   HashProduct,
   Promisish,
-} from "@escad/core"
-import { BoundingBox } from "./BoundingBox"
-import { _boundingBox } from "./getBoundingBox"
-import { Matrix4 } from "./Matrix4"
-import { Mesh } from "./Mesh"
-import { Transform, Transformation } from "./Transformation"
-import { Vector3 } from "./Vector3"
+} from "../core/mod.ts"
+import { BoundingBox } from "./BoundingBox.ts"
+import { _boundingBox } from "./getBoundingBox.ts"
+import { Matrix4 } from "./Matrix4.ts"
+import { Mesh } from "./Mesh.ts"
+import { Transform, Transformation } from "./Transformation.ts"
+import { Vector3 } from "./Vector3.ts"
 
 const moveToId = Id.create(__filename, "@escad/builtins", "Marker", "MoveTo")
 export type MoveTo<T extends Product> = MarkedProduct<typeof moveToId, T>

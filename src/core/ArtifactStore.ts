@@ -1,7 +1,7 @@
 
-import { ArtifactManager } from "./ArtifactManager"
-import { Hash } from "./Hash"
-import { WrappedValue } from "./WrappedValue"
+import { ArtifactManager } from "./ArtifactManager.ts"
+import { Hash } from "./Hash.ts"
+import { WrappedValue } from "./WrappedValue.ts"
 
 export interface ArtifactStore {
   readonly storeRaw?: (hash: Hash<unknown>, artifact: WrappedValue, artifactManager: ArtifactManager) => Promise<void>,

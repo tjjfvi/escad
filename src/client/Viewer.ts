@@ -1,5 +1,5 @@
 
-import { Product } from "@escad/core"
+import { Product } from "../core/mod.ts"
 
 export interface ViewerInput {
   product: Product,

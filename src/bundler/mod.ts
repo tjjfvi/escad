@@ -1,12 +1,12 @@
 
-import { Compiler, Stats } from "webpack"
-import { Connection, createMessenger } from "@escad/messages"
-import { BundleOptions, BundlerServerMessenger } from "@escad/protocol"
-import { Hash } from "@escad/core"
-import { writeFile } from "fs-extra"
-import stylus from "stylus"
-import path from "path"
-import fs from "fs"
+import { Compiler, Stats } from "webpack.ts"
+import { Connection, createMessenger } from "../messages/mod.ts"
+import { BundleOptions, BundlerServerMessenger } from "../protocol/mod.ts"
+import { Hash } from "../core/mod.ts"
+import { writeFile } from "fs-extra.ts"
+import stylus from "stylus.ts"
+import path from "path.ts"
+import fs from "fs.ts"
 
 export const createBundlerServerMessenger = (
   connection: Connection<unknown>,

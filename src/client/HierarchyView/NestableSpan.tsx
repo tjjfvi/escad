@@ -1,5 +1,5 @@
 
-import React, { useState } from "react"
+import React, { useState } from "react.ts"
 
 export interface NestableSpanProps {
   className?: string,

@@ -1,5 +1,5 @@
 
-import { brandConnection, createConnectionPair } from "../src"
+import { brandConnection, createConnectionPair } from "../src.ts"
 
 test("", () => {
   const [_a, b] = createConnectionPair()

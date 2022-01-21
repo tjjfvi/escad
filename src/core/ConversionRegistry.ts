@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { ProductType, Product } from "./Product"
-import { ConvertibleTo, ConversionImpl, ConversionImplish } from "./Conversions"
-import { Hash } from "./Hash"
-import { artifactManager, ArtifactManager } from "./ArtifactManager"
-import { ArtifactStore } from "./ArtifactStore"
-import { Id } from "./Id"
-import { TupleProduct, TupleProductType } from "./TupleProduct"
-import { ArrayProduct, ArrayProductType } from "./ArrayProduct"
-import { UnknownProduct, UnknownProductType } from "./UnknownProduct"
-import { MarkedProduct, MarkedProductType } from "./MarkedProduct"
-import { HashProduct, HashProductType } from "./HashProduct"
-import { WrappedValue } from "./WrappedValue"
+import { ProductType, Product } from "./Product.ts"
+import { ConvertibleTo, ConversionImpl, ConversionImplish } from "./Conversions.ts"
+import { Hash } from "./Hash.ts"
+import { artifactManager, ArtifactManager } from "./ArtifactManager.ts"
+import { ArtifactStore } from "./ArtifactStore.ts"
+import { Id } from "./Id.ts"
+import { TupleProduct, TupleProductType } from "./TupleProduct.ts"
+import { ArrayProduct, ArrayProductType } from "./ArrayProduct.ts"
+import { UnknownProduct, UnknownProductType } from "./UnknownProduct.ts"
+import { MarkedProduct, MarkedProductType } from "./MarkedProduct.ts"
+import { HashProduct, HashProductType } from "./HashProduct.ts"
+import { WrappedValue } from "./WrappedValue.ts"
 
 type ConversionPath = ConversionImpl<any, any>[]
 

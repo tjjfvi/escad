@@ -1,12 +1,12 @@
 
-import webpack, { NormalModule } from "webpack"
+import webpack, { NormalModule } from "webpack.ts"
 // @ts-ignore
 import CachedConstDependency = require("webpack/lib/dependencies/CachedConstDependency")
 import MonacoWebpackPlugin = require("monaco-editor-webpack-plugin")
 import NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
-import { stylusGlobals } from "@escad/bundler"
-import path from "path"
-import { mapModuleIds } from "../utils/mapModuleIds"
+import { stylusGlobals } from "../bundler/mod.ts"
+import path from "path.ts"
+import { mapModuleIds } from "../utils/mapModuleIds.ts"
 
 export const staticDir = __dirname + "/../../static/"
 const bundledDir = staticDir + "bundled/"

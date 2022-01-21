@@ -1,4 +1,4 @@
-import { createLeafProductUtils, Id, LeafProduct } from "@escad/core"
+import { createLeafProductUtils, Id, LeafProduct } from "../core/mod.ts"
 
 const vector3Id = Id.create(__filename, "@escad/builtins", "LeafProduct", "Vector3")
 

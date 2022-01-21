@@ -1,4 +1,4 @@
-import { $string, Serializer } from "@escad/serial"
-import { Hash } from "../Hash"
+import { $string, Serializer } from "../serial/mod.ts"
+import { Hash } from "../Hash.ts"
 
 export const $hash: Serializer<Hash<any>> = $string as never

@@ -1,16 +1,16 @@
 
 import "../main/initialize"
-import webpack from "webpack"
-import fs from "fs"
-import NodePolyfillPlugin from "node-polyfill-webpack-plugin"
-import rendererSource from "!!raw-loader!./renderer.js"
-import { getResourceFilePath } from "../utils/resourceFiles"
-import { brandConnection, createMessenger, workerConnection } from "@escad/messages"
-import { promisify } from "util"
-import { ModuleKind, ModuleResolutionKind, ScriptTarget, transpileModule } from "typescript"
-import { fsPromise } from "../main/initialize"
-import fakeImportAllEscadSource from "!!raw-loader!../utils/fakeImportAllEscad.js"
-import { mapModuleIds } from "../utils/mapModuleIds"
+import webpack from "webpack.ts"
+import fs from "fs.ts"
+import NodePolyfillPlugin from "node-polyfill-webpack-plugin.ts"
+import rendererSource from "!!raw-loader!./renderer.js.ts"
+import { getResourceFilePath } from "../utils/resourceFiles.ts"
+import { brandConnection, createMessenger, workerConnection } from "../messages/mod.ts"
+import { promisify } from "util.ts"
+import { ModuleKind, ModuleResolutionKind, ScriptTarget, transpileModule } from "typescript.ts"
+import { fsPromise } from "../main/initialize.ts"
+import fakeImportAllEscadSource from "!!raw-loader!../utils/fakeImportAllEscad.js.ts"
+import { mapModuleIds } from "../utils/mapModuleIds.ts"
 
 export type RendererBundlerMessengerShape = {
   bundle: () => Promise<void>,

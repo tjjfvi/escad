@@ -1,6 +1,6 @@
 
-import { State } from "./State"
-import { TreeText, TreeTextPart } from "./TreeText"
+import { State } from "./State.ts"
+import { TreeText, TreeTextPart } from "./TreeText.ts"
 
 export type Tree = TreePart[]
 

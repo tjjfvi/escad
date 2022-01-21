@@ -1,8 +1,8 @@
 
 // @create-index {"mode":"*"}
 
-export * from "./bundlerMessenger"
-export * from "./clientMessenger"
-export * from "./rendererMessenger"
-export * from "./serverEmitter"
+export * from "./bundlerMessenger.ts"
+export * from "./clientMessenger.ts"
+export * from "./rendererMessenger.ts"
+export * from "./serverEmitter.ts"
 

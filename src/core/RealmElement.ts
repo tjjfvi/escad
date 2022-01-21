@@ -1,13 +1,13 @@
 
-import { Product } from "./Product"
-import { Element } from "./Element"
-import { Component, GenericComponent } from "./Component"
-import { GenericOperation, Operation } from "./Operation"
-import { Realm } from "./Realm"
-import { ExtensibleFunction } from "./ExtensibleFunction"
-import { ConvertibleTo } from "./Conversions"
-import { RealmComponent, RealmGenericComponent } from "./RealmComponent"
-import { Hkt } from "./Hkt"
+import { Product } from "./Product.ts"
+import { Element } from "./Element.ts"
+import { Component, GenericComponent } from "./Component.ts"
+import { GenericOperation, Operation } from "./Operation.ts"
+import { Realm } from "./Realm.ts"
+import { ExtensibleFunction } from "./ExtensibleFunction.ts"
+import { ConvertibleTo } from "./Conversions.ts"
+import { RealmComponent, RealmGenericComponent } from "./RealmComponent.ts"
+import { Hkt } from "./Hkt.ts"
 
 export type ConvertibleRealmElement<T extends Product, C> = RealmElement<ConvertibleTo<T>, C>
 

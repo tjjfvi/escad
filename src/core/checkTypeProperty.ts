@@ -23,4 +23,4 @@ checkTypeProperty.idScope =
       typeof value === "string" && Id.tryParse(value)?.scope === scope,
     )
 
-import { Id, __id } from "./Id"
+import { Id, __id } from "./Id.ts"

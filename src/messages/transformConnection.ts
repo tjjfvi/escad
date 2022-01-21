@@ -1,5 +1,5 @@
 
-import { Connection } from "./Connection"
+import { Connection } from "./Connection.ts"
 
 export const transformConnection =
   <T0, U0, T1, U1>(

@@ -1,7 +1,7 @@
 
-import { Viewer, ViewerInput } from "./Viewer"
-import { conversionRegistry, Product } from "@escad/core"
-import { ProductConsumer, ProductConsumerRegistry } from "./ProductConsumerRegistry"
+import { Viewer, ViewerInput } from "./Viewer.ts"
+import { conversionRegistry, Product } from "../core/mod.ts"
+import { ProductConsumer, ProductConsumerRegistry } from "./ProductConsumerRegistry.ts"
 
 export type ViewerRegistration<P extends Product, T extends ViewerInput> = ProductConsumer<P, T, Viewer<T>>
 

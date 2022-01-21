@@ -1,11 +1,11 @@
 import "../stylus/LogsPane.styl"
-import { IdView } from "./IdView"
-import { observer, useFromProm } from "rhobo"
-import React, { useContext } from "react"
-import { Id, Log } from "@escad/core"
-import { ClientState } from "./ClientState"
-import { Pane } from "./Pane"
-import { Loading } from "./Loading"
+import { IdView } from "./IdView.ts"
+import { observer, useFromProm } from "rhobo.ts"
+import React, { useContext } from "react.ts"
+import { Id, Log } from "../core/mod.ts"
+import { ClientState } from "./ClientState.ts"
+import { Pane } from "./Pane.ts"
+import { Loading } from "./Loading.ts"
 
 export interface LogTypeRegistration<T extends Log> {
   id: T["type"],

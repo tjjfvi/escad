@@ -1,6 +1,6 @@
 
-import { Product, _Product } from "./Product"
-import { checkTypeProperty } from "./checkTypeProperty"
+import { Product, _Product } from "./Product.ts"
+import { checkTypeProperty } from "./checkTypeProperty.ts"
 
 export interface UnknownProduct extends _Product {
   readonly type: "UnknownProduct",

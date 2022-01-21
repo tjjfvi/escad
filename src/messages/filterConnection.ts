@@ -1,5 +1,5 @@
 
-import { Connection } from "./Connection"
+import { Connection } from "./Connection.ts"
 
 export const filterConnection =
   <T, U0, U1 extends U0>(connection: Connection<T, U0>, filter: (v: U0) => v is U1): Connection<T, U1> => ({

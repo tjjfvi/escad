@@ -1,6 +1,6 @@
 
-import { HierarchyPath } from "../HierarchyPath"
-import { State } from "./State"
+import { HierarchyPath } from "../HierarchyPath.ts"
+import { State } from "./State.ts"
 
 export type TreeText = TreeTextPart[]
 

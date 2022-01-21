@@ -1,8 +1,8 @@
 
-import { createBundlerServerMessenger, stylusGlobals } from "@escad/bundler"
-import { parentProcessConnection } from "@escad/messages"
-import webpack, { EnvironmentPlugin } from "webpack"
-import NodePolyfillPlugin from "node-polyfill-webpack-plugin"
+import { createBundlerServerMessenger, stylusGlobals } from "../bundler/mod.ts"
+import { parentProcessConnection } from "../messages/mod.ts"
+import webpack, { EnvironmentPlugin } from "webpack.ts"
+import NodePolyfillPlugin from "node-polyfill-webpack-plugin.ts"
 
 createBundlerServerMessenger(
   parentProcessConnection(),

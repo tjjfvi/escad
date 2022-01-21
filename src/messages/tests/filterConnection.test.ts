@@ -1,5 +1,5 @@
 
-import { filterConnection, createConnectionPair } from "../src"
+import { filterConnection, createConnectionPair } from "../src.ts"
 
 test("", () => {
   const [_a, b] = createConnectionPair()

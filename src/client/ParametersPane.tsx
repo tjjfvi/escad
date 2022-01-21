@@ -1,10 +1,10 @@
 import "../stylus/Parameters.styl"
-import { Parameter } from "@escad/core"
-import React, { useContext } from "react"
-import { observer } from "rhobo"
-import { ClientState } from "./ClientState"
-import { Pane } from "./Pane"
-import { ParameterView } from "./Parameters"
+import { Parameter } from "../core/mod.ts"
+import React, { useContext } from "react.ts"
+import { observer } from "rhobo.ts"
+import { ClientState } from "./ClientState.ts"
+import { Pane } from "./Pane.ts"
+import { ParameterView } from "./Parameters.ts"
 
 export const ParametersPane = observer(() => {
   const state = useContext(ClientState.Context)

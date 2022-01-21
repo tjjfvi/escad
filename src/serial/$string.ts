@@ -1,5 +1,5 @@
-import { $buffer } from "./$buffer"
-import { Serializer } from "./Serializer"
+import { $buffer } from "./$buffer.ts"
+import { Serializer } from "./Serializer.ts"
 
 const textEncoder = new TextEncoder()
 const textDecoder = new TextDecoder()

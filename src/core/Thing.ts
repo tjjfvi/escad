@@ -1,8 +1,8 @@
 
-import { Component, GenericComponent } from "./Component"
-import { GenericOperation, Operation } from "./Operation"
-import { Element } from "./Element"
-import { HierarchyProp } from "./Hierarchy"
+import { Component, GenericComponent } from "./Component.ts"
+import { GenericOperation, Operation } from "./Operation.ts"
+import { Element } from "./Element.ts"
+import { HierarchyProp } from "./Hierarchy.ts"
 
 export type Thing = Element<any> | Component<any[], any> | Operation<any, any>
 export type StripRealm<T extends Thing> =

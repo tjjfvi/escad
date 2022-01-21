@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { Serializer, $string, $uint8, registerType } from "@escad/serial"
-import { ArrayProductType } from "../ArrayProduct"
-import { assertNever } from "../assertNever"
-import { HashProductType } from "../HashProduct"
-import { ScopedId } from "../Id"
-import { LeafProductType } from "../LeafProduct"
-import { MarkedProductType } from "../MarkedProduct"
-import { Product, ProductType } from "../Product"
-import { TupleProductType } from "../TupleProduct"
-import { UnknownProductType } from "../UnknownProduct"
-import { $hash } from "./$hash"
-import { $id } from "./$id"
+import { Serializer, $string, $uint8, registerType } from "../serial/mod.ts"
+import { ArrayProductType } from "../ArrayProduct.ts"
+import { assertNever } from "../assertNever.ts"
+import { HashProductType } from "../HashProduct.ts"
+import { ScopedId } from "../Id.ts"
+import { LeafProductType } from "../LeafProduct.ts"
+import { MarkedProductType } from "../MarkedProduct.ts"
+import { Product, ProductType } from "../Product.ts"
+import { TupleProductType } from "../TupleProduct.ts"
+import { UnknownProductType } from "../UnknownProduct.ts"
+import { $hash } from "./$hash.ts"
+import { $id } from "./$id.ts"
 
 export const $productType = new Serializer<ProductType>({
   *s(rootProductType){

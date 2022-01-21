@@ -1,8 +1,8 @@
 
 import "../packages/builtins/register"
-import { renderFunction } from "../packages/renderer/dist"
-import { booleanParam, numberParam } from "../packages/builtins/dist"
-import escad, { objectParam, log } from "../packages/core/dist"
+import { renderFunction } from "../packages/renderer/dist.ts"
+import { booleanParam, numberParam } from "../packages/builtins/dist.ts"
+import escad, { objectParam, log } from "../packages/core/dist.ts"
 
 export default renderFunction(
   {

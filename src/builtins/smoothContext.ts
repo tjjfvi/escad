@@ -1,5 +1,5 @@
 
-import { Context, Id } from "@escad/core"
+import { Context, Id } from "../core/mod.ts"
 
 export interface Smooth {
   readonly sides?: number,

@@ -7,17 +7,17 @@ import {
   createConnectionPair,
   transformConnection,
   workerConnection,
-} from "@escad/messages"
-import React from "react"
-import ReactDOM from "react-dom"
-import { App, ClientState } from "@escad/client"
-import { artifactManager, ArtifactStore, InMemoryArtifactStore } from "@escad/core"
-import { createServerClientMessenger } from "@escad/server"
-import { createBlob } from "../utils/createBlob"
-import { ServerRendererMessenger } from "@escad/protocol"
-import { createServerEmitter } from "@escad/server"
-import { mdi } from "@escad/client"
-import { observable } from "rhobo"
+} from "../messages/mod.ts"
+import React from "react.ts"
+import ReactDOM from "react-dom.ts"
+import { App, ClientState } from "../client/mod.ts"
+import { artifactManager, ArtifactStore, InMemoryArtifactStore } from "../core/mod.ts"
+import { createServerClientMessenger } from "../server/mod.ts"
+import { createBlob } from "../utils/createBlob.ts"
+import { ServerRendererMessenger } from "../protocol/mod.ts"
+import { createServerEmitter } from "../server/mod.ts"
+import { mdi } from "../client/mod.ts"
+import { observable } from "rhobo.ts"
 
 const isRun = location.host === "escad.run" || (location.pathname.startsWith("/run"))
 

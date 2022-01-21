@@ -7,12 +7,12 @@ import {
   conversionRegistry,
   Component,
   Element,
-} from "@escad/core"
-import { Face } from "./Face"
-import { interpretTriplet, Triplet } from "./helpers"
-import { Mesh } from "./Mesh"
-import { Smooth, smoothContext } from "./smoothContext"
-import { Vector3 } from "./Vector3"
+} from "../core/mod.ts"
+import { Face } from "./Face.ts"
+import { interpretTriplet, Triplet } from "./helpers.ts"
+import { Mesh } from "./Mesh.ts"
+import { Smooth, smoothContext } from "./smoothContext.ts"
+import { Vector3 } from "./Vector3.ts"
 
 const tau = Math.PI * 2
 

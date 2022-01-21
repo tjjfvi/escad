@@ -1,5 +1,5 @@
-import { createMessenger } from "./Messenger"
-import { Messenger, EventsShape } from "./Messenger"
+import { createMessenger } from "./Messenger.ts"
+import { Messenger, EventsShape } from "./Messenger.ts"
 
 export type EventEmitter<E extends EventsShape> = Omit<Messenger<{}, {}, E>, "impl" | "retryAll">
 

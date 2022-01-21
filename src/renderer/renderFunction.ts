@@ -1,4 +1,4 @@
-import { ObjectParamGeneric, ObjectParamValue, Elementish } from "@escad/core"
+import { ObjectParamGeneric, ObjectParamValue, Elementish } from "../core/mod.ts"
 
 export class RenderFunction<O extends ObjectParamGeneric> {
 

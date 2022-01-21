@@ -1,8 +1,8 @@
 
-import { compiler, staticDir } from "./bundler"
-import { join } from "path"
-import express from "express"
-import fs from "fs-extra"
+import { compiler, staticDir } from "./bundler.ts"
+import { join } from "path.ts"
+import express from "express.ts"
+import fs from "fs-extra.ts"
 
 compiler.watch({ ignored: /node_modules/ }, err => {
   if(err) console.error(err)

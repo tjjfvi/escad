@@ -1,6 +1,6 @@
 
-import { $string } from "./$string"
-import { Serializer } from "./Serializer"
+import { $string } from "./$string.ts"
+import { Serializer } from "./Serializer.ts"
 
 export const $json = new Serializer<any>({
   s: value => $string.s(JSON.stringify(value)),

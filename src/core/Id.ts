@@ -1,6 +1,6 @@
 
-import { posix as path } from "path"
-import { Timer } from "./Timer"
+import { posix as path } from "path.ts"
+import { Timer } from "./Timer.ts"
 
 // Import read-pkg-up if in node, do nothing in webpack & co
 const nodeRequire = eval("typeof require === \"undefined\" ? () => {} : require")

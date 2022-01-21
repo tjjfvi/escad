@@ -1,9 +1,9 @@
 
-import * as t from "three"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
-import { colors } from "./colors"
-import { createOrientCube } from "./orientCube"
-import { createLineAxes, createCylAxes } from "./axes"
+import * as t from "three.ts"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.ts"
+import { colors } from "./colors.ts"
+import { createOrientCube } from "./orientCube.ts"
+import { createLineAxes, createCylAxes } from "./axes.ts"
 
 export const createScene = () => {
   const scene = new t.Scene()

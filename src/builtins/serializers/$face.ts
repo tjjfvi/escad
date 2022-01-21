@@ -1,6 +1,6 @@
-import { $array, registerType, Serializer } from "@escad/serial"
-import { Face } from "../Face"
-import { $vector3 } from "./$vector3"
+import { $array, registerType, Serializer } from "../serial/mod.ts"
+import { Face } from "../Face.ts"
+import { $vector3 } from "./$vector3.ts"
 
 const $points = $array($vector3)
 export const $face = new Serializer<Face>({

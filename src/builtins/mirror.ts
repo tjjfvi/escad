@@ -1,6 +1,6 @@
-import { Component, ConvertibleTo, Elementish, mapOperation } from "@escad/core"
-import { Mesh } from "./Mesh"
-import { reflect } from "./reflect"
+import { Component, ConvertibleTo, Elementish, mapOperation } from "../core/mod.ts"
+import { Mesh } from "./Mesh.ts"
+import { reflect } from "./reflect.ts"
 
 export const mirror = Component.create(
   "mirror",

@@ -1,7 +1,7 @@
 /* eslint-disable array-element-newline */
 
-import { createLeafProductUtils, Id, LeafProduct } from "@escad/core"
-import { Vector3 } from "./Vector3"
+import { createLeafProductUtils, Id, LeafProduct } from "../core/mod.ts"
+import { Vector3 } from "./Vector3.ts"
 
 const c = Math.cos
 const s = Math.sin

@@ -1,4 +1,4 @@
-import { Vector3 } from "./Vector3"
+import { Vector3 } from "./Vector3.ts"
 
 export type TripletObj = Partial<Record<"x" | "y" | "z" | 0 | 1 | 2, number>>
 export type Triplet = number | TripletObj

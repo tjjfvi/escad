@@ -1,12 +1,12 @@
 
-import { Component, GenericComponent } from "./Component"
-import { GenericOperation, Operation } from "./Operation"
-import { Element } from "./Element"
-import { Realm } from "./Realm"
-import { RealmElement } from "./RealmElement"
-import { RealmGenericOperation, RealmOperation } from "./RealmOperation"
-import { RealmComponent, RealmGenericComponent } from "./RealmComponent"
-import { Thing } from "./Thing"
+import { Component, GenericComponent } from "./Component.ts"
+import { GenericOperation, Operation } from "./Operation.ts"
+import { Element } from "./Element.ts"
+import { Realm } from "./Realm.ts"
+import { RealmElement } from "./RealmElement.ts"
+import { RealmGenericOperation, RealmOperation } from "./RealmOperation.ts"
+import { RealmComponent, RealmGenericComponent } from "./RealmComponent.ts"
+import { Thing } from "./Thing.ts"
 
 export type RealmThing<T extends Thing, C> =
   | T extends Element<infer T> ? RealmElement<T, C>

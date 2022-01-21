@@ -1,13 +1,13 @@
 
 // @create-index {"mode":"*"}
 
-export * from "./BooleanParam"
-export * from "./EdgesGeometry"
-export * from "./NumberParam"
-export * from "./Viewer3d"
-export * from "./axes"
-export * from "./colors"
-export * from "./createScene"
-export * from "./meshViewer3d"
-export * from "./orientCube"
+export * from "./BooleanParam.ts"
+export * from "./EdgesGeometry.ts"
+export * from "./NumberParam.ts"
+export * from "./Viewer3d.ts"
+export * from "./axes.ts"
+export * from "./colors.ts"
+export * from "./createScene.ts"
+export * from "./meshViewer3d.ts"
+export * from "./orientCube.ts"
 

@@ -1,4 +1,4 @@
-import { Serializer } from "./Serializer"
+import { Serializer } from "./Serializer.ts"
 
 export const $tuple =
   <T extends Serializer<any>[]>(

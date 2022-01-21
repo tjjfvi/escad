@@ -1,5 +1,5 @@
 
-import { ArtifactManager, ArtifactStore, Hash, Id, WrappedValue } from "../src"
+import { ArtifactManager, ArtifactStore, Hash, Id, WrappedValue } from "../src.ts"
 
 const createArtifactStoreMock = (
   name: string,

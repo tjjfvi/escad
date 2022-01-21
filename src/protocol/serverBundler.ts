@@ -1,7 +1,7 @@
 
-import { Hash } from "@escad/core"
-import { Messenger } from "@escad/messages"
-import { PluginRegistration } from "@escad/register-client-plugin"
+import { Hash } from "../core/mod.ts"
+import { Messenger } from "../messages/mod.ts"
+import { PluginRegistration } from "../register-client-plugin/mod.ts"
 
 export interface BundleOptions {
   outDir: string,

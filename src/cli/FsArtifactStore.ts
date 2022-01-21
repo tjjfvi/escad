@@ -1,9 +1,9 @@
 
-import { Hash, Id, ArtifactStore, WrappedValue, $wrappedValue } from "@escad/core"
-import { join, dirname } from "path"
-import fs from "fs"
-import { promisify } from "util"
-import stream, { Readable } from "stream"
+import { Hash, Id, ArtifactStore, WrappedValue, $wrappedValue } from "../core/mod.ts"
+import { join, dirname } from "path.ts"
+import fs from "fs.ts"
+import { promisify } from "util.ts"
+import stream, { Readable } from "stream.ts"
 
 const symlink = promisify(fs.symlink)
 const mkdir = promisify(fs.mkdir)

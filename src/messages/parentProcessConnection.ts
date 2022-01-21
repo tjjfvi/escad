@@ -1,5 +1,5 @@
 
-import { Connection } from "./Connection"
+import { Connection } from "./Connection.ts"
 
 /* istanbul ignore next: covered by types, difficult to test */
 export const parentProcessConnection = (): Connection<unknown> => {

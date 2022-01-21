@@ -1,6 +1,6 @@
-import { registerType, Serializer } from "@escad/serial"
-import { BoundingBox } from "../BoundingBox"
-import { $vector3 } from "./$vector3"
+import { registerType, Serializer } from "../serial/mod.ts"
+import { BoundingBox } from "../BoundingBox.ts"
+import { $vector3 } from "./$vector3.ts"
 
 export const $boundingBox = new Serializer<BoundingBox>({
   *s(box){

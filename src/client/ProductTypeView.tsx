@@ -1,7 +1,7 @@
 
-import React, { Fragment } from "react"
-import { LeafProductType, ArrayProductType, TupleProductType, ProductType } from "@escad/core"
-import { IdView } from "./IdView"
+import React, { Fragment } from "react.ts"
+import { LeafProductType, ArrayProductType, TupleProductType, ProductType } from "../core/mod.ts"
+import { IdView } from "./IdView.ts"
 
 export const ProductTypeView = ({ productType }: { productType: ProductType }) => {
   if(LeafProductType.isLeafProductType(productType))

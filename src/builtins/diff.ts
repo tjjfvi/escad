@@ -12,9 +12,9 @@ import {
   Operation,
   MarkedProduct,
   TupleProductType,
-} from "@escad/core"
-import { Bsp, ClipOptions } from "./Bsp"
-import { Union } from "./union"
+} from "../core/mod.ts"
+import { Bsp, ClipOptions } from "./Bsp.ts"
+import { Union } from "./union.ts"
 
 const diffId = Id.create(__filename, "@escad/builtins", "Marker", "Diff")
 export type Diff<T extends Product> = MarkedProduct<typeof diffId, T>

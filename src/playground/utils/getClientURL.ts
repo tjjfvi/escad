@@ -1,6 +1,6 @@
 
-import { createBlob } from "./createBlob"
-import fs from "fs"
+import { createBlob } from "./createBlob.ts"
+import fs from "fs.ts"
 
 export function getClientURL(){
   let scriptURL: string

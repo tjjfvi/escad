@@ -1,11 +1,11 @@
 
-import { checkTypeProperty } from "./checkTypeProperty"
-import { Element, Elementish } from "./Element"
-import { ExtensibleFunction } from "./ExtensibleFunction"
-import { Product } from "./Product"
-import { RealmElement } from "./RealmElement"
-import { RealmThing } from "./RealmThing"
-import { Thing } from "./Thing"
+import { checkTypeProperty } from "./checkTypeProperty.ts"
+import { Element, Elementish } from "./Element.ts"
+import { ExtensibleFunction } from "./ExtensibleFunction.ts"
+import { Product } from "./Product.ts"
+import { RealmElement } from "./RealmElement.ts"
+import { RealmThing } from "./RealmThing.ts"
+import { Thing } from "./Thing.ts"
 
 export type Realm<C> =
   & {

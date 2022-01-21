@@ -1,8 +1,8 @@
 
-import { createEventEmitter } from "."
-import { $unknown } from "@escad/serial"
-import { Connection  } from "./Connection"
-import { transformConnection } from "./transformConnection"
+import { createEventEmitter } from "..ts"
+import { $unknown } from "../serial/mod.ts"
+import { Connection  } from "./Connection.ts"
+import { transformConnection } from "./transformConnection.ts"
 
 export const serializeConnection = (_connection: Connection<Uint8Array, unknown>): Connection<unknown> => {
   const connection: Connection<Uint8Array> = transformConnection(_connection, x => x, v => {

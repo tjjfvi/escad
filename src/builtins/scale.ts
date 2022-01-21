@@ -1,9 +1,9 @@
 
-import { Matrix4 } from "./Matrix4"
-import { Component, mapOperation, ConvertibleOperation, TupleProduct } from "@escad/core"
-import { Transform } from "./Transformation"
-import { FlipFaces } from "./flip"
-import { Mesh } from "./Mesh"
+import { Matrix4 } from "./Matrix4.ts"
+import { Component, mapOperation, ConvertibleOperation, TupleProduct } from "../core/mod.ts"
+import { Transform } from "./Transformation.ts"
+import { FlipFaces } from "./flip.ts"
+import { Mesh } from "./Mesh.ts"
 
 type ScaleArgs =
   | [number]

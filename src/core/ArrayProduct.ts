@@ -1,6 +1,6 @@
 
-import { checkTypeProperty } from "./checkTypeProperty"
-import { Product, _Product, ProductType, ProductTypeish } from "./Product"
+import { checkTypeProperty } from "./checkTypeProperty.ts"
+import { Product, _Product, ProductType, ProductTypeish } from "./Product.ts"
 
 export interface ArrayProduct<T extends Product = Product> extends _Product {
   readonly type: "ArrayProduct",

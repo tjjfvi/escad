@@ -1,7 +1,7 @@
-import * as t from "three"
-import { colors } from "./colors"
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
-import { BufferGeometryUtils } from "three/examples/jsm/utils/BufferGeometryUtils"
+import * as t from "three.ts"
+import { colors } from "./colors.ts"
+import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.ts"
+import { BufferGeometryUtils } from "three/examples/jsm/utils/BufferGeometryUtils.ts"
 
 const cubeSize = .5
 const edgeSize = .125

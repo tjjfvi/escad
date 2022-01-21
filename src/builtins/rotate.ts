@@ -1,8 +1,8 @@
 
-import { Matrix4 } from "./Matrix4"
-import { Component, mapOperation, ConvertibleOperation, TupleProduct } from "@escad/core"
-import { Transform, Transformation } from "./Transformation"
-import { Mesh } from "./Mesh"
+import { Matrix4 } from "./Matrix4.ts"
+import { Component, mapOperation, ConvertibleOperation, TupleProduct } from "../core/mod.ts"
+import { Transform, Transformation } from "./Transformation.ts"
+import { Mesh } from "./Mesh.ts"
 
 const tau = Math.PI * 2
 

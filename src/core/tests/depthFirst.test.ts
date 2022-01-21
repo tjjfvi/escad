@@ -1,4 +1,4 @@
-import { depthFirst, Stack } from "../src"
+import { depthFirst, Stack } from "../src.ts"
 
 test("Stack", () => {
   const stack = new Stack<number>([3, 2])

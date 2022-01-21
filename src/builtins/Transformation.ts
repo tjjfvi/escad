@@ -1,7 +1,7 @@
-import { TupleProduct, Conversion, Product, conversionRegistry, TupleProductType, Id, MarkedProduct } from "@escad/core"
-import { Mesh } from "./Mesh"
-import { Matrix4 } from "./Matrix4"
-import { Face } from "./Face"
+import { TupleProduct, Conversion, Product, conversionRegistry, TupleProductType, Id, MarkedProduct } from "../core/mod.ts"
+import { Mesh } from "./Mesh.ts"
+import { Matrix4 } from "./Matrix4.ts"
+import { Face } from "./Face.ts"
 
 const transformId = Id.create(__filename, "@escad/builtins", "Marker", "Transform")
 export type Transform<T extends Product> = MarkedProduct<typeof transformId, T>

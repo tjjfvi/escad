@@ -11,8 +11,8 @@ import {
   Operation,
   MarkedProduct,
   Product,
-} from "@escad/core"
-import { Mesh } from "./Mesh"
+} from "../core/mod.ts"
+import { Mesh } from "./Mesh.ts"
 
 const meldId = Id.create(__filename, "@escad/builtins", "Marker", "Meld")
 export type Meld<T extends Product> = MarkedProduct<typeof meldId, T>

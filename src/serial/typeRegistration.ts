@@ -1,4 +1,4 @@
-import { Serializer } from "./Serializer"
+import { Serializer } from "./Serializer.ts"
 
 export const registeredTypes: Record<string, Serializer<any>> = Object.create(null)
 

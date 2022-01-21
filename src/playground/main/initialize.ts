@@ -10,9 +10,9 @@ import fsConstants = require("fs-constants")
 import util = require("util")
 import EventEmitter = require("events")
 import url = require("url")
-import { promisify } from "util"
-import stylusStdLib from "!!raw-loader!stylus/lib/functions/index.styl"
-import { escadPackageTgzs } from "../utils/escadPackages"
+import { promisify } from "util.ts"
+import stylusStdLib from "!!raw-loader!stylus/lib/functions/index.styl.ts"
+import { escadPackageTgzs } from "../utils/escadPackages.ts"
 
 declare const BrowserFS: any
 
@@ -189,14 +189,14 @@ export const fds: Record<number, { _path: string }> = fs.getFSModule().fdMap
 
 self.setImmediate = (fn, ...args) => setTimeout(fn, 0, ...args)
 
-import rendererSource from "!!raw-loader!../workers/renderer.js"
-import createBlobSource from "!!raw-loader!../utils/createBlob.js"
-import fakeImportAllEscadSource from "!!raw-loader!../utils/fakeImportAllEscad.js"
-import { createResourceFile } from "../utils/resourceFiles"
-import { observable } from "rhobo"
-import { ReadableWebToNodeStream } from "readable-web-to-node-stream"
-import tar from "tar"
-import { once } from "events"
+import rendererSource from "!!raw-loader!../workers/renderer.js.ts"
+import createBlobSource from "!!raw-loader!../utils/createBlob.js.ts"
+import fakeImportAllEscadSource from "!!raw-loader!../utils/fakeImportAllEscad.js.ts"
+import { createResourceFile } from "../utils/resourceFiles.ts"
+import { observable } from "rhobo.ts"
+import { ReadableWebToNodeStream } from "readable-web-to-node-stream.ts"
+import tar from "tar.ts"
+import { once } from "events.ts"
 
 if(self.document) {
   fs.mkdirSync("/resourceFiles")

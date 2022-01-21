@@ -1,5 +1,5 @@
 
-import { Hash } from "../src"
+import { Hash } from "../src.ts"
 
 test("Hash.create", () => {
   expect([

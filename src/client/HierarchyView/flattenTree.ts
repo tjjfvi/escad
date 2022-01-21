@@ -1,7 +1,7 @@
 
-import { finalizeTree } from "./finalizeTree"
-import { Tree, TreePart } from "./Tree"
-import { treeTextLength } from "./treeTextLength"
+import { finalizeTree } from "./finalizeTree.ts"
+import { Tree, TreePart } from "./Tree.ts"
+import { treeTextLength } from "./treeTextLength.ts"
 
 /**
  * Equally flattens a tree's children up until it's fully flattened or there's no more room in `maxLength`

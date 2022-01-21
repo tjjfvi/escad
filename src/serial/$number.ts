@@ -1,6 +1,6 @@
 
-import ieee754 from "ieee754"
-import { Serializer } from "./Serializer"
+import ieee754 from "ieee754.ts"
+import { Serializer } from "./Serializer.ts"
 
 export const $number = new Serializer<number>({
   s: (value: number) => Serializer.write(8, ({ buffer, offset }) => ieee754.write(buffer, value, offset, true, 52, 8)),

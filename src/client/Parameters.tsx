@@ -1,8 +1,8 @@
-import { IdView } from "./IdView"
-import { Observable, Writeable } from "rhobo"
-import React, { useContext, useEffect } from "react"
-import { Id, Parameter } from "@escad/core"
-import { ClientState } from "./ClientState"
+import { IdView } from "./IdView.ts"
+import { Observable, Writeable } from "rhobo.ts"
+import React, { useContext, useEffect } from "react.ts"
+import { Id, Parameter } from "../core/mod.ts"
+import { ClientState } from "./ClientState.ts"
 
 export interface ParameterRegistration<T, P extends Parameter<T>> {
   id: P["type"],

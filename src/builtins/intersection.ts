@@ -13,8 +13,8 @@ import {
   ConvertibleElementish,
   Operation,
   MarkedProduct,
-} from "@escad/core"
-import { Bsp, ClipOptions } from "./Bsp"
+} from "../core/mod.ts"
+import { Bsp, ClipOptions } from "./Bsp.ts"
 
 const intersectionId = Id.create(__filename, "@escad/builtins", "Marker", "Intersection")
 export type Intersection<T extends Product> = MarkedProduct<typeof intersectionId, T>

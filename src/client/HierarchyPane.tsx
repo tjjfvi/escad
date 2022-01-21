@@ -1,11 +1,11 @@
 
 import "../stylus/Hierarchy.styl"
-import React, { useContext } from "react"
-import { observer, useObservable } from "rhobo"
-import { ClientState } from "./ClientState"
-import { HierarchyToTreeEngine, HierarchyView, httDetailedEngine, httOutlineEngine } from "./HierarchyView"
-import { Pane } from "./Pane"
-import { Dropdown } from "./Dropdown"
+import React, { useContext } from "react.ts"
+import { observer, useObservable } from "rhobo.ts"
+import { ClientState } from "./ClientState.ts"
+import { HierarchyToTreeEngine, HierarchyView, httDetailedEngine, httOutlineEngine } from "./HierarchyView.ts"
+import { Pane } from "./Pane.ts"
+import { Dropdown } from "./Dropdown.ts"
 
 export const HierarchyPane = observer(() => {
   const engine = useObservable<HierarchyToTreeEngine>(httOutlineEngine)

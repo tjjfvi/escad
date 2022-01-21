@@ -1,10 +1,10 @@
 
-import { conversionRegistry, ExportTypeInfo, ExportTypeRegistry, Product } from "@escad/core"
-import React, { useContext } from "react"
-import { observer } from "rhobo"
-import { ClientState } from "./ClientState"
-import { ProductConsumerRegistry } from "./ProductConsumerRegistry"
-import { usePromise } from "./usePromise"
+import { conversionRegistry, ExportTypeInfo, ExportTypeRegistry, Product } from "../core/mod.ts"
+import React, { useContext } from "react.ts"
+import { observer } from "rhobo.ts"
+import { ClientState } from "./ClientState.ts"
+import { ProductConsumerRegistry } from "./ProductConsumerRegistry.ts"
+import { usePromise } from "./usePromise.ts"
 
 export const Export = observer(() => {
   const state = useContext(ClientState.Context)

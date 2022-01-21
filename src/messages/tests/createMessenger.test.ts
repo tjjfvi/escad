@@ -1,4 +1,4 @@
-import { Connection, createMessenger, Messenger, createConnectionPair } from "../src"
+import { Connection, createMessenger, Messenger, createConnectionPair } from "../src.ts"
 
 type TestShape = {
   promiseResolve: <T>(value: T) => Promise<T>,

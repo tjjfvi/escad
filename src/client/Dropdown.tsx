@@ -1,7 +1,7 @@
 
 import "../stylus/Dropdown.styl"
-import React from "react"
-import { Observable, observer } from "rhobo"
+import React from "react.ts"
+import { Observable, observer } from "rhobo.ts"
 
 export interface DropdownProps<T> {
   options: Record<string, T>,

@@ -1,5 +1,5 @@
 
-import { Connection } from "./Connection"
+import { Connection } from "./Connection.ts"
 
 export const createConnectionPair = <T, U = T>(): [Connection<T, U>, Connection<U, T>] => {
   const aListeners = new Set<(value: T) => void>()

@@ -7,10 +7,10 @@ import {
   Element,
   LeafProduct,
   conversionRegistry,
-} from "@escad/core"
-import { TripletObj, Triplet, interpretTriplet } from "./helpers"
-import { Mesh } from "./Mesh"
-import { Vector3 } from "./Vector3"
+} from "../core/mod.ts"
+import { TripletObj, Triplet, interpretTriplet } from "./helpers.ts"
+import { Mesh } from "./Mesh.ts"
+import { Vector3 } from "./Vector3.ts"
 
 const cubeId = Id.create(__filename, "@escad/builtins", "LeafProduct", "Cube")
 

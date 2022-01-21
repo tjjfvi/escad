@@ -1,5 +1,5 @@
-import { $uint32le } from "./$number"
-import { Serializer } from "./Serializer"
+import { $uint32le } from "./$number.ts"
+import { Serializer } from "./Serializer.ts"
 
 export const $map = <K, V>($key: Serializer<K>, $value: Serializer<V>) => new Serializer<Map<K, V>>({
   *s(map){

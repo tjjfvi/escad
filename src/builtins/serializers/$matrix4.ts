@@ -1,5 +1,5 @@
-import { $number, $tuple, Serializer } from "@escad/serial"
-import { Matrix4, Sixteen } from "../Matrix4"
+import { $number, $tuple, Serializer } from "../serial/mod.ts"
+import { Matrix4, Sixteen } from "../Matrix4.ts"
 
 const $sixteen: Serializer<Sixteen<number>> = $tuple(
   $number, $number, $number, $number,

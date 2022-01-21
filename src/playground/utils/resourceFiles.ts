@@ -1,7 +1,7 @@
 
-import fs from "fs"
-import { Hash } from "@escad/core"
-import { promisify } from "util"
+import fs from "fs.ts"
+import { Hash } from "../core/mod.ts"
+import { promisify } from "util.ts"
 
 export const createResourceFile = (source: string, extension = ".js") => {
   const path = getResourceFilePath(source, extension)

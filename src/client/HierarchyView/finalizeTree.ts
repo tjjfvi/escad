@@ -1,8 +1,8 @@
 
-import { assertNever } from "@escad/core"
-import { Tree, TreePart } from "./Tree"
-import { TreeText, TreeTextPart } from "./TreeText"
-import { treeTextLength } from "./treeTextLength"
+import { assertNever } from "../core/mod.ts"
+import { Tree, TreePart } from "./Tree.ts"
+import { TreeText, TreeTextPart } from "./TreeText.ts"
+import { treeTextLength } from "./treeTextLength.ts"
 
 /**
  * Finishes a `Tree` to be displayed

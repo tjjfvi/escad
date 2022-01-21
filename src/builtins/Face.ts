@@ -1,7 +1,7 @@
 
-import { Vector3 } from "./Vector3"
-import { Plane } from "./Plane"
-import { createLeafProductUtils, Id, LeafProduct } from "@escad/core"
+import { Vector3 } from "./Vector3.ts"
+import { Plane } from "./Plane.ts"
+import { createLeafProductUtils, Id, LeafProduct } from "../core/mod.ts"
 
 const faceId = Id.create(__filename, "@escad/builtins", "LeafProduct", "Face")
 export interface Face extends LeafProduct {

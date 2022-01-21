@@ -1,9 +1,9 @@
 
 import "@escad/core" // register serializers, needed for talking to renderer
 
-import { createMessenger } from "@escad/messages"
-import { ServerRendererMessenger, ServerRendererShape } from "@escad/protocol"
-import { Connection } from "@escad/messages"
+import { createMessenger } from "../messages/mod.ts"
+import { ServerRendererMessenger, ServerRendererShape } from "../protocol/mod.ts"
+import { Connection } from "../messages/mod.ts"
 
 export const createServerRendererMessenger = (
   lookupRaw: ServerRendererShape["lookupRaw"],

@@ -1,9 +1,9 @@
 
-import { Hierarchy } from "./Hierarchy"
-import { HierarchyLog } from "./HierarchyLog"
-import { Log, LogLevel } from "./Log"
-import { Promisish } from "./Promisish"
-import { StringLog } from "./StringLog"
+import { Hierarchy } from "./Hierarchy.ts"
+import { HierarchyLog } from "./HierarchyLog.ts"
+import { Log, LogLevel } from "./Log.ts"
+import { Promisish } from "./Promisish.ts"
+import { StringLog } from "./StringLog.ts"
 
 export class Logger {
 

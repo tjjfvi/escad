@@ -1,6 +1,6 @@
-import React from "react"
-import MdiIcon from "@mdi/react"
-import * as mdiIcons from "@mdi/js"
+import React from "react.ts"
+import MdiIcon from "@mdi/react.ts"
+import * as mdiIcons from "@mdi/js.ts"
 
 export type Icon = ((props: { className?: string }) => React.ReactElement | null)
 

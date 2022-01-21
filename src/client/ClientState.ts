@@ -1,6 +1,6 @@
 
-import { ClientServerMessenger, RenderInfo } from "@escad/protocol"
-import { computed, observable } from "rhobo"
+import { ClientServerMessenger, RenderInfo } from "../protocol/mod.ts"
+import { computed, observable } from "rhobo.ts"
 import {
   ArtifactManager,
   ArtifactStore,
@@ -11,21 +11,21 @@ import {
   Log,
   $wrappedValue,
   WrappedValue,
-} from "@escad/core"
-import { ObjectParam } from "@escad/core"
-import { createContext } from "react"
+} from "../core/mod.ts"
+import { ObjectParam } from "../core/mod.ts"
+import { createContext } from "react.ts"
 import {
   Connection,
   createMessenger,
   logConnection,
   createConnectionPair,
   serializeConnection,
-} from "@escad/messages"
-import { StatusSet } from "./Status"
-import { HierarchySelection, resolveHierarchySelection } from "./HierarchySelection"
-import { Loading } from "./Loading"
-import { mdi } from "./Icon"
-import crypto from "crypto"
+} from "../messages/mod.ts"
+import { StatusSet } from "./Status.ts"
+import { HierarchySelection, resolveHierarchySelection } from "./HierarchySelection.ts"
+import { Loading } from "./Loading.ts"
+import { mdi } from "./Icon.ts"
+import crypto from "crypto.ts"
 
 const lookupRawRetryTimer = 500
 

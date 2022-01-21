@@ -1,6 +1,6 @@
 
-import { Connection } from "./Connection"
-import { transformConnection } from "./transformConnection"
+import { Connection } from "./Connection.ts"
+import { transformConnection } from "./transformConnection.ts"
 
 /* istanbul ignore next: covered by types, difficult to test */
 export const workerConnection = (worker: Worker): Connection<unknown> =>

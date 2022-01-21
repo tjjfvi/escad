@@ -1,9 +1,9 @@
-import { Component, GenericComponent, GenericConstraint, _GCU } from "./Component"
-import { ExtensibleFunction } from "./ExtensibleFunction"
-import { Hkt } from "./Hkt"
-import { Realm } from "./Realm"
-import { RealmThing } from "./RealmThing"
-import { Thing } from "./Thing"
+import { Component, GenericComponent, GenericConstraint, _GCU } from "./Component.ts"
+import { ExtensibleFunction } from "./ExtensibleFunction.ts"
+import { Hkt } from "./Hkt.ts"
+import { Realm } from "./Realm.ts"
+import { RealmThing } from "./RealmThing.ts"
+import { Thing } from "./Thing.ts"
 
 export interface RealmComponent<I extends any[], O extends Thing, C> extends Component<I, O> {
   (...args: I): RealmThing<O, C>,

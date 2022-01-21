@@ -1,6 +1,6 @@
-import { exportTypeRegistry, Hash, Id } from "@escad/core"
-import { Face } from "./Face"
-import { Mesh } from "./Mesh"
+import { exportTypeRegistry, Hash, Id } from "../core/mod.ts"
+import { Face } from "./Face.ts"
+import { Mesh } from "./Mesh.ts"
 
 exportTypeRegistry.register<Mesh>({
   id: Id.create(__filename, "@escad/builtins", "ExportType", "MeshBinaryStl"),

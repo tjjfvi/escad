@@ -1,9 +1,9 @@
 
-import { WeakCache } from "./WeakCache"
-import { Hash } from "./Hash"
-import { ArtifactStore } from "./ArtifactStore"
-import { WrappedValue } from "./WrappedValue"
-import { Counter, Timer } from "./Timer"
+import { WeakCache } from "./WeakCache.ts"
+import { Hash } from "./Hash.ts"
+import { ArtifactStore } from "./ArtifactStore.ts"
+import { WrappedValue } from "./WrappedValue.ts"
+import { Counter, Timer } from "./Timer.ts"
 
 export class ArtifactManager {
 

@@ -1,5 +1,5 @@
-import { Component, ConvertibleElement, Realm } from "../packages/core/dist"
-import builtinChainables, { Mesh } from "../packages/builtins/dist"
+import { Component, ConvertibleElement, Realm } from "../packages/core/dist.ts"
+import builtinChainables, { Mesh } from "../packages/builtins/dist.ts"
 
 const escad = Realm.create(() => ({
   ...builtinChainables,

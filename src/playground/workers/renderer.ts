@@ -1,7 +1,7 @@
 
-import { artifactManager, ArtifactStore, logger } from "@escad/core"
-import { workerConnection, brandConnection, createMessenger } from "@escad/messages"
-import { createRendererServerMessenger } from "@escad/renderer"
+import { artifactManager, ArtifactStore, logger } from "../core/mod.ts"
+import { workerConnection, brandConnection, createMessenger } from "../messages/mod.ts"
+import { createRendererServerMessenger } from "../renderer/mod.ts"
 
 const artifactMessenger = createMessenger<{}, Required<ArtifactStore>, {}>({
   impl: {},

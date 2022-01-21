@@ -1,6 +1,6 @@
 
-import { Id } from "./Id"
-import { Parameter } from "./Parameter"
+import { Id } from "./Id.ts"
+import { Parameter } from "./Parameter.ts"
 
 export type ObjectParamGeneric = Record<string, Parameter<any>>
 

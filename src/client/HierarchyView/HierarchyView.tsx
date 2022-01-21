@@ -1,12 +1,12 @@
 
-import { Hierarchy } from "@escad/core"
-import React, { useRef, useState } from "react"
-import { useValue } from "rhobo"
-import { ResizeSensor } from "css-element-queries"
-import { StateMemo } from "./State"
-import { TreeView } from "./TreeView"
-import { hierarchyToTree, HierarchyToTreeEngine } from "./hierarchyToTree"
-import { httDetailedEngine } from "./httDetailedEngine"
+import { Hierarchy } from "../core/mod.ts"
+import React, { useRef, useState } from "react.ts"
+import { useValue } from "rhobo.ts"
+import { ResizeSensor } from "css-element-queries.ts"
+import { StateMemo } from "./State.ts"
+import { TreeView } from "./TreeView.ts"
+import { hierarchyToTree, HierarchyToTreeEngine } from "./hierarchyToTree.ts"
+import { httDetailedEngine } from "./httDetailedEngine.ts"
 
 export interface HierarchyViewProps {
   hierarchy: Hierarchy,

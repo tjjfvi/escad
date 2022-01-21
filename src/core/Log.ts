@@ -1,6 +1,6 @@
 
-import { checkTypeProperty } from "./checkTypeProperty"
-import { ScopedId } from "./Id"
+import { checkTypeProperty } from "./checkTypeProperty.ts"
+import { ScopedId } from "./Id.ts"
 
 export interface Log {
   type: ScopedId<"Log">,

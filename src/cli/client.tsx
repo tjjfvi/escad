@@ -1,8 +1,8 @@
 
-import React from "react"
-import ReactDOM from "react-dom"
-import { App, WebSocketClientState } from "@escad/client"
-import { artifactManager, InMemoryArtifactStore } from "@escad/core"
+import React from "react.ts"
+import ReactDOM from "react-dom.ts"
+import { App, WebSocketClientState } from "../client/mod.ts"
+import { artifactManager, InMemoryArtifactStore } from "../core/mod.ts"
 
 artifactManager.artifactStores.unshift(new InMemoryArtifactStore())
 const state = new WebSocketClientState(

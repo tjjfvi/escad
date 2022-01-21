@@ -1,7 +1,7 @@
 
 import ".."
-import { extendChainables } from "@escad/core"
-import chainables from "../chainables"
+import { extendChainables } from "../core/mod.ts"
+import chainables from "../chainables.ts"
 
 type Chainables = typeof chainables
 

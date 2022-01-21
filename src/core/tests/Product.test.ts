@@ -10,7 +10,7 @@ import {
   TupleProduct,
   TupleProductType,
   UnknownProduct,
-} from "../src"
+} from "../src.ts"
 
 const productAId = Id.create(__filename, "@escad/core", "LeafProduct", "ProductA")
 const productBId = Id.create(__filename, "@escad/core", "LeafProduct", "ProductB")

@@ -1,7 +1,7 @@
-import { $array } from "./$array"
-import { Serializer } from "./Serializer"
-import { $string } from "./$string"
-import { $tuple } from "./$tuple"
+import { $array } from "./$array.ts"
+import { Serializer } from "./Serializer.ts"
+import { $string } from "./$string.ts"
+import { $tuple } from "./$tuple.ts"
 
 export const $record = <V>($value: Serializer<V>) => {
   const $entries = $array($tuple($string, $value))

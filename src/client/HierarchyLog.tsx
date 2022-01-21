@@ -1,9 +1,9 @@
 
 import "../stylus/HierarchyLog.styl"
-import React from "react"
-import { HierarchyLog } from "@escad/core"
-import { registerLogType } from "./LogsPane"
-import { HierarchyView } from "./HierarchyView"
+import React from "react.ts"
+import { HierarchyLog } from "../core/mod.ts"
+import { registerLogType } from "./LogsPane.ts"
+import { HierarchyView } from "./HierarchyView.ts"
 
 const HierarchyLogView = ({ log }: { log: HierarchyLog }) =>
   <HierarchyView hierarchy={log.hierarchy} selectable={false}/>

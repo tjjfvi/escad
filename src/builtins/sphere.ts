@@ -1,5 +1,5 @@
 
-import { Mesh } from "./Mesh"
+import { Mesh } from "./Mesh.ts"
 import {
   Element,
   Id,
@@ -8,11 +8,11 @@ import {
   createLeafProductUtils,
   Conversion,
   conversionRegistry,
-} from "@escad/core"
-import { interpretTriplet, Triplet } from "./helpers"
-import { Smooth, smoothContext } from "./smoothContext"
-import { Face } from "./Face"
-import { Vector3 } from "./Vector3"
+} from "../core/mod.ts"
+import { interpretTriplet, Triplet } from "./helpers.ts"
+import { Smooth, smoothContext } from "./smoothContext.ts"
+import { Face } from "./Face.ts"
+import { Vector3 } from "./Vector3.ts"
 
 const tau = Math.PI * 2
 

@@ -1,9 +1,9 @@
 
-import { Hash } from "@escad/core"
-import { Connection, createMessenger } from "@escad/messages"
-import { ServerBundlerMessenger, ServerClientMessenger, ServerRendererShape } from "@escad/protocol"
-import { ServerRendererMessenger } from "@escad/protocol"
-import { ServerEmitter } from "./serverEmitter"
+import { Hash } from "../core/mod.ts"
+import { Connection, createMessenger } from "../messages/mod.ts"
+import { ServerBundlerMessenger, ServerClientMessenger, ServerRendererShape } from "../protocol/mod.ts"
+import { ServerRendererMessenger } from "../protocol/mod.ts"
+import { ServerEmitter } from "./serverEmitter.ts"
 
 export const createServerClientMessenger = ({
   connection,

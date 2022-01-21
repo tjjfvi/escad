@@ -1,7 +1,7 @@
-import { Component, ConvertibleTo, mapOperation, TupleProduct } from "@escad/core"
-import { Mesh, Transform } from "."
-import { FlipFaces } from "./flip"
-import { Matrix4 } from "./Matrix4"
+import { Component, ConvertibleTo, mapOperation, TupleProduct } from "../core/mod.ts"
+import { Mesh, Transform } from "..ts"
+import { FlipFaces } from "./flip.ts"
+import { Matrix4 } from "./Matrix4.ts"
 
 export const reflect = Component.create("reflect", (axis: "x" | "y" | "z", center: number = 0) => {
   const scale = { x: 1, y: 1, z: 1, [axis]: -1 }

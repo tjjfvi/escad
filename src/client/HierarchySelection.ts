@@ -1,5 +1,5 @@
-import { assertNever, Hash, Hierarchy, Product } from "@escad/core"
-import { getHierarchyPath, HierarchyPath } from "./HierarchyPath"
+import { assertNever, Hash, Hierarchy, Product } from "../core/mod.ts"
+import { getHierarchyPath, HierarchyPath } from "./HierarchyPath.ts"
 
 export interface HierarchySelectionPart {
   type: "include" | "exclude",

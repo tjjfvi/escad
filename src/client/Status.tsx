@@ -1,9 +1,9 @@
 
 import "../stylus/Status.styl"
-import React, { useContext } from "react"
-import { observer, Readable } from "rhobo"
-import { ClientState } from "./ClientState"
-import { Icon } from "./Icon"
+import React, { useContext } from "react.ts"
+import { observer, Readable } from "rhobo.ts"
+import { ClientState } from "./ClientState.ts"
+import { Icon } from "./Icon.ts"
 
 export interface StatusSet {
   name: string,

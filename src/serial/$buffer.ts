@@ -1,5 +1,5 @@
-import { $uint32le } from "./$number"
-import { Serializer } from "./Serializer"
+import { $uint32le } from "./$number.ts"
+import { Serializer } from "./Serializer.ts"
 
 export const $buffer = new Serializer<Uint8Array>({
   *s(value){

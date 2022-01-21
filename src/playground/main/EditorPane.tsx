@@ -1,16 +1,16 @@
 
-import * as monaco from "monaco-editor"
-import { fds, fsEventEmitter } from "./initialize"
-import { autoInstall } from "./npm"
-import { debounce } from "../utils/debounce"
-import fs from "fs"
-import { ModuleResolutionKind } from "typescript"
-import path from "path"
-import { reloadRenderer } from "./server"
-import React from "react"
-import Editor from "@monaco-editor/react"
-import { Pane } from "@escad/client"
-import lzstring from "lz-string"
+import * as monaco from "monaco-editor.ts"
+import { fds, fsEventEmitter } from "./initialize.ts"
+import { autoInstall } from "./npm.ts"
+import { debounce } from "../utils/debounce.ts"
+import fs from "fs.ts"
+import { ModuleResolutionKind } from "typescript.ts"
+import path from "path.ts"
+import { reloadRenderer } from "./server.ts"
+import React from "react.ts"
+import Editor from "@monaco-editor/react.ts"
+import { Pane } from "../client/mod.ts"
+import lzstring from "lz-string.ts"
 
 export const EditorPane = () =>
   <Pane name="Editor" left defaultWidth={750} minWidth={200} defaultOpen={true}>
@@ -52,7 +52,7 @@ monaco.languages.typescript.typescriptDefaults.setCompilerOptions({
 
 export const augmentMonacoEditor = (editor: monaco.editor.IStandaloneCodeEditor) => {
   const defaultCode = `
-import escad from "@escad/core";
+import escad from "../core/mod.ts";
 import "@escad/builtins/register";
 
 export default () =>

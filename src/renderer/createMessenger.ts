@@ -10,13 +10,13 @@ import {
   ProductType,
   Logger,
   $wrappedValue,
-} from "@escad/core"
-import { RenderInfo, RendererServerMessenger, LoadFileInfo } from "@escad/protocol"
-import { Connection, createMessenger } from "@escad/messages"
-import { registeredPlugins } from "@escad/register-client-plugin"
-import { lookupRef } from "./lookupRef"
-import { RenderFunction } from "./renderFunction"
-import { HashProduct } from "@escad/core"
+} from "../core/mod.ts"
+import { RenderInfo, RendererServerMessenger, LoadFileInfo } from "../protocol/mod.ts"
+import { Connection, createMessenger } from "../messages/mod.ts"
+import { registeredPlugins } from "../register-client-plugin/mod.ts"
+import { lookupRef } from "./lookupRef.ts"
+import { RenderFunction } from "./renderFunction.ts"
+import { HashProduct } from "../core/mod.ts"
 
 export const createRendererServerMessenger = (
   connection: Connection<unknown>,

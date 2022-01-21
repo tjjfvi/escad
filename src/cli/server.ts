@@ -1,17 +1,17 @@
 
-import express from "express"
-import expressWs from "express-ws"
+import express from "express.ts"
+import expressWs from "express-ws.ts"
 import {
   createServerBundlerMessenger,
   createServerClientMessenger,
   createServerRendererMessenger,
-} from "@escad/server"
-import path from "path"
-import { childProcessConnection, logConnection, serializeConnection } from "@escad/messages"
-import { fork } from "child_process"
-import watch from "node-watch"
-import { BundleOptions, ServerRendererShape } from "@escad/protocol"
-import { createServerEmitter } from "@escad/server"
+} from "../server/mod.ts"
+import path from "path.ts"
+import { childProcessConnection, logConnection, serializeConnection } from "../messages/mod.ts"
+import { fork } from "child_process.ts"
+import watch from "node-watch.ts"
+import { BundleOptions, ServerRendererShape } from "../protocol/mod.ts"
+import { createServerEmitter } from "../server/mod.ts"
 
 export interface ServerOptions {
   artifactsDir: string,

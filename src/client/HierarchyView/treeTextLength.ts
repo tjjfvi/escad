@@ -1,5 +1,5 @@
 
-import { TreeText } from "./TreeText"
+import { TreeText } from "./TreeText.ts"
 
 export function treeTextLength(text: TreeText): number{
   let total = 0

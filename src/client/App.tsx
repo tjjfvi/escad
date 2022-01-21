@@ -1,11 +1,11 @@
 
-import React from "react"
-import { Statuses } from "./Status"
-import { HierarchyPane } from "./HierarchyPane"
-import { ParametersPane } from "./ParametersPane"
-import { Preview } from "./Preview"
-import { ClientState } from "./ClientState"
-import { LogsPane } from "./LogsPane"
+import React from "react.ts"
+import { Statuses } from "./Status.ts"
+import { HierarchyPane } from "./HierarchyPane.ts"
+import { ParametersPane } from "./ParametersPane.ts"
+import { Preview } from "./Preview.ts"
+import { ClientState } from "./ClientState.ts"
+import { LogsPane } from "./LogsPane.ts"
 
 export const App = ({ state }: { state: ClientState }) =>
   <ClientState.Context.Provider value={state}>

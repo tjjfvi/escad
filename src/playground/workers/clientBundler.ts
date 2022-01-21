@@ -1,13 +1,13 @@
 
 import "../main/initialize"
-import { createBundlerServerMessenger, stylusGlobals } from "@escad/bundler"
-import { workerConnection, brandConnection } from "@escad/messages"
-import NodePolyfillPlugin from "node-polyfill-webpack-plugin"
-import { webpack } from "webpack"
-import { createResourceFileAsync, getResourceFilePath } from "../utils/resourceFiles"
-import fakeImportAllEscadSource from "!!raw-loader!../utils/fakeImportAllEscad.js"
-import { mapModuleIds } from "../utils/mapModuleIds"
-import path from "path"
+import { createBundlerServerMessenger, stylusGlobals } from "../bundler/mod.ts"
+import { workerConnection, brandConnection } from "../messages/mod.ts"
+import NodePolyfillPlugin from "node-polyfill-webpack-plugin.ts"
+import { webpack } from "webpack.ts"
+import { createResourceFileAsync, getResourceFilePath } from "../utils/resourceFiles.ts"
+import fakeImportAllEscadSource from "!!raw-loader!../utils/fakeImportAllEscad.js.ts"
+import { mapModuleIds } from "../utils/mapModuleIds.ts"
+import path from "path.ts"
 
 createBundlerServerMessenger(
   brandConnection(workerConnection(self as any), "bundler"),

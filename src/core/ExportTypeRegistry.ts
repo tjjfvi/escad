@@ -1,11 +1,11 @@
 
-import { ExportType } from "./ExportType"
-import { artifactManager, ArtifactManager } from "./ArtifactManager"
-import { Id } from "./Id"
-import { ArtifactStore } from "./ArtifactStore"
-import { Product, ProductType } from "./Product"
-import { conversionRegistry, ConversionRegistry } from "./ConversionRegistry"
-import { WrappedValue } from "./WrappedValue"
+import { ExportType } from "./ExportType.ts"
+import { artifactManager, ArtifactManager } from "./ArtifactManager.ts"
+import { Id } from "./Id.ts"
+import { ArtifactStore } from "./ArtifactStore.ts"
+import { Product, ProductType } from "./Product.ts"
+import { conversionRegistry, ConversionRegistry } from "./ConversionRegistry.ts"
+import { WrappedValue } from "./WrappedValue.ts"
 
 export class ExportTypeRegistry {
 

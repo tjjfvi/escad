@@ -1,6 +1,6 @@
-import { $number, registerType, Serializer } from "@escad/serial"
-import { Plane } from "../Plane"
-import { $vector3 } from "./$vector3"
+import { $number, registerType, Serializer } from "../serial/mod.ts"
+import { Plane } from "../Plane.ts"
+import { $vector3 } from "./$vector3.ts"
 
 export const $plane = new Serializer<Plane>({
   *s(plane){

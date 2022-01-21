@@ -1,15 +1,15 @@
 
-import { addLoadingStatus } from "./initialize"
-import { createBlob } from "../utils/createBlob"
-import { createServerRendererMessenger } from "@escad/server"
-import fs from "fs"
-import { brandConnection, createMessenger, workerConnection } from "@escad/messages"
-import { ServerRendererMessenger, ServerRendererShape } from "@escad/protocol"
-import RendererBundlerWorker from "worker-loader?filename=bundler.worker.js!../workers/bundler.js"
-import type { RendererBundlerMessengerShape } from "../workers/rendererBundler"
-import { attachWorkerFs } from "../utils/attachWorkerFs"
-import { InMemoryArtifactStore } from "@escad/core"
-import { ArtifactStore } from "@escad/core"
+import { addLoadingStatus } from "./initialize.ts"
+import { createBlob } from "../utils/createBlob.ts"
+import { createServerRendererMessenger } from "../server/mod.ts"
+import fs from "fs.ts"
+import { brandConnection, createMessenger, workerConnection } from "../messages/mod.ts"
+import { ServerRendererMessenger, ServerRendererShape } from "../protocol/mod.ts"
+import RendererBundlerWorker from "worker-loader?filename=bundler.worker.js!../workers/bundler.js.ts"
+import type { RendererBundlerMessengerShape } from "../workers/rendererBundler.ts"
+import { attachWorkerFs } from "../utils/attachWorkerFs.ts"
+import { InMemoryArtifactStore } from "../core/mod.ts"
+import { ArtifactStore } from "../core/mod.ts"
 
 export const artifactStore = new InMemoryArtifactStore()
 

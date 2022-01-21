@@ -1,8 +1,8 @@
 
 import "../stylus/StringLog.styl"
-import React from "react"
-import { StringLog } from "@escad/core"
-import { registerLogType } from "./LogsPane"
+import React from "react.ts"
+import { StringLog } from "../core/mod.ts"
+import { registerLogType } from "./LogsPane.ts"
 
 const StringLogView = ({ log }: { log: StringLog }) =>
   <span>{log.message}</span>

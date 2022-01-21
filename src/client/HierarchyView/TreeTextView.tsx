@@ -1,11 +1,11 @@
 
-import { assertNever, Hash } from "@escad/core"
-import React, { useContext } from "react"
-import { observer } from "rhobo"
-import { ClientState } from "../ClientState"
-import { getHierarchyPath } from "../HierarchyPath"
-import { NestableSpan } from "./NestableSpan"
-import { TreeText, TreeTextRange } from "./TreeText"
+import { assertNever, Hash } from "../core/mod.ts"
+import React, { useContext } from "react.ts"
+import { observer } from "rhobo.ts"
+import { ClientState } from "../ClientState.ts"
+import { getHierarchyPath } from "../HierarchyPath.ts"
+import { NestableSpan } from "./NestableSpan.ts"
+import { TreeText, TreeTextRange } from "./TreeText.ts"
 
 export interface TreeTextViewProps {
   text: TreeText,

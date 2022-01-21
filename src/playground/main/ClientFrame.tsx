@@ -1,14 +1,14 @@
 
 import "../../stylus/ClientFrame.styl"
-import { brandConnection, createMessenger, filterConnection, transformConnection } from "@escad/messages"
-import { createServerClientMessenger } from "@escad/server"
-import React, { useState } from "react"
-import { bundlerMessenger, serverEmitter } from "./server"
-import { getClientURL } from "../utils/getClientURL"
-import { observer } from "rhobo"
-import { loadingStatuses } from "./initialize"
-import { createRendererWorker } from "./rendererWorker"
-import fs from "fs"
+import { brandConnection, createMessenger, filterConnection, transformConnection } from "../messages/mod.ts"
+import { createServerClientMessenger } from "../server/mod.ts"
+import React, { useState } from "react.ts"
+import { bundlerMessenger, serverEmitter } from "./server.ts"
+import { getClientURL } from "../utils/getClientURL.ts"
+import { observer } from "rhobo.ts"
+import { loadingStatuses } from "./initialize.ts"
+import { createRendererWorker } from "./rendererWorker.ts"
+import fs from "fs.ts"
 
 export const ClientFrame = observer(() => {
   const [, setState] = useState({})

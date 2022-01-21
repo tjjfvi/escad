@@ -1,5 +1,5 @@
 
-import { HashSet } from "@escad/core"
+import { HashSet } from "../core/mod.ts"
 
 export const registeredPlugins = new HashSet<PluginRegistration>()
 

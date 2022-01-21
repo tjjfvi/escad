@@ -9,7 +9,7 @@ import {
   Element,
   conversionRegistry,
   ProductTypeish,
-} from "@escad/core"
+} from "../core/mod.ts"
 
 export interface ConvertArgsHkt extends Hkt<[Product]> {
   [Hkt.output]: [productTypeish: ProductTypeish<Hkt.Input<this>[0]>],

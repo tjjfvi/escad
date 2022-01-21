@@ -1,7 +1,7 @@
 
-import { Mesh } from "./Mesh"
-import { Vector3 } from "./Vector3"
-import { Element, Component } from "@escad/core"
+import { Mesh } from "./Mesh.ts"
+import { Vector3 } from "./Vector3.ts"
+import { Element, Component } from "../core/mod.ts"
 
 type PolyhedronVerts = Vector3[]
 type PolyhedronFaces = number[][]

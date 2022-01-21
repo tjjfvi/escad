@@ -1,7 +1,7 @@
 
-import { __hash } from "./Hash"
-import { ScopedId } from "./Id"
-import { Product, ProductType, ProductTypeish } from "./Product"
+import { __hash } from "./Hash.ts"
+import { ScopedId } from "./Id.ts"
+import { Product, ProductType, ProductTypeish } from "./Product.ts"
 
 export interface Conversion<A, B> {
   (value: A): B,
@@ -133,7 +133,7 @@ export type ConvertibleTo<T extends Product> = Product & {
 
 /* Tests */
 
-// import { ArrayProduct, LeafProduct, TupleProduct, __Element__, Elementish } from ".";
+// import { ArrayProduct, LeafProduct, TupleProduct, __Element__, Elementish } from "..ts";
 
 // declare global {
 //   namespace escad {

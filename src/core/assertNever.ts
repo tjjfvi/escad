@@ -1,5 +1,5 @@
 
-import { inspect } from "util"
+import { inspect } from "util.ts"
 
 export function assertNever(
   value: never,

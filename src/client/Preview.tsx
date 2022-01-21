@@ -1,14 +1,14 @@
 
 import "../stylus/Preview.styl"
-import React, { useContext, useEffect } from "react"
-import { viewerRegistry } from "./ViewerRegistry"
-import { observer, useObservable } from "rhobo"
-import { Product } from "@escad/core"
-import { Export } from "./Export"
-import { Viewer } from "./Viewer"
-import { ClientState } from "./ClientState"
-import { Loading } from "./Loading"
-import { usePromise } from "./usePromise"
+import React, { useContext, useEffect } from "react.ts"
+import { viewerRegistry } from "./ViewerRegistry.ts"
+import { observer, useObservable } from "rhobo.ts"
+import { Product } from "../core/mod.ts"
+import { Export } from "./Export.ts"
+import { Viewer } from "./Viewer.ts"
+import { ClientState } from "./ClientState.ts"
+import { Loading } from "./Loading.ts"
+import { usePromise } from "./usePromise.ts"
 
 export const Preview = observer(() => {
   const state = useContext(ClientState.Context)

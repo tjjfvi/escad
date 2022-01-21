@@ -1,5 +1,5 @@
-import { $uint32le } from "./$number"
-import { Deserialization, Serializer } from "./Serializer"
+import { $uint32le } from "./$number.ts"
+import { Deserialization, Serializer } from "./Serializer.ts"
 
 export const $array = <T>($value: Serializer<T>) => new Serializer<readonly T[]>({
   *s(array: readonly T[]){

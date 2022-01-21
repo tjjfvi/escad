@@ -1,4 +1,4 @@
-import { createConnectionPair, serializeConnection } from "../src"
+import { createConnectionPair, serializeConnection } from "../src.ts"
 
 test("", async () => {
   const [_a, b] = createConnectionPair<Uint8Array>()

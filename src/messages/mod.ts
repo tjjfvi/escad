@@ -1,16 +1,16 @@
 
 // @create-index {"mode":"*"}
 
-export * from "./Connection"
-export * from "./EventEmitter"
-export * from "./Messenger"
-export * from "./brandConnection"
-export * from "./childProcessConnection"
-export * from "./createConnectionPair"
-export * from "./filterConnection"
-export * from "./logConnection"
-export * from "./parentProcessConnection"
-export * from "./serializeConnection"
-export * from "./transformConnection"
-export * from "./workerConnection"
+export * from "./Connection.ts"
+export * from "./EventEmitter.ts"
+export * from "./Messenger.ts"
+export * from "./brandConnection.ts"
+export * from "./childProcessConnection.ts"
+export * from "./createConnectionPair.ts"
+export * from "./filterConnection.ts"
+export * from "./logConnection.ts"
+export * from "./parentProcessConnection.ts"
+export * from "./serializeConnection.ts"
+export * from "./transformConnection.ts"
+export * from "./workerConnection.ts"
 

@@ -1,7 +1,7 @@
 
-import { ScopedId } from "./Id"
-import { Product, ProductType, ProductTypeish, _Product } from "./Product"
-import { checkTypeProperty } from "./checkTypeProperty"
+import { ScopedId } from "./Id.ts"
+import { Product, ProductType, ProductTypeish, _Product } from "./Product.ts"
+import { checkTypeProperty } from "./checkTypeProperty.ts"
 
 export type Marker = ScopedId<"Marker">
 

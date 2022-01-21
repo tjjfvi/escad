@@ -1,8 +1,8 @@
 
-import { Matrix4 } from "./Matrix4"
-import { Mesh } from "./Mesh"
-import { mapOperation, Component, ConvertibleOperation, TupleProduct } from "@escad/core"
-import { Transform, Transformation } from "./Transformation"
+import { Matrix4 } from "./Matrix4.ts"
+import { Mesh } from "./Mesh.ts"
+import { mapOperation, Component, ConvertibleOperation, TupleProduct } from "../core/mod.ts"
+import { Transform, Transformation } from "./Transformation.ts"
 
 export type TranslateArgs =
   | [number, number, number]

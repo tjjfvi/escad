@@ -1,7 +1,7 @@
 
-import { Conversion, conversionRegistry, createLeafProductUtils, Id, LeafProduct } from "@escad/core"
-import { Cube } from "./cube"
-import { Vector3 } from "./Vector3"
+import { Conversion, conversionRegistry, createLeafProductUtils, Id, LeafProduct } from "../core/mod.ts"
+import { Cube } from "./cube.ts"
+import { Vector3 } from "./Vector3.ts"
 
 const boundingBoxId = Id.create(__filename, "@escad/builtins", "LeafProduct", "BoundingBox")
 

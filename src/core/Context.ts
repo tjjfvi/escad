@@ -1,6 +1,6 @@
 
-import { ScopedId } from "./Id"
-import { ContextStack, contextStack as defaultContextStack } from "./ContextStack"
+import { ScopedId } from "./Id.ts"
+import { ContextStack, contextStack as defaultContextStack } from "./ContextStack.ts"
 
 export class Context<T> {
 

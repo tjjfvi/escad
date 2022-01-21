@@ -1,10 +1,10 @@
 
-import { viewerRegistry } from "@escad/client"
-import { Face, Mesh } from "@escad/builtins"
-import { viewer3d, Viewer3dInput } from "./Viewer3d"
-import { colors } from "./colors"
-import { EdgesGeometry } from "./EdgesGeometry"
-import * as t from "three"
+import { viewerRegistry } from "../client/mod.ts"
+import { Face, Mesh } from "../builtins/mod.ts"
+import { viewer3d, Viewer3dInput } from "./Viewer3d.ts"
+import { colors } from "./colors.ts"
+import { EdgesGeometry } from "./EdgesGeometry.ts"
+import * as t from "three.ts"
 
 viewerRegistry.register<Mesh, Viewer3dInput>({
   type: Mesh,

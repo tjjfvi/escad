@@ -1,5 +1,5 @@
 
-import { HashMap } from "../src"
+import { HashMap } from "../src.ts"
 
 test("HashMap", () => {
   const map = new HashMap()

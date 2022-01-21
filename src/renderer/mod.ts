@@ -1,7 +1,7 @@
 
 // @create-index {"mode":"*"}
 
-export * from "./createMessenger"
-export * from "./lookupRef"
-export * from "./renderFunction"
+export * from "./createMessenger.ts"
+export * from "./lookupRef.ts"
+export * from "./renderFunction.ts"
 

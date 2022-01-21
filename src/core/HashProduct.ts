@@ -1,8 +1,8 @@
 
-import { artifactManager as defaultArtifactManager } from "./ArtifactManager"
-import { checkTypeProperty } from "./checkTypeProperty"
-import { Hash } from "./Hash"
-import { Product, ProductType, _Product } from "./Product"
+import { artifactManager as defaultArtifactManager } from "./ArtifactManager.ts"
+import { checkTypeProperty } from "./checkTypeProperty.ts"
+import { Hash } from "./Hash.ts"
+import { Product, ProductType, _Product } from "./Product.ts"
 
 export interface HashProduct<T extends Product = Product> extends _Product {
   type: "HashProduct",

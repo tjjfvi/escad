@@ -1,5 +1,5 @@
 
-import { ArrayHierarchy, assertNever, Hierarchy } from "@escad/core"
+import { ArrayHierarchy, assertNever, Hierarchy } from "../core/mod.ts"
 
 interface ObjectHierarchyPathPart {
   readonly type: "ObjectHierarchyPathPart",

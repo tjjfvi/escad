@@ -1,7 +1,7 @@
 
-import { createLeafProductUtils, Id, LeafProduct, Stack } from "@escad/core"
-import { Face } from "./Face"
-import { Plane } from "./Plane"
+import { createLeafProductUtils, Id, LeafProduct, Stack } from "../core/mod.ts"
+import { Face } from "./Face.ts"
+import { Plane } from "./Plane.ts"
 
 const bspId = Id.create(__filename, "@escad/builtins", "LeafProduct", "Bsp")
 

@@ -13,10 +13,10 @@ import {
   MarkedProduct,
   Elementish,
   HashProduct,
-} from "@escad/core"
-import { BoundingBox } from "./BoundingBox"
-import { Mesh } from "./Mesh"
-import { Vector3 } from "./Vector3"
+} from "../core/mod.ts"
+import { BoundingBox } from "./BoundingBox.ts"
+import { Mesh } from "./Mesh.ts"
+import { Vector3 } from "./Vector3.ts"
 
 const getBoundingBoxId = Id.create(__filename, "@escad/builtins", "Marker", "GetBoundingBox")
 export type GetBoundingBox<T extends Product> = MarkedProduct<typeof getBoundingBoxId, T>

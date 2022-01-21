@@ -8,9 +8,9 @@ import {
   MarkedProduct,
   ConvertibleTo,
   Operation,
-} from "@escad/core"
-import { Face } from "./Face"
-import { Mesh } from "./Mesh"
+} from "../core/mod.ts"
+import { Face } from "./Face.ts"
+import { Mesh } from "./Mesh.ts"
 
 const flipFacesId = Id.create(__filename, "@escad/builtins", "Marker", "FlipFaces")
 export type FlipFaces<T extends Product> = MarkedProduct<typeof flipFacesId, T>

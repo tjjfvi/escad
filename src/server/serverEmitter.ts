@@ -1,6 +1,6 @@
 
-import { createEventEmitter, EventEmitter } from "@escad/messages"
-import { PluginRegistration } from "@escad/register-client-plugin"
+import { createEventEmitter, EventEmitter } from "../messages/mod.ts"
+import { PluginRegistration } from "../register-client-plugin/mod.ts"
 
 export type ServerEmitter = EventEmitter<{
   changeObserved: [],

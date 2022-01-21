@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { Connection } from "./Connection"
+import { Connection } from "./Connection.ts"
 
 export type MessengerShape = Record<string, (...args: any[]) => Promise<unknown>>
 export type EventsShape = Record<string, readonly unknown[]>

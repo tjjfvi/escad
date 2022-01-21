@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 
-import commander from "commander"
-import path from "path"
-import os from "os"
-import fs from "fs"
-import { createServer } from "../server"
+import commander from "commander.ts"
+import path from "path.ts"
+import os from "os.ts"
+import fs from "fs.ts"
+import { createServer } from "../server.ts"
 ;(() => {
   commander
     .usage("[options] <file>")

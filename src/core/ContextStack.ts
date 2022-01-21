@@ -1,5 +1,5 @@
 
-import { Id } from "./Id"
+import { Id } from "./Id.ts"
 
 export class ContextStack {
 

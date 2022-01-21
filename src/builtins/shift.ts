@@ -1,7 +1,7 @@
-import { Component, ConvertibleElement, Operation } from "@escad/core"
-import { interpretTriplet, Triplet } from "./helpers"
-import { Mesh } from "./Mesh"
-import { moveTo } from "./moveTo"
+import { Component, ConvertibleElement, Operation } from "../core/mod.ts"
+import { interpretTriplet, Triplet } from "./helpers.ts"
+import { Mesh } from "./Mesh.ts"
+import { moveTo } from "./moveTo.ts"
 
 export const shift = Component.create("shift", (triplet: Triplet) => {
   const shift = interpretTriplet(triplet, 0)

@@ -1,9 +1,9 @@
 
-import { Hash, Product, Hierarchy } from "@escad/core"
-import { HierarchyPath } from "../HierarchyPath"
-import { StateMemo } from "./State"
-import { Tree, TreePart } from "./Tree"
-import { TreeTextPart, TreeTextRange } from "./TreeText"
+import { Hash, Product, Hierarchy } from "../core/mod.ts"
+import { HierarchyPath } from "../HierarchyPath.ts"
+import { StateMemo } from "./State.ts"
+import { Tree, TreePart } from "./Tree.ts"
+import { TreeTextPart, TreeTextRange } from "./TreeText.ts"
 
 /**
  * Converts a `Hierarchy` to a `Tree`

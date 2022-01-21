@@ -1,8 +1,8 @@
 
-import { checkTypeProperty } from "./checkTypeProperty"
-import { Hierarchy } from "./Hierarchy"
-import { Id } from "./Id"
-import { Log, LogLevel } from "./Log"
+import { checkTypeProperty } from "./checkTypeProperty.ts"
+import { Hierarchy } from "./Hierarchy.ts"
+import { Id } from "./Id.ts"
+import { Log, LogLevel } from "./Log.ts"
 
 const hierarchyLogId = Id.create(__filename, "@escad/core", "Log", "HierarchyLog")
 

@@ -1,7 +1,7 @@
 
-import { checkTypeProperty } from "./checkTypeProperty"
-import { Id } from "./Id"
-import { Log, LogLevel } from "./Log"
+import { checkTypeProperty } from "./checkTypeProperty.ts"
+import { Id } from "./Id.ts"
+import { Log, LogLevel } from "./Log.ts"
 
 const stringLogId = Id.create(__filename, "@escad/core", "Log", "StringLog")
 

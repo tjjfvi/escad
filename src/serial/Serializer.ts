@@ -1,4 +1,4 @@
-import { BufferInfo } from "./BufferInfo"
+import { BufferInfo } from "./BufferInfo.ts"
 
 export type Serialization = Generator<Uint8Array, void, void>
 export type Deserialization<T> = Generator<undefined, T, Uint8Array>

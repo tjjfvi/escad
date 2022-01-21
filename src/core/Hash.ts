@@ -1,7 +1,7 @@
 
-import crypto from "crypto"
-import { Timer } from "./Timer"
-import { $unknown } from "@escad/serial"
+import crypto from "crypto.ts"
+import { Timer } from "./Timer.ts"
+import { $unknown } from "../serial/mod.ts"
 
 const hashMemo = new WeakMap<object, Hash<any>>()
 export const Hash = {

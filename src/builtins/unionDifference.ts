@@ -1,8 +1,8 @@
 
-import { Mesh } from "./Mesh"
-import { Element, ConvertibleOperation, ConvertibleElementish, Operation } from "@escad/core"
-import { Bsp } from "./Bsp"
-import { diff } from "./diff"
+import { Mesh } from "./Mesh.ts"
+import { Element, ConvertibleOperation, ConvertibleElementish, Operation } from "../core/mod.ts"
+import { Bsp } from "./Bsp.ts"
+import { diff } from "./diff.ts"
 
 export const udMeld: ConvertibleOperation<Bsp, Bsp> =
   Operation.create("udMeld", async el => {

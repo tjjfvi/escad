@@ -2,11 +2,11 @@
 
 import "../stylus/Viewer3d.styl"
 
-import React, { useEffect } from "react"
-import { ViewerInput, Viewer } from "@escad/client"
+import React, { useEffect } from "react.ts"
+import { ViewerInput, Viewer } from "../client/mod.ts"
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-import * as t from "three"
-import { createScene } from "./createScene"
+import * as t from "three.ts"
+import { createScene } from "./createScene.ts"
 
 export interface Viewer3dInput extends ViewerInput {
   group: t.Group,

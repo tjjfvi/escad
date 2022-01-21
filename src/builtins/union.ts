@@ -13,8 +13,8 @@ import {
   ConvertibleElement,
   MarkedProduct,
   ArrayProduct,
-} from "@escad/core"
-import { Bsp, ClipOptions } from "./Bsp"
+} from "../core/mod.ts"
+import { Bsp, ClipOptions } from "./Bsp.ts"
 
 const unionId = Id.create(__filename, "@escad/builtins", "Marker", "Union")
 export type Union<T extends Product> = MarkedProduct<typeof unionId, T>

@@ -8,8 +8,8 @@ import {
   mapOperation,
   conversionRegistry,
   ProductTypeish,
-} from "@escad/core"
-import { ValueWrapperProduct } from "./ValueWrapperProduct"
+} from "../core/mod.ts"
+import { ValueWrapperProduct } from "./ValueWrapperProduct.ts"
 
 type StringKeys<T> = `${Exclude<keyof T, symbol>}`
 type GetStringKey<T, K extends StringKeys<T>> = K extends keyof T ? T[K] : T[number & keyof T]

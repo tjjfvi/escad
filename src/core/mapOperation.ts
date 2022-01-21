@@ -1,7 +1,7 @@
-import { Operation, OperationOptions } from "./Operation"
-import { Product } from "./Product"
-import { Element, Elementish } from "./Element"
-import { Promisish } from "./Promisish"
+import { Operation, OperationOptions } from "./Operation.ts"
+import { Product } from "./Product.ts"
+import { Element, Elementish } from "./Element.ts"
+import { Promisish } from "./Promisish.ts"
 
 export const mapOperation = (
  <I extends Product, O extends Product = I>(

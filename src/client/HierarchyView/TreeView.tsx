@@ -1,10 +1,10 @@
 
-import React, { useState } from "react"
-import { flattenTree } from "./flattenTree"
-import { finalizeTree } from "./finalizeTree"
-import { Tree, TreePart } from "./Tree"
-import { TreeText } from "./TreeText"
-import { TreeTextView } from "./TreeTextView"
+import React, { useState } from "react.ts"
+import { flattenTree } from "./flattenTree.ts"
+import { finalizeTree } from "./finalizeTree.ts"
+import { Tree, TreePart } from "./Tree.ts"
+import { TreeText } from "./TreeText.ts"
+import { TreeTextView } from "./TreeTextView.ts"
 
 const arrowWidth = 25
 const characterWidth = 10

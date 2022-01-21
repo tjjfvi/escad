@@ -1,4 +1,4 @@
-import { Compiler, Module } from "webpack"
+import { Compiler, Module } from "webpack.ts"
 
 export const mapModuleIds = (fn: (id: string, module: Module) => string) => (compiler: Compiler) => {
   const context = compiler.options.context

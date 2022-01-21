@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import commander from "commander"
+import commander from "commander.ts"
 
 commander
   // .version(require("../../package.json").version, "-v, --version")

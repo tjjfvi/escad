@@ -1,6 +1,6 @@
 
-import { Id } from "@escad/core"
-import { Parameter } from "@escad/core"
+import { Id } from "../core/mod.ts"
+import { Parameter } from "../core/mod.ts"
 
 export interface BooleanParamArgs {
   readonly defaultValue: boolean,

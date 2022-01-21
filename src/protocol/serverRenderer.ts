@@ -1,7 +1,7 @@
 
-import { ExportTypeInfo, Hash, Hierarchy, ObjectParam, Product, Log, ObjectParamValue } from "@escad/core"
-import { Messenger } from "@escad/messages"
-import { PluginRegistration } from "@escad/register-client-plugin"
+import { ExportTypeInfo, Hash, Hierarchy, ObjectParam, Product, Log, ObjectParamValue } from "../core/mod.ts"
+import { Messenger } from "../messages/mod.ts"
+import { PluginRegistration } from "../register-client-plugin/mod.ts"
 
 export interface LoadFileInfo {
   paramDef: ObjectParam<any>,

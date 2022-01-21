@@ -1,4 +1,4 @@
-import { Context, ContextStack, Id } from "../src"
+import { Context, ContextStack, Id } from "../src.ts"
 
 const id = Id.create(__filename, "@escad/core", "Context", "test")
 

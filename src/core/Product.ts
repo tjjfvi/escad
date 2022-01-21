@@ -1,20 +1,20 @@
 
-import { LeafProduct, LeafProductType } from "./LeafProduct"
-import { TupleProduct, TupleProductType } from "./TupleProduct"
-import { ArrayProduct, ArrayProductType } from "./ArrayProduct"
+import { LeafProduct, LeafProductType } from "./LeafProduct.ts"
+import { TupleProduct, TupleProductType } from "./TupleProduct.ts"
+import { ArrayProduct, ArrayProductType } from "./ArrayProduct.ts"
 import {
   __convertibleTo,
   __convertibleToOverride,
   _ConvertibleTo,
   __convertibleToTransitivityOverride,
   TransitivityOverride,
-} from "./Conversions"
-import { Hash } from "./Hash"
-import { UnknownProduct, UnknownProductType } from "./UnknownProduct"
-import { ScopedId } from "./Id"
-import { MarkedProduct, MarkedProductType } from "./MarkedProduct"
-import { HashProduct, HashProductType } from "./HashProduct"
-import { Timer } from "./Timer"
+} from "./Conversions.ts"
+import { Hash } from "./Hash.ts"
+import { UnknownProduct, UnknownProductType } from "./UnknownProduct.ts"
+import { ScopedId } from "./Id.ts"
+import { MarkedProduct, MarkedProductType } from "./MarkedProduct.ts"
+import { HashProduct, HashProductType } from "./HashProduct.ts"
+import { Timer } from "./Timer.ts"
 
 export interface _Product {
   readonly type: string | ScopedId<"LeafProduct">,

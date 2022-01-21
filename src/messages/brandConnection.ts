@@ -1,7 +1,7 @@
 
-import { Connection } from "./Connection"
-import { filterConnection } from "./filterConnection"
-import { transformConnection } from "./transformConnection"
+import { Connection } from "./Connection.ts"
+import { filterConnection } from "./filterConnection.ts"
+import { transformConnection } from "./transformConnection.ts"
 
 export const brandConnection =
   (connection: Connection<{ brand: string, value: unknown }, unknown>, brand: string): Connection<unknown> =>

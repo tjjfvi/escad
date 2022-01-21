@@ -1,6 +1,6 @@
-import { Serializer } from "./Serializer"
-import { $string } from "./$string"
-import { registeredTypes } from "./typeRegistration"
+import { Serializer } from "./Serializer.ts"
+import { $string } from "./$string.ts"
+import { registeredTypes } from "./typeRegistration.ts"
 
 const primitiveProtos = new Set([
   Object.prototype,

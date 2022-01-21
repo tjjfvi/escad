@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react.ts"
 
 export const usePromise = <T>(func: () => Promise<T>, deps: readonly unknown[]) => {
   const [value, setValue] = useState<T>()

@@ -1,9 +1,9 @@
 
-import { Hierarchy, CallHierarchy, ArrayHierarchy, ObjectHierarchy } from "@escad/core"
-import { getState } from "./State"
-import { HierarchyPath } from "../HierarchyPath"
-import { HierarchyToTreeEngine, wrapTreeSelectable } from "./hierarchyToTree"
-import { Tree, TreePart } from "./Tree"
+import { Hierarchy, CallHierarchy, ArrayHierarchy, ObjectHierarchy } from "../core/mod.ts"
+import { getState } from "./State.ts"
+import { HierarchyPath } from "../HierarchyPath.ts"
+import { HierarchyToTreeEngine, wrapTreeSelectable } from "./hierarchyToTree.ts"
+import { Tree, TreePart } from "./Tree.ts"
 
 export const httDetailedEngine: HierarchyToTreeEngine = {
 

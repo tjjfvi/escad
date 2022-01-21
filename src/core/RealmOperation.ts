@@ -1,13 +1,13 @@
-import { ExtensibleFunction } from "./ExtensibleFunction"
-import { Product } from "./Product"
-import { Element, Elementish } from "./Element"
-import { GenericOperation, Operation } from "./Operation"
-import { RealmElement } from "./RealmElement"
-import { Component, GenericComponent } from "./Component"
-import { Realm } from "./Realm"
-import { RealmThing } from "./RealmThing"
-import { RealmComponent, RealmGenericComponent } from "./RealmComponent"
-import { Hkt } from "./Hkt"
+import { ExtensibleFunction } from "./ExtensibleFunction.ts"
+import { Product } from "./Product.ts"
+import { Element, Elementish } from "./Element.ts"
+import { GenericOperation, Operation } from "./Operation.ts"
+import { RealmElement } from "./RealmElement.ts"
+import { Component, GenericComponent } from "./Component.ts"
+import { Realm } from "./Realm.ts"
+import { RealmThing } from "./RealmThing.ts"
+import { RealmComponent, RealmGenericComponent } from "./RealmComponent.ts"
+import { Hkt } from "./Hkt.ts"
 
 type Assert<T, U extends T> = U
 

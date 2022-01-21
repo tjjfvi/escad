@@ -1,7 +1,7 @@
 
-import { Vector3 } from "./Vector3"
-import { Face } from "./Face"
-import { createLeafProductUtils, Id, LeafProduct } from "@escad/core"
+import { Vector3 } from "./Vector3.ts"
+import { Face } from "./Face.ts"
+import { createLeafProductUtils, Id, LeafProduct } from "../core/mod.ts"
 
 const epsilon = 1e-5
 

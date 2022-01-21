@@ -1,5 +1,5 @@
 
-import { HashMap } from "./HashMap"
+import { HashMap } from "./HashMap.ts"
 
 export class HashSet<T> {
 

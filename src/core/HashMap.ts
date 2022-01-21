@@ -1,5 +1,5 @@
 
-import { Hash } from "./Hash"
+import { Hash } from "./Hash.ts"
 
 export class HashMap<K, V> {
 

@@ -1,7 +1,7 @@
-import escad, { ConvertibleTo } from "../packages/core"
+import escad, { ConvertibleTo } from "../packages/core.ts"
 import "../packages/builtins/register"
-import { Mesh } from "../packages/csg/node_modules/@escad/builtins/dist"
-import { smoothContext } from "../packages/builtins/node_modules/@escad/builtins/dist/smoothContext"
+import { Mesh } from "../packages/csg/node_modules/@escad/builtins/dist.ts"
+import { smoothContext } from "../packages/builtins/node_modules/@escad/builtins/dist/smoothContext.ts"
 
 export default () => {
   smoothContext.set({ sides: 12 })
