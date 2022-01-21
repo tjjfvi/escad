@@ -1,6 +1,6 @@
 
 import { createEventEmitter } from "."
-import { $unknown } from "../../serial/dist"
+import { $unknown } from "@escad/serial"
 import { Connection  } from "./Connection"
 import { transformConnection } from "./transformConnection"
 
