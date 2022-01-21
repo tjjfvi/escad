@@ -1,10 +1,9 @@
-
-import { Product, _Product } from "./Product.ts"
-import { checkTypeProperty } from "./checkTypeProperty.ts"
+import { _Product, Product } from "./Product.ts";
+import { checkTypeProperty } from "./checkTypeProperty.ts";
 
 export interface UnknownProduct extends _Product {
-  readonly type: "UnknownProduct",
-  readonly product: Product,
+  readonly type: "UnknownProduct";
+  readonly product: Product;
 }
 
 export const UnknownProduct = {
@@ -13,15 +12,17 @@ export const UnknownProduct = {
     product,
   }),
   isUnknownProduct: checkTypeProperty.string<UnknownProduct>("UnknownProduct"),
-}
+};
 
 export interface UnknownProductType {
-  readonly type: "UnknownProductType",
+  readonly type: "UnknownProductType";
 }
 
 export const UnknownProductType = {
   create: (): UnknownProductType => ({
     type: "UnknownProductType",
   }),
-  isUnknownProductType: checkTypeProperty.string<UnknownProductType>("UnknownProductType"),
-}
+  isUnknownProductType: checkTypeProperty.string<UnknownProductType>(
+    "UnknownProductType",
+  ),
+};

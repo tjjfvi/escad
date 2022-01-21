@@ -1,17 +1,21 @@
-
-import { Id } from "../core/mod.ts"
-import { Parameter } from "../core/mod.ts"
+import { Id } from "../core/mod.ts";
+import { Parameter } from "../core/mod.ts";
 
 export interface BooleanParamArgs {
-  readonly defaultValue: boolean,
-  readonly name?: string,
-  readonly desc?: string,
+  readonly defaultValue: boolean;
+  readonly name?: string;
+  readonly desc?: string;
 }
 
-const booleanParamId = Id.create(import.meta.url, "@escad/builtins", "Parameter", "BooleanParam")
+const booleanParamId = Id.create(
+  import.meta.url,
+  "@escad/builtins",
+  "Parameter",
+  "BooleanParam",
+);
 
 export interface BooleanParam extends Parameter<boolean>, BooleanParamArgs {
-  readonly type: typeof booleanParamId,
+  readonly type: typeof booleanParamId;
 }
 
 export const BooleanParam = {
@@ -20,6 +24,6 @@ export const BooleanParam = {
     type: booleanParamId,
   }),
   id: booleanParamId,
-}
+};
 
-export const booleanParam = BooleanParam.create
+export const booleanParam = BooleanParam.create;

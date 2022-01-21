@@ -1,16 +1,26 @@
+import {
+  Conversion,
+  conversionRegistry,
+  createLeafProductUtils,
+  Id,
+  LeafProduct,
+} from "../core/mod.ts";
+import { Cube } from "./cube.ts";
+import { Vector3 } from "./Vector3.ts";
 
-import { Conversion, conversionRegistry, createLeafProductUtils, Id, LeafProduct } from "../core/mod.ts"
-import { Cube } from "./cube.ts"
-import { Vector3 } from "./Vector3.ts"
-
-const boundingBoxId = Id.create(import.meta.url, "@escad/builtins", "LeafProduct", "BoundingBox")
+const boundingBoxId = Id.create(
+  import.meta.url,
+  "@escad/builtins",
+  "LeafProduct",
+  "BoundingBox",
+);
 
 export interface BoundingBox extends LeafProduct {
-  readonly type: typeof boundingBoxId,
-  readonly min: Vector3,
-  readonly max: Vector3,
-  readonly size: Vector3,
-  readonly center: Vector3,
+  readonly type: typeof boundingBoxId;
+  readonly min: Vector3;
+  readonly max: Vector3;
+  readonly size: Vector3;
+  readonly center: Vector3;
 }
 
 export const BoundingBox = {
@@ -23,24 +33,30 @@ export const BoundingBox = {
     size: Vector3.subtract(max, min),
   }),
   fromVector3: (vector: Vector3) => BoundingBox.create(vector, vector),
-  ...createLeafProductUtils<BoundingBox, "BoundingBox">(boundingBoxId, "BoundingBox"),
-}
+  ...createLeafProductUtils<BoundingBox, "BoundingBox">(
+    boundingBoxId,
+    "BoundingBox",
+  ),
+};
 
 declare global {
   namespace escad {
     interface ConversionsObj {
-      "@escad/builtins/BoundingBox": (
-        | Conversion<BoundingBox, Cube>
-      ),
+      "@escad/builtins/BoundingBox": (Conversion<BoundingBox, Cube>);
     }
   }
 }
 
 conversionRegistry.register({
-  id: Id.create(import.meta.url, "@escad/builtins", "Conversion", "BoundingBoxToCube"),
+  id: Id.create(
+    import.meta.url,
+    "@escad/builtins",
+    "Conversion",
+    "BoundingBoxToCube",
+  ),
   fromType: BoundingBox,
   toType: Cube,
-  convert: async boundingBox =>
+  convert: async (boundingBox) =>
     Cube.create(boundingBox.size, boundingBox.center),
   weight: 1,
-})
+});

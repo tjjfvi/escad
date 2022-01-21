@@ -1,9 +1,8 @@
-
-import { Hash, Product, Hierarchy } from "../core/mod.ts"
-import { HierarchyPath } from "../HierarchyPath.ts"
-import { StateMemo } from "./State.ts"
-import { Tree, TreePart } from "./Tree.ts"
-import { TreeTextPart, TreeTextRange } from "./TreeText.ts"
+import { Hash, Hierarchy, Product } from "../core/mod.ts";
+import { HierarchyPath } from "../HierarchyPath.ts";
+import { StateMemo } from "./State.ts";
+import { Tree, TreePart } from "./Tree.ts";
+import { TreeTextPart, TreeTextRange } from "./TreeText.ts";
 
 /**
  * Converts a `Hierarchy` to a `Tree`
@@ -22,36 +21,41 @@ export function hierarchyToTree(
   hierarchy: Hierarchy,
   stateMemo: StateMemo,
   path: HierarchyPath = [],
-): Tree{
-  return wrapTreeSelectable(path, hierarchy.linkedProducts, _hierarchyToTree(engine, hierarchy, stateMemo, path))
+): Tree {
+  return wrapTreeSelectable(
+    path,
+    hierarchy.linkedProducts,
+    _hierarchyToTree(engine, hierarchy, stateMemo, path),
+  );
 }
 
 /**
  * The underlying conversions used in `hierarchyToTree`
  */
 export type HierarchyToTreeEngine = {
-  [K in Hierarchy["type"]]:
-    (args: {
-      path: HierarchyPath,
-      hierarchy: Extract<Hierarchy, { type: K }>,
-      stateMemo: StateMemo,
-      hierarchyToTree: (props: { path: HierarchyPath, hierarchy: Hierarchy }) => Tree,
-    }) => Tree
-}
+  [K in Hierarchy["type"]]: (args: {
+    path: HierarchyPath;
+    hierarchy: Extract<Hierarchy, { type: K }>;
+    stateMemo: StateMemo;
+    hierarchyToTree: (
+      props: { path: HierarchyPath; hierarchy: Hierarchy },
+    ) => Tree;
+  }) => Tree;
+};
 
 function _hierarchyToTree(
   engine: HierarchyToTreeEngine,
   hierarchy: Hierarchy,
   stateMemo: StateMemo,
   path: HierarchyPath,
-){
+) {
   return engine[hierarchy.type]({
     path,
     hierarchy: hierarchy as never,
     stateMemo,
     hierarchyToTree: ({ path, hierarchy }) =>
       hierarchyToTree(engine, hierarchy, stateMemo, path),
-  })
+  });
 }
 
 /**
@@ -67,12 +71,13 @@ export function wrapTreeSelectable(
   path: HierarchyPath,
   linkedProducts: readonly Hash<Product>[] | undefined,
   tree: Tree,
-): Tree{
-  if(!linkedProducts?.length || !tree.length)
-    return tree
+): Tree {
+  if (!linkedProducts?.length || !tree.length) {
+    return tree;
+  }
   return [
     TreePart.Line(TreeTextPart.RangeStart(TreeTextRange.Selectable(path))),
     ...tree,
     TreePart.Line(TreeTextPart.RangeEnd()),
-  ]
+  ];
 }

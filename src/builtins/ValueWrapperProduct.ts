@@ -1,10 +1,15 @@
-import { createLeafProductUtils, Id, LeafProduct } from "../core/mod.ts"
+import { createLeafProductUtils, Id, LeafProduct } from "../core/mod.ts";
 
-const valueWrapperProductId = Id.create(import.meta.url, "@escad/builtins", "LeafProduct", "ValueWrapperProduct")
+const valueWrapperProductId = Id.create(
+  import.meta.url,
+  "@escad/builtins",
+  "LeafProduct",
+  "ValueWrapperProduct",
+);
 
 export interface ValueWrapperProduct<T = unknown> extends LeafProduct {
-  readonly type: typeof valueWrapperProductId,
-  readonly value: T,
+  readonly type: typeof valueWrapperProductId;
+  readonly value: T;
 }
 
 export const ValueWrapperProduct = {
@@ -17,4 +22,4 @@ export const ValueWrapperProduct = {
     "ValueWrapperProduct",
   ),
   id: valueWrapperProductId,
-}
+};

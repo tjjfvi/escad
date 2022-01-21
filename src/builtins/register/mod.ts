@@ -1,14 +1,13 @@
+import "..";
+import { extendChainables } from "../core/mod.ts";
+import chainables from "../chainables.ts";
 
-import ".."
-import { extendChainables } from "../core/mod.ts"
-import chainables from "../chainables.ts"
-
-type Chainables = typeof chainables
+type Chainables = typeof chainables;
 
 declare global {
   export namespace escad {
-    export interface DefaultChainables extends Chainables { }
+    export interface DefaultChainables extends Chainables {}
   }
 }
 
-extendChainables(chainables)
+extendChainables(chainables);

@@ -1,119 +1,129 @@
-
-import express from "express.ts"
-import expressWs from "express-ws.ts"
+import express from "express.ts";
+import expressWs from "express-ws.ts";
 import {
   createServerBundlerMessenger,
   createServerClientMessenger,
   createServerRendererMessenger,
-} from "../server/mod.ts"
-import path from "path.ts"
-import { childProcessConnection, logConnection, serializeConnection } from "../messages/mod.ts"
-import { fork } from "child_process.ts"
-import watch from "node-watch.ts"
-import { BundleOptions, ServerRendererShape } from "../protocol/mod.ts"
-import { createServerEmitter } from "../server/mod.ts"
+} from "../server/mod.ts";
+import path from "path.ts";
+import {
+  childProcessConnection,
+  logConnection,
+  serializeConnection,
+} from "../messages/mod.ts";
+import { fork } from "child_process.ts";
+import watch from "node-watch.ts";
+import { BundleOptions, ServerRendererShape } from "../protocol/mod.ts";
+import { createServerEmitter } from "../server/mod.ts";
 
 export interface ServerOptions {
-  artifactsDir: string,
-  port: number,
-  ip: string,
-  loadFile: string,
-  loadDir: string,
-  dev: boolean,
+  artifactsDir: string;
+  port: number;
+  ip: string;
+  loadFile: string;
+  loadDir: string;
+  dev: boolean;
 }
 
-export const createServer = async ({ artifactsDir, port, ip = "::", loadFile, loadDir, dev }: ServerOptions) => {
-  const { app } = expressWs(express())
+export const createServer = async (
+  { artifactsDir, port, ip = "::", loadFile, loadDir, dev }: ServerOptions,
+) => {
+  const { app } = expressWs(express());
 
-  const staticDir = path.join(__dirname, "../static/")
-  const bundleDir = path.join(artifactsDir, "static/")
+  const staticDir = path.join(__dirname, "../static/");
+  const bundleDir = path.join(artifactsDir, "static/");
 
-  app.use(express.static(staticDir))
-  app.use(express.static(bundleDir))
-  app.use("/artifacts", express.static(artifactsDir + "/"))
+  app.use(express.static(staticDir));
+  app.use(express.static(bundleDir));
+  app.use("/artifacts", express.static(artifactsDir + "/"));
 
   const baseBundleOptions: BundleOptions = {
     outDir: bundleDir,
     coreClientPath: require.resolve("./client"),
     clientPlugins: [],
     watch: dev,
-  }
+  };
 
-  const createRendererMessenger = async (lookupRaw: ServerRendererShape["lookupRaw"]) => {
+  const createRendererMessenger = async (
+    lookupRaw: ServerRendererShape["lookupRaw"],
+  ) => {
     const child = fork(require.resolve("./renderer"), {
       env: { ...process.env, ARTIFACTS_DIR: artifactsDir, LOAD_FILE: loadFile },
-    })
-    console.log(`New renderer process: ${child.pid}`)
-    return createServerRendererMessenger(lookupRaw, serializeConnection(childProcessConnection(child)))
-  }
+    });
+    console.log(`New renderer process: ${child.pid}`);
+    return createServerRendererMessenger(
+      lookupRaw,
+      serializeConnection(childProcessConnection(child)),
+    );
+  };
 
-  const loadInfo = await (await createRendererMessenger(async () => null)).loadFile()
+  const loadInfo = await (await createRendererMessenger(async () => null))
+    .loadFile();
 
   const bundlerProcess = fork(require.resolve("./bundler"), {
     env: { ...process.env, DEV_MODE: dev + "" },
-  })
-  const bundlerMessenger = createServerBundlerMessenger(childProcessConnection(bundlerProcess))
+  });
+  const bundlerMessenger = createServerBundlerMessenger(
+    childProcessConnection(bundlerProcess),
+  );
 
   bundlerMessenger.bundle({
     ...baseBundleOptions,
     clientPlugins: loadInfo.clientPlugins,
-  })
+  });
 
-  const serverEmitter = createServerEmitter()
+  const serverEmitter = createServerEmitter();
 
   watch(loadDir, {
-    filter: file => !file.includes("artifacts") && !file.includes("node_modules") && !file.includes("dist"),
+    filter: (file) =>
+      !file.includes("artifacts") && !file.includes("node_modules") &&
+      !file.includes("dist"),
   }, (event, filePath) => {
-    console.log(`Watched file ${filePath} ${event}d`)
-    serverEmitter.emit("changeObserved")
-  })
+    console.log(`Watched file ${filePath} ${event}d`);
+    serverEmitter.emit("changeObserved");
+  });
 
   bundlerMessenger.on("bundleStart", () => {
-    console.log("Bundle client start")
-  })
-  bundlerMessenger.on("bundleFinish", hash => {
-    console.log(`Bundle client finish (${hash.slice(0, 32)}...)`)
-  })
+    console.log("Bundle client start");
+  });
+  bundlerMessenger.on("bundleFinish", (hash) => {
+    console.log(`Bundle client finish (${hash.slice(0, 32)}...)`);
+  });
 
-  serverEmitter.on("clientPlugins", clientPlugins => {
+  serverEmitter.on("clientPlugins", (clientPlugins) => {
     bundlerMessenger.bundle({
       ...baseBundleOptions,
       clientPlugins,
-    })
-  })
+    });
+  });
 
-  app.ws("/ws", ws => {
+  app.ws("/ws", (ws) => {
     const messenger = createServerClientMessenger({
       connection: logConnection(serializeConnection({
-        send: msg => ws.send(msg),
-        onMsg: cb => {
-          ws.on("message", cb)
-          return () => ws.off("message", cb)
+        send: (msg) => ws.send(msg),
+        onMsg: (cb) => {
+          ws.on("message", cb);
+          return () => ws.off("message", cb);
         },
       })),
       serverEmitter,
       createRendererMessenger,
       bundlerMessenger,
-    })
-    ws.on("close", () => messenger.destroy())
-    ws.on("error", () => messenger.destroy())
-  })
+    });
+    ws.on("close", () => messenger.destroy());
+    ws.on("error", () => messenger.destroy());
+  });
 
   const httpServer = app.listen(port, ip, () => {
-    const address = httpServer.address()
-    const addressString =
-    typeof address === "object" && address
-      ? address.family === "IPv6"
-        ? `[${address.address}]`
-        : address.address
-      : "<?>"
+    const address = httpServer.address();
+    const addressString = typeof address === "object" && address
+      ? address.family === "IPv6" ? `[${address.address}]` : address.address
+      : "<?>";
     const addressPortString = (
       typeof address === "object"
-        ? address
-          ? `http://${addressString}:${address.port}`
-          : "<?>"
+        ? address ? `http://${addressString}:${address.port}` : "<?>"
         : address
-    )
-    console.log(`Listening on ${addressPortString}`)
-  })
-}
+    );
+    console.log(`Listening on ${addressPortString}`);
+  });
+};

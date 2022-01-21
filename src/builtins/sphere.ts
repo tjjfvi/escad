@@ -1,28 +1,32 @@
-
-import { Mesh } from "./Mesh.ts"
+import { Mesh } from "./Mesh.ts";
 import {
-  Element,
-  Id,
   Component,
-  LeafProduct,
-  createLeafProductUtils,
   Conversion,
   conversionRegistry,
-} from "../core/mod.ts"
-import { interpretTriplet, Triplet } from "./helpers.ts"
-import { Smooth, smoothContext } from "./smoothContext.ts"
-import { Face } from "./Face.ts"
-import { Vector3 } from "./Vector3.ts"
+  createLeafProductUtils,
+  Element,
+  Id,
+  LeafProduct,
+} from "../core/mod.ts";
+import { interpretTriplet, Triplet } from "./helpers.ts";
+import { Smooth, smoothContext } from "./smoothContext.ts";
+import { Face } from "./Face.ts";
+import { Vector3 } from "./Vector3.ts";
 
-const tau = Math.PI * 2
+const tau = Math.PI * 2;
 
-const sphereId = Id.create(import.meta.url, "@escad/builtins", "LeafProduct", "Sphere")
+const sphereId = Id.create(
+  import.meta.url,
+  "@escad/builtins",
+  "LeafProduct",
+  "Sphere",
+);
 
 export interface Sphere extends LeafProduct {
-  readonly type: typeof sphereId,
-  readonly radius: number,
-  readonly smooth: Smooth,
-  readonly center: Vector3,
+  readonly type: typeof sphereId;
+  readonly radius: number;
+  readonly smooth: Smooth;
+  readonly center: Vector3;
 }
 
 export const Sphere = {
@@ -34,14 +38,14 @@ export const Sphere = {
   }),
   ...createLeafProductUtils<Sphere, "Sphere">(sphereId, "Sphere"),
   id: sphereId,
-}
+};
 
 declare global {
   namespace escad {
     interface ConversionsObj {
       "@escad/builtins/sphere": {
-        cylToMesh: Conversion<Sphere, Mesh>,
-      },
+        cylToMesh: Conversion<Sphere, Mesh>;
+      };
     }
   }
 }
@@ -49,60 +53,63 @@ declare global {
 conversionRegistry.register({
   fromType: Sphere,
   toType: Mesh,
-  convert: async sphere => {
-    const { radius, smooth, center } = sphere
+  convert: async (sphere) => {
+    const { radius, smooth, center } = sphere;
     const sides = Math.max(
       2,
       smooth.sides ?? 0,
       Math.ceil(radius * tau / 2 / (smooth.size ?? Infinity)),
       360 / 2 / (smooth.angle ?? Infinity),
-    )
-    const slices = 2 * sides
-    const stacks = sides
+    );
+    const slices = 2 * sides;
+    const stacks = sides;
 
     const vertex = (i: number, j: number) => {
-      const theta = i * tau / slices
-      const phi = j * tau / 2 / stacks
+      const theta = i * tau / slices;
+      const phi = j * tau / 2 / stacks;
       return Vector3.create(
         center.x + Math.sin(theta) * Math.sin(phi) * radius,
         center.y + Math.cos(theta) * Math.sin(phi) * radius,
         center.z + Math.cos(phi) * radius,
-      )
-    }
+      );
+    };
 
     return Mesh.create(
       [...Array(slices)].flatMap((_, i) =>
         [...Array(stacks)].flatMap((_, j) => {
-          let vertices = []
+          let vertices = [];
 
-          vertices.push(vertex(i, j))
-          if(j > 0)
-            vertices.push(vertex(i + 1, j))
-          if(j < stacks - 1)
-            vertices.push(vertex(i + 1, j + 1))
-          vertices.push(vertex(i, j + 1))
+          vertices.push(vertex(i, j));
+          if (j > 0) {
+            vertices.push(vertex(i + 1, j));
+          }
+          if (j < stacks - 1) {
+            vertices.push(vertex(i + 1, j + 1));
+          }
+          vertices.push(vertex(i, j + 1));
 
-          return Face.create(vertices)
-        }),
+          return Face.create(vertices);
+        })
       ),
-    )
+    );
   },
   weight: 1,
   id: Id.create(import.meta.url, "@escad/builtins", "Conversion", "SphereMesh"),
-})
+});
 
 type SphereArgs = number | {
-  radius: number,
-  smooth?: Smooth,
-  shift?: Triplet,
-}
+  radius: number;
+  smooth?: Smooth;
+  shift?: Triplet;
+};
 
-export const sphere: Component<[SphereArgs], Element<Sphere>> =
-  Component.create("sphere", args => {
-    if(typeof args === "number")
-      args = { radius: args }
-    const { radius, smooth = smoothContext.get() } = args
-    const shift = interpretTriplet(args.shift, 0)
-    const center = Vector3.multiplyScalar(shift, radius)
-    return Element.create(Sphere.create(radius, smooth, center))
-  }, { showOutput: false })
+export const sphere: Component<[SphereArgs], Element<Sphere>> = Component
+  .create("sphere", (args) => {
+    if (typeof args === "number") {
+      args = { radius: args };
+    }
+    const { radius, smooth = smoothContext.get() } = args;
+    const shift = interpretTriplet(args.shift, 0);
+    const center = Vector3.multiplyScalar(shift, radius);
+    return Element.create(Sphere.create(radius, smooth, center));
+  }, { showOutput: false });

@@ -1,26 +1,25 @@
-
-import { checkTypeProperty } from "./checkTypeProperty.ts"
-import { _Hierarchy } from "./Hierarchy.ts"
+import { checkTypeProperty } from "./checkTypeProperty.ts";
+import { _Hierarchy } from "./Hierarchy.ts";
 
 type SerializableValue =
   | string
   | number
   | boolean
-  | null
+  | null;
 
 type RawValue =
   | SerializableValue
   | undefined
-  | symbol
+  | symbol;
 
 type ValueHierarchyValue =
   | SerializableValue
   | { undefined: true }
-  | { symbol: string | undefined }
+  | { symbol: string | undefined };
 
 export interface ValueHierarchy extends _Hierarchy {
-  readonly type: "ValueHierarchy",
-  readonly value: ValueHierarchyValue,
+  readonly type: "ValueHierarchy";
+  readonly value: ValueHierarchyValue;
 }
 
 export const ValueHierarchy = {
@@ -38,9 +37,9 @@ export const ValueHierarchy = {
         value === undefined
           ? { undefined: true }
           : typeof value === "symbol"
-            ? { symbol: value.description }
-            : value
+          ? { symbol: value.description }
+          : value
       ),
     }),
   isValueHierarchy: checkTypeProperty.string<ValueHierarchy>("ValueHierarchy"),
-}
+};

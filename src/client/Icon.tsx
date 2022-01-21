@@ -1,23 +1,31 @@
-import React from "react.ts"
-import MdiIcon from "@mdi/react.ts"
-import * as mdiIcons from "@mdi/js.ts"
+import React from "react.ts";
+import MdiIcon from "@mdi/react.ts";
+import * as mdiIcons from "@mdi/js.ts";
 
-export type Icon = ((props: { className?: string }) => React.ReactElement | null)
+export type Icon = ((
+  props: { className?: string },
+) => React.ReactElement | null);
 
-export const Icon = (props: { icon: Icon, className?: string }) =>
-  <props.icon className={props.className}/>
+export const Icon = (props: { icon: Icon; className?: string }) => (
+  <props.icon className={props.className} />
+);
 
 export const mdi: {
-  [K in keyof typeof mdiIcons as K extends `mdi${infer T}` ? Uncapitalize<T> : never]: Icon
+  [
+    K in keyof typeof mdiIcons as K extends `mdi${infer T}` ? Uncapitalize<T>
+      : never
+  ]: Icon;
 } = new Proxy({}, {
   get: (target, key) => {
-    if(key in target || typeof key === "symbol" || typeof key === "number")
-      return target[key as never]
-    const icon: Icon = ({ className }) =>
+    if (key in target || typeof key === "symbol" || typeof key === "number") {
+      return target[key as never];
+    }
+    const icon: Icon = ({ className }) => (
       <MdiIcon
         path={mdiIcons[("mdi" + key[0].toUpperCase() + key.slice(1)) as never]}
         className={(className ?? "") + ` mdi ${key}`}
       />
-    return (target[key as never] as any) = icon
+    );
+    return (target[key as never] as any) = icon;
   },
-}) as any
+}) as any;

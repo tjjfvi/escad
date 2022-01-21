@@ -1,16 +1,15 @@
+import { createBlob } from "./createBlob.ts";
+import fs from "fs.ts";
 
-import { createBlob } from "./createBlob.ts"
-import fs from "fs.ts"
-
-export function getClientURL(){
-  let scriptURL: string
+export function getClientURL() {
+  let scriptURL: string;
   try {
-    scriptURL = createBlob(fs.readFileSync("/static/bundle.js"))
+    scriptURL = createBlob(fs.readFileSync("/static/bundle.js"));
+  } catch (e) {
+    return null;
   }
-  catch (e) {
-    return null
-  }
-  return createBlob(Buffer.from(`
+  return createBlob(
+    Buffer.from(`
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -25,5 +24,7 @@ export function getClientURL(){
   <script src="${scriptURL}"></script>
 </body>
 </html>
-  `.trim()), "text/html")
+  `.trim()),
+    "text/html",
+  );
 }

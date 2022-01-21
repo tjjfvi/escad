@@ -1,5 +1,11 @@
-import { Component, ConvertibleTo, Element, NameHierarchy, Operation } from "../core/mod.ts"
-import { Mesh } from "./Mesh.ts"
+import {
+  Component,
+  ConvertibleTo,
+  Element,
+  NameHierarchy,
+  Operation,
+} from "../core/mod.ts";
+import { Mesh } from "./Mesh.ts";
 
 export const label = Component.create(
   "label",
@@ -18,4 +24,4 @@ export const label = Component.create(
       { overrideHierarchy: false },
     ),
   { showOutput: false },
-)
+);

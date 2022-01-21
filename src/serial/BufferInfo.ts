@@ -1,8 +1,7 @@
-
 export interface BufferInfo {
-  buffer: Uint8Array,
-  dataView: DataView,
-  offset: number,
+  buffer: Uint8Array;
+  dataView: DataView;
+  offset: number;
 }
 
 export const BufferInfo = {
@@ -11,4 +10,4 @@ export const BufferInfo = {
     dataView: new DataView(buffer.buffer, buffer.byteOffset, buffer.byteLength),
     offset,
   }),
-}
+};

@@ -1,22 +1,25 @@
-
-import "../stylus/BooleanParam.styl"
-import { BooleanParam } from "../builtins/mod.ts"
-import React from "react.ts"
-import { observer } from "rhobo.ts"
-import { NameDesc, registerParameter } from "../client/mod.ts"
+import "../stylus/BooleanParam.styl";
+import { BooleanParam } from "../builtins/mod.ts";
+import React from "react.ts";
+import { observer } from "rhobo.ts";
+import { NameDesc, registerParameter } from "../client/mod.ts";
 
 registerParameter<boolean, BooleanParam>({
   id: BooleanParam.id,
   className: "BooleanParam",
   component: observer(({ parameter, value }) => (
     <>
-      <NameDesc parameter={parameter}/>
+      <NameDesc parameter={parameter} />
       <div className="checkbox">
         <label>
-          <input type="checkbox" checked={value()} onChange={() => value(!value.value)}/>
-          <div/>
+          <input
+            type="checkbox"
+            checked={value()}
+            onChange={() => value(!value.value)}
+          />
+          <div />
         </label>
       </div>
     </>
   )),
-})
+});

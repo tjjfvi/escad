@@ -1,13 +1,17 @@
+import { Vector3 } from "./Vector3.ts";
+import { Plane } from "./Plane.ts";
+import { createLeafProductUtils, Id, LeafProduct } from "../core/mod.ts";
 
-import { Vector3 } from "./Vector3.ts"
-import { Plane } from "./Plane.ts"
-import { createLeafProductUtils, Id, LeafProduct } from "../core/mod.ts"
-
-const faceId = Id.create(import.meta.url, "@escad/builtins", "LeafProduct", "Face")
+const faceId = Id.create(
+  import.meta.url,
+  "@escad/builtins",
+  "LeafProduct",
+  "Face",
+);
 export interface Face extends LeafProduct {
-  readonly type: typeof faceId,
-  readonly points: readonly Vector3[],
-  readonly plane: Plane,
+  readonly type: typeof faceId;
+  readonly points: readonly Vector3[];
+  readonly plane: Plane;
 }
 
 export const Face = {
@@ -19,7 +23,8 @@ export const Face = {
   }),
   ...createLeafProductUtils<Face, "Face">(faceId, "Face"),
   toTriangles: (face: Face): Face[] =>
-    face.points.slice(2).map((_, i) => Face.create([face.points[0], face.points[i + 1], face.points[i + 2]])),
-  flip: (face: Face) =>
-    Face.create([...face.points].reverse()),
-}
+    face.points.slice(2).map((_, i) =>
+      Face.create([face.points[0], face.points[i + 1], face.points[i + 2]])
+    ),
+  flip: (face: Face) => Face.create([...face.points].reverse()),
+};

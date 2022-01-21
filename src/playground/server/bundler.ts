@@ -1,17 +1,16 @@
-
-import webpack, { NormalModule } from "webpack.ts"
+import webpack, { NormalModule } from "webpack.ts";
 // @ts-ignore
-import CachedConstDependency = require("webpack/lib/dependencies/CachedConstDependency")
-import MonacoWebpackPlugin = require("monaco-editor-webpack-plugin")
-import NodePolyfillPlugin = require("node-polyfill-webpack-plugin")
-import { stylusGlobals } from "../bundler/mod.ts"
-import path from "path.ts"
-import { mapModuleIds } from "../utils/mapModuleIds.ts"
+import CachedConstDependency = require("webpack/lib/dependencies/CachedConstDependency");
+import MonacoWebpackPlugin = require("monaco-editor-webpack-plugin");
+import NodePolyfillPlugin = require("node-polyfill-webpack-plugin");
+import { stylusGlobals } from "../bundler/mod.ts";
+import path from "path.ts";
+import { mapModuleIds } from "../utils/mapModuleIds.ts";
 
-export const staticDir = __dirname + "/../../static/"
-const bundledDir = staticDir + "bundled/"
+export const staticDir = __dirname + "/../../static/";
+const bundledDir = staticDir + "bundled/";
 
-const prefix = "/bundled/"
+const prefix = "/bundled/";
 
 export const compiler = webpack({
   entry: {
@@ -86,12 +85,15 @@ export const compiler = webpack({
     }),
     new MonacoWebpackPlugin(),
     // Modified from <https://github.com/webpack/webpack/blob/master/lib/NodeStuffPlugin.js>
-    function(compiler){
+    function (compiler) {
       compiler.hooks.compilation.tap(
         "FileDirName",
         (comilation, { normalModuleFactory }) => {
           const handler = (parser: any) => {
-            const setModuleConstant = (expressionName: string, fn: (module: NormalModule) => string) => {
+            const setModuleConstant = (
+              expressionName: string,
+              fn: (module: NormalModule) => string,
+            ) => {
               parser.hooks.expression
                 .for(expressionName)
                 .tap("FileDirName", (expr: any) => {
@@ -99,29 +101,47 @@ export const compiler = webpack({
                     JSON.stringify(fn(parser.state.module)),
                     expr.range,
                     expressionName,
-                  )
-                  dep.loc = expr.loc
-                  parser.state.module.addPresentationalDependency(dep)
-                  return true
-                })
-            }
+                  );
+                  dep.loc = expr.loc;
+                  parser.state.module.addPresentationalDependency(dep);
+                  return true;
+                });
+            };
 
-            setModuleConstant("__filename", module =>
-              path.resolve(prefix, path.relative(compiler.context, module.resource)),
-            )
-            setModuleConstant("__dirname", module =>
-              path.resolve(prefix, path.relative(compiler.context, path.dirname(module.resource))),
-            )
-          }
+            setModuleConstant(
+              "__filename",
+              (module) =>
+                path.resolve(
+                  prefix,
+                  path.relative(compiler.context, module.resource),
+                ),
+            );
+            setModuleConstant(
+              "__dirname",
+              (module) =>
+                path.resolve(
+                  prefix,
+                  path.relative(
+                    compiler.context,
+                    path.dirname(module.resource),
+                  ),
+                ),
+            );
+          };
           normalModuleFactory.hooks.parser
             .for("javascript/auto")
-            .tap("NodeStuffPlugin", handler)
+            .tap("NodeStuffPlugin", handler);
           normalModuleFactory.hooks.parser
             .for("javascript/dynamic")
-            .tap("NodeStuffPlugin", handler)
+            .tap("NodeStuffPlugin", handler);
         },
-      )
+      );
     },
-    mapModuleIds(id => id.replace(/\\/g, "/").replace(/^\.\/packages\//g, "./node_modules/@escad/")),
+    mapModuleIds((id) =>
+      id.replace(/\\/g, "/").replace(
+        /^\.\/packages\//g,
+        "./node_modules/@escad/",
+      )
+    ),
   ],
-})
+});

@@ -1,34 +1,42 @@
-import { Component, GenericComponent, GenericConstraint, _GCU } from "./Component.ts"
-import { ExtensibleFunction } from "./ExtensibleFunction.ts"
-import { Hkt } from "./Hkt.ts"
-import { Realm } from "./Realm.ts"
-import { RealmThing } from "./RealmThing.ts"
-import { Thing } from "./Thing.ts"
+import {
+  _GCU,
+  Component,
+  GenericComponent,
+  GenericConstraint,
+} from "./Component.ts";
+import { ExtensibleFunction } from "./ExtensibleFunction.ts";
+import { Hkt } from "./Hkt.ts";
+import { Realm } from "./Realm.ts";
+import { RealmThing } from "./RealmThing.ts";
+import { Thing } from "./Thing.ts";
 
-export interface RealmComponent<I extends any[], O extends Thing, C> extends Component<I, O> {
-  (...args: I): RealmThing<O, C>,
+export interface RealmComponent<I extends any[], O extends Thing, C>
+  extends Component<I, O> {
+  (...args: I): RealmThing<O, C>;
 }
 
 export const RealmComponent = {
-  create:
-    <I extends any[], O extends Thing, C>(realm: Realm<C>, component: Component<I, O>): RealmComponent<I, O, C> => {
-      const that = Object.assign(
-        new ExtensibleFunction(
-          (...args: I) => RealmThing.create<any, C>(realm, component(...args)),
-          {},
-          component.name,
-        ),
-        {
-          type: "Component" as const,
-          func: component.func,
-          overrideHierarchy: component.overrideHierarchy,
-          hierarchy: component.hierarchy,
-          info: component.info,
-        },
-      ) as RealmComponent<I, O, C>
-      return that
-    },
-}
+  create: <I extends any[], O extends Thing, C>(
+    realm: Realm<C>,
+    component: Component<I, O>,
+  ): RealmComponent<I, O, C> => {
+    const that = Object.assign(
+      new ExtensibleFunction(
+        (...args: I) => RealmThing.create<any, C>(realm, component(...args)),
+        {},
+        component.name,
+      ),
+      {
+        type: "Component" as const,
+        func: component.func,
+        overrideHierarchy: component.overrideHierarchy,
+        hierarchy: component.hierarchy,
+        info: component.info,
+      },
+    ) as RealmComponent<I, O, C>;
+    return that;
+  },
+};
 
 export interface RealmGenericComponent<
   T extends GenericConstraint,
@@ -42,5 +50,7 @@ export interface RealmGenericComponent<
     U2 extends T[2],
     U3 extends T[3],
     U4 extends T[4],
-  >(...args: Hkt.Output<I, _GCU<T, U0, U1, U2, U3, U4>>): RealmThing<Hkt.Output<O, _GCU<T, U0, U1, U2, U3, U4>>, C>,
+  >(
+    ...args: Hkt.Output<I, _GCU<T, U0, U1, U2, U3, U4>>
+  ): RealmThing<Hkt.Output<O, _GCU<T, U0, U1, U2, U3, U4>>, C>;
 }

@@ -1,135 +1,147 @@
-
-import { __hash } from "./Hash.ts"
-import { ScopedId } from "./Id.ts"
-import { Product, ProductType, ProductTypeish } from "./Product.ts"
+import { __hash } from "./Hash.ts";
+import { ScopedId } from "./Id.ts";
+import { Product, ProductType, ProductTypeish } from "./Product.ts";
 
 export interface Conversion<A, B> {
-  (value: A): B,
+  (value: A): B;
 }
 
 export interface ConversionImpl<A extends Product, B extends Product> {
-  readonly convert: (value: A) => Promise<B>,
-  readonly fromType: ProductType<A>,
-  readonly toType: ProductType<B>,
-  readonly weight: number,
-  readonly id?: ScopedId<"Conversion">,
+  readonly convert: (value: A) => Promise<B>;
+  readonly fromType: ProductType<A>;
+  readonly toType: ProductType<B>;
+  readonly weight: number;
+  readonly id?: ScopedId<"Conversion">;
 }
 
 export interface ConversionImplish<A extends Product, B extends Product> {
-  readonly convert: (value: A) => Promise<B>,
-  readonly fromType: ProductTypeish<A>,
-  readonly toType: ProductTypeish<B>,
-  readonly weight: number,
-  readonly id: ScopedId<"Conversion">,
+  readonly convert: (value: A) => Promise<B>;
+  readonly fromType: ProductTypeish<A>;
+  readonly toType: ProductTypeish<B>;
+  readonly weight: number;
+  readonly id: ScopedId<"Conversion">;
 }
 
-type Values<T> = T[keyof T]
+type Values<T> = T[keyof T];
 
 declare global {
   namespace escad {
-    interface ConversionsObj { }
+    interface ConversionsObj {}
   }
 }
 
-export type ConversionsUnion<C = escad.ConversionsObj> = Values<{
-  [K in keyof C]: C[K] extends Conversion<any, any> ? C[K] : ConversionsUnion<C[K]>
-}>
+export type ConversionsUnion<C = escad.ConversionsObj> = Values<
+  {
+    [K in keyof C]: C[K] extends Conversion<any, any> ? C[K]
+      : ConversionsUnion<C[K]>;
+  }
+>;
 
 export type ConversionImpls<C = ConversionsUnion> = (
   C extends Conversion<infer A, infer B>
     ? A extends Product
       ? B extends Product
         ? ConversionImpl<Extract<A, Product>, Extract<B, Product>>
-        : never
       : never
     : never
-)
-
-export type DirectConvertibleTo<T, C = ConversionsUnion> =
-  C extends Conversion<infer F, infer T2>
-    ? Omit<T2, __convertibleTo> extends T
-      ? Omit<F, __convertibleTo>
-      : never
     : never
+);
 
-export declare const __convertibleTo: unique symbol
-export declare const __convertibleToOverride: unique symbol
-export declare const __convertibleToTransitivityOverride: unique symbol
-export type __convertibleTo = typeof __convertibleTo
-export type __convertibleToOverride = typeof __convertibleToOverride
-export type __convertibleToTransitivityOverride = typeof __convertibleToTransitivityOverride
+export type DirectConvertibleTo<T, C = ConversionsUnion> = C extends
+  Conversion<infer F, infer T2>
+  ? Omit<T2, __convertibleTo> extends T ? Omit<F, __convertibleTo>
+  : never
+  : never;
+
+export declare const __convertibleTo: unique symbol;
+export declare const __convertibleToOverride: unique symbol;
+export declare const __convertibleToTransitivityOverride: unique symbol;
+export type __convertibleTo = typeof __convertibleTo;
+export type __convertibleToOverride = typeof __convertibleToOverride;
+export type __convertibleToTransitivityOverride =
+  typeof __convertibleToTransitivityOverride;
 
 // A is assignable to B, and B is assignable to C, but A is not assignable to C
 export namespace TransitivityOverride {
-  export type A = (x?: true) => never
-  export type B = () => true
-  export type C = (x?: false) => boolean
+  export type A = (x?: true) => never;
+  export type B = () => true;
+  export type C = (x?: false) => boolean;
 }
 
-type Match<T, U> = keyof U extends keyof T ? Pick<T, keyof U> extends U ? true : false : false
+type Match<T, U> = keyof U extends keyof T
+  ? Pick<T, keyof U> extends U ? true : false
+  : false;
 
-type _ImplicitlyConvertibleTo<A> = A extends A ?
-  | Match<A, { type: "TupleProduct" }> extends true
-    ? "children" extends keyof A
-      ? {
-        readonly type: "TupleProduct",
-        readonly children: {
-          readonly [K in keyof A["children"] & (number | `${number}`)]: _ConvertibleTo<A["children"][K]>
-        },
-      }
-      : never
+type _ImplicitlyConvertibleTo<A> = A extends A
+  ? Match<A, { type: "TupleProduct" }> extends true
+    ? "children" extends keyof A ? {
+      readonly type: "TupleProduct";
+      readonly children: {
+        readonly [K in keyof A["children"] & (number | `${number}`)]:
+          _ConvertibleTo<A["children"][K]>;
+      };
+    }
+    : never
   : Match<A, { type: "ArrayProduct" }> extends true
-    ? "children" extends keyof A ? number extends keyof A["children"]
-      ? {
-        readonly type: "ArrayProduct",
-        readonly children: readonly _ConvertibleTo<A["children"][number]>[],
+    ? "children" extends keyof A ? number extends keyof A["children"] ? 
+      | {
+        readonly type: "ArrayProduct";
+        readonly children: readonly _ConvertibleTo<A["children"][number]>[];
       }
       | {
-        readonly type: "TupleProduct",
-        readonly children: Readonly<Record<number, _ConvertibleTo<A["children"][number]>>>,
+        readonly type: "TupleProduct";
+        readonly children: Readonly<
+          Record<number, _ConvertibleTo<A["children"][number]>>
+        >;
       }
-      : never : never
+    : never
+    : never
   : Match<A, { type: "MarkedProduct" }> extends true
-    ? "child" extends keyof A
-      ? {
-        readonly type: "MarkedProduct",
-        readonly child: _ConvertibleTo<A["child"]>,
-      }
-      : never
+    ? "child" extends keyof A ? {
+      readonly type: "MarkedProduct";
+      readonly child: _ConvertibleTo<A["child"]>;
+    }
+    : never
   : Match<A, { type: "HashProduct" }> extends true
     ? "hash" extends keyof A
       ? __hash extends keyof A["hash"]
         ? _ConvertibleTo<Omit<A["hash"][__hash], __convertibleTo>>
-        : never
       : never
-  : A
-: never
-
-export type _ConvertibleTo<T, E=never> =
-  T extends T
-    ? __convertibleToOverride extends keyof T
-      ? _ConvertibleTo<Unphantom<T[__convertibleToOverride]>>
-      : _ImplicitlyConvertibleTo<T>
-      | (
-        T extends E
-          ? never
-          : _ConvertibleTo<DirectConvertibleTo<_ImplicitlyConvertibleTo<T>>, E | T>
-      )
-      | {
-        [__convertibleTo]?: _ConvertibleTo<T, E> | T[Extract<__convertibleTo, keyof T>],
-        [__convertibleToTransitivityOverride]?: TransitivityOverride.C,
-      }
     : never
+  : A
+  : never;
+
+export type _ConvertibleTo<T, E = never> = T extends T
+  ? __convertibleToOverride extends keyof T
+    ? _ConvertibleTo<Unphantom<T[__convertibleToOverride]>>
+  : 
+    | _ImplicitlyConvertibleTo<T>
+    | (
+      T extends E ? never
+        : _ConvertibleTo<
+          DirectConvertibleTo<_ImplicitlyConvertibleTo<T>>,
+          E | T
+        >
+    )
+    | {
+      [__convertibleTo]?:
+        | _ConvertibleTo<T, E>
+        | T[Extract<__convertibleTo, keyof T>];
+      [__convertibleToTransitivityOverride]?: TransitivityOverride.C;
+    }
+  : never;
 
 // Preserves type info but does not affect assignability
-export interface Phantom<T> { _: Phantom<T> }
-export type Unphantom<T> = T extends Phantom<infer U> ? U : never
+export interface Phantom<T> {
+  _: Phantom<T>;
+}
+export type Unphantom<T> = T extends Phantom<infer U> ? U : never;
 
 export type ConvertibleTo<T extends Product> = Product & {
-  [__convertibleToTransitivityOverride]?: TransitivityOverride.B,
-  [__convertibleToOverride]?: Phantom<T>,
-  [__convertibleTo]?: T[__convertibleTo],
-}
+  [__convertibleToTransitivityOverride]?: TransitivityOverride.B;
+  [__convertibleToOverride]?: Phantom<T>;
+  [__convertibleTo]?: T[__convertibleTo];
+};
 
 /* Tests */
 

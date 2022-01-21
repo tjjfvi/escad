@@ -1,2 +1,1 @@
-
-export type Promisish<T> = T | Promise<T>
+export type Promisish<T> = T | Promise<T>;

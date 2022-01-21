@@ -1,10 +1,9 @@
-
-import { checkTypeProperty } from "./checkTypeProperty.ts"
-import { _Hierarchy } from "./Hierarchy.ts"
+import { checkTypeProperty } from "./checkTypeProperty.ts";
+import { _Hierarchy } from "./Hierarchy.ts";
 
 export interface NameHierarchy extends _Hierarchy {
-  readonly type: "NameHierarchy",
-  readonly name: string,
+  readonly type: "NameHierarchy";
+  readonly name: string;
 }
 
 export const NameHierarchy = {
@@ -17,4 +16,4 @@ export const NameHierarchy = {
     linkedProducts,
   }),
   isNameHierarchy: checkTypeProperty.string<NameHierarchy>("NameHierarchy"),
-}
+};

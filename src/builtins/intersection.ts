@@ -1,31 +1,38 @@
-
 import {
-  TupleProduct,
-  Conversion,
-  Id,
-  Product,
-  Component,
-  Element,
-  conversionRegistry,
   ArrayProduct,
   ArrayProductType,
-  ConvertibleOperation,
+  Component,
+  Conversion,
+  conversionRegistry,
   ConvertibleElementish,
-  Operation,
+  ConvertibleOperation,
+  Element,
+  Id,
   MarkedProduct,
-} from "../core/mod.ts"
-import { Bsp, ClipOptions } from "./Bsp.ts"
+  Operation,
+  Product,
+  TupleProduct,
+} from "../core/mod.ts";
+import { Bsp, ClipOptions } from "./Bsp.ts";
 
-const intersectionId = Id.create(import.meta.url, "@escad/builtins", "Marker", "Intersection")
-export type Intersection<T extends Product> = MarkedProduct<typeof intersectionId, T>
-export const Intersection = MarkedProduct.for(intersectionId)
+const intersectionId = Id.create(
+  import.meta.url,
+  "@escad/builtins",
+  "Marker",
+  "Intersection",
+);
+export type Intersection<T extends Product> = MarkedProduct<
+  typeof intersectionId,
+  T
+>;
+export const Intersection = MarkedProduct.for(intersectionId);
 
 declare global {
   namespace escad {
     interface ConversionsObj {
       "@escad/builtins/intersection": {
-        computeIntersection: Conversion<Intersection<ArrayProduct<Bsp>>, Bsp>,
-      },
+        computeIntersection: Conversion<Intersection<ArrayProduct<Bsp>>, Bsp>;
+      };
     }
   }
 }
@@ -35,20 +42,38 @@ conversionRegistry.register({
   toType: Bsp,
   convert: async ({ child: { children } }) =>
     children.reduce((a, b) => {
-      a = Bsp.clipTo(a, b, ClipOptions.DropFront | ClipOptions.DropCoplanarBack)
-      b = Bsp.clipTo(b, a, ClipOptions.DropFront | ClipOptions.DropCoplanar)
-      return Bsp.build(a, Bsp.allFaces(b)) ?? Bsp.null()
+      a = Bsp.clipTo(
+        a,
+        b,
+        ClipOptions.DropFront | ClipOptions.DropCoplanarBack,
+      );
+      b = Bsp.clipTo(b, a, ClipOptions.DropFront | ClipOptions.DropCoplanar);
+      return Bsp.build(a, Bsp.allFaces(b)) ?? Bsp.null();
     }),
   weight: 1,
-  id: Id.create(import.meta.url, "@escad/builtins", "Conversion", "Intersection"),
-})
+  id: Id.create(
+    import.meta.url,
+    "@escad/builtins",
+    "Conversion",
+    "Intersection",
+  ),
+});
 
-export const intersection: ConvertibleOperation<Bsp, Bsp> =
-  Operation.create("intersection", async el =>
-    Intersection.create(TupleProduct.create(await Element.toArrayFlat(el)))
-  , { showOutput: false })
+export const intersection: ConvertibleOperation<Bsp, Bsp> = Operation.create(
+  "intersection",
+  async (el) =>
+    Intersection.create(TupleProduct.create(await Element.toArrayFlat(el))),
+  { showOutput: false },
+);
 
-export const intersect: Component<ConvertibleElementish<Bsp>[], ConvertibleOperation<Bsp, Bsp>> =
-  Component.create("intersect", (...el) =>
-    Operation.create("intersect", el2 => intersection(el2, el), { overrideHierarchy: false })
-  , { showOutput: false })
+export const intersect: Component<
+  ConvertibleElementish<Bsp>[],
+  ConvertibleOperation<Bsp, Bsp>
+> = Component.create(
+  "intersect",
+  (...el) =>
+    Operation.create("intersect", (el2) => intersection(el2, el), {
+      overrideHierarchy: false,
+    }),
+  { showOutput: false },
+);

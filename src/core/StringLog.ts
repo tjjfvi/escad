@@ -1,13 +1,17 @@
+import { checkTypeProperty } from "./checkTypeProperty.ts";
+import { Id } from "./Id.ts";
+import { Log, LogLevel } from "./Log.ts";
 
-import { checkTypeProperty } from "./checkTypeProperty.ts"
-import { Id } from "./Id.ts"
-import { Log, LogLevel } from "./Log.ts"
-
-const stringLogId = Id.create(import.meta.url, "@escad/core", "Log", "StringLog")
+const stringLogId = Id.create(
+  import.meta.url,
+  "@escad/core",
+  "Log",
+  "StringLog",
+);
 
 export interface StringLog extends Log {
-  type: typeof stringLogId,
-  message: string,
+  type: typeof stringLogId;
+  message: string;
 }
 
 export const StringLog = {
@@ -18,4 +22,4 @@ export const StringLog = {
     level,
   }),
   isStringLog: checkTypeProperty.id<StringLog>(stringLogId),
-}
+};

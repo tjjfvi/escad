@@ -1,10 +1,9 @@
-
-import { checkTypeProperty } from "./checkTypeProperty.ts"
-import { _Hierarchy, Hierarchy } from "./Hierarchy.ts"
+import { checkTypeProperty } from "./checkTypeProperty.ts";
+import { _Hierarchy, Hierarchy } from "./Hierarchy.ts";
 
 export interface ArrayHierarchy extends _Hierarchy {
-  readonly type: "ArrayHierarchy",
-  readonly children: Hierarchy[],
+  readonly type: "ArrayHierarchy";
+  readonly children: Hierarchy[];
 }
 
 export const ArrayHierarchy = {
@@ -18,7 +17,7 @@ export const ArrayHierarchy = {
   }),
   from: async (array: unknown[], raw = false) =>
     ArrayHierarchy.create({
-      children: await Promise.all(array.map(x => Hierarchy.from(x, raw))),
+      children: await Promise.all(array.map((x) => Hierarchy.from(x, raw))),
     }),
   isArrayHierarchy: checkTypeProperty.string<ArrayHierarchy>("ArrayHierarchy"),
-}
+};

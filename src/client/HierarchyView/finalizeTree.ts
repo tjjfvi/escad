@@ -1,8 +1,7 @@
-
-import { assertNever } from "../core/mod.ts"
-import { Tree, TreePart } from "./Tree.ts"
-import { TreeText, TreeTextPart } from "./TreeText.ts"
-import { treeTextLength } from "./treeTextLength.ts"
+import { assertNever } from "../core/mod.ts";
+import { Tree, TreePart } from "./Tree.ts";
+import { TreeText, TreeTextPart } from "./TreeText.ts";
+import { treeTextLength } from "./treeTextLength.ts";
 
 /**
  * Finishes a `Tree` to be displayed
@@ -19,46 +18,51 @@ import { treeTextLength } from "./treeTextLength.ts"
  * Tree[Line[DummyRangeStart, String, RangeEnd], Block, Line[DummyRangeStart, String, RangeEnd, String]]
  * ```
  */
-export function finalizeTree(originalTree: Tree){
-  let treeAcc: Tree = []
-  let treeTextAcc: TreeText = []
-  let openRanges: TreeTextPart.RangeStart[] = []
-  for(const treePart of originalTree) {
-    if(treePart.kind === "line") {
-      for(const treeTextPart of treePart.text) {
-        treeTextAcc.push(treeTextPart)
-        if(treeTextPart.kind === "string" || treeTextPart.kind === "ellipsis")
-          continue
-        if(treeTextPart.kind === "rangeEnd") {
-          openRanges.pop()
-          continue
+export function finalizeTree(originalTree: Tree) {
+  let treeAcc: Tree = [];
+  let treeTextAcc: TreeText = [];
+  let openRanges: TreeTextPart.RangeStart[] = [];
+  for (const treePart of originalTree) {
+    if (treePart.kind === "line") {
+      for (const treeTextPart of treePart.text) {
+        treeTextAcc.push(treeTextPart);
+        if (
+          treeTextPart.kind === "string" || treeTextPart.kind === "ellipsis"
+        ) {
+          continue;
         }
-        if(treeTextPart.kind === "rangeStart") {
-          openRanges.push(treeTextPart)
-          continue
+        if (treeTextPart.kind === "rangeEnd") {
+          openRanges.pop();
+          continue;
         }
-        assertNever(treeTextPart)
+        if (treeTextPart.kind === "rangeStart") {
+          openRanges.push(treeTextPart);
+          continue;
+        }
+        assertNever(treeTextPart);
       }
-      continue
+      continue;
     }
-    if(!treePart.state.open) {
+    if (!treePart.state.open) {
       treeTextAcc.push(
         TreeTextPart.Ellipsis(treePart.state),
-      )
-      continue
+      );
+      continue;
     }
-    finishTreeTextAcc()
-    treeAcc.push({ ...treePart })
+    finishTreeTextAcc();
+    treeAcc.push({ ...treePart });
   }
-  finishTreeTextAcc()
+  finishTreeTextAcc();
 
-  return treeAcc
+  return treeAcc;
 
-  function finishTreeTextAcc(){
-    for(const {} of openRanges)
-      treeTextAcc.push(TreeTextPart.RangeEnd())
-    if(treeTextLength(treeTextAcc))
-      treeAcc.push(TreePart.Line(treeTextAcc))
-    treeTextAcc = [...openRanges]
+  function finishTreeTextAcc() {
+    for (const {} of openRanges) {
+      treeTextAcc.push(TreeTextPart.RangeEnd());
+    }
+    if (treeTextLength(treeTextAcc)) {
+      treeAcc.push(TreePart.Line(treeTextAcc));
+    }
+    treeTextAcc = [...openRanges];
   }
 }

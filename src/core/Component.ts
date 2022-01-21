@@ -1,29 +1,28 @@
-
-import { CallHierarchy } from "./CallHierarchy.ts"
-import { checkTypeProperty } from "./checkTypeProperty.ts"
-import { contextStack } from "./ContextStack.ts"
-import { ExtensibleFunction } from "./ExtensibleFunction.ts"
-import { Hierarchy, HierarchyProp } from "./Hierarchy.ts"
-import { Hkt } from "./Hkt.ts"
-import { NameHierarchy } from "./NameHierarchy.ts"
-import { Thing, StripRealm } from "./Thing.ts"
+import { CallHierarchy } from "./CallHierarchy.ts";
+import { checkTypeProperty } from "./checkTypeProperty.ts";
+import { contextStack } from "./ContextStack.ts";
+import { ExtensibleFunction } from "./ExtensibleFunction.ts";
+import { Hierarchy, HierarchyProp } from "./Hierarchy.ts";
+import { Hkt } from "./Hkt.ts";
+import { NameHierarchy } from "./NameHierarchy.ts";
+import { StripRealm, Thing } from "./Thing.ts";
 
 export interface Component<I extends any[], O extends Thing> {
-  readonly type: "Component",
-  readonly func: (...input: I) => O,
-  readonly name: string,
-  readonly hierarchy?: HierarchyProp,
-  readonly overrideHierarchy?: boolean,
-  readonly showOutput?: boolean,
-  readonly info: Record<string, any>,
-  (...args: I): StripRealm<O>,
+  readonly type: "Component";
+  readonly func: (...input: I) => O;
+  readonly name: string;
+  readonly hierarchy?: HierarchyProp;
+  readonly overrideHierarchy?: boolean;
+  readonly showOutput?: boolean;
+  readonly info: Record<string, any>;
+  (...args: I): StripRealm<O>;
 }
 
 export interface ComponentOpts {
-  readonly hierarchy?: HierarchyProp,
-  readonly overrideHierarchy?: boolean,
-  readonly showOutput?: boolean,
-  readonly info?: Record<string, any>,
+  readonly hierarchy?: HierarchyProp;
+  readonly overrideHierarchy?: boolean;
+  readonly showOutput?: boolean;
+  readonly info?: Record<string, any>;
 }
 
 export const Component = {
@@ -31,13 +30,14 @@ export const Component = {
   create: <I extends any[], O extends Thing>(
     name: string,
     func: (...args: I) => O,
-    { hierarchy, overrideHierarchy = true, showOutput = true, info = {} }: ComponentOpts = {},
+    { hierarchy, overrideHierarchy = true, showOutput = true, info = {} }:
+      ComponentOpts = {},
   ): Component<I, O> => {
     const that = Object.assign(
       new ExtensibleFunction(
         (...args: I) => {
-          const result = contextStack.wrap(() => func(...args))
-          return Thing.applyHierarchy(result, createHierarchy(result, args))
+          const result = contextStack.wrap(() => func(...args));
+          return Thing.applyHierarchy(result, createHierarchy(result, args));
         },
         {},
         name,
@@ -50,19 +50,20 @@ export const Component = {
         showOutput,
         info,
       },
-    ) as Component<I, O>
-    return that
+    ) as Component<I, O>;
+    return that;
 
-    async function createHierarchy(result: O, args: I){
-      if(!overrideHierarchy)
-        return result.hierarchy
+    async function createHierarchy(result: O, args: I) {
+      if (!overrideHierarchy) {
+        return result.hierarchy;
+      }
       return CallHierarchy.create({
         operator: await hierarchy ?? NameHierarchy.create({ name }),
-        operands: await Promise.all(args.map(x => Hierarchy.from(x))),
+        operands: await Promise.all(args.map((x) => Hierarchy.from(x))),
         result: showOutput ? await result.hierarchy : undefined,
         composable: false,
         linkedProducts: (await Hierarchy.from(result)).linkedProducts,
-      })
+      });
     }
   },
   applyHierarchy: <I extends any[], O extends Thing>(
@@ -73,11 +74,15 @@ export const Component = {
       ...component,
       hierarchy,
     }),
-}
+};
 
-declare const __genericComponent__: unique symbol
+declare const __genericComponent__: unique symbol;
 
-export type GenericComponent<T extends GenericConstraint, I extends Hkt<[...T], any[]>, O extends Hkt<[...T], Thing>> =
+export type GenericComponent<
+  T extends GenericConstraint,
+  I extends Hkt<[...T], any[]>,
+  O extends Hkt<[...T], Thing>,
+> =
   & Omit<Component<Hkt.Output<I, T>, Hkt.Output<O, T>>, "func">
   & {
     readonly func: <
@@ -86,19 +91,29 @@ export type GenericComponent<T extends GenericConstraint, I extends Hkt<[...T], 
       U2 extends T[2],
       U3 extends T[3],
       U4 extends T[4],
-  >(...args: Hkt.Output<I, _GCU<T, U0, U1, U2, U3, U4>>) => Hkt.Output<O, _GCU<T, U0, U1, U2, U3, U4>>,
+    >(
+      ...args: Hkt.Output<I, _GCU<T, U0, U1, U2, U3, U4>>
+    ) => Hkt.Output<O, _GCU<T, U0, U1, U2, U3, U4>>;
     <
       U0 extends T[0],
       U1 extends T[1],
       U2 extends T[2],
       U3 extends T[3],
       U4 extends T[4],
-    >(...args: Hkt.Output<I, _GCU<T, U0, U1, U2, U3, U4>>): StripRealm<Hkt.Output<O, _GCU<T, U0, U1, U2, U3, U4>>>,
+    >(
+      ...args: Hkt.Output<I, _GCU<T, U0, U1, U2, U3, U4>>
+    ): StripRealm<Hkt.Output<O, _GCU<T, U0, U1, U2, U3, U4>>>;
     // Component shouldn't be assignable to GenericComponent
-    readonly [__genericComponent__]: never,
-  }
+    readonly [__genericComponent__]: never;
+  };
 
-export type GenericConstraint = [unknown?, unknown?, unknown?, unknown?, unknown?]
+export type GenericConstraint = [
+  unknown?,
+  unknown?,
+  unknown?,
+  unknown?,
+  unknown?,
+];
 export type _GCU<
   T extends GenericConstraint,
   U0 extends T[0],
@@ -106,12 +121,20 @@ export type _GCU<
   U2 extends T[2],
   U3 extends T[3],
   U4 extends T[4],
-> = {
-  [K in keyof T]: K extends keyof GenericConstraint & `${number}` ? [U0, U1, U2, U3, U4][K] : T[K]
-} & T
+> =
+  & {
+    [K in keyof T]: K extends keyof GenericConstraint & `${number}`
+      ? [U0, U1, U2, U3, U4][K]
+      : T[K];
+  }
+  & T;
 
 export const GenericComponent = {
-  create: <T extends GenericConstraint, I extends Hkt<[...T], any[]>, O extends Hkt<[...T], Thing>>(
+  create: <
+    T extends GenericConstraint,
+    I extends Hkt<[...T], any[]>,
+    O extends Hkt<[...T], Thing>,
+  >(
     name: string,
     func: <
       U0 extends T[0],
@@ -119,13 +142,26 @@ export const GenericComponent = {
       U2 extends T[2],
       U3 extends T[3],
       U4 extends T[4],
-    >(...args: Hkt.Output<I, _GCU<T, U0, U1, U2, U3, U4>>) => Hkt.Output<O, _GCU<T, U0, U1, U2, U3, U4>>,
+    >(
+      ...args: Hkt.Output<I, _GCU<T, U0, U1, U2, U3, U4>>
+    ) => Hkt.Output<O, _GCU<T, U0, U1, U2, U3, U4>>,
     opts?: ComponentOpts,
   ): GenericComponent<T, I, O> =>
-    Component.create<Hkt.Output<I, T>, Hkt.Output<O, T>>(name, func, opts) as never,
-  applyHierarchy: <T extends GenericConstraint, I extends Hkt<[...T], any[]>, O extends Hkt<[...T], Thing>>(
+    Component.create<Hkt.Output<I, T>, Hkt.Output<O, T>>(
+      name,
+      func,
+      opts,
+    ) as never,
+  applyHierarchy: <
+    T extends GenericConstraint,
+    I extends Hkt<[...T], any[]>,
+    O extends Hkt<[...T], Thing>,
+  >(
     component: GenericComponent<T, I, O>,
     hierarchy?: Hierarchy,
   ) =>
-    GenericComponent.create<T, I, O>(component.name, component.func, { ...component, hierarchy }),
-}
+    GenericComponent.create<T, I, O>(component.name, component.func, {
+      ...component,
+      hierarchy,
+    }),
+};

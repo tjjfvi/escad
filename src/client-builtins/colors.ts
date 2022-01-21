@@ -1,4 +1,3 @@
-
 export const colors = {
   black: 0x151820,
   blackish: 0x1d2028,
@@ -12,4 +11,4 @@ export const colors = {
   green: 0x2ecc71,
   blue: 0x0984e3,
   purple: 0x8e44ad,
-}
+};
