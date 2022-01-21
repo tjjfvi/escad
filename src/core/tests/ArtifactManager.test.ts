@@ -4,7 +4,7 @@ import {
   Hash,
   Id,
   WrappedValue,
-} from "../src.ts";
+} from "../mod.ts";
 
 const createArtifactStoreMock = (
   name: string,

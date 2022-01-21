@@ -3,7 +3,7 @@ import {
   CallHierarchy,
   Hierarchy,
   ObjectHierarchy,
-} from "../core/mod.ts";
+} from "../../core/mod.ts";
 import { getState } from "./State.ts";
 import { HierarchyPath } from "../HierarchyPath.ts";
 import {

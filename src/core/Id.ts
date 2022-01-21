@@ -1,11 +1,4 @@
-import { posix as path } from "path.ts";
 import { Timer } from "./Timer.ts";
-
-// Import read-pkg-up if in node, do nothing in webpack & co
-const nodeRequire = eval('typeof require === "undefined" ? () => {} : require');
-const readPkgUp: typeof import("read-pkg-up") | undefined = nodeRequire(
-  "read-pkg-up",
-);
 
 const ids = new Set<string>();
 
@@ -33,18 +26,7 @@ export const Id = {
     if (!idRegex.test(id)) {
       throw new Error("Invalid id passed to Id.create: " + id);
     }
-    if (readPkgUp) {
-      const result = readPkgUp.sync({ cwd: path.dirname(filepath) });
-      if (!result) {
-        throw new Error("Could not find package.json from file " + filepath);
-      }
-      const { packageJson: { name: packageJsonName } } = result;
-      if (packageName !== packageJsonName) {
-        throw new Error(
-          `Id.create: packageName mismatch; ${packageJsonName} attempted to create an id under ${packageName}`,
-        );
-      }
-    }
+    // TODO: use filepath / validate packageName
     if (ids.has(id)) {
       throw new Error(`Duplicate ids created under ${id}`);
     }

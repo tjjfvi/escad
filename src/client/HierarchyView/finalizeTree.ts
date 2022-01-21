@@ -1,4 +1,4 @@
-import { assertNever } from "../core/mod.ts";
+import { assertNever } from "../../core/mod.ts";
 import { Tree, TreePart } from "./Tree.ts";
 import { TreeText, TreeTextPart } from "./TreeText.ts";
 import { treeTextLength } from "./treeTextLength.ts";

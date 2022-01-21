@@ -1,4 +1,4 @@
-import { Id } from "../src.ts";
+import { Id } from "../mod.ts";
 
 describe("Id.create", () => {
   test("@escad/core/Test/test0", () => {

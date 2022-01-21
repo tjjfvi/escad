@@ -7,7 +7,7 @@ import { Component, GenericComponent } from "./Component.ts";
 import { Realm } from "./Realm.ts";
 import { RealmThing } from "./RealmThing.ts";
 import { RealmComponent, RealmGenericComponent } from "./RealmComponent.ts";
-import { Hkt } from "./Hkt.ts";
+import { type Hkt } from "./Hkt.ts";
 
 type Assert<T, U extends T> = U;
 

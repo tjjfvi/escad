@@ -374,16 +374,14 @@ export class ConversionRegistry {
   }
 
   private rehydrateConversionMemo = new WeakMap<
-    Omit<ConversionImpl<any, any>, "convert">,
+    DehydratedConversion,
     ConversionImpl<any, any>
   >();
   private rehydrateConversion(
-    conversion: Omit<ConversionImpl<any, any>, "convert">,
+    conversion: DehydratedConversion,
   ): ConversionImpl<any, any> {
-    if (
-      "convert" in conversion && typeof conversion["convert"] === "function"
-    ) {
-      return conversion;
+    if (typeof conversion["convert"] === "function") {
+      return conversion as never;
     }
     const existing = this.rehydrateConversionMemo.get(conversion);
     if (existing) return existing;
@@ -426,5 +424,9 @@ export class ConversionRegistry {
     return rehydrated;
   }
 }
+
+type DehydratedConversion =
+  & Omit<ConversionImpl<any, any>, "convert">
+  & Partial<Pick<ConversionImpl<any, any>, "convert">>;
 
 export const conversionRegistry = new ConversionRegistry(artifactManager);

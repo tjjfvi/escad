@@ -1,4 +1,4 @@
-import { $number, registerType, Serializer } from "../serial/mod.ts";
+import { $number, registerType, Serializer } from "../../serial/mod.ts";
 import { Plane } from "../Plane.ts";
 import { $vector3 } from "./$vector3.ts";
 

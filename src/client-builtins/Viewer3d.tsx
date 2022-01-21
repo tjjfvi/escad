@@ -1,11 +1,11 @@
 /* eslint-disable react/prop-types */
 
-import "../stylus/Viewer3d.styl";
+import "./stylus/Viewer3d.styl";
 
-import React, { useEffect } from "react.ts";
+import React from "../deps/react.ts";
 import { Viewer, ViewerInput } from "../client/mod.ts";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-import * as t from "three.ts";
+import * as t from "../deps/three.ts";
 import { createScene } from "./createScene.ts";
 
 export interface Viewer3dInput extends ViewerInput {
@@ -36,7 +36,7 @@ const Viewer3d = ({ inputs }: { inputs: Promise<Viewer3dInput>[] }) => {
   let el: HTMLDivElement | null = null;
 
   let active = true;
-  useEffect(() =>
+  React.useEffect(() =>
     () => {
       active = false;
     }

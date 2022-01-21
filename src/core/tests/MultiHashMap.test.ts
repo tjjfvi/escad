@@ -1,4 +1,4 @@
-import { MultiHashMap } from "../src.ts";
+import { MultiHashMap } from "../mod.ts";
 
 test("MultiHashMap", () => {
   const map = new MultiHashMap();

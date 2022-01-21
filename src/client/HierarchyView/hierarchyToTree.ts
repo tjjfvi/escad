@@ -1,4 +1,4 @@
-import { Hash, Hierarchy, Product } from "../core/mod.ts";
+import { Hash, Hierarchy, Product } from "../../core/mod.ts";
 import { HierarchyPath } from "../HierarchyPath.ts";
 import { StateMemo } from "./State.ts";
 import { Tree, TreePart } from "./Tree.ts";

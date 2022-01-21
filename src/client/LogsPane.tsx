@@ -1,11 +1,11 @@
-import "../stylus/LogsPane.styl";
-import { IdView } from "./IdView.ts";
-import { observer, useFromProm } from "rhobo.ts";
-import React, { useContext } from "react.ts";
+import "./stylus/LogsPane.styl";
+import { IdView } from "./IdView.tsx";
+import { observer, useFromProm } from "../deps/rhobo.ts";
+import React from "../deps/react.ts";
 import { Id, Log } from "../core/mod.ts";
 import { ClientState } from "./ClientState.ts";
-import { Pane } from "./Pane.ts";
-import { Loading } from "./Loading.ts";
+import { Pane } from "./Pane.tsx";
+import { Loading } from "./Loading.tsx";
 
 export interface LogTypeRegistration<T extends Log> {
   id: T["type"];
@@ -50,7 +50,7 @@ const LogView = ({ log: logPromise }: { log: Promise<Log> }) => {
 };
 
 export const LogsPane = observer(() => {
-  const state = useContext(ClientState.Context);
+  const state = React.useContext(ClientState.Context);
 
   return (
     <Pane right name="Logs">

@@ -1,7 +1,7 @@
-import "../stylus/BooleanParam.styl";
+import "./stylus/BooleanParam.styl";
 import { BooleanParam } from "../builtins/mod.ts";
-import React from "react.ts";
-import { observer } from "rhobo.ts";
+import React from "../deps/react.ts";
+import { observer } from "../deps/rhobo.ts";
 import { NameDesc, registerParameter } from "../client/mod.ts";
 
 registerParameter<boolean, BooleanParam>({

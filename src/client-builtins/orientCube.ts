@@ -1,7 +1,5 @@
-import * as t from "three.ts";
+import * as t from "../deps/three.ts";
 import { colors } from "./colors.ts";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.ts";
-import { BufferGeometryUtils } from "three/examples/jsm/utils/BufferGeometryUtils.ts";
 
 const cubeSize = .5;
 const edgeSize = .125;
@@ -9,11 +7,11 @@ const centerSize = cubeSize - edgeSize * 2;
 
 export function createOrientCube(
   getCamera: () => t.Camera,
-  controls: OrbitControls,
+  controls: t.OrbitControls,
 ) {
   let planeGeo = new t.PlaneBufferGeometry(centerSize, centerSize);
 
-  let edgeGeo = BufferGeometryUtils.mergeBufferGeometries([
+  let edgeGeo = t.BufferGeometryUtils.mergeBufferGeometries([
     new t.PlaneBufferGeometry(edgeSize, centerSize).translate(
       -edgeSize / 2,
       0,
@@ -26,7 +24,7 @@ export function createOrientCube(
     ).rotateY(Math.PI / 2),
   ]);
 
-  let cornerGeo = BufferGeometryUtils.mergeBufferGeometries([
+  let cornerGeo = t.BufferGeometryUtils.mergeBufferGeometries([
     new t.PlaneBufferGeometry(edgeSize, edgeSize).translate(
       -edgeSize / 2,
       -edgeSize / 2,

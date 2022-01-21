@@ -3,7 +3,7 @@ import { checkTypeProperty } from "./checkTypeProperty.ts";
 import { contextStack } from "./ContextStack.ts";
 import { ExtensibleFunction } from "./ExtensibleFunction.ts";
 import { Hierarchy, HierarchyProp } from "./Hierarchy.ts";
-import { Hkt } from "./Hkt.ts";
+import { type Hkt } from "./Hkt.ts";
 import { NameHierarchy } from "./NameHierarchy.ts";
 import { StripRealm, Thing } from "./Thing.ts";
 

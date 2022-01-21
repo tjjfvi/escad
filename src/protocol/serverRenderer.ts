@@ -8,12 +8,11 @@ import {
   Product,
 } from "../core/mod.ts";
 import { Messenger } from "../messages/mod.ts";
-import { PluginRegistration } from "../register-client-plugin/mod.ts";
 
 export interface LoadFileInfo {
   paramDef: ObjectParam<any>;
   exportTypes: readonly ExportTypeInfo[];
-  clientPlugins: readonly PluginRegistration[];
+  clientPlugins: readonly string[];
   func: Function | ((params: ObjectParamValue<any>) => any);
 }
 
@@ -22,7 +21,7 @@ export interface RenderInfo {
   hierarchy: Hash<Hierarchy> | null;
   paramDef: Hash<ObjectParam<any>> | null;
   exportTypes: readonly ExportTypeInfo[];
-  clientPlugins: readonly PluginRegistration[];
+  clientPlugins: readonly string[];
 }
 
 export type RendererServerShape = {

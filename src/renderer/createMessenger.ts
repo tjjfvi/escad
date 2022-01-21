@@ -23,7 +23,7 @@ import { HashProduct } from "../core/mod.ts";
 
 export const createRendererServerMessenger = (
   connection: Connection<unknown>,
-  requireFile: () => unknown,
+  requireFile: () => Promise<unknown>,
   logger: Logger,
 ) => {
   const messenger: RendererServerMessenger = createMessenger({
@@ -123,7 +123,7 @@ export const createRendererServerMessenger = (
   }
 
   async function loadFile() {
-    const fullExported = requireFile();
+    const fullExported = await requireFile();
 
     if (
       typeof fullExported !== "object" || !fullExported ||

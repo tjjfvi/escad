@@ -1,4 +1,4 @@
-import { checkTypeProperty, Id } from "../src.ts";
+import { checkTypeProperty, Id } from "../mod.ts";
 
 describe("checkTypeProperty", () => {
   const fnTrue = checkTypeProperty((v): v is unknown => true);

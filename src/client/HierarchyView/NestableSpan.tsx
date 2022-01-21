@@ -1,4 +1,4 @@
-import React, { useState } from "react.ts";
+import React from "../../deps/react.ts";
 
 export interface NestableSpanProps {
   className?: string;
@@ -12,7 +12,7 @@ export interface NestableSpanProps {
 export const NestableSpan = (
   { className, onClick, children }: NestableSpanProps,
 ) => {
-  const [hovered, setHovered] = useState(false);
+  const [hovered, setHovered] = React.useState(false);
   return (
     <span
       className={(className ?? "") + (hovered ? " hover" : "")}

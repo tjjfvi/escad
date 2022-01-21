@@ -1,5 +1,5 @@
-import React from "react.ts";
-import ReactDOM from "react-dom.ts";
+import React from "../deps/react.ts";
+import ReactDOM from "https://cdn.esm.sh/v64/react-dom@17.0.2/es2021/react-dom.development.js";
 import { App, WebSocketClientState } from "../client/mod.ts";
 import { artifactManager, InMemoryArtifactStore } from "../core/mod.ts";
 
@@ -12,10 +12,8 @@ const state = new WebSocketClientState(
 console.log(state);
 ReactDOM.render(<App state={state} />, document.getElementById("root"));
 
-if (process.env.DEV_MODE === "true") {
-  state.clientStatus.on("update", () => {
-    if (state.clientStatus() === "reload") {
-      window.location.reload();
-    }
-  });
-}
+state.clientStatus.on("update", () => {
+  if (state.clientStatus() === "reload") {
+    window.location.reload();
+  }
+});

@@ -1,9 +1,9 @@
 import { viewerRegistry } from "../client/mod.ts";
 import { Face, Mesh } from "../builtins/mod.ts";
-import { viewer3d, Viewer3dInput } from "./Viewer3d.ts";
+import { viewer3d, Viewer3dInput } from "./Viewer3d.tsx";
 import { colors } from "./colors.ts";
 import { EdgesGeometry } from "./EdgesGeometry.ts";
-import * as t from "three.ts";
+import * as t from "../deps/three.ts";
 
 viewerRegistry.register<Mesh, Viewer3dInput>({
   type: Mesh,
@@ -37,8 +37,8 @@ viewerRegistry.register<Mesh, Viewer3dInput>({
       polygonOffsetFactor: 1,
       polygonOffsetUnits: 1,
     });
-    // @ts-ignore
     let lines = new t.LineSegments(
+      // @ts-ignore
       new EdgesGeometry(geo),
       new t.LineBasicMaterial({ color: colors.white }),
     );

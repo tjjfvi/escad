@@ -1,4 +1,4 @@
-import crypto from "crypto.ts";
+import { Sha256 } from "https://deno.land/std@0.122.0/hash/sha256.ts";
 import { Timer } from "./Timer.ts";
 import { $unknown } from "../serial/mod.ts";
 
@@ -9,11 +9,11 @@ export const Hash = {
       const memoedHash = hashMemo.get(obj as never);
       if (memoedHash) return memoedHash;
     }
-    const hasher = crypto.createHash("sha256");
+    const hasher = new Sha256();
     for (const part of $unknown.serialize(obj)) {
       hasher.update(part);
     }
-    const hash = hasher.digest("hex") as Hash<T>;
+    const hash = hasher.hex() as Hash<T>;
     if (typeof obj === "object" && obj) {
       hashMemo.set(obj as never, hash);
     }

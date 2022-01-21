@@ -1,4 +1,4 @@
-import { brandConnection, createConnectionPair } from "../src.ts";
+import { brandConnection, createConnectionPair } from "../mod.ts";
 
 test("", () => {
   const [_a, b] = createConnectionPair();

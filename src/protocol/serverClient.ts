@@ -14,8 +14,7 @@ export type ClientServerShape = {
 export type ServerClientEvents = {
   changeObserved: [];
   info: [info: RenderInfo];
-  bundleStart: [];
-  bundleFinish: [hash: Hash<unknown>];
+  reload: [];
   log: [log: Hash<Log> | null];
 };
 

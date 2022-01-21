@@ -1,21 +1,18 @@
-// eslint-disable-next-line @typescript-eslint/no-var-requires
-require("ts-node").register();
-
 import { artifactManager, logger } from "../core/mod.ts";
 import {
-  parentProcessConnection,
+  parentWorkerConnection,
   serializeConnection,
 } from "../messages/mod.ts";
 import { createRendererServerMessenger } from "../renderer/mod.ts";
 import { FsArtifactStore } from "./FsArtifactStore.ts";
 
-const artifactsDir = process.env.ARTIFACTS_DIR;
+const artifactsDir = Deno.env.get("ARTIFACTS_DIR");
 if (!artifactsDir) {
   throw new Error(
     "Renderer process was not passed environment variable ARTIFACTS_DIR",
   );
 }
-const loadFile = process.env.LOAD_FILE;
+const loadFile = Deno.env.get("LOAD_FILE");
 if (!loadFile) {
   throw new Error(
     "Renderer process was not passed environment variable LOAD_FILE",
@@ -24,7 +21,7 @@ if (!loadFile) {
 artifactManager.artifactStores.unshift(new FsArtifactStore(artifactsDir));
 
 createRendererServerMessenger(
-  serializeConnection(parentProcessConnection()),
-  () => require(loadFile),
+  serializeConnection(parentWorkerConnection()),
+  () => import(loadFile),
   logger,
 );

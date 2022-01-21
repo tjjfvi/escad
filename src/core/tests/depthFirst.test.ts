@@ -1,4 +1,4 @@
-import { depthFirst, Stack } from "../src.ts";
+import { depthFirst, Stack } from "../mod.ts";
 
 test("Stack", () => {
   const stack = new Stack<number>([3, 2]);

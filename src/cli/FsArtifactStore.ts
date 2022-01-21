@@ -5,43 +5,48 @@ import {
   Id,
   WrappedValue,
 } from "../core/mod.ts";
-import { dirname, join } from "path.ts";
-import fs from "fs.ts";
-import { promisify } from "util.ts";
-import stream, { Readable } from "stream.ts";
-
-const symlink = promisify(fs.symlink);
-const mkdir = promisify(fs.mkdir);
-const pipeline = promisify(stream.pipeline);
+import {
+  copy,
+  iterateReader,
+  readerFromIterable,
+} from "https://deno.land/std@0.122.0/streams/conversion.ts";
+import { dirname, join } from "https://deno.land/std@0.122.0/path/mod.ts";
 
 export class FsArtifactStore implements ArtifactStore {
   constructor(public rootDir: string) {}
 
   async storeRaw(hash: Hash<unknown>, value: WrappedValue) {
     const path = await this.getPathRaw(hash);
-    const writeStream = fs.createWriteStream(path, { flags: "wx" });
-    pipeline(
-      Readable.from($wrappedValue.serialize(value)),
-      writeStream,
-    ).catch(() => null);
+    const file = await Deno.open(path, { write: true, create: true });
+    await copy(readerFromIterable($wrappedValue.serialize(value)), file);
   }
 
   async storeRef(loc: readonly unknown[], hash: Hash<unknown>) {
     const fromPath = await this.getPathRef(loc);
     const toPath = await this.getPathRaw(hash);
-    await symlink(toPath, fromPath).catch(() => null);
+    await Deno.symlink(toPath, fromPath).catch(() => null);
   }
 
   async lookupRaw(hash: Hash<unknown>) {
     const path = await this.getPathRaw(hash);
-    return await $wrappedValue.deserializeAsync(fs.createReadStream(path))
-      .catch(() => null);
+    try {
+      return await $wrappedValue.deserializeAsync(
+        iterateReader(await Deno.open(path)),
+      );
+    } catch {
+      return null;
+    }
   }
 
   async lookupRef(loc: readonly unknown[]) {
     const path = await this.getPathRef(loc);
-    return await $wrappedValue.deserializeAsync(fs.createReadStream(path))
-      .catch(() => null);
+    try {
+      return await $wrappedValue.deserializeAsync(
+        iterateReader(await Deno.open(path)),
+      );
+    } catch {
+      return null;
+    }
   }
 
   private async getPathRaw(hash: Hash<unknown>) {
@@ -55,11 +60,11 @@ export class FsArtifactStore implements ArtifactStore {
       this.rootDir,
       ...loc.map((x) => Id.isId(x) ? x.replace(/\//g, "-") : Hash.create(x)),
     );
-    await mkdir(dirname(path), { recursive: true });
+    await Deno.mkdir(dirname(path), { recursive: true });
     return path;
   }
 
   private async mkdirp(path: string) {
-    await mkdir(path, { recursive: true });
+    await Deno.mkdir(path, { recursive: true });
   }
 }

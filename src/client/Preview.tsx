@@ -1,16 +1,16 @@
-import "../stylus/Preview.styl";
-import React, { useContext, useEffect } from "react.ts";
+import "./stylus/Preview.styl";
+import React from "../deps/react.ts";
 import { viewerRegistry } from "./ViewerRegistry.ts";
-import { observer, useObservable } from "rhobo.ts";
+import { observer, useObservable } from "../deps/rhobo.ts";
 import { Product } from "../core/mod.ts";
-import { Export } from "./Export.ts";
+import { Export } from "./Export.tsx";
 import { Viewer } from "./Viewer.ts";
 import { ClientState } from "./ClientState.ts";
-import { Loading } from "./Loading.ts";
+import { Loading } from "./Loading.tsx";
 import { usePromise } from "./usePromise.ts";
 
 export const Preview = observer(() => {
-  const state = useContext(ClientState.Context);
+  const state = React.useContext(ClientState.Context);
   const products = state.products.use()();
   const viewerObs = useObservable.use<Viewer<any>>();
   const viewers = usePromise(async () => {
@@ -22,7 +22,7 @@ export const Preview = observer(() => {
     return unsortedViewers?.sort((a, b) => b.weight - a.weight);
   }, [products]);
 
-  useEffect(() => {
+  React.useEffect(() => {
   }, [products]);
 
   if (!products.length) {

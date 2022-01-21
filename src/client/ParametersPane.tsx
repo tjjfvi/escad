@@ -1,13 +1,13 @@
-import "../stylus/Parameters.styl";
+import "./stylus/Parameters.styl";
 import { Parameter } from "../core/mod.ts";
-import React, { useContext } from "react.ts";
-import { observer } from "rhobo.ts";
+import React from "../deps/react.ts";
+import { observer } from "../deps/rhobo.ts";
 import { ClientState } from "./ClientState.ts";
-import { Pane } from "./Pane.ts";
-import { ParameterView } from "./Parameters.ts";
+import { Pane } from "./Pane.tsx";
+import { ParameterView } from "./Parameters.tsx";
 
 export const ParametersPane = observer(() => {
-  const state = useContext(ClientState.Context);
+  const state = React.useContext(ClientState.Context);
   const def = state.paramDef();
 
   if (!def) {

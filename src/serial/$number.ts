@@ -1,4 +1,4 @@
-import ieee754 from "ieee754.ts";
+import * as ieee754 from "https://deno.land/x/ieee754@v1.0.0/mod.ts";
 import { Serializer } from "./Serializer.ts";
 
 export const $number = new Serializer<number>({

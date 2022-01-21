@@ -1,5 +1,5 @@
 import { ClientServerMessenger, RenderInfo } from "../protocol/mod.ts";
-import { computed, observable } from "rhobo.ts";
+import { computed, observable } from "../deps/rhobo.ts";
 import {
   $wrappedValue,
   ArtifactManager,
@@ -12,7 +12,7 @@ import {
   WrappedValue,
 } from "../core/mod.ts";
 import { ObjectParam } from "../core/mod.ts";
-import { createContext } from "react.ts";
+import React from "../deps/react.ts";
 import {
   Connection,
   createConnectionPair,
@@ -20,18 +20,18 @@ import {
   logConnection,
   serializeConnection,
 } from "../messages/mod.ts";
-import { StatusSet } from "./Status.ts";
+import { StatusSet } from "./Status.tsx";
 import {
   HierarchySelection,
   resolveHierarchySelection,
 } from "./HierarchySelection.ts";
-import { Loading } from "./Loading.ts";
-import { mdi } from "./Icon.ts";
-import crypto from "crypto.ts";
+import { Loading } from "./Loading.tsx";
+import { mdi } from "./Icon.tsx";
+import { Sha256 } from "https://deno.land/std@0.122.0/hash/sha256.ts";
 
 const lookupRawRetryTimer = 500;
 
-const _ClientStateContext = createContext<ClientState>(null as never);
+const _ClientStateContext = React.createContext<ClientState>(null as never);
 
 export class ClientState implements ArtifactStore {
   static Context = _ClientStateContext;
@@ -234,14 +234,8 @@ export class ClientState implements ArtifactStore {
       });
     });
 
-    this.clientServerMessenger.on("bundleStart", async () => {
-      this.clientStatus("bundling");
-    });
-
-    this.clientServerMessenger.on("bundleFinish", async (newBundleHash) => {
-      this.clientStatus(
-        newBundleHash === await this.bundleHash ? "current" : "reload",
-      );
+    this.clientServerMessenger.on("reload", async () => {
+      window.location.reload();
     });
 
     this.clientServerMessenger.on("info", (info) => {
@@ -312,7 +306,7 @@ export class ClientState implements ArtifactStore {
     return this.wrapRendering(async () => {
       console.log("lookupRaw", hash);
       const stream = fetchStream(this.hashToUrl(hash));
-      const hasher = crypto.createHash("sha256");
+      const hasher = new Sha256();
       const wrappedStream = (async function* () {
         for await (const part of stream) {
           hasher.update(part);
@@ -323,7 +317,7 @@ export class ClientState implements ArtifactStore {
 
       return result.catch(async () => {
         for await (const {} of wrappedStream); // Finish hashing the stream
-        if (hasher.digest("hex") === hash) return null;
+        if (hasher.hex() === hash) return null;
         await new Promise((r) => setTimeout(r, lookupRawRetryTimer));
         return this.lookupRaw(hash); // Try again
       });

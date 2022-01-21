@@ -1,4 +1,4 @@
-import { createConnectionPair, transformConnection } from "../src.ts";
+import { createConnectionPair, transformConnection } from "../mod.ts";
 
 test("", () => {
   const [_a, b] = createConnectionPair<string>();

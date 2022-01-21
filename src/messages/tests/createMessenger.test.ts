@@ -3,7 +3,7 @@ import {
   createConnectionPair,
   createMessenger,
   Messenger,
-} from "../src.ts";
+} from "../mod.ts";
 
 type TestShape = {
   promiseResolve: <T>(value: T) => Promise<T>;

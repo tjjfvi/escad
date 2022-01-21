@@ -1,4 +1,4 @@
-import { $number, $tuple, registerType, Serializer } from "../serial/mod.ts";
+import { $number, $tuple, registerType, Serializer } from "../../serial/mod.ts";
 import { Vector3 } from "../Vector3.ts";
 
 const $xyz = $tuple($number, $number, $number);

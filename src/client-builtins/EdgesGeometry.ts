@@ -1,6 +1,10 @@
 // @ts-nocheck
 
-import { BufferGeometry, Float32BufferAttribute, Geometry } from "three.ts";
+import {
+  BufferGeometry,
+  Float32BufferAttribute,
+  Geometry,
+} from "../deps/three.ts";
 
 function EdgesGeometry(geometry, thresholdAngle = 1) {
   BufferGeometry.call(this);

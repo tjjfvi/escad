@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
-import { $string, $uint8, registerType, Serializer } from "../serial/mod.ts";
+import { $string, $uint8, registerType, Serializer } from "../../serial/mod.ts";
 import { ArrayProductType } from "../ArrayProduct.ts";
 import { assertNever } from "../assertNever.ts";
 import { HashProductType } from "../HashProduct.ts";

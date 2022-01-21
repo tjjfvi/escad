@@ -1,11 +1,11 @@
-import "../stylus/RawViewer.styl";
+import "./stylus/RawViewer.styl";
 import { Hierarchy } from "../core/mod.ts";
 import { UnknownProduct, UnknownProductType } from "../core/mod.ts";
-import React from "react.ts";
-import { observer, useFromPromise } from "rhobo.ts";
-import { HierarchyView } from "./HierarchyView.ts";
+import React from "../deps/react.ts";
+import { observer, useFromPromise } from "../deps/rhobo.ts";
+import { HierarchyView } from "./HierarchyView/mod.ts";
 import { viewerRegistry } from "./ViewerRegistry.ts";
-import { Loading } from "./Loading.ts";
+import { Loading } from "./Loading.tsx";
 
 viewerRegistry.register<UnknownProduct, { product: UnknownProduct }>({
   type: UnknownProductType.create(),

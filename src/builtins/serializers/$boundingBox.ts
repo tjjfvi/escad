@@ -1,4 +1,4 @@
-import { registerType, Serializer } from "../serial/mod.ts";
+import { registerType, Serializer } from "../../serial/mod.ts";
 import { BoundingBox } from "../BoundingBox.ts";
 import { $vector3 } from "./$vector3.ts";
 

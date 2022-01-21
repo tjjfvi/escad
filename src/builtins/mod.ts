@@ -1,8 +1,8 @@
 import { registerPlugin } from "../register-client-plugin/mod.ts";
 
-registerPlugin({
-  path: require.resolve("@escad/client-builtins"),
-});
+registerPlugin(
+  new URL("../client-builtins/mod.ts", import.meta.url).toString(),
+);
 
 export { default } from "./chainables.ts";
 
@@ -37,7 +37,7 @@ export * from "./polyhedron.ts";
 export * from "./reflect.ts";
 export * from "./rotate.ts";
 export * from "./scale.ts";
-export * from "./serializers.ts";
+export * from "./serializers/mod.ts";
 export * from "./shift.ts";
 export * from "./smoothContext.ts";
 export * from "./sphere.ts";

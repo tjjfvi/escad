@@ -1,9 +1,9 @@
-import { Hierarchy } from "../core/mod.ts";
-import React, { useRef, useState } from "react.ts";
-import { useValue } from "rhobo.ts";
-import { ResizeSensor } from "css-element-queries.ts";
+import { Hierarchy } from "../../core/mod.ts";
+import React from "../../deps/react.ts";
+import { useValue } from "../../deps/rhobo.ts";
+import { ResizeSensor } from "https://esm.sh/css-element-queries";
 import { StateMemo } from "./State.ts";
-import { TreeView } from "./TreeView.ts";
+import { TreeView } from "./TreeView.tsx";
 import { hierarchyToTree, HierarchyToTreeEngine } from "./hierarchyToTree.ts";
 import { httDetailedEngine } from "./httDetailedEngine.ts";
 
@@ -17,8 +17,8 @@ export const HierarchyView = (
   { hierarchy, selectable = false, engine = httDetailedEngine }:
     HierarchyViewProps,
 ) => {
-  const [width, setWidth] = useState<number>(0);
-  const sensorRef = useRef<ResizeSensor>();
+  const [width, setWidth] = React.useState<number>(0);
+  const sensorRef = React.useRef<ResizeSensor>();
   const stateMemo = useValue<StateMemo>(() => new Map());
   return (
     <div

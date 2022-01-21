@@ -9,7 +9,7 @@ import {
   TupleProduct,
   TupleProductType,
   UnknownProduct,
-} from "../src.ts";
+} from "../mod.ts";
 
 const productAId = Id.create(
   import.meta.url,

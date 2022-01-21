@@ -1,7 +1,7 @@
-import "../stylus/NumberParam.styl";
+import "./stylus/NumberParam.styl";
 import { NumberParam } from "../builtins/mod.ts";
-import React from "react.ts";
-import { observer, useComputed, useObservable } from "rhobo.ts";
+import React from "../deps/react.ts";
+import { observer, useComputed, useObservable } from "../deps/rhobo.ts";
 import { NameDesc, registerParameter } from "../client/mod.ts";
 
 registerParameter<number, NumberParam>({

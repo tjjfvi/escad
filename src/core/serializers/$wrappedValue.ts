@@ -1,4 +1,4 @@
-import { $unknown, Serializer } from "../serial/mod.ts";
+import { $unknown, Serializer } from "../../serial/mod.ts";
 import { WrappedValue } from "../WrappedValue.ts";
 
 export const $wrappedValue = new Serializer<WrappedValue>({

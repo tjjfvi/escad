@@ -60,4 +60,4 @@ export * from "./checkTypeProperty.ts";
 export * from "./defaultChainables.ts";
 export * from "./depthFirst.ts";
 export * from "./mapOperation.ts";
-export * from "./serializers.ts";
+export * from "./serializers/mod.ts";

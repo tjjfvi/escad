@@ -1,9 +1,9 @@
-import { assertNever, Hash } from "../core/mod.ts";
-import React, { useContext } from "react.ts";
-import { observer } from "rhobo.ts";
+import { assertNever, Hash } from "../../core/mod.ts";
+import React from "../../deps/react.ts";
+import { observer } from "../../deps/rhobo.ts";
 import { ClientState } from "../ClientState.ts";
 import { getHierarchyPath } from "../HierarchyPath.ts";
-import { NestableSpan } from "./NestableSpan.ts";
+import { NestableSpan } from "./NestableSpan.tsx";
 import { TreeText, TreeTextRange } from "./TreeText.ts";
 
 export interface TreeTextViewProps {
@@ -78,7 +78,7 @@ interface TreeTextPartViewProps {
 
 const TreeTextPartView = observer(
   ({ range, children, selectable }: TreeTextPartViewProps) => {
-    const state = useContext(ClientState.Context);
+    const state = React.useContext(ClientState.Context);
     if (range.kind === "dummy") {
       return <>{children}</>;
     }

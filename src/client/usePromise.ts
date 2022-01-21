@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react.ts";
+import React from "../deps/react.ts";
 
 export const usePromise = <T>(
   func: () => Promise<T>,
   deps: readonly unknown[],
 ) => {
-  const [value, setValue] = useState<T>();
+  const [value, setValue] = React.useState<T>();
   let current = true;
-  useEffect(() => {
+  React.useEffect(() => {
     setValue(undefined);
     func().then((value) => current && setValue(value));
     return () => {

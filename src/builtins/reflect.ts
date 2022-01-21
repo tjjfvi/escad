@@ -4,7 +4,8 @@ import {
   mapOperation,
   TupleProduct,
 } from "../core/mod.ts";
-import { Mesh, Transform } from "..ts";
+import { Mesh } from "./Mesh.ts";
+import { Transform } from "./Transformation.ts";
 import { FlipFaces } from "./flip.ts";
 import { Matrix4 } from "./Matrix4.ts";
 

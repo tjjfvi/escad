@@ -1,5 +1,5 @@
-import "../stylus/Loading.styl";
-import React from "react.ts";
+import "./stylus/Loading.styl";
+import React from "../deps/react.ts";
 
 export const Loading = (
   { className, size }: { className?: string; size?: number },

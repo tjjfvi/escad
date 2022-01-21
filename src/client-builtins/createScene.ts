@@ -1,5 +1,4 @@
-import * as t from "three.ts";
-import { OrbitControls } from "three/examples/jsm/controls/OrbitControls.ts";
+import * as t from "../deps/three.ts";
 import { colors } from "./colors.ts";
 import { createOrientCube } from "./orientCube.ts";
 import { createCylAxes, createLineAxes } from "./axes.ts";
@@ -14,7 +13,7 @@ export const createScene = () => {
   camera.up = new t.Vector3(0, 0, 1);
   camera.lookAt(0, 0, 0);
 
-  const controls = new OrbitControls(camera, renderer.domElement);
+  const controls = new t.OrbitControls(camera, renderer.domElement);
   controls.enableKeys = false;
   controls.screenSpacePanning = true;
 

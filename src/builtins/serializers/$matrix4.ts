@@ -1,4 +1,4 @@
-import { $number, $tuple, Serializer } from "../serial/mod.ts";
+import { $number, $tuple, Serializer } from "../../serial/mod.ts";
 import { Matrix4, Sixteen } from "../Matrix4.ts";
 
 const $sixteen: Serializer<Sixteen<number>> = $tuple(

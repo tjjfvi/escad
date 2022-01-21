@@ -1,6 +1,6 @@
-import { IdView } from "./IdView.ts";
-import { Observable, Writeable } from "rhobo.ts";
-import React, { useContext, useEffect } from "react.ts";
+import { IdView } from "./IdView.tsx";
+import { Observable, Writeable } from "../deps/rhobo.ts";
+import React from "../deps/react.ts";
 import { Id, Parameter } from "../core/mod.ts";
 import { ClientState } from "./ClientState.ts";
 
@@ -26,8 +26,8 @@ export const registerParameter = async <T, P extends Parameter<T>>(
 export const ParameterView = <T,>(
   { parameter, value }: { parameter: Parameter<T>; value: Observable<T> },
 ) => {
-  const state = useContext(ClientState.Context);
-  useEffect(() => {
+  const state = React.useContext(ClientState.Context);
+  React.useEffect(() => {
     value.on("update", state.triggerParamsUpdate);
     return () => {
       value.off("update", state.triggerParamsUpdate);

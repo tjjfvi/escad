@@ -22,7 +22,7 @@ import {
   $unknown,
   registerType,
   Serializer,
-} from "...ts";
+} from "../mod.ts";
 
 // eslint-disable-next-line max-len
 const lorem =

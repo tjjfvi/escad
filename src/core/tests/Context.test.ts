@@ -1,4 +1,4 @@
-import { Context, ContextStack, Id } from "../src.ts";
+import { Context, ContextStack, Id } from "../mod.ts";
 
 const id = Id.create(import.meta.url, "@escad/core", "Context", "test");
 

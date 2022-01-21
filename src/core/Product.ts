@@ -2,9 +2,9 @@ import { LeafProduct, LeafProductType } from "./LeafProduct.ts";
 import { TupleProduct, TupleProductType } from "./TupleProduct.ts";
 import { ArrayProduct, ArrayProductType } from "./ArrayProduct.ts";
 import {
-  __convertibleTo,
-  __convertibleToOverride,
-  __convertibleToTransitivityOverride,
+  type __convertibleTo,
+  type __convertibleToOverride,
+  type __convertibleToTransitivityOverride,
   _ConvertibleTo,
   TransitivityOverride,
 } from "./Conversions.ts";

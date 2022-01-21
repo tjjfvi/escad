@@ -1,8 +1,8 @@
-import "../stylus/ObjectParam.styl";
+import "./stylus/ObjectParam.styl";
 import { ObjectParam, Parameter } from "../core/mod.ts";
-import React from "react.ts";
-import { observer } from "rhobo.ts";
-import { NameDesc, ParameterView, registerParameter } from "./Parameters.ts";
+import React from "../deps/react.ts";
+import { observer } from "../deps/rhobo.ts";
+import { NameDesc, ParameterView, registerParameter } from "./Parameters.tsx";
 
 registerParameter<
   Record<string, unknown>,

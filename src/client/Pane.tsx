@@ -1,6 +1,6 @@
-import "../stylus/Pane.styl";
-import React from "react.ts";
-import { useObservable } from "rhobo.ts";
+import "./stylus/Pane.styl";
+import React from "../deps/react.ts";
+import { useObservable } from "../deps/rhobo.ts";
 
 export type PaneArgs = {
   name: string;

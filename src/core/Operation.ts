@@ -8,7 +8,7 @@ import { ExtensibleFunction } from "./ExtensibleFunction.ts";
 import { CallHierarchy } from "./CallHierarchy.ts";
 import { NameHierarchy } from "./NameHierarchy.ts";
 import { Promisish } from "./Promisish.ts";
-import { Hkt } from "./Hkt.ts";
+import { type Hkt } from "./Hkt.ts";
 
 export type ConvertibleOperation<I extends Product, O extends Product> =
   Operation<ConvertibleTo<I>, ConvertibleTo<O>>;

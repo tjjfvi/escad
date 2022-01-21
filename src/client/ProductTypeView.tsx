@@ -1,11 +1,11 @@
-import React, { Fragment } from "react.ts";
+import React from "../deps/react.ts";
 import {
   ArrayProductType,
   LeafProductType,
   ProductType,
   TupleProductType,
 } from "../core/mod.ts";
-import { IdView } from "./IdView.ts";
+import { IdView } from "./IdView.tsx";
 
 export const ProductTypeView = (
   { productType }: { productType: ProductType },
@@ -18,10 +18,10 @@ export const ProductTypeView = (
       <span className="ProductType">
         {"["}
         {productType.elementTypes.map((x, i) => (
-          <Fragment key={i}>
+          <React.Fragment key={i}>
             {i === 0 ? null : ", "}
             <ProductTypeView productType={x} />
-          </Fragment>
+          </React.Fragment>
         ))}
         {"]"}
       </span>

@@ -1,11 +1,5 @@
-import { HashSet } from "../core/mod.ts";
+export const registeredPlugins = new Set<string>();
 
-export const registeredPlugins = new HashSet<PluginRegistration>();
-
-export interface PluginRegistration {
-  path: string;
-}
-
-export const registerPlugin = (registration: PluginRegistration) => {
-  registeredPlugins.add(registration);
+export const registerPlugin = (url: string | URL) => {
+  registeredPlugins.add(url.toString());
 };

@@ -1,4 +1,4 @@
-import { createConnectionPair, serializeConnection } from "../src.ts";
+import { createConnectionPair, serializeConnection } from "../mod.ts";
 
 test("", async () => {
   const [_a, b] = createConnectionPair<Uint8Array>();

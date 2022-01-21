@@ -1,9 +1,9 @@
-import React, { useState } from "react.ts";
+import React from "../../deps/react.ts";
 import { flattenTree } from "./flattenTree.ts";
 import { finalizeTree } from "./finalizeTree.ts";
 import { Tree, TreePart } from "./Tree.ts";
 import { TreeText } from "./TreeText.ts";
-import { TreeTextView } from "./TreeTextView.ts";
+import { TreeTextView } from "./TreeTextView.tsx";
 
 const arrowWidth = 25;
 const characterWidth = 10;
@@ -15,7 +15,7 @@ export const TreeView = (
     selectable: boolean;
   },
 ) => {
-  const [, _update] = useState({});
+  const [, _update] = React.useState({});
   const update = () => _update({});
   const innerWidth = width - arrowWidth;
   const maxLength = innerWidth / characterWidth;

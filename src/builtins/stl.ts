@@ -16,15 +16,19 @@ exportTypeRegistry.register<Mesh>({
     const triangles = meshes.flatMap((m) =>
       m.faces.flatMap((f) => Face.toTriangles(f))
     );
-    const buffer = Buffer.alloc(84 + triangles.length * 50);
-    buffer.write("@escad/builtins/stl/" + Hash.create(meshes), "utf-8");
-    buffer.writeUInt32LE(triangles.length, 80);
+    const buffer = new ArrayBuffer(84 + triangles.length * 50);
+    new TextEncoder().encodeInto(
+      "@escad/builtins/stl/" + Hash.create(meshes),
+      new Uint8Array(buffer),
+    );
+    let dataView = new DataView(buffer);
+    dataView.setUint32(triangles.length, 80, true);
     let position = 84;
     for (const triangle of triangles) {
       for (const vector of [triangle.plane.normal, ...triangle.points]) {
-        buffer.writeFloatLE(vector.x, position);
-        buffer.writeFloatLE(vector.y, position + 4);
-        buffer.writeFloatLE(vector.z, position + 8);
+        dataView.setFloat32(vector.x, position, true);
+        dataView.setFloat32(vector.y, position + 4, true);
+        dataView.setFloat32(vector.z, position + 8, true);
         position += 12;
       }
       position += 2;
@@ -61,6 +65,6 @@ exportTypeRegistry.register<Mesh>({
       str += "endfacet\n";
     }
     str += `endsolid ${name}\n`;
-    return Buffer.from(str);
+    return new TextEncoder().encode(str);
   },
 });

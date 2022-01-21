@@ -1,4 +1,4 @@
-import { HashMap } from "../src.ts";
+import { HashMap } from "../mod.ts";
 
 test("HashMap", () => {
   const map = new HashMap();

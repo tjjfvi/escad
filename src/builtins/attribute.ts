@@ -2,7 +2,7 @@ import {
   conversionRegistry,
   ConvertibleTo,
   GenericComponent,
-  Hkt,
+  type Hkt,
   mapOperation,
   Operation,
   Product,

@@ -6,7 +6,7 @@ import { Realm } from "./Realm.ts";
 import { ExtensibleFunction } from "./ExtensibleFunction.ts";
 import { ConvertibleTo } from "./Conversions.ts";
 import { RealmComponent, RealmGenericComponent } from "./RealmComponent.ts";
-import { Hkt } from "./Hkt.ts";
+import { type Hkt } from "./Hkt.ts";
 
 export type ConvertibleRealmElement<T extends Product, C> = RealmElement<
   ConvertibleTo<T>,

@@ -1,13 +1,13 @@
 /* eslint-disable @typescript-eslint/ban-types */
 
-if (!("WeakRef" in global)) {
+if (typeof WeakRef === "undefined") {
   throw new Error("The environment does not support WeakRef");
 }
 
 export class WeakCache<K, V> {
   private cache = new Map<K, WeakRef<V & object>>();
   private asyncCache = new Map<K, Promise<V>>();
-  private finalizationRegistry = new FinalizationRegistry((key) => {
+  private finalizationRegistry = new FinalizationRegistry<K>((key) => {
     this.cache.delete(key);
   });
 

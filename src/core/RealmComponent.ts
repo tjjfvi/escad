@@ -5,7 +5,7 @@ import {
   GenericConstraint,
 } from "./Component.ts";
 import { ExtensibleFunction } from "./ExtensibleFunction.ts";
-import { Hkt } from "./Hkt.ts";
+import { type Hkt } from "./Hkt.ts";
 import { Realm } from "./Realm.ts";
 import { RealmThing } from "./RealmThing.ts";
 import { Thing } from "./Thing.ts";

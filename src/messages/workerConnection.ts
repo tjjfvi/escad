@@ -15,3 +15,6 @@ export const workerConnection = (worker: Worker): Connection<unknown> =>
     (msg) => msg,
     (e: MessageEvent) => e.data,
   );
+
+export const parentWorkerConnection = (): Connection<unknown> =>
+  workerConnection(self as never);

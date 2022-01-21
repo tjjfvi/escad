@@ -1,20 +1,13 @@
-import express from "express.ts";
-import expressWs from "express-ws.ts";
+import { createServer as _createServer } from "../server/mod.ts";
+import * as path from "https://deno.land/std@0.122.0/path/mod.ts";
 import {
-  createServerBundlerMessenger,
-  createServerClientMessenger,
-  createServerRendererMessenger,
-} from "../server/mod.ts";
-import path from "path.ts";
-import {
-  childProcessConnection,
   logConnection,
   serializeConnection,
+  workerConnection,
 } from "../messages/mod.ts";
-import { fork } from "child_process.ts";
-import watch from "node-watch.ts";
-import { BundleOptions, ServerRendererShape } from "../protocol/mod.ts";
-import { createServerEmitter } from "../server/mod.ts";
+import { getTranspiledUrl } from "./serverTranspiler.ts";
+import { Application, send } from "https://deno.land/x/oak/mod.ts";
+import { contentType } from "https://deno.land/x/media_types/mod.ts";
 
 export interface ServerOptions {
   artifactsDir: string;
@@ -25,105 +18,121 @@ export interface ServerOptions {
   dev: boolean;
 }
 
-export const createServer = async (
-  { artifactsDir, port, ip = "::", loadFile, loadDir, dev }: ServerOptions,
-) => {
-  const { app } = expressWs(express());
-
-  const staticDir = path.join(__dirname, "../static/");
+export const createServer = async ({
+  artifactsDir,
+  port,
+  ip = "::",
+  loadFile,
+  loadDir,
+  dev,
+}: ServerOptions) => {
   const bundleDir = path.join(artifactsDir, "static/");
 
-  app.use(express.static(staticDir));
-  app.use(express.static(bundleDir));
-  app.use("/artifacts", express.static(artifactsDir + "/"));
+  Deno.env.set("ARTIFACTS_DIR", artifactsDir);
+  Deno.env.set("LOAD_FILE", loadFile);
+  Deno.env.set("DEV_MODE", dev.toString());
+  Deno.env.set("BUNDLE_DIR", bundleDir);
 
-  const baseBundleOptions: BundleOptions = {
-    outDir: bundleDir,
-    coreClientPath: require.resolve("./client"),
-    clientPlugins: [],
-    watch: dev,
-  };
+  await Deno.mkdir(bundleDir, { recursive: true });
 
-  const createRendererMessenger = async (
-    lookupRaw: ServerRendererShape["lookupRaw"],
-  ) => {
-    const child = fork(require.resolve("./renderer"), {
-      env: { ...process.env, ARTIFACTS_DIR: artifactsDir, LOAD_FILE: loadFile },
+  const server = await _createServer({
+    createRendererConnection: () =>
+      serializeConnection(workerConnection(worker("./renderer.ts"))),
+    transpilerConnection: workerConnection(worker("./transpiler.ts")),
+    coreClientUrl: new URL("./client.tsx", import.meta.url).toString(),
+    writeClientRoot: (content) =>
+      Deno.writeTextFile(path.join(bundleDir, "main.js"), content),
+    getTranspiledUrl,
+  });
+
+  const app = new Application();
+
+  const staticFiles = [
+    "index.html",
+    "favicon.ico",
+    "favicon-16x16.png",
+    "favicon-32x32.png",
+  ];
+
+  for (let file of staticFiles) {
+    let response = await fetch(new URL("./static/" + file, import.meta.url));
+    let content = await response.arrayBuffer();
+    app.use((ctx, next) => {
+      if (
+        !(ctx.request.url.pathname === "/" + file ||
+          file === "index.html" && ctx.request.url.pathname === "/")
+      ) {
+        return next();
+      }
+      ctx.response.body = content;
+      ctx.response.headers.set(
+        "Content-Type",
+        response.headers.get("Content-Type")!,
+      );
     });
-    console.log(`New renderer process: ${child.pid}`);
-    return createServerRendererMessenger(
-      lookupRaw,
-      serializeConnection(childProcessConnection(child)),
-    );
-  };
+  }
 
-  const loadInfo = await (await createRendererMessenger(async () => null))
-    .loadFile();
-
-  const bundlerProcess = fork(require.resolve("./bundler"), {
-    env: { ...process.env, DEV_MODE: dev + "" },
-  });
-  const bundlerMessenger = createServerBundlerMessenger(
-    childProcessConnection(bundlerProcess),
-  );
-
-  bundlerMessenger.bundle({
-    ...baseBundleOptions,
-    clientPlugins: loadInfo.clientPlugins,
+  app.use(async (ctx, next) => {
+    try {
+      console.log(ctx.request.url.pathname);
+      await send(ctx, ctx.request.url.pathname, {
+        root: bundleDir,
+        contentTypes: new Proxy({}, {
+          get: (target, key) => {
+            if (key === ".styl") return contentType(".css");
+            return contentType(key as string) ?? contentType(".js");
+          },
+        }),
+      });
+    } catch {
+      await next();
+    }
   });
 
-  const serverEmitter = createServerEmitter();
-
-  watch(loadDir, {
-    filter: (file) =>
-      !file.includes("artifacts") && !file.includes("node_modules") &&
-      !file.includes("dist"),
-  }, (event, filePath) => {
-    console.log(`Watched file ${filePath} ${event}d`);
-    serverEmitter.emit("changeObserved");
+  app.use(async (ctx, next) => {
+    if (!ctx.request.url.pathname.startsWith("/artifacts")) return next();
+    try {
+      await send(ctx, ctx.request.url.pathname.slice("/artifacts".length), {
+        root: artifactsDir,
+      });
+    } catch {
+      await next();
+    }
   });
 
-  bundlerMessenger.on("bundleStart", () => {
-    console.log("Bundle client start");
-  });
-  bundlerMessenger.on("bundleFinish", (hash) => {
-    console.log(`Bundle client finish (${hash.slice(0, 32)}...)`);
-  });
+  // TODO: watch
 
-  serverEmitter.on("clientPlugins", (clientPlugins) => {
-    bundlerMessenger.bundle({
-      ...baseBundleOptions,
-      clientPlugins,
-    });
-  });
-
-  app.ws("/ws", (ws) => {
-    const messenger = createServerClientMessenger({
-      connection: logConnection(serializeConnection({
+  app.use(async (ctx, next) => {
+    if (ctx.request.url.pathname !== "/ws/") return next();
+    const ws = ctx.upgrade();
+    const client = server.addClient(
+      logConnection(serializeConnection({
         send: (msg) => ws.send(msg),
         onMsg: (cb) => {
-          ws.on("message", cb);
-          return () => ws.off("message", cb);
+          let wrapped = (e: MessageEvent) => cb(e.data);
+          ws.addEventListener("message", wrapped);
+          return () => ws.removeEventListener("message", wrapped);
         },
       })),
-      serverEmitter,
-      createRendererMessenger,
-      bundlerMessenger,
-    });
-    ws.on("close", () => messenger.destroy());
-    ws.on("error", () => messenger.destroy());
+    );
+    ws.addEventListener("close", () => client.destroy());
+    ws.addEventListener("error", () => client.destroy());
   });
 
-  const httpServer = app.listen(port, ip, () => {
-    const address = httpServer.address();
-    const addressString = typeof address === "object" && address
-      ? address.family === "IPv6" ? `[${address.address}]` : address.address
-      : "<?>";
-    const addressPortString = (
-      typeof address === "object"
-        ? address ? `http://${addressString}:${address.port}` : "<?>"
-        : address
-    );
-    console.log(`Listening on ${addressPortString}`);
-  });
+  app.listen({ port, hostname: ip });
+
+  let isIpV4 = /^(\d{1,3}\.){3}\d{1,3}}$/.test(ip);
+  console.log(`Listening on http://${isIpV4 ? ip : `[${ip}]`}:${port}`);
 };
+
+function worker(relativePath: string) {
+  return new Worker(
+    new URL(relativePath, import.meta.url).toString(),
+    {
+      type: "module",
+      deno: {
+        namespace: true,
+      },
+    },
+  );
+}

@@ -1,4 +1,4 @@
-import { createEventEmitter } from "..ts";
+import { createEventEmitter } from "./EventEmitter.ts";
 import { $unknown } from "../serial/mod.ts";
 import { Connection } from "./Connection.ts";
 import { transformConnection } from "./transformConnection.ts";

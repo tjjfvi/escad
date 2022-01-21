@@ -6,7 +6,7 @@ import {
   $unknown,
   registerType,
   Serializer,
-} from "../serial/mod.ts";
+} from "../../serial/mod.ts";
 import { assertNever } from "../assertNever.ts";
 import { HashProduct } from "../HashProduct.ts";
 import { Id } from "../Id.ts";

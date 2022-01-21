@@ -1,4 +1,4 @@
-import { Hash } from "../src.ts";
+import { Hash } from "../mod.ts";
 
 test("Hash.create", () => {
   expect([

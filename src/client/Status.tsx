@@ -1,8 +1,8 @@
-import "../stylus/Status.styl";
-import React, { useContext } from "react.ts";
-import { observer, Readable } from "rhobo.ts";
+import "./stylus/Status.styl";
+import React from "../deps/react.ts";
+import { observer, Readable } from "../deps/rhobo.ts";
 import { ClientState } from "./ClientState.ts";
-import { Icon } from "./Icon.ts";
+import { Icon } from "./Icon.tsx";
 
 export interface StatusSet {
   name: string;
@@ -19,7 +19,7 @@ export interface Status {
 }
 
 export const Statuses = observer(() => {
-  const state = useContext(ClientState.Context);
+  const state = React.useContext(ClientState.Context);
   const statuses = state.statuses();
   return (
     <div className="Statuses">

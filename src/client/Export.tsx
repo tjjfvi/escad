@@ -4,14 +4,14 @@ import {
   ExportTypeRegistry,
   Product,
 } from "../core/mod.ts";
-import React, { useContext } from "react.ts";
-import { observer } from "rhobo.ts";
+import React from "../deps/react.ts";
+import { observer } from "../deps/rhobo.ts";
 import { ClientState } from "./ClientState.ts";
 import { ProductConsumerRegistry } from "./ProductConsumerRegistry.ts";
 import { usePromise } from "./usePromise.ts";
 
 export const Export = observer(() => {
-  const state = useContext(ClientState.Context);
+  const state = React.useContext(ClientState.Context);
   const consumerRegistry = new ProductConsumerRegistry<
     Product,
     Product,

@@ -15,6 +15,7 @@ export type Messenger<
   impl: F;
   destroy(awaitCompletion?: boolean): void;
   retryAll(): void;
+  requestRetry(): void;
   emit<K extends keyof E>(event: K, iterable: AsyncIterable<E[K]>): void;
   emit<K extends keyof E>(event: K, ...args: E[K]): void;
   on<K extends keyof E>(
@@ -24,7 +25,10 @@ export type Messenger<
   on<K extends keyof E>(event: K): AsyncIterable<E[K]>;
   once<K extends keyof E>(event: K, callback: (...args: E[K]) => void): void;
   once<K extends keyof E>(event: K): Promise<E[K]>;
+  // For type inference
+  [__messengerSymb]?: T;
 };
+declare const __messengerSymb: unique symbol;
 
 export const createMessenger = (
   <F extends MessengerShape, T extends MessengerShape, E extends EventsShape>({
@@ -79,6 +83,12 @@ export const createMessenger = (
           for (const message of retryMessages) {
             connection.send(message);
           }
+        },
+        requestRetry() {
+          if (destroyed) {
+            throw new Error("Attempted to requestRetry on destroyed messenger");
+          }
+          connection.send(["retry"]);
         },
         async destroy(awaitCompletion?: boolean) {
           if (awaitCompletion) {
@@ -186,6 +196,13 @@ export const createMessenger = (
         return;
       }
       const [kind, id, key, ...args] = msg;
+      if (kind === "retry") {
+        console.log(retryMessages);
+        for (const message of retryMessages) {
+          connection.send(message);
+        }
+        return;
+      }
       if (
         typeof id !== "number" ||
         typeof key !== "number" && typeof key !== "string" && key !== null
@@ -212,6 +229,7 @@ export const createMessenger = (
       }
     };
     const offMsg = connection.onMsg(handler);
+    result.requestRetry();
     return result;
 
     function recvPromise(id: number) {

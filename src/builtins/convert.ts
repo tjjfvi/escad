@@ -3,7 +3,7 @@ import {
   ConvertibleTo,
   Element,
   GenericComponent,
-  Hkt,
+  type Hkt,
   Operation,
   Product,
   ProductType,
