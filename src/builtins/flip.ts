@@ -12,7 +12,7 @@ import {
 import { Face } from "./Face.ts"
 import { Mesh } from "./Mesh.ts"
 
-const flipFacesId = Id.create(__filename, "@escad/builtins", "Marker", "FlipFaces")
+const flipFacesId = Id.create(import.meta.url, "@escad/builtins", "Marker", "FlipFaces")
 export type FlipFaces<T extends Product> = MarkedProduct<typeof flipFacesId, T>
 export const FlipFaces = MarkedProduct.for(flipFacesId)
 
@@ -34,7 +34,7 @@ conversionRegistry.register<FlipFaces<Mesh>, Mesh>({
   fromType: FlipFaces.createProductType(Mesh),
   toType: Mesh,
   weight: 1,
-  id: Id.create(__filename, "@escad/builtins", "Conversion", "FlipFaces"),
+  id: Id.create(import.meta.url, "@escad/builtins", "Conversion", "FlipFaces"),
 })
 
 export const flip: Operation<ConvertibleTo<Mesh>, FlipFaces<ConvertibleTo<Mesh>>> =

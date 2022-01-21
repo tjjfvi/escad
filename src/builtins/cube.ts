@@ -12,7 +12,7 @@ import { TripletObj, Triplet, interpretTriplet } from "./helpers.ts"
 import { Mesh } from "./Mesh.ts"
 import { Vector3 } from "./Vector3.ts"
 
-const cubeId = Id.create(__filename, "@escad/builtins", "LeafProduct", "Cube")
+const cubeId = Id.create(import.meta.url, "@escad/builtins", "LeafProduct", "Cube")
 
 export interface Cube extends LeafProduct {
   readonly type: typeof cubeId,
@@ -81,7 +81,7 @@ conversionRegistry.register({
     ])
   },
   weight: 1,
-  id: Id.create(__filename, "@escad/builtins", "Conversion", "CubeMesh"),
+  id: Id.create(import.meta.url, "@escad/builtins", "Conversion", "CubeMesh"),
 })
 
 export interface CubeArgs extends TripletObj {

@@ -37,7 +37,7 @@ test("", async () => {
   const artifacts = [
     { isTestArtifact: true },
     Hash.create("test"),
-    Id.create(__filename, "@escad/core", "Test", "ArtifactTest"),
+    Id.create(import.meta.url, "@escad/core", "Test", "ArtifactTest"),
   ]
   for(const artifact of artifacts) {
     await artifactManager.lookupRaw(Hash.create(artifact))

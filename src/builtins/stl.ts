@@ -3,7 +3,7 @@ import { Face } from "./Face.ts"
 import { Mesh } from "./Mesh.ts"
 
 exportTypeRegistry.register<Mesh>({
-  id: Id.create(__filename, "@escad/builtins", "ExportType", "MeshBinaryStl"),
+  id: Id.create(import.meta.url, "@escad/builtins", "ExportType", "MeshBinaryStl"),
   name: "Binary STL",
   extension: ".stl",
   productType: Mesh,
@@ -27,7 +27,7 @@ exportTypeRegistry.register<Mesh>({
 })
 
 exportTypeRegistry.register<Mesh>({
-  id: Id.create(__filename, "@escad/builtins", "ExportType", "MeshAsciiStl"),
+  id: Id.create(import.meta.url, "@escad/builtins", "ExportType", "MeshAsciiStl"),
   name: "ASCII STL",
   extension: ".stl",
   productType: Mesh,

@@ -1,6 +1,6 @@
 import { createLeafProductUtils, Id, LeafProduct } from "../core/mod.ts"
 
-const valueWrapperProductId = Id.create(__filename, "@escad/builtins", "LeafProduct", "ValueWrapperProduct")
+const valueWrapperProductId = Id.create(import.meta.url, "@escad/builtins", "LeafProduct", "ValueWrapperProduct")
 
 export interface ValueWrapperProduct<T = unknown> extends LeafProduct {
   readonly type: typeof valueWrapperProductId,

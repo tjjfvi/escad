@@ -3,7 +3,7 @@ import { Conversion, conversionRegistry, createLeafProductUtils, Id, LeafProduct
 import { Cube } from "./cube.ts"
 import { Vector3 } from "./Vector3.ts"
 
-const boundingBoxId = Id.create(__filename, "@escad/builtins", "LeafProduct", "BoundingBox")
+const boundingBoxId = Id.create(import.meta.url, "@escad/builtins", "LeafProduct", "BoundingBox")
 
 export interface BoundingBox extends LeafProduct {
   readonly type: typeof boundingBoxId,
@@ -37,7 +37,7 @@ declare global {
 }
 
 conversionRegistry.register({
-  id: Id.create(__filename, "@escad/builtins", "Conversion", "BoundingBoxToCube"),
+  id: Id.create(import.meta.url, "@escad/builtins", "Conversion", "BoundingBoxToCube"),
   fromType: BoundingBox,
   toType: Cube,
   convert: async boundingBox =>

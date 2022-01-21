@@ -7,5 +7,5 @@ export interface Smooth {
   readonly size?: number,
 }
 
-const smoothContextId = Id.create(__filename, "@escad/builtins", "Context", "SmoothContext")
+const smoothContextId = Id.create(import.meta.url, "@escad/builtins", "Context", "SmoothContext")
 export const smoothContext = new Context<Smooth>(smoothContextId, { sides: 16 })

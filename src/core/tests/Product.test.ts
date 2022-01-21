@@ -12,9 +12,9 @@ import {
   UnknownProduct,
 } from "../src.ts"
 
-const productAId = Id.create(__filename, "@escad/core", "LeafProduct", "ProductA")
-const productBId = Id.create(__filename, "@escad/core", "LeafProduct", "ProductB")
-const productCId = Id.create(__filename, "@escad/core", "LeafProduct", "ProductC")
+const productAId = Id.create(import.meta.url, "@escad/core", "LeafProduct", "ProductA")
+const productBId = Id.create(import.meta.url, "@escad/core", "LeafProduct", "ProductB")
+const productCId = Id.create(import.meta.url, "@escad/core", "LeafProduct", "ProductC")
 interface ProductA extends LeafProduct { readonly type: typeof productAId }
 interface ProductB extends LeafProduct { readonly type: typeof productBId }
 interface ProductC extends LeafProduct { readonly type: typeof productCId }

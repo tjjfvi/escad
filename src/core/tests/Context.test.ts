@@ -1,6 +1,6 @@
 import { Context, ContextStack, Id } from "../src.ts"
 
-const id = Id.create(__filename, "@escad/core", "Context", "test")
+const id = Id.create(import.meta.url, "@escad/core", "Context", "test")
 
 test("", () => {
   const contextStack = new ContextStack()

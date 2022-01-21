@@ -5,7 +5,7 @@ import { createLeafProductUtils, Id, LeafProduct } from "../core/mod.ts"
 
 const epsilon = 1e-5
 
-const planeId = Id.create(__filename, "@escad/builtins", "LeafProduct", "Plane")
+const planeId = Id.create(import.meta.url, "@escad/builtins", "LeafProduct", "Plane")
 export interface Plane extends LeafProduct {
   readonly type: typeof planeId,
   readonly normal: Vector3,

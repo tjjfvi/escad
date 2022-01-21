@@ -22,11 +22,11 @@ import { Mesh } from "./Mesh.ts"
 import { Transform, Transformation } from "./Transformation.ts"
 import { Vector3 } from "./Vector3.ts"
 
-const moveToId = Id.create(__filename, "@escad/builtins", "Marker", "MoveTo")
+const moveToId = Id.create(import.meta.url, "@escad/builtins", "Marker", "MoveTo")
 export type MoveTo<T extends Product> = MarkedProduct<typeof moveToId, T>
 export const MoveTo = MarkedProduct.for(moveToId)
 
-const moveToArgsId = Id.create(__filename, "@escad/builtins", "LeafProduct", "MoveToArgs")
+const moveToArgsId = Id.create(import.meta.url, "@escad/builtins", "LeafProduct", "MoveToArgs")
 
 export interface MoveToArgs extends
   LeafProduct,
@@ -99,7 +99,7 @@ declare global {
   }
 }
 
-const moveToConversionMeshId = Id.create(__filename, "@escad/builtins", "Conversion", "MoveToConversionMesh")
+const moveToConversionMeshId = Id.create(import.meta.url, "@escad/builtins", "Conversion", "MoveToConversionMesh")
 
 conversionRegistry.register({
   id: moveToConversionMeshId,

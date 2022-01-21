@@ -3,7 +3,7 @@ import { Face } from "./Face.ts"
 import { Vector3 } from "./Vector3.ts"
 import { createLeafProductUtils, Id, LeafProduct } from "../core/mod.ts"
 
-const meshId = Id.create(__filename, "@escad/builtins", "LeafProduct", "Mesh")
+const meshId = Id.create(import.meta.url, "@escad/builtins", "LeafProduct", "Mesh")
 
 export interface Mesh extends LeafProduct {
   readonly type: typeof meshId,

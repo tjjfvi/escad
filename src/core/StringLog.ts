@@ -3,7 +3,7 @@ import { checkTypeProperty } from "./checkTypeProperty.ts"
 import { Id } from "./Id.ts"
 import { Log, LogLevel } from "./Log.ts"
 
-const stringLogId = Id.create(__filename, "@escad/core", "Log", "StringLog")
+const stringLogId = Id.create(import.meta.url, "@escad/core", "Log", "StringLog")
 
 export interface StringLog extends Log {
   type: typeof stringLogId,

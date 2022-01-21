@@ -4,7 +4,7 @@ import { Hierarchy } from "./Hierarchy.ts"
 import { Id } from "./Id.ts"
 import { Log, LogLevel } from "./Log.ts"
 
-const hierarchyLogId = Id.create(__filename, "@escad/core", "Log", "HierarchyLog")
+const hierarchyLogId = Id.create(import.meta.url, "@escad/core", "Log", "HierarchyLog")
 
 export interface HierarchyLog extends Log {
   type: typeof hierarchyLogId,
