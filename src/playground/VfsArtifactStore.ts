@@ -5,12 +5,8 @@ import {
   Id,
   WrappedValue,
 } from "../core/mod.ts";
-import {
-  iterateReader,
-  readableStreamFromIterable,
-  readerFromStreamReader,
-} from "https://deno.land/std@0.122.0/streams/conversion.ts";
-import { join } from "https://deno.land/std@0.122.0/path/mod.ts";
+import { iterateReader, readerFromStreamReader } from "../deps/streams.ts";
+import { join } from "../deps/path.ts";
 import { getVfs, putVfs } from "./vfs.ts";
 
 export class VfsArtifactStore implements ArtifactStore {

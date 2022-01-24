@@ -1,6 +1,5 @@
 import React from "../deps/react.ts";
-import MdiIcon from "https://esm.sh/@mdi/react";
-import * as mdiIcons from "https://esm.sh/@mdi/js";
+import { MdiIcon, mdiIcons } from "../deps/mdi.ts";
 
 export type Icon = ((
   props: { className?: string },

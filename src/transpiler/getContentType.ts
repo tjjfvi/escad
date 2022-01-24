@@ -1,4 +1,4 @@
-import { contentType } from "https://deno.land/x/media_types/mod.ts";
+import { contentType } from "../deps/media_types.ts";
 
 export function getContentType(ext: string) {
   if (ext === ".styl") return contentType(".css")!;

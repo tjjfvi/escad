@@ -1,8 +1,8 @@
-import { Application, Router, send } from "https://deno.land/x/oak/mod.ts";
-import * as path from "https://deno.land/std@0.122.0/path/mod.ts";
+import { Application, Router, send } from "../deps/oak.ts";
+import * as path from "../deps/path.ts";
 
 import { transpile, TranspileContext } from "../transpiler/mod.ts";
-import { contentType } from "https://deno.land/x/media_types/mod.ts";
+import { contentType } from "../deps/media_types.ts";
 
 const dirname = path.dirname(path.fromFileUrl(import.meta.url));
 

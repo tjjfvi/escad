@@ -1,4 +1,5 @@
-import rhobo from "./_rhobo.js";
+// @deno-types="./_/rhobo.d.ts"
+import { default as rhobo } from "https://esm.sh/rhobo@0.3.6?dev";
 
 export const {
   Observable,

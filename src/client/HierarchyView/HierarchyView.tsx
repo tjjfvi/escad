@@ -1,7 +1,7 @@
 import { Hierarchy } from "../../core/mod.ts";
 import React from "../../deps/react.ts";
 import { useValue } from "../../deps/rhobo.ts";
-import { ResizeSensor } from "https://esm.sh/css-element-queries";
+import { ResizeSensor } from "../../deps/css-element-queries.ts";
 import { StateMemo } from "./State.ts";
 import { TreeView } from "./TreeView.tsx";
 import { hierarchyToTree, HierarchyToTreeEngine } from "./hierarchyToTree.ts";

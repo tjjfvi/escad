@@ -1,5 +1,5 @@
-import { ts } from "https://deno.land/x/ts_morph/mod.ts";
-import { stylus } from "./stylus/mod.ts";
+import { ts } from "../deps/tsc.ts";
+import { stylus } from "../deps/stylus.ts";
 import { TranspilerServerMessenger } from "../protocol/mod.ts";
 import { Connection, createMessenger } from "../messages/mod.ts";
 
@@ -28,7 +28,7 @@ export async function transpile(
       return;
     }
     let [result, deps] = await _transpile(url, ctx);
-    return [ctx.cache.set(url, result), deps] as const;
+    return [ctx.cache.set(escapeUrl(url), result), deps] as const;
   })();
   ctx.memo.set(url, prom);
   let [cacheProm, deps] = await prom ?? [];
@@ -105,10 +105,10 @@ async function _transpileCss(
 document.head.appendChild(Object.assign(document.createElement("link"), {
   type: "text/css",
   rel: "stylesheet",
-  href: ${JSON.stringify(ctx.transformUrl(url))},
+  href: ${JSON.stringify(ctx.transformUrl(escapeUrl(url)))},
 }))
   `;
-  ctx.memo.set(jsUrl, ctx.cache.set(jsUrl, jsContent));
+  ctx.memo.set(jsUrl, ctx.cache.set(escapeUrl(jsUrl), jsContent));
   return [content, [jsUrl]] as const;
 }
 
@@ -146,7 +146,7 @@ async function _transpileTs(
                 let resolved = (new URL(str, url)).toString();
                 deps.push(resolved);
                 return ts.factory.createStringLiteral(
-                  ctx.transformUrl(transformUrl(resolved)),
+                  ctx.transformUrl(transformUrl(escapeUrl(resolved))),
                 );
               }
               return ts.visitEachChild(node, visitor, context);
@@ -158,6 +158,10 @@ async function _transpileTs(
     },
   });
   return [result.outputText, deps] as const;
+}
+
+function escapeUrl(url: string) {
+  return url.replace(/[?#]/g, "_").replace(/\.\./g, "__");
 }
 
 function transformUrl(url: string) {

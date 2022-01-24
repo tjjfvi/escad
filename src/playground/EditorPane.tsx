@@ -2,7 +2,7 @@ import { debounce } from "./debounce.ts";
 import { transpiler } from "./server.ts";
 import React from "../deps/react.ts";
 import { Pane } from "../client/Pane.tsx";
-import { Editor, monaco } from "./monaco/mod.ts";
+import { Editor, monaco } from "../deps/monaco.ts";
 import { putVfs } from "./vfs.ts";
 import { instanceId } from "./instanceId.ts";
 

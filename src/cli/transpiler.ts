@@ -4,7 +4,7 @@ import {
   TranspileContext,
 } from "../transpiler/mod.ts";
 import { getTranspiledUrl, replaceTsExtension } from "./serverTranspiler.ts";
-import * as path from "https://deno.land/std@0.122.0/path/mod.ts";
+import * as path from "../deps/path.ts";
 
 const bundleDir = Deno.env.get("BUNDLE_DIR")!;
 

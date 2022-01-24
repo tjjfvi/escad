@@ -1,13 +1,13 @@
 import { createServer as _createServer } from "../server/mod.ts";
-import * as path from "https://deno.land/std@0.122.0/path/mod.ts";
+import * as path from "../deps/path.ts";
 import {
   logConnection,
   serializeConnection,
   workerConnection,
 } from "../messages/mod.ts";
 import { getTranspiledUrl } from "./serverTranspiler.ts";
-import { Application, send } from "https://deno.land/x/oak/mod.ts";
-import { contentType } from "https://deno.land/x/media_types/mod.ts";
+import { Application, send } from "../deps/oak.ts";
+import { contentType } from "../deps/media_types.ts";
 
 export interface ServerOptions {
   artifactsDir: string;

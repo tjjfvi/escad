@@ -5,12 +5,8 @@ import {
   Id,
   WrappedValue,
 } from "../core/mod.ts";
-import {
-  copy,
-  iterateReader,
-  readerFromIterable,
-} from "https://deno.land/std@0.122.0/streams/conversion.ts";
-import { dirname, join } from "https://deno.land/std@0.122.0/path/mod.ts";
+import { copy, iterateReader, readerFromIterable } from "../deps/streams.ts";
+import { dirname, join } from "../deps/path.ts";
 
 export class FsArtifactStore implements ArtifactStore {
   constructor(public rootDir: string) {}

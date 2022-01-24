@@ -1,5 +1,5 @@
 import { createServer } from "./server.ts";
-import * as path from "https://deno.land/std@0.122.0/path/mod.ts";
+import * as path from "../deps/path.ts";
 
 createServer({
   artifactsDir: path.join(Deno.cwd(), "artifacts"),

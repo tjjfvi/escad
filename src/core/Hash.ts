@@ -1,4 +1,4 @@
-import { Sha256 } from "https://deno.land/std@0.122.0/hash/sha256.ts";
+import { Sha256 } from "../deps/sha256.ts";
 import { Timer } from "./Timer.ts";
 import { $unknown } from "../serial/mod.ts";
 

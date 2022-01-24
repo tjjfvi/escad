@@ -4,7 +4,7 @@ import {
   transformConnection,
 } from "../messages/mod.ts";
 import React from "../deps/react.ts";
-import ReactDOM from "https://cdn.esm.sh/v64/react-dom@17.0.2/es2021/react-dom.development.js";
+import ReactDOM from "../deps/react-dom.ts";
 import { App, ClientState } from "../client/mod.ts";
 import { artifactManager } from "../core/mod.ts";
 import { VfsArtifactStore } from "./VfsArtifactStore.ts";

@@ -27,7 +27,7 @@ import {
 } from "./HierarchySelection.ts";
 import { Loading } from "./Loading.tsx";
 import { mdi } from "./Icon.tsx";
-import { Sha256 } from "https://deno.land/std@0.122.0/hash/sha256.ts";
+import { Sha256 } from "../deps/sha256.ts";
 
 const lookupRawRetryTimer = 500;
 
