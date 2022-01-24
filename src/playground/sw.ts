@@ -7,19 +7,23 @@ export {};
 const sw = self as never as ServiceWorkerGlobalScope;
 
 sw.addEventListener("install", (event) => {
-  console.log(event);
+  console.log("service worker install", event);
 });
 
-console.log("service worker restart");
+sw.addEventListener("activate", (event) => {
+  console.log("service worker activate", event);
+});
 
 let vfsCache = "escad-vfs-v6";
-
-caches.delete(vfsCache);
 
 sw.addEventListener("fetch", function (event) {
   const req = event.request;
   const path = new URL(req.url).pathname;
   if (path === "/sw.js") return;
+  if (path === "/vfs/clear") {
+    event.respondWith(new Response("cleared vfs", { status: 200 }));
+    caches.delete(vfsCache);
+  }
   if (path.startsWith("/vfs/")) {
     console.log(req.method, path, "foo");
     event.respondWith((async () => {
