@@ -105,6 +105,7 @@ export const createServer = async ({
   app.use(async (ctx, next) => {
     if (ctx.request.url.pathname !== "/ws/") return next();
     const ws = ctx.upgrade();
+    await new Promise((r) => ws.onopen = r);
     const client = server.addClient(
       logConnection(serializeConnection({
         send: (msg) => ws.send(msg),
