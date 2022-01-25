@@ -1,10 +1,8 @@
 import { debounce } from "./debounce.ts";
-import { code, setCode, transpiler } from "./transpiler.ts";
+import { code, setCode } from "./code.ts";
 import React from "../deps/react.ts";
 import { Pane } from "../client/Pane.tsx";
 import { Editor, monaco } from "../deps/monaco.ts";
-import { putVfs } from "./vfs.ts";
-import { instanceId } from "./instanceId.ts";
 
 export const EditorPane = () => (
   <Pane name="Editor" left defaultWidth={600} minWidth={200} defaultOpen={true}>

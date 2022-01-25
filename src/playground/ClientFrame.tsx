@@ -1,6 +1,7 @@
 import "./stylus/ClientFrame.styl";
 import {
   brandConnection,
+  createMessenger,
   filterConnection,
   logConnection,
   transformConnection,
@@ -9,6 +10,7 @@ import { server } from "./server.ts";
 import React from "../deps/react.ts";
 import { observer } from "../deps/rhobo.ts";
 import { instanceId } from "./instanceId.ts";
+import { share } from "./code.ts";
 
 const clientUrl = `/vfs/${instanceId}/index.html`;
 await fetch(clientUrl, {
@@ -62,8 +64,15 @@ export const ClientFrame = observer(() => {
           const client = server.addClient(
             logConnection(brandConnection(baseConnection, "client")),
           );
+          const shareMessenger = createMessenger<ShareMessengerShape, {}, {}>({
+            impl: {
+              share,
+            },
+            connection: brandConnection(baseConnection, "share"),
+          });
           onNewWindow.current = () => {
             client.destroy();
+            shareMessenger.destroy();
           };
         }
         // childWindow.addEventListener("mousemove", origEvent => {
@@ -77,3 +86,7 @@ export const ClientFrame = observer(() => {
     />
   );
 });
+
+export type ShareMessengerShape = {
+  share(): Promise<string | null>;
+};
