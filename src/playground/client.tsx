@@ -29,4 +29,5 @@ const clientState = new ClientState(
 );
 clientState.removeStatusSet("Connection");
 clientState.connect();
+clientState.serverStatus("connected");
 ReactDOM.render(<App state={clientState} />, document.getElementById("root"));
