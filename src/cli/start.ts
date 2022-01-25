@@ -5,7 +5,7 @@ createServer({
   artifactsDir: path.join(Deno.cwd(), "artifacts"),
   port: 8080,
   ip: "::",
-  loadFile: path.join(Deno.cwd(), Deno.args[0]),
+  loadFile: "file://" + path.join(Deno.cwd(), Deno.args[0]),
   loadDir: null!,
   dev: true,
 });
