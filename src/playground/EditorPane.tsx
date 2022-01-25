@@ -19,7 +19,9 @@ export const EditorPane = () => (
         scrollbar: {
           useShadows: false,
         },
-        // renderIndentGuides: false,
+        guides: {
+          indentation: false,
+        },
         tabSize: 2,
       }}
       defaultLanguage="typescript"
