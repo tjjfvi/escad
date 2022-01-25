@@ -102,11 +102,12 @@ async function _transpileCss(
 ) {
   let jsUrl = url + ".js";
   let jsContent = `
-document.head.appendChild(Object.assign(document.createElement("link"), {
-  type: "text/css",
-  rel: "stylesheet",
-  href: ${JSON.stringify(ctx.transformUrl(escapeUrl(url)))},
-}))
+let el = document.createElement("link");
+el.type = "text/css";
+el.rel = "stylesheet";
+el.href = ${JSON.stringify(ctx.transformUrl(escapeUrl(url)))};
+document.head.appendChild(el);
+await new Promise(r => el.onload = r)
   `;
   ctx.memo.set(jsUrl, ctx.cache.set(escapeUrl(jsUrl), jsContent));
   return [content, [jsUrl]] as const;
