@@ -1,5 +1,5 @@
 import { debounce } from "./debounce.ts";
-import { transpiler } from "./server.ts";
+import { code, setCode, transpiler } from "./transpiler.ts";
 import React from "../deps/react.ts";
 import { Pane } from "../client/Pane.tsx";
 import { Editor, monaco } from "../deps/monaco.ts";
@@ -7,7 +7,7 @@ import { putVfs } from "./vfs.ts";
 import { instanceId } from "./instanceId.ts";
 
 export const EditorPane = () => (
-  <Pane name="Editor" left defaultWidth={750} minWidth={200} defaultOpen={true}>
+  <Pane name="Editor" left defaultWidth={600} minWidth={200} defaultOpen={true}>
     <Editor
       onMount={(editor) => {
         augmentMonacoEditor(editor as never);
@@ -42,25 +42,6 @@ monaco.editor.defineTheme("escad", {
 export const augmentMonacoEditor = (
   editor: monaco.editor.IStandaloneCodeEditor,
 ) => {
-  const defaultCode = `
-import escad from "${location.origin}/core/mod.ts";
-import "${location.origin}/builtins/register.ts";
-
-export default () =>
-  escad
-    .cube({ size: 1 })
-    .sub(escad.cube({ size: .9 }))
-    .sub(escad.cube({ size: 1, shift: 1 }))
-`;
-
-  let code = defaultCode;
-  // let code = localStorage.code ?? defaultCode;
-  if (location.hash.startsWith("#code=")) {
-    // code = lzstring.decompressFromEncodedURIComponent(
-    //   location.hash.slice("#code=".length),
-    // );
-  }
-
   const mainModel = monaco.editor.createModel(
     "",
     "typescript",
@@ -125,14 +106,8 @@ export default () =>
   }
 
   async function onChange() {
-    const content = mainModel.getValue();
-    localStorage.code = content;
-    addDeps("file:///main.ts", editor.getValue());
-    await putVfs(`${instanceId}/main.ts`, content);
-    transpiler.transpile(
-      new URL(`/vfs/${instanceId}/main.ts`, import.meta.url).toString(),
-      true,
-    );
+    setCode(mainModel.getValue());
+    addDeps("file:///main.ts", code);
   }
 
   return editor;

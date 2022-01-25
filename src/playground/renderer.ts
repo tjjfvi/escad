@@ -1,6 +1,6 @@
 import { instanceId } from "./instanceId.ts";
 import { putVfs } from "./vfs.ts";
-import { transpiler } from "./server.ts";
+import { transpiler } from "./transpiler.ts";
 
 export async function getRendererWorkerUrl(): Promise<string> {
   await putVfs(

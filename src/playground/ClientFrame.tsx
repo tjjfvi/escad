@@ -55,13 +55,11 @@ export const ClientFrame = observer(() => {
             (x) => x,
             (ev: any) => ev.data,
           );
-          const client = server.then((x) =>
-            x.addClient(
-              logConnection(brandConnection(baseConnection, "client")),
-            )
+          const client = server.addClient(
+            logConnection(brandConnection(baseConnection, "client")),
           );
           onNewWindow.current = () => {
-            client.then((x) => x.destroy());
+            client.destroy();
           };
         }
         // childWindow.addEventListener("mousemove", origEvent => {

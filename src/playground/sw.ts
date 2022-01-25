@@ -21,8 +21,11 @@ sw.addEventListener("fetch", function (event) {
   const path = new URL(req.url).pathname;
   if (path === "/sw.js") return;
   if (path === "/vfs/clear") {
-    event.respondWith(new Response("cleared vfs", { status: 200 }));
+    event.respondWith(
+      new Response("cleared vfs " + Date.now(), { status: 200 }),
+    );
     caches.delete(vfsCache);
+    return;
   }
   if (path.startsWith("/vfs/")) {
     console.log(req.method, path, "foo");
