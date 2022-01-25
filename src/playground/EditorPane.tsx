@@ -39,6 +39,8 @@ monaco.editor.defineTheme("escad", {
   },
 });
 
+const depsRegex = /(from\s*|import\s*)(["'])(.+?)\2/g;
+
 export const augmentMonacoEditor = (
   editor: monaco.editor.IStandaloneCodeEditor,
 ) => {
@@ -59,7 +61,7 @@ export const augmentMonacoEditor = (
   let aliasesUri = monaco.Uri.parse("file:///aliases");
   let aliasesContent = "";
 
-  onChange();
+  onChange().then(() => mainModel.setValue(mainModel.getValue()));
 
   async function addFile(url: string) {
     if (files.has(url)) return;
@@ -71,7 +73,20 @@ export const augmentMonacoEditor = (
     if (!response.ok) {
       return console.error(`Could not add dependency ${url} to monaco`);
     }
-    const content = addDeps(url, await response.text());
+    let content = await response.text();
+    let children: Promise<unknown>[] = [];
+    content = content.replace(
+      depsRegex,
+      (...match) => {
+        children.push(addFile(new URL(match[3], url).toString()));
+        if (match[3].match(/^\w+:\/\//)) {
+          return match[0];
+        } else {
+          return match[1] + match[2] + match[3].replace(bannedCharacters, "_") +
+            match[2];
+        }
+      },
+    );
     addLib(monaco.Uri.file(fileName + ".ts"), content);
     addLib(
       aliasesUri,
@@ -80,6 +95,8 @@ export const augmentMonacoEditor = (
     );
 
     console.log(`Added dependency ${url} to monaco (${fileName})`);
+
+    await Promise.all(children);
 
     function addLib(uri: monaco.Uri, content: string) {
       (
@@ -107,7 +124,7 @@ export const augmentMonacoEditor = (
 
   async function onChange() {
     setCode(mainModel.getValue());
-    addDeps("file:///main.ts", code);
+    await Promise.all([...code.matchAll(depsRegex)].map((x) => addFile(x[3])));
   }
 
   return editor;
