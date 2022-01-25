@@ -10,7 +10,7 @@ export const EditorPane = () => (
   <Pane name="Editor" left defaultWidth={750} minWidth={200} defaultOpen={true}>
     <Editor
       onMount={(editor) => {
-        augmentMonacoEditor(editor);
+        augmentMonacoEditor(editor as never);
       }}
       options={{
         minimap: {
@@ -72,6 +72,9 @@ export default () =>
   mainModel.setValue(code);
 
   const files = new Set();
+  const bannedCharacters = /[^\w/.-]/g;
+  let aliasesUri = monaco.Uri.parse("file:///aliases");
+  let aliasesContent = "";
 
   onChange();
 
@@ -80,31 +83,43 @@ export default () =>
     files.add(url);
     const fileName = url
       .replace("://", "/")
-      .replace(/[^\w/.-]/g, "_");
+      .replace(bannedCharacters, "_");
     const response = await fetch(url);
     if (!response.ok) {
       return console.error(`Could not add dependency ${url} to monaco`);
     }
-    const content = await response.text();
-    const uri = monaco.Uri.file(fileName + ".ts");
-    let mod = monaco.editor.createModel("", "typescript", uri);
-    mod.setValue(content);
-    monaco.languages.typescript.typescriptDefaults.addExtraLib(
-      content,
-      uri.toString(),
+    const content = addDeps(url, await response.text());
+    addLib(monaco.Uri.file(fileName + ".ts"), content);
+    addLib(
+      aliasesUri,
+      aliasesContent +=
+        `declare module "${url}" { export * from "${fileName}"; export { default } from "${fileName}" }\n`,
     );
-    monaco.languages.typescript.typescriptDefaults.addExtraLib(
-      `declare module "${url}" { export * from "${fileName}"; export { default } from "${fileName}" }`,
-      uri.toString() + "/__alias",
-    );
-    console.log(`Added dependency ${url} to monaco`);
-    addDeps(url, content);
+
+    console.log(`Added dependency ${url} to monaco (${fileName})`);
+
+    function addLib(uri: monaco.Uri, content: string) {
+      (
+        monaco.editor.getModel(uri) ??
+          monaco.editor.createModel("", "typescript", uri)
+      ).setValue(content);
+      monaco.languages.typescript.typescriptDefaults.addExtraLib(
+        content,
+        uri.toString(),
+      );
+    }
   }
 
-  async function addDeps(url: string, content: string) {
-    for (let match of content.matchAll(/(?:from|import) (["'])(.+?)\1/g)) {
-      addFile(new URL(match[2], url).toString());
-    }
+  function addDeps(url: string, content: string) {
+    return content.replace(/(from\s*|import\s*)(["'])(.+?)\2/g, (...match) => {
+      addFile(new URL(match[3], url).toString());
+      if (match[3].match(/^\w+:\/\//)) {
+        return match[0];
+      } else {
+        return match[1] + match[2] + match[3].replace(bannedCharacters, "_") +
+          match[2];
+      }
+    });
   }
 
   async function onChange() {

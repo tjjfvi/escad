@@ -9,7 +9,7 @@ const transpileContext: TranspileContext = {
   memo: new Map(),
   cache: {
     has: async (url) => {
-      // if (url.startsWith(window.origin)) return false;
+      if (url.startsWith(window.origin)) return false;
       return (await fetch(`/vfs/${url}`)).ok;
     },
     set: putVfs,

@@ -145,8 +145,6 @@ export type ConvertibleTo<T extends Product> = Product & {
 
 /* Tests */
 
-// import { ArrayProduct, LeafProduct, TupleProduct, __Element__, Elementish } from "..ts";
-
 // declare global {
 //   namespace escad {
 //     interface ConversionsObj {
