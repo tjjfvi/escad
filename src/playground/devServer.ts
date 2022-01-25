@@ -9,7 +9,7 @@ const dirname = path.dirname(path.fromFileUrl(import.meta.url));
 const staticDir = path.join(dirname, "static");
 
 const replaceTsExtension = (url: string) =>
-  url.replace(/\.tsx?$|(?<=\/[^/\.]*)$/, ".js");
+  url.replace(/\.tsx?$|(?<!\.[^\W\d]+)$/, ".js").replace(/\.styl$/, ".css");
 const getTranspiledLocation = (url: string) =>
   replaceTsExtension(path.join(staticDir, url));
 const getTranspiledPath = (url: string) => `/${replaceTsExtension(url)}`;
@@ -91,7 +91,9 @@ app.use(async (ctx, next) => {
   }
 });
 
-const port = +(Deno.env.get("PORT") ?? "8080");
+if (!Deno.env.get("PROD")) {
+  const port = +(Deno.env.get("PORT") ?? "8080");
 
-console.log("listening");
-await app.listen({ port });
+  console.log("listening");
+  await app.listen({ port });
+}

@@ -1,34 +1,29 @@
-
 name: Publish Playground
 
 on:
   push:
-    branches: [ master ]
+    branches: [deno]
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
       - uses: actions/checkout@v2
-      
-      - uses: actions/setup-node@v2
-        with:
-          node-version: '14'
-          
-      - name: Cache dependencies
-        uses: actions/cache@v2
-        with:
-          path: ~/.npm
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
 
-      - run: npm i
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
 
-      - run: npm run build-playground-prod
+      - run: PROD=1 deno run -A --unstable --no-check src/playground/devServer.ts
+
+      - run: mkdir playground
+      - run: mv src/playground/static/* playground/
+      - run: mv playground/file:/$PWD/src/playground/{mod.js,sw.js} playground/
+      - run: mv playground/mod.js playground/main.js
+      - run: mv src/* playground/
 
       - uses: peaceiris/actions-gh-pages@v3
         with:
           github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./packages/playground/static/
+          publish_dir: ./playground
           cname: escad.dev
