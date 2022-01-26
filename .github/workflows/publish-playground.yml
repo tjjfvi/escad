@@ -8,22 +8,14 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-
-      - uses: denoland/setup-deno@v1
+      - name: escad.run
+        uses: actions/github-script@v5
         with:
-          deno-version: v1.x
-
-      - run: PROD=1 deno run -A --unstable --no-check src/playground/devServer.ts
-
-      - run: mkdir playground
-      - run: mv src/playground/static/* playground/
-      - run: mv playground/file:/$PWD/src/playground/{mod.js,sw.js} playground/
-      - run: mv playground/mod.js playground/main.js
-      - run: mv src/* playground/
-
-      - uses: peaceiris/actions-gh-pages@v3
-        with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./playground
-          cname: escad.dev
+          github-token: ${{ secrets.PAT }}
+          script: |
+            await github.request('POST /repos/{owner}/{repo}/actions/workflows/{workflow_id}/dispatches', {
+              owner: 'tjjfvi',
+              repo: 'escad.run',
+              workflow_id: 'publish.yml',
+              ref: 'main'
+            })
