@@ -5,7 +5,6 @@ import {
   serializeConnection,
   workerConnection,
 } from "../messages/mod.ts";
-import { getTranspiledUrl } from "./serverTranspiler.ts";
 import { Application, send } from "../deps/oak.ts";
 import { contentType } from "../deps/media_types.ts";
 
@@ -42,7 +41,7 @@ export const createServer = async ({
     coreClientUrl: new URL("./client.tsx", import.meta.url).toString(),
     writeClientRoot: (content) =>
       Deno.writeTextFile(path.join(bundleDir, "main.js"), content),
-    getTranspiledUrl,
+    getTranspiledUrl: (url) => "/" + url,
   });
 
   const app = new Application();

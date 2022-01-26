@@ -4,10 +4,13 @@ import {
   serializeConnection,
   workerConnection,
 } from "../messages/mod.ts";
-import { instanceId } from "./instanceId.ts";
-import { putVfs } from "./vfs.ts";
+import { clientId } from "./swApi.ts";
+import { put } from "./swApi.ts";
 import { getRendererWorkerUrl } from "./renderer.ts";
 import { transpiler, transpilerConnection } from "./transpiler.ts";
+import { getTranspiledUrl } from "./getTranspiledUrl.ts";
+import { escadLocation } from "./escadLocation.ts";
+import "./code.ts";
 
 const rendererWorkerUrl = await getRendererWorkerUrl();
 
@@ -15,20 +18,18 @@ export const server = await _createServer({
   createRendererConnection: () =>
     serializeConnection(workerConnection(worker(rendererWorkerUrl))),
   transpilerConnection: brandConnection(transpilerConnection, "b"),
-  coreClientUrl: new URL("/playground/client.tsx", import.meta.url)
-    .toString(),
+  coreClientUrl: escadLocation + "/playground/client.tsx",
   writeClientRoot: async (content) => {
     console.log("clientroot");
-    await putVfs(`${instanceId}/client.js`, content);
+    await put(`${clientId}/client.js`, content);
   },
   mapClientPlugins: (url) => {
-    if (url.startsWith(location.origin + "/vfs/")) {
-      return url.slice((location.origin + "/vfs/").length);
+    if (url.startsWith(location.origin + "/transpiled/")) {
+      return url.slice((location.origin + "/transpiled/").length);
     }
     return url;
   },
-  getTranspiledUrl: (url) => "/vfs/" + url,
-  // initialPump: false,
+  getTranspiledUrl,
 });
 
 server.events.emit("changeObserved", transpiler.on("transpileFinish"));

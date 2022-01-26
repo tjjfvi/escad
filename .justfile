@@ -8,8 +8,9 @@ run-playground:
 build-playground:
   PROD=1 just run-playground
   mkdir playground
-  mv src/playground/static/*: playground/
+  mv src/playground/static/transpiled playground/
   cp src/playground/static/* playground/
-  mv playground/file:/$PWD/src/playground/mod.js playground/main.js
-  mv playground/file:/$PWD/src/playground/sw.js playground/sw.js
+  mv playground/transpiled/https://escad.dev/playground/mod.js playground/main.js
+  mv playground/transpiled/https://escad.dev/playground/sw.js playground/sw.js
   cp -r src/* playground/
+  git rev-parse HEAD > playground/version

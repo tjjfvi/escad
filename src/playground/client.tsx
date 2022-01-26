@@ -28,7 +28,7 @@ const baseConnection = transformConnection(
 const clientState = new ClientState(
   brandConnection(baseConnection, "client"),
   artifactManager,
-  (hash) => "/vfs/artifacts/raw/" + hash,
+  (hash) => "/artifacts/raw/" + hash,
 );
 const shareMessenger = createMessenger<{}, ShareMessengerShape, {}>({
   impl: {},

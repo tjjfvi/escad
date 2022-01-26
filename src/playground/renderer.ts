@@ -1,38 +1,33 @@
-import { instanceId } from "./instanceId.ts";
-import { putVfs } from "./vfs.ts";
+import { escadLocation } from "./escadLocation.ts";
+import { clientId } from "./swApi.ts";
+import { put } from "./swApi.ts";
 import { transpiler } from "./transpiler.ts";
 
 export async function getRendererWorkerUrl(): Promise<string> {
-  await putVfs(
-    `${instanceId}/renderer.ts`,
+  await put(
+    `${clientId}/renderer.ts`,
     `
-import { artifactManager, ArtifactStore, logger } from "/core/mod.ts";
+import { artifactManager, ArtifactStore, logger } from "${escadLocation}/core/mod.ts";
 import {
   createMessenger,
   workerConnection,
   serializeConnection,
   logConnection,
-} from "/messages/mod.ts";
-import { createRendererServerMessenger } from "/renderer/mod.ts";
-import { VfsArtifactStore } from "/playground/VfsArtifactStore.ts";
+} from "${escadLocation}/messages/mod.ts";
+import { createRendererServerMessenger } from "${escadLocation}/renderer/mod.ts";
+import { VfsArtifactStore } from "${escadLocation}/playground/VfsArtifactStore.ts";
 
 artifactManager.artifactStores.unshift(new VfsArtifactStore());
 
 createRendererServerMessenger(
   logConnection(serializeConnection(workerConnection(self as any))),
-  () => import(${
-      JSON.stringify(
-        `/vfs/${new URL(`/vfs/${instanceId}/main.ts`, import.meta.url)}`,
-      )
-    })
+  () => import(${JSON.stringify(`/${clientId}/transpiled/main.js`)})
   logger,
 ).requestRetry();
 `,
   );
 
-  let rendererUrl = new URL(`/vfs/${instanceId}/renderer.ts`, import.meta.url)
-    .toString();
-  await transpiler.transpile(rendererUrl, false);
+  await transpiler.transpile(location.origin + `/${clientId}/renderer.ts`);
 
-  return `/vfs/${rendererUrl}`;
+  return `/${clientId}/transpiled/renderer.js`;
 }

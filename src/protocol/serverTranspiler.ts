@@ -3,7 +3,8 @@ import { Messenger } from "../messages/mod.ts";
 export type ServerTranspilerShape = {/**/};
 
 export type TranspilerServerShape = {
-  transpile(path: string, force: boolean): Promise<void>;
+  transpile(url: string, force?: boolean): Promise<void>;
+  transpileAll(urls: string[], force?: boolean): Promise<void>;
 };
 
 export type ServerTranspilerEvents = {

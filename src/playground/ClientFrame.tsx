@@ -9,13 +9,13 @@ import {
 import { server } from "./server.ts";
 import React from "../deps/react.ts";
 import { observer } from "../deps/rhobo.ts";
-import { instanceId } from "./instanceId.ts";
+import { clientId, put } from "./swApi.ts";
 import { share } from "./code.ts";
 
-const clientUrl = `/vfs/${instanceId}/index.html`;
-await fetch(clientUrl, {
-  method: "PUT",
-  body: `
+const clientUrl = `/${clientId}/index.html`;
+await put(
+  clientUrl,
+  `
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -30,11 +30,11 @@ await fetch(clientUrl, {
     <svg id="L" style="width:300px" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2000 2000"><defs><style>.cls-1{fill:#252830;}.cls-1,.cls-2{stroke:#bdc3c7;stroke-linejoin:round;stroke-width:9px;}.cls-1,.cls-2,.cls-3,.cls-4,.cls-5,.cls-6,.cls-7,.cls-8{stroke-linecap:round;}.cls-2,.cls-3,.cls-4,.cls-5,.cls-6,.cls-7,.cls-8{fill:none;}.cls-3,.cls-6{stroke:#0984e3;}.cls-3,.cls-4,.cls-5,.cls-6,.cls-7,.cls-8{stroke-miterlimit:8.192;stroke-width:12px;}.cls-3,.cls-4,.cls-5{opacity:0.5;isolation:isolate;}.cls-4,.cls-7{stroke:#c0392b;}.cls-5,.cls-8{stroke:#2ecc71;}.cls-9{fill:#bdc3c7;}</style></defs><polygon class="cls-1" points="309.341 1398.352 136.738 502.955 998.471 204.741 1860.205 502.955 1687.602 1398.352 998.471 1995.525 309.341 1398.352"/><polygon class="cls-2" points="1000.919 1571.94 572.728 1247.693 506.018 714.752 1000.919 506.048 1495.819 714.752 1429.109 1247.693 1000.919 1571.94"/><polygon class="cls-2" points="1000.919 560.88 567.565 750.285 620.218 1220.277 1000.919 1500.883 1381.619 1220.277 1434.282 750.285 1000.919 560.88"/><line class="cls-2" x1="506.018" y1="714.752" x2="139.185" y2="502.955"/><line class="cls-2" x1="1000.919" y1="1571.94" x2="1000.919" y2="1995.525"/><line class="cls-2" x1="1495.819" y1="714.752" x2="1862.652" y2="502.955"/><line class="cls-3" x1="1000.919" y1="1001.197" x2="1000.919" y2="1362.589"/><line class="cls-4" x1="1001.535" y1="1000.123" x2="1314.521" y2="819.422"/><line class="cls-5" x1="1000.302" y1="1000.123" x2="687.326" y2="819.422"/><polyline class="cls-6" points="1000.919 1001.197 1000.919 560.88 1000.919 506.048 1000.919 204.741 1000.919 5.975"/><polyline class="cls-7" points="1001.535 1000.123 620.218 1220.277 572.728 1247.693 311.788 1398.352 140.08 1498.346"/><polyline class="cls-8" points="1000.302 1000.123 1381.619 1220.277 1429.109 1247.693 1690.049 1398.352 1861.767 1498.346"/><path class="cls-9" d="M1000.919,1000.482h0m0-11.938a11.938,11.938,0,1,0,11.937,11.938,11.934,11.934,0,0,0-11.937-11.938Z"/></svg>
     <div id="l"/>
   </div>
-  <script type="module" src="/vfs/${instanceId}/client.js"></script>
+  <script type="module" src="/${clientId}/client.js"></script>
 </body>
 </html>
   `.trim(),
-});
+);
 
 export const ClientFrame = observer(() => {
   const lastWindow = React.useRef<Window>();

@@ -13,6 +13,7 @@ import {
   ServerRendererShape,
 } from "../protocol/mod.ts";
 import { ServerTranspilerMessenger } from "../protocol/mod.ts";
+import { transformUrl } from "../transpiler/transformUrl.ts";
 
 export interface ServerHost {
   createRendererConnection: () => Connection<unknown>;
@@ -83,12 +84,10 @@ export const createServer = async ({
     lastClientPlugins = clientPlugins;
     let files = [coreClientUrl, ...clientPlugins.map(mapClientPlugins)];
     let content = files.map((x) =>
-      `import ${JSON.stringify(getTranspiledUrl(x))}`
+      `import ${JSON.stringify(getTranspiledUrl(transformUrl(x)))}`
     ).join("\n");
     await writeClientRoot(content);
-    for (let file of files) {
-      await transpiler.transpile(file, false);
-    }
+    await transpiler.transpileAll(files);
   }
 
   function createServerClientMessenger(connection: Connection<unknown>) {

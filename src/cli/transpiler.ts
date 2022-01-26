@@ -1,18 +1,15 @@
 import { parentWorkerConnection } from "../messages/mod.ts";
 import {
+  createTranspiler,
   createTranspilerServerMessenger,
-  TranspileContext,
 } from "../transpiler/mod.ts";
-import { getTranspiledUrl, replaceTsExtension } from "./serverTranspiler.ts";
 import * as path from "../deps/path.ts";
 
 const bundleDir = Deno.env.get("BUNDLE_DIR")!;
 
-export const getTranspiledLocation = (url: string) =>
-  replaceTsExtension(path.join(bundleDir, url));
+export const getTranspiledLocation = (url: string) => path.join(bundleDir, url);
 
-const transpileContext: TranspileContext = {
-  memo: new Map(),
+const transpiler = createTranspiler({
   cache: {
     has: async (url) => {
       try {
@@ -32,7 +29,7 @@ const transpileContext: TranspileContext = {
       await Deno.writeTextFile(loc, result);
     },
   },
-  transformUrl: getTranspiledUrl,
-};
+  transformUrl: (url) => "/" + url,
+});
 
-createTranspilerServerMessenger(transpileContext, parentWorkerConnection());
+createTranspilerServerMessenger(transpiler, parentWorkerConnection());

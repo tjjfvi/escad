@@ -7,7 +7,7 @@ import {
 } from "../core/mod.ts";
 import { iterateReader, readerFromStreamReader } from "../deps/streams.ts";
 import { join } from "../deps/path.ts";
-import { getVfs, putVfs } from "./vfs.ts";
+import { put } from "./swApi.ts";
 
 export class VfsArtifactStore implements ArtifactStore {
   async storeRaw(hash: Hash<unknown>, value: WrappedValue) {
@@ -16,16 +16,16 @@ export class VfsArtifactStore implements ArtifactStore {
     for await (let chunk of $wrappedValue.serialize(value)) {
       chunks.push(chunk);
     }
-    await putVfs(path, new Blob(chunks));
+    await put(path, new Blob(chunks));
   }
 
   async storeRef(loc: readonly unknown[], hash: Hash<unknown>) {
     const path = this.getPathRef(loc);
-    await putVfs(path, hash);
+    await put(path, hash);
   }
 
   async lookupRaw(hash: Hash<unknown>) {
-    const response = await getVfs(this.getPathRaw(hash));
+    const response = await fetch(this.getPathRaw(hash));
     if (!response.ok || !response.body) return null;
     return await $wrappedValue.deserializeAsync(
       iterateReader(readerFromStreamReader(response.body.getReader())),
@@ -33,18 +33,18 @@ export class VfsArtifactStore implements ArtifactStore {
   }
 
   async lookupRef(loc: readonly unknown[]) {
-    const response = await getVfs(this.getPathRef(loc));
+    const response = await fetch(this.getPathRef(loc));
     if (!response.ok) return null;
     return this.lookupRaw(await response.text() as Hash<unknown>);
   }
 
   private getPathRaw(hash: Hash<unknown>) {
-    return `artifacts/raw/` + hash;
+    return `/artifacts/raw/` + hash;
   }
 
   private getPathRef(loc: readonly unknown[]) {
     const path = join(
-      "artifacts",
+      "/artifacts",
       ...loc.map((x) => Id.isId(x) ? x.replace(/\//g, "-") : Hash.create(x)),
     );
     return path;

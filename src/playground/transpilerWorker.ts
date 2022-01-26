@@ -1,28 +1,33 @@
 import { brandConnection, parentWorkerConnection } from "../messages/mod.ts";
 import {
+  createTranspiler,
   createTranspilerServerMessenger,
-  TranspileContext,
 } from "../transpiler/mod.ts";
-import { putVfs } from "./vfs.ts";
+import { transformUrl } from "../transpiler/transformUrl.ts";
+import { getTranspiledUrl } from "./getTranspiledUrl.ts";
+import { put } from "./swApi.ts";
 
-const transpileContext: TranspileContext = {
-  memo: new Map(),
+const transpiler = createTranspiler({
   cache: {
     has: async (url) => {
-      if (url.startsWith(window.origin)) return false;
-      return (await fetch(`/vfs/${url}`)).ok;
+      return (await fetch(`/transpiled/${transformUrl(url)}`)).ok;
     },
-    set: putVfs,
+    set: async (url, content) => {
+      await put(
+        getTranspiledUrl(url).slice((location.origin + "/").length),
+        content,
+      );
+    },
   },
-  transformUrl: (url) =>
-    new URL(`/vfs/${url}`, window.location.toString()).toString(),
-};
+  transformUrl: getTranspiledUrl,
+});
 
 createTranspilerServerMessenger(
-  transpileContext,
+  transpiler,
   brandConnection(parentWorkerConnection(), "a"),
 );
+
 createTranspilerServerMessenger(
-  transpileContext,
+  transpiler,
   brandConnection(parentWorkerConnection(), "b"),
 );

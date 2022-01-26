@@ -1,11 +1,11 @@
-import { instanceId } from "./instanceId.ts";
+import { clientId } from "./swApi.ts";
 import { transpiler } from "./transpiler.ts";
-import { putVfs } from "./vfs.ts";
-import { lzstring } from "../deps/lzstring.ts";
+import { put } from "./swApi.ts";
+import { escadLocation } from "./escadLocation.ts";
 
 const defaultCode = `
-import escad from "${location.origin}/core/mod.ts";
-import "${location.origin}/builtins/register.ts";
+import escad from "${escadLocation}/core/mod.ts";
+import "${escadLocation}/builtins/register.ts";
 
 export default () =>
   escad
@@ -21,9 +21,9 @@ await setCode(code);
 export async function setCode(_code: string) {
   code = _code;
   localStorage.code = code;
-  await putVfs(`${instanceId}/main.ts`, code);
+  await put(`${clientId}/main.ts`, code);
   await transpiler.transpile(
-    new URL(`/vfs/${instanceId}/main.ts`, import.meta.url).toString(),
+    new URL(`/${clientId}/main.ts`, import.meta.url).toString(),
     true,
   );
 }

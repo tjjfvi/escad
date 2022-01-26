@@ -1,6 +1,6 @@
 /// <reference lib="dom"/>
 
-import "./initSw.ts";
+import "./swApi.ts";
 
 import "../client/stylus/index.styl";
 import "../client/stylus/fonts.css";
