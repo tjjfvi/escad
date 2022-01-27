@@ -132,7 +132,7 @@ async function updateVersion() {
   let response;
   try {
     response = await fetch("/version");
-  } catch (e) {
+  } catch {
     return;
   }
   if (!response.ok) return;

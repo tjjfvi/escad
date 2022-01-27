@@ -22,7 +22,7 @@ export const createServer = async ({
   port,
   ip = "::",
   loadFile,
-  loadDir,
+  // loadDir,
   dev,
 }: ServerOptions) => {
   const bundleDir = path.join(artifactsDir, "static/");
@@ -77,7 +77,7 @@ export const createServer = async ({
       await send(ctx, ctx.request.url.pathname, {
         root: bundleDir,
         contentTypes: new Proxy({}, {
-          get: (target, key) => {
+          get: (_target, key) => {
             if (key === ".styl") return contentType(".css");
             return contentType(key as string) ?? contentType(".js");
           },

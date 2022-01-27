@@ -1,6 +1,20 @@
 
 list:
-  just --summary
+  @just --list
+
+fmt:
+  deno fmt --config deno.jsonc
+
+fmt-check:
+  deno fmt --config deno.jsonc --check
+
+lint:
+  @just fmt
+  deno lint --config deno.jsonc
+
+lint-check:
+  @just fmt-check
+  deno lint --config deno.jsonc
 
 run-playground:
   deno run -A --unstable --no-check src/playground/devServer.ts

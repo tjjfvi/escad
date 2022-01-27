@@ -17,7 +17,7 @@ export type ScopedId<S extends string> = Id<string, S, string>;
 
 export const Id = {
   create: <P extends string, S extends string, N extends string>(
-    filepath: string,
+    _filepath: string,
     packageName: P,
     scope: S,
     name: N,

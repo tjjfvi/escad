@@ -96,7 +96,7 @@ let escadPackages = [...Deno.readDirSync(path.dirname(dirname))].map((x) =>
   x.name
 );
 
-app.use(async (ctx, next) => {
+app.use(async (ctx) => {
   if (escadPackages.includes(ctx.request.url.pathname.split("/")[1])) {
     await send(ctx, ctx.request.url.pathname, {
       root: path.dirname(dirname),
@@ -105,7 +105,7 @@ app.use(async (ctx, next) => {
     await send(ctx, ctx.request.url.pathname, {
       root: staticDir,
       contentTypes: new Proxy({}, {
-        get: (target, key) => {
+        get: (_target, key) => {
           if (key === ".styl") return contentType(".css");
           return contentType(key as string) ?? contentType(".js");
         },

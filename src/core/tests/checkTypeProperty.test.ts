@@ -1,8 +1,8 @@
 import { checkTypeProperty, Id } from "../mod.ts";
 
 describe("checkTypeProperty", () => {
-  const fnTrue = checkTypeProperty((v): v is unknown => true);
-  const fnFalse = checkTypeProperty((v): v is never => false);
+  const fnTrue = checkTypeProperty((_v): _v is unknown => true);
+  const fnFalse = checkTypeProperty((_v): _v is never => false);
 
   test("Doesn't match non-object", () => {
     expect(fnTrue(5)).toBe(false);

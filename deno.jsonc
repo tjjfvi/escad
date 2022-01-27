@@ -1,0 +1,30 @@
+{
+  "fmt": {
+    "files": {
+      "include": ["src/", "examples/"],
+      "exclude": ["src/cli/static/", "src/playground/static/"]
+    }
+  },
+  "lint": {
+    "files": {
+      "include": ["src/", "examples/"],
+      "exclude": ["src/cli/static/", "src/playground/static/"]
+    },
+    "rules": {
+      "exclude": [
+        "prefer-const",
+        "no-explicit-any",
+        "ban-types",
+        "require-yield",
+        "require-await",
+        "ban-ts-comment",
+        "no-namespace",
+        "no-empty-interface",
+        "no-window-prefix",
+        "no-inner-declarations",
+        "no-inferrable-types",
+        "no-empty-pattern"
+      ]
+    }
+  }
+}
