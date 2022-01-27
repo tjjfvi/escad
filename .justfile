@@ -5,12 +5,14 @@ list:
 run-playground:
   deno run -A --unstable --no-check src/playground/devServer.ts
 
-build-playground:
+build-escad-run:
   PROD=1 just run-playground
-  mkdir playground
-  mv src/playground/static/transpiled playground/
-  cp src/playground/static/* playground/
-  mv playground/transpiled/https://escad.dev/playground/mod.js playground/main.js
-  mv playground/transpiled/https://escad.dev/playground/sw.js playground/sw.js
-  cp -r src/* playground/
-  git rev-parse HEAD > playground/version
+  mkdir escad.run
+  cp -r src/playground/static/* escad.run/
+  mv escad.run/transpiled/https://escad.dev/playground/mod.js escad.run/main.js
+  mv escad.run/transpiled/https://escad.dev/playground/sw.js escad.run/sw.js
+  git rev-parse HEAD > escad.run/version
+
+build-escad-dev:
+  mkdir escad.dev
+  cp -r src/* logo examples escad.dev
