@@ -5,6 +5,7 @@ import {
   Id,
   WrappedValue,
 } from "../mod.ts";
+import { snapshot } from "../../testUtils/mod.ts";
 
 const createArtifactStoreMock = (
   name: string,
@@ -27,7 +28,7 @@ const createArtifactStoreMock = (
   },
 });
 
-test("", async () => {
+Deno.test("ArtifactManager", async () => {
   const artifactManager = new ArtifactManager();
   const output = [] as unknown[];
   const store0 = createArtifactStoreMock("store0", output, []);
@@ -54,5 +55,5 @@ test("", async () => {
   await artifactManager.lookupRef(artifacts, excludeStores);
   await artifactManager.storeRef(artifacts, artifacts[0]);
   await artifactManager.storeRef([], artifacts[1], excludeStores);
-  expect(output).toMatchSnapshot();
+  await snapshot(import.meta.url, "", output);
 });

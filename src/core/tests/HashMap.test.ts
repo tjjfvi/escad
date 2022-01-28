@@ -1,23 +1,24 @@
+import { assertEquals } from "../../testUtils/mod.ts";
 import { HashMap } from "../mod.ts";
 
-test("HashMap", () => {
+Deno.test("HashMap", () => {
   const map = new HashMap();
-  expect(map.has({ a: 1 })).toBe(false);
-  expect(map.get({ a: 1 })).toBe(undefined);
+  assertEquals(map.has({ a: 1 }), false);
+  assertEquals(map.get({ a: 1 }), undefined);
   map.set({ a: 1 }, 5);
-  expect(map.has({ a: 1 })).toBe(true);
-  expect(map.get({ a: 1 })).toBe(5);
+  assertEquals(map.has({ a: 1 }), true);
+  assertEquals(map.get({ a: 1 }), 5);
   map.clear();
-  expect(map.has({ a: 1 })).toBe(false);
-  expect(map.get({ a: 1 })).toBe(undefined);
+  assertEquals(map.has({ a: 1 }), false);
+  assertEquals(map.get({ a: 1 }), undefined);
   map.set({ a: 1 }, "x");
   map.set({ a: 1 }, "x");
   map.set({ b: 1 }, "42");
-  expect(map.get({ a: 1 })).toBe("x");
-  expect(map.get({ b: 1 })).toBe("42");
-  expect(map.size).toBe(2);
-  expect([...map.values()]).toEqual(["x", "42"]);
+  assertEquals(map.get({ a: 1 }), "x");
+  assertEquals(map.get({ b: 1 }), "42");
+  assertEquals(map.size, 2);
+  assertEquals([...map.values()], ["x", "42"]);
   map.delete({ b: 1 });
-  expect(map.get({ b: 1 })).toBe(undefined);
-  expect(map.size).toBe(1);
+  assertEquals(map.get({ b: 1 }), undefined);
+  assertEquals(map.size, 1);
 });

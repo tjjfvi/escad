@@ -1,64 +1,73 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[` 1`] = `
-Array [
-  Array [
+[
+  [
     "a->b",
-    Array [
+    [
+      "retry",
+    ],
+  ],
+  [
+    "b->a",
+    [
+      "retry",
+    ],
+  ],
+  [
+    "a->b",
+    [
       "call",
       1,
       "promiseResolve",
       -1,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "resolve",
       1,
       null,
       -1,
     ],
   ],
-  Array [
+  [
     "a->b",
-    Array [
+    [
       "call",
       2,
       "promiseResolve",
       0,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "resolve",
       2,
       null,
       0,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "call",
       1,
       "promiseResolve",
       1,
     ],
   ],
-  Array [
+  [
     "a->b",
-    Array [
+    [
       "resolve",
       1,
       null,
       1,
     ],
   ],
-  Array [
+  [
     "a->b",
-    Array [
+    [
       "call",
       3,
       "bouncingPromiseResolve",
@@ -66,9 +75,9 @@ Array [
       10,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "event",
       -1,
       "promiseResolveBounced",
@@ -76,9 +85,9 @@ Array [
       10,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "call",
       2,
       "bouncingPromiseResolve",
@@ -86,9 +95,9 @@ Array [
       9,
     ],
   ],
-  Array [
+  [
     "a->b",
-    Array [
+    [
       "event",
       -1,
       "promiseResolveBounced",
@@ -96,9 +105,9 @@ Array [
       9,
     ],
   ],
-  Array [
+  [
     "a->b",
-    Array [
+    [
       "call",
       4,
       "bouncingPromiseResolve",
@@ -106,9 +115,9 @@ Array [
       8,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "event",
       -1,
       "promiseResolveBounced",
@@ -116,9 +125,9 @@ Array [
       8,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "call",
       3,
       "bouncingPromiseResolve",
@@ -126,9 +135,9 @@ Array [
       7,
     ],
   ],
-  Array [
+  [
     "a->b",
-    Array [
+    [
       "event",
       -1,
       "promiseResolveBounced",
@@ -136,9 +145,9 @@ Array [
       7,
     ],
   ],
-  Array [
+  [
     "a->b",
-    Array [
+    [
       "call",
       5,
       "bouncingPromiseResolve",
@@ -146,9 +155,9 @@ Array [
       6,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "event",
       -1,
       "promiseResolveBounced",
@@ -156,9 +165,9 @@ Array [
       6,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "call",
       4,
       "bouncingPromiseResolve",
@@ -166,9 +175,9 @@ Array [
       5,
     ],
   ],
-  Array [
+  [
     "a->b",
-    Array [
+    [
       "event",
       -1,
       "promiseResolveBounced",
@@ -176,9 +185,9 @@ Array [
       5,
     ],
   ],
-  Array [
+  [
     "a->b",
-    Array [
+    [
       "call",
       6,
       "bouncingPromiseResolve",
@@ -186,9 +195,9 @@ Array [
       4,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "event",
       -1,
       "promiseResolveBounced",
@@ -196,9 +205,9 @@ Array [
       4,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "call",
       5,
       "bouncingPromiseResolve",
@@ -206,9 +215,9 @@ Array [
       3,
     ],
   ],
-  Array [
+  [
     "a->b",
-    Array [
+    [
       "event",
       -1,
       "promiseResolveBounced",
@@ -216,9 +225,9 @@ Array [
       3,
     ],
   ],
-  Array [
+  [
     "a->b",
-    Array [
+    [
       "call",
       7,
       "bouncingPromiseResolve",
@@ -226,9 +235,9 @@ Array [
       2,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "event",
       -1,
       "promiseResolveBounced",
@@ -236,9 +245,9 @@ Array [
       2,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "call",
       6,
       "bouncingPromiseResolve",
@@ -246,9 +255,9 @@ Array [
       1,
     ],
   ],
-  Array [
+  [
     "a->b",
-    Array [
+    [
       "event",
       -1,
       "promiseResolveBounced",
@@ -256,9 +265,9 @@ Array [
       1,
     ],
   ],
-  Array [
+  [
     "a->b",
-    Array [
+    [
       "call",
       8,
       "bouncingPromiseResolve",
@@ -266,147 +275,148 @@ Array [
       0,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "resolve",
       8,
       null,
       2,
     ],
   ],
-  Array [
+  [
     "a->b",
-    Array [
+    [
       "resolve",
       6,
       null,
       2,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "resolve",
       7,
       null,
       2,
     ],
   ],
-  Array [
+  [
     "a->b",
-    Array [
+    [
       "resolve",
       5,
       null,
       2,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "resolve",
       6,
       null,
       2,
     ],
   ],
-  Array [
+  [
     "a->b",
-    Array [
+    [
       "resolve",
       4,
       null,
       2,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "resolve",
       5,
       null,
       2,
     ],
   ],
-  Array [
+  [
     "a->b",
-    Array [
+    [
       "resolve",
       3,
       null,
       2,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "resolve",
       4,
       null,
       2,
     ],
   ],
-  Array [
+  [
     "a->b",
-    Array [
+    [
       "resolve",
       2,
       null,
       2,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "resolve",
       3,
       null,
       2,
     ],
   ],
-  Array [
+  [
     "b->a",
     1234,
   ],
-  Array [
+  [
     "b->a",
     null,
   ],
-  Array [
+  [
     "b->a",
-    Object {},
+    {},
   ],
-  Array [
+  [
     "b->a",
-    Array [],
+    [
+      ,
+    ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "missingno",
       1,
       2,
       3,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "call",
       null,
       1,
       1,
     ],
   ],
-  Array [
+  [
     "b->a",
-    Array [
+    [
       "call",
       1,
-      Object {},
+      {},
       1,
     ],
   ],
 ]
-`;

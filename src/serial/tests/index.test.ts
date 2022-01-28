@@ -24,110 +24,12 @@ import {
   Serializer,
 } from "../mod.ts";
 
-// eslint-disable-next-line max-len
-const lorem =
-  "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
-// eslint-disable-next-line max-len
-const cube = {
-  type: "Mesh",
-  faces: [{
-    type: "Face",
-    points: [{ type: "Vector3", x: 1, y: 1, z: 1 }, {
-      type: "Vector3",
-      x: -1,
-      y: 1,
-      z: 1,
-    }, { type: "Vector3", x: 1, y: -1, z: 1 }],
-  }, {
-    type: "Face",
-    points: [{ type: "Vector3", x: -1, y: -1, z: 1 }, {
-      type: "Vector3",
-      x: 1,
-      y: -1,
-      z: 1,
-    }, { type: "Vector3", x: -1, y: 1, z: 1 }],
-  }, {
-    type: "Face",
-    points: [{ type: "Vector3", x: 1, y: -1, z: -1 }, {
-      type: "Vector3",
-      x: -1,
-      y: 1,
-      z: -1,
-    }, { type: "Vector3", x: 1, y: 1, z: -1 }],
-  }, {
-    type: "Face",
-    points: [{ type: "Vector3", x: -1, y: 1, z: -1 }, {
-      type: "Vector3",
-      x: 1,
-      y: -1,
-      z: -1,
-    }, { type: "Vector3", x: -1, y: -1, z: -1 }],
-  }, {
-    type: "Face",
-    points: [{ type: "Vector3", x: 1, y: 1, z: -1 }, {
-      type: "Vector3",
-      x: -1,
-      y: 1,
-      z: 1,
-    }, { type: "Vector3", x: 1, y: 1, z: 1 }],
-  }, {
-    type: "Face",
-    points: [{ type: "Vector3", x: -1, y: 1, z: -1 }, {
-      type: "Vector3",
-      x: -1,
-      y: 1,
-      z: 1,
-    }, { type: "Vector3", x: 1, y: 1, z: -1 }],
-  }, {
-    type: "Face",
-    points: [{ type: "Vector3", x: 1, y: -1, z: -1 }, {
-      type: "Vector3",
-      x: 1,
-      y: -1,
-      z: 1,
-    }, { type: "Vector3", x: -1, y: -1, z: 1 }],
-  }, {
-    type: "Face",
-    points: [{ type: "Vector3", x: 1, y: -1, z: -1 }, {
-      type: "Vector3",
-      x: -1,
-      y: -1,
-      z: 1,
-    }, { type: "Vector3", x: -1, y: -1, z: -1 }],
-  }, {
-    type: "Face",
-    points: [{ type: "Vector3", x: -1, y: 1, z: 1 }, {
-      type: "Vector3",
-      x: -1,
-      y: -1,
-      z: -1,
-    }, { type: "Vector3", x: -1, y: -1, z: 1 }],
-  }, {
-    type: "Face",
-    points: [{ type: "Vector3", x: -1, y: 1, z: -1 }, {
-      type: "Vector3",
-      x: -1,
-      y: -1,
-      z: -1,
-    }, { type: "Vector3", x: -1, y: 1, z: 1 }],
-  }, {
-    type: "Face",
-    points: [{ type: "Vector3", x: 1, y: 1, z: -1 }, {
-      type: "Vector3",
-      x: 1,
-      y: 1,
-      z: 1,
-    }, { type: "Vector3", x: 1, y: -1, z: 1 }],
-  }, {
-    type: "Face",
-    points: [{ type: "Vector3", x: 1, y: -1, z: -1 }, {
-      type: "Vector3",
-      x: 1,
-      y: 1,
-      z: -1,
-    }, { type: "Vector3", x: 1, y: -1, z: 1 }],
-  }],
-};
+import { assertEquals, snapshot } from "../../testUtils/mod.ts";
+
+// deno-fmt-ignore
+const lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
+// deno-fmt-ignore
+const cube = { type: "Mesh", faces: [{ type: "Face", points: [{ type: "Vector3", x: 1, y: 1, z: 1 }, { type: "Vector3", x: -1, y: 1, z: 1, }, { type: "Vector3", x: 1, y: -1, z: 1 }], }, { type: "Face", points: [{ type: "Vector3", x: -1, y: -1, z: 1 }, { type: "Vector3", x: 1, y: -1, z: 1, }, { type: "Vector3", x: -1, y: 1, z: 1 }], }, { type: "Face", points: [{ type: "Vector3", x: 1, y: -1, z: -1 }, { type: "Vector3", x: -1, y: 1, z: -1, }, { type: "Vector3", x: 1, y: 1, z: -1 }], }, { type: "Face", points: [{ type: "Vector3", x: -1, y: 1, z: -1 }, { type: "Vector3", x: 1, y: -1, z: -1, }, { type: "Vector3", x: -1, y: -1, z: -1 }], }, { type: "Face", points: [{ type: "Vector3", x: 1, y: 1, z: -1 }, { type: "Vector3", x: -1, y: 1, z: 1, }, { type: "Vector3", x: 1, y: 1, z: 1 }], }, { type: "Face", points: [{ type: "Vector3", x: -1, y: 1, z: -1 }, { type: "Vector3", x: -1, y: 1, z: 1, }, { type: "Vector3", x: 1, y: 1, z: -1 }], }, { type: "Face", points: [{ type: "Vector3", x: 1, y: -1, z: -1 }, { type: "Vector3", x: 1, y: -1, z: 1, }, { type: "Vector3", x: -1, y: -1, z: 1 }], }, { type: "Face", points: [{ type: "Vector3", x: 1, y: -1, z: -1 }, { type: "Vector3", x: -1, y: -1, z: 1, }, { type: "Vector3", x: -1, y: -1, z: -1 }], }, { type: "Face", points: [{ type: "Vector3", x: -1, y: 1, z: 1 }, { type: "Vector3", x: -1, y: -1, z: -1, }, { type: "Vector3", x: -1, y: -1, z: 1 }], }, { type: "Face", points: [{ type: "Vector3", x: -1, y: 1, z: -1 }, { type: "Vector3", x: -1, y: -1, z: -1, }, { type: "Vector3", x: -1, y: 1, z: 1 }], }, { type: "Face", points: [{ type: "Vector3", x: 1, y: 1, z: -1 }, { type: "Vector3", x: 1, y: 1, z: 1, }, { type: "Vector3", x: 1, y: -1, z: 1 }], }, { type: "Face", points: [{ type: "Vector3", x: 1, y: -1, z: -1 }, { type: "Vector3", x: 1, y: 1, z: -1, }, { type: "Vector3", x: 1, y: -1, z: 1 }], }], };
 
 interface Vector3 {
   type: "Vector3";
@@ -135,7 +37,6 @@ interface Vector3 {
   y: number;
   z: number;
 }
-
 interface Face {
   type: "Face";
   points: [Vector3, Vector3, Vector3];
@@ -177,7 +78,7 @@ registerType("Vector3", $vector3);
 registerType("Face", $face);
 registerType("Mesh", $mesh);
 
-describe.each([
+const serialRoundTripTestData: [string, Serializer<any>, any[]][] = [
   ["$uint8", $uint8, [0, 1, 255]],
   ["$uint16le", $uint16le, [0, 1, 255, 65535]],
   ["$uint16be", $uint16be, [0, 1, 255, 65535]],
@@ -322,35 +223,43 @@ describe.each([
       cube,
     },
   ]],
-])("%s", (_name, serializer, values: any[]) => {
-  test.each(values.map((x) => [x] as const))("%s", (value) => {
-    testSerializer<any>(serializer, value);
-  });
-});
+];
 
-function testSerializer<T>(serializer: Serializer<T>, value: T) {
-  const buffers = [...serializer.serialize(value, { chunkSize: 16 })];
-  let i = 0;
-  let str = "";
-  for (const buffer of buffers) {
-    for (const num of buffer) {
-      i++;
-      str += (num < 16 ? "0" : "") + num.toString(16) +
-        (i % 16 === 0 ? "\n " : " ");
-    }
-  }
-  expect(str.trimEnd()).toMatchSnapshot();
-  const deserialized = serializer.deserialize((function* () {
-    for (const buffer of buffers) {
-      const chunkSize = Math.floor(Math.random() * 16) + 16;
-      for (let i = 0; i < buffer.length; i += chunkSize) {
-        yield new Uint8Array(
-          buffer.buffer,
-          buffer.byteOffset + i,
-          Math.min(chunkSize, buffer.byteLength - i),
-        );
+for (const [name, serializer, values] of serialRoundTripTestData) {
+  Deno.test(name, async () => {
+    const data = new Map<any, any>();
+    for (const value of values) {
+      const buffers = [...serializer.serialize(value, { chunkSize: 16 })];
+      let i = 0;
+      let str = "";
+      for (const buffer of buffers) {
+        for (const num of buffer) {
+          i++;
+          str += num.toString(16).padStart(2, "0") +
+            (i % 16 === 0 ? "\n" : " ");
+        }
       }
+      data.set(value, str.split("\n"));
+      const deserialized = serializer.deserialize((function* () {
+        for (const buffer of buffers) {
+          const chunkSize = Math.floor(Math.random() * 16) + 16;
+          for (let i = 0; i < buffer.length; i += chunkSize) {
+            yield new Uint8Array(
+              buffer.buffer,
+              buffer.byteOffset + i,
+              Math.min(chunkSize, buffer.byteLength - i),
+            );
+          }
+        }
+      })());
+      assertEquals(deserialized, value);
     }
-  })());
-  expect({ value: deserialized }).toEqual({ value });
+    await snapshot(import.meta.url, name, data);
+  });
 }
+
+// )("%s", (_name, serializer, values: any[]) => {
+//   test.each(values.map((x) => [x] as const))("%s", (value) => {
+//     testSerializer<any>(serializer, value);
+//   });
+// });

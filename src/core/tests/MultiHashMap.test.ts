@@ -1,24 +1,25 @@
+import { assertEquals } from "../../testUtils/mod.ts";
 import { MultiHashMap } from "../mod.ts";
 
-test("MultiHashMap", () => {
+Deno.test("MultiHashMap", () => {
   const map = new MultiHashMap();
-  expect(map.hasAny({ a: 1 })).toBe(false);
+  assertEquals(map.hasAny({ a: 1 }), false);
   map.add({ a: 1 }, 5);
-  expect(map.has({ a: 1 }, 5)).toBe(true);
-  expect(map.has({ a: 1 }, 7)).toBe(false);
-  expect(map.hasAny({ a: 1 })).toBe(true);
-  expect([...map.getAll({ a: 1 })]).toEqual([5]);
+  assertEquals(map.has({ a: 1 }, 5), true);
+  assertEquals(map.has({ a: 1 }, 7), false);
+  assertEquals(map.hasAny({ a: 1 }), true);
+  assertEquals([...map.getAll({ a: 1 })], [5]);
   map.add({ a: 1 }, 7);
-  expect([...map.getAll({ a: 1 })]).toEqual([5, 7]);
+  assertEquals([...map.getAll({ a: 1 })], [5, 7]);
   map.delete({ a: 1 }, 7);
-  expect([...map.getAll({ a: 1 })]).toEqual([5]);
+  assertEquals([...map.getAll({ a: 1 })], [5]);
   map.deleteAll({ a: 1 });
-  expect([...map.getAll({ a: 1 })]).toEqual([]);
+  assertEquals([...map.getAll({ a: 1 })], []);
   map.add({ a: 1 }, 10);
   map.add({ b: 1 }, 12);
   map.add({ b: 1 }, 12);
   map.add({ b: 1 }, 13);
-  expect([...map.values()]).toEqual([10, 12, 13]);
+  assertEquals([...map.values()], [10, 12, 13]);
   map.clear();
-  expect([...map.values()]).toEqual([]);
+  assertEquals([...map.values()], []);
 });

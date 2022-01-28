@@ -1,17 +1,20 @@
+import { snapshot, toError } from "../../testUtils/mod.ts";
 import { Id } from "../mod.ts";
 
-describe("Id.create", () => {
-  test("@escad/core/Test/test0", () => {
-    expect(Id.create(import.meta.url, "@escad/core", "Test", "test0"))
-      .toMatchSnapshot();
+Deno.test("Id.create", async (t) => {
+  await t.step("@escad/core/Test/test0", async () => {
+    await snapshot(
+      import.meta.url,
+      "idValue",
+      Id.create(import.meta.url, "@escad/core", "Test", "test0"),
+    );
   });
-  test("Throws on duplicate", () => {
-    expect(() => Id.create(import.meta.url, "@escad/core", "Test", "test0"))
-      .toThrowErrorMatchingSnapshot();
-  });
-  test("Throws on incorrect package name", () => {
-    expect(() =>
-      Id.create(import.meta.url, "@escad/incorrect", "Test", "test0")
-    ).toThrowErrorMatchingSnapshot();
+  await t.step("Throws on duplicate", async () => {
+    await snapshot(
+      import.meta.url,
+      "duplicateError",
+      toError(() => Id.create(import.meta.url, "@escad/core", "Test", "test0"))
+        .message,
+    );
   });
 });

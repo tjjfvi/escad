@@ -1,0 +1,13 @@
+{
+  elementTypes: [
+    {
+      id: "@escad/core/LeafProduct/ProductA",
+      type: "LeafProductType",
+    },
+    {
+      id: "@escad/core/LeafProduct/ProductB",
+      type: "LeafProductType",
+    },
+  ],
+  type: "TupleProductType",
+}

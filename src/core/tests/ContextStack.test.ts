@@ -1,24 +1,25 @@
+import { assertEquals } from "../../testUtils/mod.ts";
 import { ContextStack, Id } from "../mod.ts";
 
 const idA = Id.create(import.meta.url, "@escad/core", "Test", "ContextA");
 const idB = Id.create(import.meta.url, "@escad/core", "Test", "ContextB");
 
-test("", () => {
+Deno.test("ContextStack", () => {
   const stack = new ContextStack();
 
-  expect(stack.get(idA)).toBe(undefined);
-  expect(stack.get(idB)).toBe(undefined);
+  assertEquals(stack.get(idA), undefined);
+  assertEquals(stack.get(idB), undefined);
   stack.set(idA, "A0");
-  expect(stack.get(idA)).toBe("A0");
-  expect(stack.get(idB)).toBe(undefined);
+  assertEquals(stack.get(idA), "A0");
+  assertEquals(stack.get(idB), undefined);
   stack.wrap(() => {
-    expect(stack.get(idA)).toBe("A0");
-    expect(stack.get(idB)).toBe(undefined);
+    assertEquals(stack.get(idA), "A0");
+    assertEquals(stack.get(idB), undefined);
     stack.set(idA, "A1");
     stack.set(idB, "B0");
-    expect(stack.get(idA)).toBe("A1");
-    expect(stack.get(idB)).toBe("B0");
+    assertEquals(stack.get(idA), "A1");
+    assertEquals(stack.get(idB), "B0");
   });
-  expect(stack.get(idA)).toBe("A0");
-  expect(stack.get(idB)).toBe(undefined);
+  assertEquals(stack.get(idA), "A0");
+  assertEquals(stack.get(idB), undefined);
 });

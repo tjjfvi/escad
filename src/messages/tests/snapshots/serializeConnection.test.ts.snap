@@ -1,9 +1,6 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[` 1`] = `
-Array [
-  Array [
-    Uint8Array [
+[
+  [
+    Uint8Array(18) [
       6,
       0,
       0,
@@ -24,8 +21,8 @@ Array [
       0,
     ],
   ],
-  Array [
-    Uint8Array [
+  [
+    Uint8Array(108) [
       6,
       0,
       0,
@@ -137,4 +134,3 @@ Array [
     ],
   ],
 ]
-`;

@@ -1,0 +1,11 @@
+{
+  children: [
+    {
+      type: "@escad/core/LeafProduct/ProductA",
+    },
+    {
+      type: "@escad/core/LeafProduct/ProductB",
+    },
+  ],
+  type: "TupleProduct",
+}

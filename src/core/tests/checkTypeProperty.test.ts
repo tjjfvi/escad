@@ -1,52 +1,53 @@
+import { assertEquals } from "../../testUtils/mod.ts";
 import { checkTypeProperty, Id } from "../mod.ts";
 
-describe("checkTypeProperty", () => {
+Deno.test("checkTypeProperty", async (t) => {
   const fnTrue = checkTypeProperty((_v): _v is unknown => true);
   const fnFalse = checkTypeProperty((_v): _v is never => false);
 
-  test("Doesn't match non-object", () => {
-    expect(fnTrue(5)).toBe(false);
-    expect(fnTrue("string")).toBe(false);
-    expect(fnTrue(undefined)).toBe(false);
+  await t.step("Doesn't match non-object", () => {
+    assertEquals(fnTrue(5), false);
+    assertEquals(fnTrue("string"), false);
+    assertEquals(fnTrue(undefined), false);
   });
 
-  test("Doesn't match null", () => {
-    expect(fnTrue(null)).toBe(false);
+  await t.step("Doesn't match null", () => {
+    assertEquals(fnTrue(null), false);
   });
 
-  test("Doesn't match missing `type` property", () => {
-    expect(fnTrue({})).toBe(false);
-    expect(fnTrue(() => {})).toBe(false);
+  await t.step("Doesn't match missing `type` property", () => {
+    assertEquals(fnTrue({}), false);
+    assertEquals(fnTrue(() => {}), false);
   });
 
-  test("Matches valid `type` property", () => {
-    expect(fnTrue({ type: "whatever" })).toBe(true);
-    expect(fnTrue(Object.assign(() => {}, { type: "whatever" }))).toBe(true);
+  await t.step("Matches valid `type` property", () => {
+    assertEquals(fnTrue({ type: "whatever" }), true);
+    assertEquals(fnTrue(Object.assign(() => {}, { type: "whatever" })), true);
   });
 
-  test("Doesn't match invalid `type` property", () => {
-    expect(fnFalse({ type: "whatever" })).toBe(false);
-    expect(fnFalse(Object.assign(() => {}, { type: "whatever" }))).toBe(false);
+  await t.step("Doesn't match invalid `type` property", () => {
+    assertEquals(fnFalse({ type: "whatever" }), false);
+    assertEquals(fnFalse(Object.assign(() => {}, { type: "whatever" })), false);
   });
 });
 
-test("checkTypeProperty.string", () => {
-  expect(checkTypeProperty.string("test")({ type: "test" })).toBe(true);
-  expect(checkTypeProperty.string("test")({ type: "wrong" })).toBe(false);
+Deno.test("checkTypeProperty.string", () => {
+  assertEquals(checkTypeProperty.string("test")({ type: "test" }), true);
+  assertEquals(checkTypeProperty.string("test")({ type: "wrong" }), false);
 });
 
-test("checkTypeProperty.id", () => {
+Deno.test("checkTypeProperty.id", () => {
   const testId = Id.create(import.meta.url, "@escad/core", "Test", "ctpi");
   const wrongId = Id.create(import.meta.url, "@escad/core", "Test", "ctpiw");
-  expect(checkTypeProperty.id(testId)({ type: testId })).toBe(true);
-  expect(checkTypeProperty.id(testId)({ type: "wrong" })).toBe(false);
-  expect(checkTypeProperty.id(testId)({ type: wrongId })).toBe(false);
+  assertEquals(checkTypeProperty.id(testId)({ type: testId }), true);
+  assertEquals(checkTypeProperty.id(testId)({ type: "wrong" }), false);
+  assertEquals(checkTypeProperty.id(testId)({ type: wrongId }), false);
 });
 
-test("checkTypeProperty.idScope", () => {
+Deno.test("checkTypeProperty.idScope", () => {
   const testId = Id.create(import.meta.url, "@escad/core", "Test", "ctpis");
   const wrongId = Id.create(import.meta.url, "@escad/core", "Wrong", "ctpis");
-  expect(checkTypeProperty.idScope("Test")({ type: testId })).toBe(true);
-  expect(checkTypeProperty.idScope("Test")({ type: "wrong" })).toBe(false);
-  expect(checkTypeProperty.idScope("Test")({ type: wrongId })).toBe(false);
+  assertEquals(checkTypeProperty.idScope("Test")({ type: testId }), true);
+  assertEquals(checkTypeProperty.idScope("Test")({ type: "wrong" }), false);
+  assertEquals(checkTypeProperty.idScope("Test")({ type: wrongId }), false);
 });

@@ -1,3 +1,4 @@
+import { assertEquals, snapshot } from "../../testUtils/mod.ts";
 import {
   ArrayProduct,
   ArrayProductType,
@@ -54,21 +55,29 @@ const ProductC = {
   ...createLeafProductUtils<ProductC, "ProductC">(productCId, "ProductC"),
 };
 
-describe("createLeafProductUtils", () => {
-  test("Consistent keys", () => {
-    expect(Object.keys(ProductA)).toMatchSnapshot();
+Deno.test("createLeafProductUtils", async (t) => {
+  await t.step("Consistent keys", async () => {
+    await snapshot(
+      import.meta.url,
+      "createLeafProductUtils/keys",
+      Object.keys(ProductA),
+    );
   });
-  test(".productType", () => {
-    expect(ProductA.productType).toMatchSnapshot();
+  await t.step(".productType", async () => {
+    await snapshot(
+      import.meta.url,
+      "createLeafProductUtils/productType",
+      ProductA.productType,
+    );
   });
-  describe(".isProductA", () => {
+  await t.step(".isProductA", async (t) => {
     const productA = ProductA.create();
     const productB = ProductB.create();
-    test("Matches productA", () => {
-      expect(ProductA.isProductA(productA)).toEqual(true);
+    await t.step("Matches productA", () => {
+      assertEquals(ProductA.isProductA(productA), true);
     });
-    test("Doesn't match productB", () => {
-      expect(ProductA.isProductA(productB)).toEqual(false);
+    await t.step("Doesn't match productB", () => {
+      assertEquals(ProductA.isProductA(productB), false);
     });
     // Type guard
     const product: ProductA | null = ProductA.isProductA(productB)
@@ -90,71 +99,64 @@ const createProduct = () =>
     ]),
     UnknownProduct.create(ProductB.create()),
   ]);
-
-// eslint-disable-next-line func-call-spacing
-describe.each<readonly [string, () => Product]>(
+const productTests: [string, () => Product][] = [
+  ["ProductA", () => ProductA.create()],
+  ["TupleProduct<[]>", () => TupleProduct.create([])],
   [
-    ["ProductA", () => ProductA.create()],
-    ["TupleProduct<[]>", () => TupleProduct.create([])],
-    [
-      "TupleProduct<[ProductA, ProductB]>",
-      () => TupleProduct.create([ProductA.create(), ProductB.create()]),
-    ],
-    [
-      "ArrayProduct<ProductA>",
-      () => ArrayProduct.create([ProductA.create(), ProductA.create()]),
-    ],
-    ["UnknownProduct", () => UnknownProduct.create(ProductB.create())],
-    ["Complex", () => createProduct()],
-  ] as const,
-)("%s", (_, createProduct) => {
-  test(".create", () => {
-    expect(createProduct()).toMatchSnapshot();
-  });
-  test("Product.isProduct", () => {
-    expect(Product.isProduct(createProduct())).toBe(true);
-  });
-  test("Product.getProductType", () => {
-    expect(Product.getProductType(createProduct())).toMatchSnapshot();
-  });
-  test("Product.isProduct with correct ProductType", () => {
-    expect(
-      Product.isProduct(
-        createProduct(),
+    "TupleProduct<[ProductA, ProductB]>",
+    () => TupleProduct.create([ProductA.create(), ProductB.create()]),
+  ],
+  [
+    "ArrayProduct<ProductA>",
+    () => ArrayProduct.create([ProductA.create(), ProductA.create()]),
+  ],
+  ["UnknownProduct", () => UnknownProduct.create(ProductB.create())],
+  ["Complex", () => createProduct()],
+];
+
+const altProductTypes: [string, ProductType][] = [
+  ["ProductC", ProductC.productType],
+  ["ArrayProduct<ProductC>", ArrayProductType.create(ProductC)],
+  [
+    "TupleProduct<[ProductA, ProductC]>",
+    TupleProductType.create([ProductA, ProductC]),
+  ],
+];
+
+for (const [name, createProduct] of productTests) {
+  Deno.test(name, async (t) => {
+    await t.step(".create", async () => {
+      await snapshot(import.meta.url, `${name}/product`, createProduct());
+    });
+    await t.step("Product.isProduct", () => {
+      assertEquals(Product.isProduct(createProduct()), true);
+    });
+    await t.step("Product.getProductType", async () => {
+      await snapshot(
+        import.meta.url,
+        `${name}/producType`,
         Product.getProductType(createProduct()),
-      ),
-    ).toBe(true);
-  });
-  describe("Product.isProduct with wrong ProductType", () => {
-    test.each(
-      [
-        ["ProductC", ProductC],
-        ["ArrayProduct<ProductC>", ArrayProductType.create(ProductC)],
-        [
-          "TupleProduct<[ProductA, ProductC]>",
-          TupleProductType.create([ProductA, ProductC]),
-        ],
-      ] as const,
-    )("%s", (_, productType) => {
-      expect(
+      );
+    });
+    await t.step("Product.isProduct with correct ProductType", () => {
+      assertEquals(
         Product.isProduct(
           createProduct(),
-          ProductType.fromProductTypeish<Product>(productType),
+          Product.getProductType(createProduct()),
         ),
-      ).toBe(false);
+        true,
+      );
+    });
+    await t.step("Product.isProduct with wrong ProductType", () => {
+      for (const [_name, productType] of altProductTypes) {
+        assertEquals(
+          Product.isProduct(
+            createProduct(),
+            ProductType.fromProductTypeish<Product>(productType),
+          ),
+          false,
+        );
+      }
     });
   });
-});
-
-describe("Product.getProductType", () => {
-  test("Throw on invalid product", () => {
-    expect(() => Product.getProductType(null as never))
-      .toThrowErrorMatchingSnapshot();
-  });
-});
-
-describe("ArrayProduct.create", () => {
-  test("Throws on []", () => {
-    expect(() => ArrayProduct.create([])).toThrowErrorMatchingSnapshot();
-  });
-});
+}

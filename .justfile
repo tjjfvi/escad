@@ -24,6 +24,12 @@ check-force:
   @just lint-check
   deno cache --config deno.jsonc --no-check=remote --reload src/*/mod.ts
 
+test:
+  deno test -A --unstable
+
+test-update:
+  WRITE_SNAPSHOTS=1 deno test -A --unstable
+
 run-playground:
   deno run -A --unstable --no-check src/playground/devServer.ts
 

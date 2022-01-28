@@ -13,3 +13,5 @@ jobs:
       - uses: extractions/setup-just@v1
 
       - run: just check
+
+      - run: just test

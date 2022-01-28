@@ -1,3 +1,4 @@
+import { assertEquals, mock, snapshot } from "../../testUtils/mod.ts";
 import {
   Connection,
   createConnectionPair,
@@ -33,20 +34,20 @@ const createTestMessenger = (connection: Connection<unknown>) => {
   return messenger;
 };
 
-test("", async () => {
+Deno.test("createMessenger", async () => {
   const [a, b] = createConnectionPair();
-  const fn = jest.fn();
+  const fn = mock();
   a.onMsg((x) => fn("b->a", x));
   b.onMsg((x) => fn("a->b", x));
   const msgrA = createTestMessenger(a);
   const msgrB = createTestMessenger(b);
-  expect(await msgrA.promiseResolve(-1)).toBe(-1);
-  expect(await msgrA.promiseResolve(0)).toBe(0);
-  expect(await msgrB.promiseResolve(1)).toBe(1);
-  const eventFn1 = jest.fn();
-  const eventFn2 = jest.fn();
-  const eventFn3 = jest.fn();
-  const eventFn4 = jest.fn();
+  assertEquals(await msgrA.promiseResolve(-1), -1);
+  assertEquals(await msgrA.promiseResolve(0), 0);
+  assertEquals(await msgrB.promiseResolve(1), 1);
+  const eventFn1 = mock();
+  const eventFn2 = mock();
+  const eventFn3 = mock();
+  const eventFn4 = mock();
   msgrA.on("promiseResolveBounced", eventFn1);
   msgrB.on("promiseResolveBounced", eventFn2);
   msgrB.once("promiseResolveBounced", eventFn3);
@@ -55,12 +56,18 @@ test("", async () => {
       eventFn4(event);
     }
   })();
-  expect(msgrA.once("promiseResolveBounced")).resolves.toStrictEqual([2, 10]);
-  expect(await msgrA.bouncingPromiseResolve(2, 10)).toBe(2);
-  expect(eventFn1).toHaveBeenCalledTimes(10);
-  expect(eventFn2).toHaveBeenCalledTimes(10);
-  expect(eventFn3).toHaveBeenCalledTimes(1);
-  expect(eventFn4).toHaveBeenCalledTimes(10);
+  let p = msgrA.once("promiseResolveBounced").then((x) =>
+    assertEquals(x, [
+      2,
+      10,
+    ])
+  );
+  assertEquals(await msgrA.bouncingPromiseResolve(2, 10), 2);
+  await p;
+  assertEquals(eventFn1.calls.length, 10);
+  assertEquals(eventFn2.calls.length, 10);
+  assertEquals(eventFn3.calls.length, 1);
+  assertEquals(eventFn4.calls.length, 10);
   b.send(1234);
   b.send(null);
   b.send({});
@@ -68,5 +75,5 @@ test("", async () => {
   b.send(["missingno", 1, 2, 3]);
   b.send(["call", null, 1, 1]);
   b.send(["call", 1, {}, 1]);
-  expect(fn.mock.calls).toMatchSnapshot();
+  await snapshot(import.meta.url, "", fn.calls);
 });

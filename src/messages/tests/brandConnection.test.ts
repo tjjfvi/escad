@@ -1,9 +1,10 @@
+import { assertEquals, mock } from "../../testUtils/mod.ts";
 import { brandConnection, createConnectionPair } from "../mod.ts";
 
-test("", () => {
+Deno.test("brandConnection", () => {
   const [_a, b] = createConnectionPair();
   const a = brandConnection(_a, "testBrand");
-  const fn = jest.fn();
+  const fn = mock();
   a.onMsg(fn);
   b.onMsg(fn);
   a.send(0);
@@ -14,5 +15,5 @@ test("", () => {
   b.send({ value: -1 });
   b.send({ brand: "wrong", value: -1 });
   b.send({ brand: "testBrand", value: 1 });
-  expect(fn.mock.calls).toEqual([[{ brand: "testBrand", value: 0 }], [1]]);
+  assertEquals(fn.calls, [[{ brand: "testBrand", value: 0 }], [1]]);
 });

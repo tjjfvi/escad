@@ -1,11 +1,12 @@
+import { mock, snapshot } from "../../testUtils/mod.ts";
 import { createConnectionPair } from "../mod.ts";
 
-test("", () => {
+Deno.test("createConnectionPair", async () => {
   const [a, b] = createConnectionPair<number>();
-  const fn0 = jest.fn();
-  const fn1 = jest.fn();
-  const fn2 = jest.fn();
-  const fn3 = jest.fn();
+  const fn0 = mock();
+  const fn1 = mock();
+  const fn2 = mock();
+  const fn3 = mock();
   a.send(-1);
   const offMsgA = a.onMsg(fn0);
   a.send(-1);
@@ -22,5 +23,9 @@ test("", () => {
   b.send(5);
   offMsgB();
   a.send(6);
-  expect([fn0, fn1, fn2, fn3].map((f) => f.mock.calls)).toMatchSnapshot();
+  await snapshot(
+    import.meta.url,
+    "",
+    [fn0, fn1, fn2, fn3].map((f) => f.calls),
+  );
 });
