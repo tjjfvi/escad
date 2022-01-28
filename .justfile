@@ -16,6 +16,14 @@ lint-check:
   @just fmt-check
   deno lint --config deno.jsonc
 
+check:
+  @just lint-check
+  deno cache --config deno.jsonc --no-check=remote src/*/mod.ts | cat
+
+check-force:
+  @just lint-check
+  deno cache --config deno.jsonc --no-check=remote --reload src/*/mod.ts
+
 run-playground:
   deno run -A --unstable --no-check src/playground/devServer.ts
 
