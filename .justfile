@@ -44,3 +44,6 @@ build-escad-run:
 build-escad-dev:
   mkdir escad.dev
   cp -r src/* logo examples escad.dev
+
+serve file:
+  deno run -A --unstable --no-check src/cli/start.ts {{file}}

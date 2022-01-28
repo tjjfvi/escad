@@ -3,7 +3,7 @@ import * as path from "../deps/path.ts";
 
 createServer({
   artifactsDir: path.join(Deno.cwd(), "artifacts"),
-  port: 8080,
+  port: 8046,
   ip: "::",
   loadFile: "file://" + path.join(Deno.cwd(), Deno.args[0]),
   loadDir: null!,
