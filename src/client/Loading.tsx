@@ -1,4 +1,4 @@
-import "./stylus/Loading.styl";
+// @style "./stylus/Loading.styl"
 import React from "../deps/react.ts";
 
 export const Loading = (

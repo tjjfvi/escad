@@ -1,4 +1,4 @@
-import "./stylus/LogsPane.styl";
+// @style "./stylus/LogsPane.styl"
 import { IdView } from "./IdView.tsx";
 import { observer, useFromProm } from "../deps/rhobo.ts";
 import React from "../deps/react.ts";

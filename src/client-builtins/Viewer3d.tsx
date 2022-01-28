@@ -1,6 +1,6 @@
 /* eslint-disable react/prop-types */
 
-import "./stylus/Viewer3d.styl";
+// @style "./stylus/Viewer3d.styl"
 
 import React from "../deps/react.ts";
 import { Viewer, ViewerInput } from "../client/mod.ts";

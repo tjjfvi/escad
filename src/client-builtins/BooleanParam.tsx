@@ -1,4 +1,4 @@
-import "./stylus/BooleanParam.styl";
+// @style "./stylus/BooleanParam.styl"
 import { BooleanParam } from "../builtins/mod.ts";
 import React from "../deps/react.ts";
 import { observer } from "../deps/rhobo.ts";

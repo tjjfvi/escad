@@ -1,4 +1,4 @@
-import "./stylus/RawViewer.styl";
+// @style "./stylus/RawViewer.styl"
 import { Hierarchy } from "../core/mod.ts";
 import { UnknownProduct, UnknownProductType } from "../core/mod.ts";
 import React from "../deps/react.ts";

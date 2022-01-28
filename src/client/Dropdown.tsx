@@ -1,5 +1,6 @@
 /// <reference lib="dom"/>
-import "./stylus/Dropdown.styl";
+
+// @style "./stylus/Dropdown.styl"
 import React from "../deps/react.ts";
 import { Observable, observer } from "../deps/rhobo.ts";
 

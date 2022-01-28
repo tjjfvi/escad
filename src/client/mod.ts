@@ -1,5 +1,5 @@
-import "./stylus/fonts.css";
-import "./stylus/index.styl";
+// @style "./stylus/fonts.css"
+// @style "./stylus/index.styl"
 
 // @create-index {"mode":"*"}
 

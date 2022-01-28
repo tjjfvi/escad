@@ -1,4 +1,4 @@
-import "./stylus/ObjectParam.styl";
+// @style "./stylus/ObjectParam.styl"
 import { ObjectParam, Parameter } from "../core/mod.ts";
 import React from "../deps/react.ts";
 import { observer } from "../deps/rhobo.ts";

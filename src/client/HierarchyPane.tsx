@@ -1,4 +1,4 @@
-import "./stylus/Hierarchy.styl";
+// @style "./stylus/Hierarchy.styl"
 import React from "../deps/react.ts";
 import { observer, useObservable } from "../deps/rhobo.ts";
 import { ClientState } from "./ClientState.ts";

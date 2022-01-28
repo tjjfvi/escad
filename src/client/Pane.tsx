@@ -1,4 +1,4 @@
-import "./stylus/Pane.styl";
+// @style "./stylus/Pane.styl"
 import React from "../deps/react.ts";
 import { useObservable } from "../deps/rhobo.ts";
 

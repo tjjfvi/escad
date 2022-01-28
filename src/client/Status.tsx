@@ -1,4 +1,4 @@
-import "./stylus/Status.styl";
+// @style "./stylus/Status.styl"
 import React from "../deps/react.ts";
 import { observer, Readable } from "../deps/rhobo.ts";
 import { ClientState } from "./ClientState.ts";

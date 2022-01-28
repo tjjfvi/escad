@@ -1,4 +1,4 @@
-import "./stylus/StringLog.styl";
+// @style "./stylus/StringLog.styl"
 import React from "../deps/react.ts";
 import { StringLog } from "../core/mod.ts";
 import { registerLogType } from "./LogsPane.tsx";

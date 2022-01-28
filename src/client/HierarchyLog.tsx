@@ -1,4 +1,4 @@
-import "./stylus/HierarchyLog.styl";
+// @style "./stylus/HierarchyLog.styl"
 import React from "../deps/react.ts";
 import { HierarchyLog } from "../core/mod.ts";
 import { registerLogType } from "./LogsPane.tsx";

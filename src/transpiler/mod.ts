@@ -60,7 +60,7 @@ export function createTranspiler(ctx: TranspilerHost): Transpiler {
     return prom;
   }
 
-  async function __transpile(url: string) {
+  async function fetchFile(url: string) {
     let response = await fetch(url);
     if (!response.ok) {
       let error = new Error(`Error fetching ${url} for transpilation`);
@@ -69,41 +69,19 @@ export function createTranspiler(ctx: TranspilerHost): Transpiler {
       throw error;
     }
     let content = await response.text();
-    const transpileFn = url.endsWith(".css")
-      ? _transpileCss
-      : url.endsWith(".styl")
-      ? _transpileStyl
-      : _transpileTs;
-    return await transpileFn(url, content);
+    return content;
   }
 
-  async function _transpileStyl(url: string, content: string) {
-    content = [
-      await stylusStdlib,
-      stylusGlobals,
-      content,
-    ].join("\n\n\n\n\n");
-    let renderer = stylus.default(content);
-    renderer.options.imports = [];
-    let css = renderer.render();
-    return _transpileCss(url, css);
-  }
-
-  async function _transpileCss(url: string, content: string) {
-    let jsUrl = url + ".js";
-    let jsContent = `
-let el = document.createElement("link");
-el.type = "text/css";
-el.rel = "stylesheet";
-el.href = ${JSON.stringify(ctx.transformUrl(transformUrl(url)))};
-document.head.appendChild(el);
-await new Promise(r => el.onload = r)
-  `;
-    await ctx.cache.set(transformUrl(jsUrl), jsContent);
-    return [content, []] as const;
-  }
-
-  async function _transpileTs(url: string, content: string) {
+  async function __transpile(url: string) {
+    let content = await fetchFile(url);
+    content = content.replace(/^\/\/ @style (".+")$/gm, (_, file: string) => {
+      file = JSON.parse(file);
+      file = new URL(file, url).toString();
+      let jsUrl = file.endsWith(".styl")
+        ? _transpileStyl(file)
+        : _transpileCss(file);
+      return "import " + JSON.stringify(jsUrl);
+    });
     let deps: string[] = [];
     let result = ts.transpileModule(content, {
       fileName: url,
@@ -133,7 +111,7 @@ await new Promise(r => el.onload = r)
                   let resolved = (new URL(str, url)).toString();
                   deps.push(resolved);
                   return ts.factory.createStringLiteral(
-                    ctx.transformUrl(transformDepUrl(resolved)),
+                    ctx.transformUrl(transformUrl(resolved)),
                   );
                 }
                 return ts.visitEachChild(node, visitor, context);
@@ -145,6 +123,50 @@ await new Promise(r => el.onload = r)
       },
     });
     return [result.outputText, deps] as const;
+  }
+
+  function _transpileStyl(
+    url: string,
+    _content: Promise<string> = fetchFile(url),
+  ) {
+    return _transpileCss(
+      url,
+      (async () => {
+        let content = [
+          await stylusStdlib,
+          stylusGlobals,
+          await _content,
+        ].join("\n\n\n\n\n");
+        let renderer = stylus.default(content);
+        renderer.options.imports = [];
+        let css = renderer.render();
+        return css;
+      })(),
+    );
+  }
+
+  function _transpileCss(
+    url: string,
+    content: Promise<string> = fetchFile(url),
+  ) {
+    let jsUrl = url + ".js";
+    let jsContent = `
+let el = document.createElement("link");
+el.type = "text/css";
+el.rel = "stylesheet";
+el.href = ${JSON.stringify(ctx.transformUrl(transformUrl(url)))};
+document.head.appendChild(el);
+await new Promise(r => el.onload = r)
+  `;
+    memo.set(
+      url,
+      content.then((c) => ctx.cache.set(transformUrl(url), c)).then(() => []),
+    );
+    memo.set(
+      jsUrl,
+      ctx.cache.set(transformUrl(jsUrl), jsContent).then(() => [url]),
+    );
+    return jsUrl;
   }
 }
 
@@ -171,13 +193,6 @@ prefix(prop)
   -ms-{prop} slice(arguments, 1)
   {prop} slice(arguments, 1)
 `;
-
-function transformDepUrl(url: string) {
-  if (url.endsWith(".css") || url.endsWith(".styl")) {
-    url += ".js";
-  }
-  return transformUrl(url);
-}
 
 export function createTranspilerServerMessenger(
   transpiler: Transpiler,

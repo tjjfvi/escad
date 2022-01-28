@@ -1,4 +1,4 @@
-import "./stylus/Preview.styl";
+// @style "./stylus/Preview.styl"
 import React from "../deps/react.ts";
 import { viewerRegistry } from "./ViewerRegistry.ts";
 import { observer, useObservable } from "../deps/rhobo.ts";

@@ -1,4 +1,4 @@
-import "./stylus/NumberParam.styl";
+// @style "./stylus/NumberParam.styl"
 import { NumberParam } from "../builtins/mod.ts";
 import React from "../deps/react.ts";
 import { observer, useComputed, useObservable } from "../deps/rhobo.ts";
