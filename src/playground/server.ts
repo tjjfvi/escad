@@ -20,7 +20,6 @@ export const server = await _createServer({
   transpilerConnection: brandConnection(transpilerConnection, "b"),
   coreClientUrl: escadLocation + "/playground/client.tsx",
   writeClientRoot: async (content) => {
-    console.log("clientroot");
     await put(`${clientId}/client.js`, content);
   },
   mapClientPlugins: (url) => {

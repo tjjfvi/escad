@@ -73,7 +73,6 @@ export const createServer = async ({
 
   app.use(async (ctx, next) => {
     try {
-      console.log(ctx.request.url.pathname);
       await send(ctx, ctx.request.url.pathname, {
         root: bundleDir,
         contentTypes: new Proxy({}, {

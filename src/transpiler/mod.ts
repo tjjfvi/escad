@@ -202,21 +202,17 @@ export function createTranspilerServerMessenger(
   const messenger: TranspilerServerMessenger = createMessenger({
     impl: {
       transpile: async (url, force) => {
-        console.log("++", url);
         runningCount++;
         await transpiler.transpile(url, force);
         runningCount--;
-        console.log("--", url);
         if (runningCount === 0) {
           messenger.emit("transpileFinish");
         }
       },
       transpileAll: async (urls, force) => {
-        console.log("++");
         runningCount++;
         await transpiler.transpileAll(urls, force);
         runningCount--;
-        console.log("--");
         if (runningCount === 0) {
           messenger.emit("transpileFinish");
         }
