@@ -2,7 +2,7 @@ name: Publish escad.dev
 
 on:
   push:
-    branches: [deno]
+    branches: [prod]
 jobs:
   deploy:
     runs-on: ubuntu-latest
