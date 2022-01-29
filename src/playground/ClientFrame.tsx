@@ -10,7 +10,7 @@ import { server } from "./server.ts";
 import React from "../deps/react.ts";
 import { observer } from "../deps/rhobo.ts";
 import { clientId, put } from "./swApi.ts";
-import { share } from "./code.ts";
+import { share } from "./projects.ts";
 
 const clientUrl = `/${clientId}/index.html`;
 await put(
