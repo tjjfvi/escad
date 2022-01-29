@@ -1,7 +1,3 @@
-/// <reference no-default-lib="true"/>
-/// <reference lib="esnext"/>
-/// <reference lib="dom"/>
-
 // @style "./stylus/Dropdown.styl"
 import React from "../deps/react.ts";
 import { Observable, observer } from "../deps/rhobo.ts";

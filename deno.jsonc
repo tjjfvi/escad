@@ -1,4 +1,11 @@
 {
+  "compilerOptions": {
+    "lib": [
+      "deno.ns",
+      "dom",
+      "esnext"
+    ]
+  },
   "fmt": {
     "files": {
       "include": ["src/", "examples/"],
