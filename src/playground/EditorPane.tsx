@@ -1,5 +1,5 @@
 import { debounce } from "./debounce.ts";
-import { code, setCode } from "./code.ts";
+import { code, curProject } from "./projects.ts";
 import React from "../deps/react.ts";
 import { Pane } from "../client/Pane.tsx";
 import { Editor, monaco } from "../deps/monaco.ts";
@@ -52,7 +52,11 @@ export const augmentMonacoEditor = (
 
   mainModel.onDidChangeContent(debounce(onChange, 1000));
 
-  mainModel.setValue(code);
+  mainModel.setValue(code.value);
+
+  curProject.on("update", () => {
+    mainModel.setValue(curProject.value.code.value);
+  });
 
   const files = new Set();
   const bannedCharacters = /[^\w/.-]/g;
@@ -121,8 +125,12 @@ export const augmentMonacoEditor = (
   }
 
   async function onChange() {
-    setCode(mainModel.getValue());
-    await Promise.all([...code.matchAll(depsRegex)].map((x) => addFile(x[3])));
+    if (code.value !== mainModel.getValue()) {
+      code(mainModel.getValue());
+    }
+    await Promise.all(
+      [...code.value.matchAll(depsRegex)].map((x) => addFile(x[3])),
+    );
   }
 
   return editor;
