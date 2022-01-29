@@ -20,7 +20,7 @@
       "skipFiles": [
         "<node_internals>/**/*.js"
       ],
-      "port": 2992,
+      "port": 2992
     },
     {
       "name": "Atatch to server",
@@ -29,7 +29,7 @@
       "skipFiles": [
         "<node_internals>/**/*.js"
       ],
-      "port": 9229,
+      "port": 9229
     }
   ]
 }

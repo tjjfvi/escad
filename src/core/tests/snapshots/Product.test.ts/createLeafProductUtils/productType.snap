@@ -1,0 +1,4 @@
+{
+  id: "@escad/core/LeafProduct/ProductA",
+  type: "LeafProductType",
+}

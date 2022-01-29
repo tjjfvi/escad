@@ -1,0 +1,26 @@
+name: Publish escad.run
+
+on:
+  push:
+    branches: [prod]
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - uses: denoland/setup-deno@v1
+        with:
+          deno-version: v1.x
+
+      - uses: extractions/setup-just@v1
+
+      - run: just build-escad-run
+
+      - uses: peaceiris/actions-gh-pages@v3
+        with:
+          personal_token: ${{ secrets.PAT }}
+          external_repository: tjjfvi/escad.run
+          publish_dir: ./escad.run
+          cname: escad.run

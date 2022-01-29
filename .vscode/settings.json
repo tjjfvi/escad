@@ -1,4 +1,4 @@
 {
-  "debug.node.autoAttach": "off",
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "deno.enable": true,
+  "deno.unstable": true
 }

@@ -1,0 +1,7 @@
+{
+  elementType: {
+    id: "@escad/core/LeafProduct/ProductA",
+    type: "LeafProductType",
+  },
+  type: "ArrayProductType",
+}
