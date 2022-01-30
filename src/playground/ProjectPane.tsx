@@ -2,53 +2,52 @@
 
 import React from "../deps/react.ts";
 import { Pane } from "../client/Pane.tsx";
-import {
-  curProjectInd,
-  deleteProject,
-  newProject,
-  projects,
-} from "./projects.ts";
-import { observer } from "../deps/rhobo.ts";
+import { ProjectManager } from "./projectManager.ts";
 
-export const ProjectPane = observer(() => (
-  <Pane
-    name="Projects"
-    left
-    defaultWidth={300}
-    resizable={false}
-    defaultOpen={false}
-  >
-    {projects().map((project, i) => (
-      i === curProjectInd()
-        ? (
-          <input
-            key={project.id}
-            className="selected row"
-            value={project.name()}
-            onChange={(e) => project.name(e.target.value)}
-            onAuxClick={() => deleteProject(i)}
-          />
-        )
-        : (
-          <div
-            key={project.id}
-            className="row"
-            onClick={() => {
-              curProjectInd(i);
-            }}
-            onAuxClick={() => deleteProject(i)}
-          >
-            {project.name()}
-          </div>
-        )
-    ))}
-    <div
-      onClick={() => {
-        newProject();
-      }}
-      className="row new"
+export const ProjectPane = (
+  { projectManager }: { projectManager: ProjectManager },
+) => {
+  let [, setState] = React.useState({});
+  React.useEffect(() => {
+    return projectManager.events.on("projectsChange", () => setState({}));
+  }, []);
+  return (
+    <Pane
+      name="Projects"
+      left
+      defaultWidth={300}
+      resizable={false}
+      defaultOpen={false}
     >
-      new
-    </div>
-  </Pane>
-));
+      {projectManager.getProjects().map((project) => {
+        const isSelected = project === projectManager.getCurProject();
+        const titleEditable = isSelected && project.type === "local";
+        return (
+          <input
+            key={project.type === "local" ? project.id : project.url}
+            className={isSelected ? "selected row" : "row"}
+            readOnly={!titleEditable}
+            value={project.name}
+            onChange={(e) =>
+              projectManager.renameProject(project, e.target.value)}
+            onAuxClick={() => projectManager.deleteProject(project)}
+            onClick={(e) => {
+              if (!isSelected) {
+                e.preventDefault();
+                projectManager.setCurProject(project);
+              }
+            }}
+          />
+        );
+      })}
+      <div
+        onClick={() => {
+          projectManager.createProject();
+        }}
+        className="row new"
+      >
+        new
+      </div>
+    </Pane>
+  );
+};

@@ -48,7 +48,7 @@ const transpiler = createTranspiler({
   transformUrl: getTranspiledPath,
 });
 
-let mainFile = `file://${dirname}/mod.tsx`;
+let mainFile = `file://${dirname}/main.tsx`;
 let workerFile = `file://${dirname}/transpilerWorker.ts`;
 let swFile = `file://${dirname}/sw.ts`;
 let clientFile = `file://${dirname}/client.tsx`;
@@ -58,7 +58,9 @@ let rootFiles = [
   swFile,
   clientFile,
   `file://${escadDir}/builtins/mod.ts`,
+  `file://${escadDir}/builtins/register.ts`,
   `file://${escadDir}/client-builtins/mod.ts`,
+  `file://${escadDir}/renderer/mod.ts`,
 ];
 
 await transpiler.transpileAll(rootFiles);
