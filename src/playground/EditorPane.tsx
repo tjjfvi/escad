@@ -1,14 +1,16 @@
 import { debounce } from "./debounce.ts";
-import { code, curProject } from "./projects.ts";
+import { ProjectManager } from "./projects.ts";
 import React from "../deps/react.ts";
 import { Pane } from "../client/Pane.tsx";
 import { Editor, monaco } from "../deps/monaco.ts";
 
-export const EditorPane = () => (
+export const EditorPane = (
+  { projectManager }: { projectManager: ProjectManager },
+) => (
   <Pane name="Editor" left defaultWidth={600} minWidth={200} defaultOpen={true}>
     <Editor
       onMount={(editor) => {
-        augmentMonacoEditor(editor as never);
+        augmentMonacoEditor(editor as never, projectManager);
       }}
       options={{
         minimap: {
@@ -41,6 +43,7 @@ const depsRegex = /(from\s*|import\s*)(["'])(.+?)\2/g;
 
 export const augmentMonacoEditor = (
   editor: monaco.editor.IStandaloneCodeEditor,
+  projectManager: ProjectManager,
 ) => {
   const mainModel = monaco.editor.createModel(
     "",
@@ -52,11 +55,7 @@ export const augmentMonacoEditor = (
 
   mainModel.onDidChangeContent(debounce(onChange, 1000));
 
-  mainModel.setValue(code.value);
-
-  curProject.on("update", () => {
-    mainModel.setValue(curProject.value.code.value);
-  });
+  mainModel.setValue(projectManager.getCode());
 
   const files = new Set();
   const bannedCharacters = /[^\w/.-]/g;
@@ -124,14 +123,29 @@ export const augmentMonacoEditor = (
     });
   }
 
+  projectManager.events.on("codeChange", (value) => {
+    if (value !== mainModel.getValue()) {
+      mainModel.setValue(value);
+    }
+  });
+
   async function onChange() {
-    if (code.value !== mainModel.getValue()) {
-      code(mainModel.getValue());
+    const value = mainModel.getValue();
+    if (value !== projectManager.getCode()) {
+      projectManager.setCode(value);
     }
     await Promise.all(
-      [...code.value.matchAll(depsRegex)].map((x) => addFile(x[3])),
+      [...value.matchAll(depsRegex)].map((x) => addFile(x[3])),
     );
   }
 
   return editor;
+};
+
+const debounce = (fn: () => void, amount: number) => {
+  let timer: number | null = null;
+  return () => {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(fn, amount) as any as number;
+  };
 };
