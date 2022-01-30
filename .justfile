@@ -37,7 +37,8 @@ build-escad-run:
   PROD=1 just run-playground
   mkdir escad.run
   cp -r src/playground/static/* escad.run/
-  mv escad.run/transpiled/https://escad.dev/playground/{main,sw}.js escad.run/
+  mv escad.run/transpiled/https://escad.dev/playground/main.js escad.run/
+  mv escad.run/transpiled/https://escad.dev/playground/sw.js escad.run/
   git rev-parse HEAD > escad.run/version
 
 build-escad-dev:
