@@ -1,6 +1,7 @@
 **/node_modules
 projects
 artifacts
+!src/core/artifacts
 test/index.js
 **/dist
 *.log
