@@ -1,4 +1,4 @@
-// @create-index {"mode":"*"}
+// moderate
 
 export * from "./Connection.ts";
 export * from "./EventEmitter.ts";

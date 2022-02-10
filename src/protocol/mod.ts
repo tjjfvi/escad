@@ -1,4 +1,4 @@
-// @create-index {"mode":"*"}
+// moderate
 
 export * from "./serverClient.ts";
 export * from "./serverRenderer.ts";

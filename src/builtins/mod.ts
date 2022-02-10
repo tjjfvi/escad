@@ -6,7 +6,7 @@ registerPlugin(
 
 export { default } from "./chainables.ts";
 
-// @create-index {"mode":"*","ignore":["register","helpers.ts"]}
+// moderate --exclude register.ts --exclude helpers.ts
 
 export * from "./BooleanParam.ts";
 export * from "./BoundingBox.ts";
@@ -37,7 +37,6 @@ export * from "./polyhedron.ts";
 export * from "./reflect.ts";
 export * from "./rotate.ts";
 export * from "./scale.ts";
-export * from "./serializers/mod.ts";
 export * from "./shift.ts";
 export * from "./smoothContext.ts";
 export * from "./sphere.ts";
@@ -45,3 +44,4 @@ export * from "./stl.ts";
 export * from "./translate.ts";
 export * from "./union.ts";
 export * from "./unionDifference.ts";
+export * from "./serializers/mod.ts";

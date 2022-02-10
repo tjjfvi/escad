@@ -1,4 +1,4 @@
-// @create-index {"mode":"*"}
+// moderate
 
 export * from "./HierarchyView.tsx";
 export * from "./NestableSpan.tsx";

@@ -1,4 +1,4 @@
-// @create-index {"mode":"*"}
+// moderate
 
 export * from "./$boundingBox.ts";
 export * from "./$face.ts";

@@ -5,7 +5,7 @@ import { Realm } from "./Realm.ts";
 export const escad = Realm.create(() => defaultChainables);
 export default escad;
 
-// @create-index {"mode":"*"}
+// moderate
 
 export * from "./ArrayHierarchy.ts";
 export * from "./ArrayProduct.ts";

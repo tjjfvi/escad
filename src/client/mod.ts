@@ -1,7 +1,7 @@
 // @style "./stylus/fonts.css"
 // @style "./stylus/index.styl"
 
-// @create-index {"mode":"*"}
+// moderate --exclude stylusImport.d.ts
 
 export * from "./App.tsx";
 export * from "./ClientState.ts";
@@ -11,7 +11,6 @@ export * from "./HierarchyLog.tsx";
 export * from "./HierarchyPane.tsx";
 export * from "./HierarchyPath.ts";
 export * from "./HierarchySelection.ts";
-export * from "./HierarchyView/mod.ts";
 export * from "./Icon.tsx";
 export * from "./IdView.tsx";
 export * from "./Loading.tsx";
@@ -29,3 +28,4 @@ export * from "./StringLog.tsx";
 export * from "./Viewer.ts";
 export * from "./ViewerRegistry.ts";
 export * from "./usePromise.ts";
+export * from "./HierarchyView/mod.ts";
