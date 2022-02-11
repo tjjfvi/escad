@@ -1,4 +1,4 @@
-// @create-index {"mode":"*","ignore":["Callable.ts","MultiSet.ts"]}
+// moderate --exclude Callable.ts --exclude MultiSet.ts
 
 export * from "./computed.ts";
 export * from "./fromPromise.ts";

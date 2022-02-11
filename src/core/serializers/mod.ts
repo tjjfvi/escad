@@ -1,4 +1,4 @@
-// @create-index {"mode":"*"}
+// moderate
 
 export * from "./$hash.ts";
 export * from "./$id.ts";

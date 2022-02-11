@@ -1,4 +1,4 @@
-// @create-index {"mode":"*"}
+// moderate
 
 export * from "./createMessenger.ts";
 export * from "./lookupRef.ts";

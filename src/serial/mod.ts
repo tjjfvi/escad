@@ -21,7 +21,7 @@ registerType("Array", $array($unknown));
 registerType("Map", $map($unknown, $unknown));
 registerType("Set", $set($unknown));
 
-// @create-index {"mode":"*"}
+// moderate
 
 export * from "./$array.ts";
 export * from "./$boolean.ts";
