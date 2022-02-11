@@ -7,6 +7,7 @@ export default escad;
 
 // moderate
 
+export * from "./serializers/mod.ts";
 export * from "./ArrayHierarchy.ts";
 export * from "./ArrayProduct.ts";
 export * from "./ArtifactManager.ts";
@@ -60,4 +61,3 @@ export * from "./checkTypeProperty.ts";
 export * from "./defaultChainables.ts";
 export * from "./depthFirst.ts";
 export * from "./mapOperation.ts";
-export * from "./serializers/mod.ts";

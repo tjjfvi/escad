@@ -8,6 +8,7 @@ export { default } from "./chainables.ts";
 
 // moderate --exclude register.ts --exclude helpers.ts
 
+export * from "./serializers/mod.ts";
 export * from "./BooleanParam.ts";
 export * from "./BoundingBox.ts";
 export * from "./Bsp.ts";
@@ -44,4 +45,3 @@ export * from "./stl.ts";
 export * from "./translate.ts";
 export * from "./union.ts";
 export * from "./unionDifference.ts";
-export * from "./serializers/mod.ts";

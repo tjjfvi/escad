@@ -3,6 +3,7 @@
 
 // moderate --exclude stylusImport.d.ts
 
+export * from "./HierarchyView/mod.ts";
 export * from "./App.tsx";
 export * from "./ClientState.ts";
 export * from "./Dropdown.tsx";
@@ -28,4 +29,3 @@ export * from "./StringLog.tsx";
 export * from "./Viewer.ts";
 export * from "./ViewerRegistry.ts";
 export * from "./usePromise.ts";
-export * from "./HierarchyView/mod.ts";
