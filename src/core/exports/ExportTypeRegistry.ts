@@ -1,13 +1,13 @@
-import { ExportType } from "./ExportType.ts";
-import { ArtifactManager, artifactManager } from "./ArtifactManager.ts";
-import { Id } from "./Id.ts";
-import { ArtifactStore } from "./ArtifactStore.ts";
-import { Product, ProductType } from "./Product.ts";
 import {
-  ConversionRegistry,
-  conversionRegistry,
-} from "./ConversionRegistry.ts";
-import { WrappedValue } from "./WrappedValue.ts";
+  ArtifactManager,
+  artifactManager,
+  ArtifactStore,
+  WrappedValue,
+} from "../artifacts/mod.ts";
+import { ConversionRegistry, conversionRegistry } from "../conversions/mod.ts";
+import { Id } from "../utils/mod.ts";
+import { Product, ProductType } from "../product/mod.ts";
+import { ExportType } from "./ExportType.ts";
 
 export class ExportTypeRegistry {
   constructor(

@@ -1,7 +1,7 @@
+import { HierarchyProp } from "../hierarchy/mod.ts";
 import { Component, GenericComponent } from "./Component.ts";
 import { GenericOperation, Operation } from "./Operation.ts";
 import { Element } from "./Element.ts";
-import { HierarchyProp } from "./Hierarchy.ts";
 
 export type Thing = Element<any> | Component<any[], any> | Operation<any, any>;
 export type StripRealm<T extends Thing> = T extends Element<infer P>

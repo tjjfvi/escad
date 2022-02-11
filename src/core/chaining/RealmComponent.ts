@@ -1,3 +1,4 @@
+import { type Hkt } from "../utils/mod.ts";
 import {
   _GCU,
   Component,
@@ -5,7 +6,6 @@ import {
   GenericConstraint,
 } from "./Component.ts";
 import { ExtensibleFunction } from "./ExtensibleFunction.ts";
-import { type Hkt } from "./Hkt.ts";
 import { Realm } from "./Realm.ts";
 import { RealmThing } from "./RealmThing.ts";
 import { Thing } from "./Thing.ts";

@@ -1,8 +1,6 @@
-import { ScopedId } from "./Id.ts";
-import { ConvertibleTo } from "./Conversions.ts";
+import { checkTypeProperty, ScopedId } from "../utils/mod.ts";
+import { conversionRegistry, ConvertibleTo } from "../conversions/mod.ts";
 import { _Product, Product } from "./Product.ts";
-import { conversionRegistry } from "./ConversionRegistry.ts";
-import { checkTypeProperty } from "./checkTypeProperty.ts";
 
 export interface LeafProduct extends _Product {
   readonly type: ScopedId<"LeafProduct">;

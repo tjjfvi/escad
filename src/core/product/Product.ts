@@ -1,19 +1,17 @@
-import { LeafProduct, LeafProductType } from "./LeafProduct.ts";
-import { TupleProduct, TupleProductType } from "./TupleProduct.ts";
-import { ArrayProduct, ArrayProductType } from "./ArrayProduct.ts";
+import { Hash, ScopedId, Timer } from "../utils/mod.ts";
 import {
   type __convertibleTo,
   type __convertibleToOverride,
   type __convertibleToTransitivityOverride,
   _ConvertibleTo,
   TransitivityOverride,
-} from "./Conversions.ts";
-import { Hash } from "./Hash.ts";
+} from "../conversions/mod.ts";
+import { LeafProduct, LeafProductType } from "./LeafProduct.ts";
+import { TupleProduct, TupleProductType } from "./TupleProduct.ts";
+import { ArrayProduct, ArrayProductType } from "./ArrayProduct.ts";
 import { UnknownProduct, UnknownProductType } from "./UnknownProduct.ts";
-import { ScopedId } from "./Id.ts";
 import { MarkedProduct, MarkedProductType } from "./MarkedProduct.ts";
 import { HashProduct, HashProductType } from "./HashProduct.ts";
-import { Timer } from "./Timer.ts";
 
 export interface _Product {
   readonly type: string | ScopedId<"LeafProduct">;

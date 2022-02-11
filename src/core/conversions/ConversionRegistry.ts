@@ -1,21 +1,29 @@
-/* eslint-disable @typescript-eslint/no-non-null-assertion */
-
-import { Product, ProductType } from "./Product.ts";
+import { Product, ProductType } from "../product/mod.ts";
+import { Hash } from "../utils/mod.ts";
+import {
+  ArtifactManager,
+  artifactManager,
+  ArtifactStore,
+  WrappedValue,
+} from "../artifacts/mod.ts";
+import { Id } from "../utils/mod.ts";
 import {
   ConversionImpl,
   ConversionImplish,
   ConvertibleTo,
 } from "./Conversions.ts";
-import { Hash } from "./Hash.ts";
-import { ArtifactManager, artifactManager } from "./ArtifactManager.ts";
-import { ArtifactStore } from "./ArtifactStore.ts";
-import { Id } from "./Id.ts";
-import { TupleProduct, TupleProductType } from "./TupleProduct.ts";
-import { ArrayProduct, ArrayProductType } from "./ArrayProduct.ts";
-import { UnknownProduct, UnknownProductType } from "./UnknownProduct.ts";
-import { MarkedProduct, MarkedProductType } from "./MarkedProduct.ts";
-import { HashProduct, HashProductType } from "./HashProduct.ts";
-import { WrappedValue } from "./WrappedValue.ts";
+import {
+  ArrayProduct,
+  ArrayProductType,
+  HashProduct,
+  HashProductType,
+  MarkedProduct,
+  MarkedProductType,
+  TupleProduct,
+  TupleProductType,
+  UnknownProduct,
+  UnknownProductType,
+} from "../product/mod.ts";
 
 type ConversionPath = ConversionImpl<any, any>[];
 

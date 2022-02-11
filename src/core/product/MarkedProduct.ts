@@ -1,6 +1,5 @@
-import { ScopedId } from "./Id.ts";
+import { checkTypeProperty, ScopedId } from "../utils/mod.ts";
 import { _Product, Product, ProductType, ProductTypeish } from "./Product.ts";
-import { checkTypeProperty } from "./checkTypeProperty.ts";
 
 export type Marker = ScopedId<"Marker">;
 

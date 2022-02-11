@@ -1,7 +1,7 @@
-import { Hierarchy } from "./Hierarchy.ts";
+import { Hierarchy } from "../hierarchy/mod.ts";
+import { Promisish } from "../utils/mod.ts";
 import { HierarchyLog } from "./HierarchyLog.ts";
 import { Log, LogLevel } from "./Log.ts";
-import { Promisish } from "./Promisish.ts";
 import { StringLog } from "./StringLog.ts";
 
 export class Logger {

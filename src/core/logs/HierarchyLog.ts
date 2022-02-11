@@ -1,6 +1,5 @@
-import { checkTypeProperty } from "./checkTypeProperty.ts";
-import { Hierarchy } from "./Hierarchy.ts";
-import { Id } from "./Id.ts";
+import { checkTypeProperty, Id } from "../utils/mod.ts";
+import { Hierarchy } from "../hierarchy/mod.ts";
 import { Log, LogLevel } from "./Log.ts";
 
 const hierarchyLogId = Id.create(

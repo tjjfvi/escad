@@ -1,5 +1,4 @@
-import { checkTypeProperty } from "./checkTypeProperty.ts";
-import { ScopedId } from "./Id.ts";
+import { checkTypeProperty, ScopedId } from "../utils/mod.ts";
 
 export interface Log {
   type: ScopedId<"Log">;

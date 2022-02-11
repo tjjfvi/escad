@@ -1,7 +1,7 @@
-import { checkTypeProperty } from "./checkTypeProperty.ts";
+import { checkTypeProperty } from "../utils/mod.ts";
+import { Product } from "../product/mod.ts";
 import { Element, Elementish } from "./Element.ts";
 import { ExtensibleFunction } from "./ExtensibleFunction.ts";
-import { Product } from "./Product.ts";
 import { RealmElement } from "./RealmElement.ts";
 import { RealmThing } from "./RealmThing.ts";
 import { Thing } from "./Thing.ts";

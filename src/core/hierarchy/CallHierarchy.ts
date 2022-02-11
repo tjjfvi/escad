@@ -1,4 +1,4 @@
-import { checkTypeProperty } from "./checkTypeProperty.ts";
+import { checkTypeProperty } from "../utils/mod.ts";
 import { _Hierarchy, Hierarchy } from "./Hierarchy.ts";
 
 export interface CallHierarchy extends _Hierarchy {

@@ -1,6 +1,5 @@
+import { Hash, HashMap } from "../utils/mod.ts";
 import { ArtifactStore } from "./ArtifactStore.ts";
-import { Hash } from "./Hash.ts";
-import { HashMap } from "./HashMap.ts";
 import { WrappedValue } from "./WrappedValue.ts";
 
 export class InMemoryArtifactStore implements ArtifactStore {

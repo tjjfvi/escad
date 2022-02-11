@@ -1,16 +1,12 @@
-import { Product } from "./Product.ts";
-import { Component } from "./Component.ts";
-import { Element } from "./Element.ts";
-import { Hash } from "./Hash.ts";
-import { Operation } from "./Operation.ts";
+import { HashProduct, Product } from "../product/mod.ts";
+import { Component, Element, Operation } from "../chaining/mod.ts";
+import { Hash, Promisish } from "../utils/mod.ts";
+import { artifactManager } from "../artifacts/mod.ts";
 import { ArrayHierarchy } from "./ArrayHierarchy.ts";
 import { CallHierarchy } from "./CallHierarchy.ts";
 import { ObjectHierarchy } from "./ObjectHierarchy.ts";
 import { NameHierarchy } from "./NameHierarchy.ts";
 import { ValueHierarchy } from "./ValueHierarchy.ts";
-import { Promisish } from "./Promisish.ts";
-import { HashProduct } from "./HashProduct.ts";
-import { artifactManager } from "./ArtifactManager.ts";
 
 export type HierarchyProp = Promisish<Hierarchy | undefined>;
 

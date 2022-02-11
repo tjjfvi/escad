@@ -1,5 +1,5 @@
-import { ScopedId } from "./Id.ts";
-import { Product, ProductTypeish } from "./Product.ts";
+import { ScopedId } from "../utils/mod.ts";
+import { Product, ProductTypeish } from "../product/mod.ts";
 
 export interface ExportType<P extends Product> {
   readonly id: ScopedId<"ExportType">;

@@ -1,9 +1,8 @@
-import { Hierarchy, HierarchyProp } from "./Hierarchy.ts";
-import { Product } from "./Product.ts";
-import { ConvertibleTo } from "./Conversions.ts";
-import { checkTypeProperty } from "./checkTypeProperty.ts";
-import { artifactManager } from "./ArtifactManager.ts";
-import { Promisish } from "./Promisish.ts";
+import { Hierarchy, HierarchyProp } from "../hierarchy/mod.ts";
+import { Product } from "../product/mod.ts";
+import { ConvertibleTo } from "../conversions/mod.ts";
+import { checkTypeProperty, Promisish } from "../utils/mod.ts";
+import { artifactManager } from "../artifacts/mod.ts";
 
 interface ObjMap<T> {
   readonly [name: string]: T;

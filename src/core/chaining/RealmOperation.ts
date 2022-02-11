@@ -1,5 +1,6 @@
+import { Product } from "../product/mod.ts";
+import { type Hkt } from "../utils/mod.ts";
 import { ExtensibleFunction } from "./ExtensibleFunction.ts";
-import { Product } from "./Product.ts";
 import { Element, Elementish } from "./Element.ts";
 import { GenericOperation, Operation } from "./Operation.ts";
 import { RealmElement } from "./RealmElement.ts";
@@ -7,7 +8,6 @@ import { Component, GenericComponent } from "./Component.ts";
 import { Realm } from "./Realm.ts";
 import { RealmThing } from "./RealmThing.ts";
 import { RealmComponent, RealmGenericComponent } from "./RealmComponent.ts";
-import { type Hkt } from "./Hkt.ts";
 
 type Assert<T, U extends T> = U;
 

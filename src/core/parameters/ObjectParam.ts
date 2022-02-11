@@ -1,4 +1,4 @@
-import { Id } from "./Id.ts";
+import { Id } from "../utils/mod.ts";
 import { Parameter } from "./Parameter.ts";
 
 export type ObjectParamGeneric = Record<string, Parameter<any>>;

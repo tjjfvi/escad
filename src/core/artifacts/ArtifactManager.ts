@@ -1,8 +1,6 @@
-import { WeakCache } from "./WeakCache.ts";
-import { Hash } from "./Hash.ts";
+import { Counter, Hash, Timer, WeakCache } from "../utils/mod.ts";
 import { ArtifactStore } from "./ArtifactStore.ts";
 import { WrappedValue } from "./WrappedValue.ts";
-import { Counter, Timer } from "./Timer.ts";
 
 export class ArtifactManager {
   private excludeStoresCaches = new WeakMap<

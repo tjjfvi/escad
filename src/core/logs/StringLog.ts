@@ -1,5 +1,4 @@
-import { checkTypeProperty } from "./checkTypeProperty.ts";
-import { Id } from "./Id.ts";
+import { checkTypeProperty, Id } from "../utils/mod.ts";
 import { Log, LogLevel } from "./Log.ts";
 
 const stringLogId = Id.create(

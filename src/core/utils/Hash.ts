@@ -1,6 +1,6 @@
-import { Sha256 } from "../deps/sha256.ts";
+import { Sha256 } from "../../deps/sha256.ts";
+import { $unknown } from "../../serial/mod.ts";
 import { Timer } from "./Timer.ts";
-import { $unknown } from "../serial/mod.ts";
 
 const hashMemo = new WeakMap<object, Hash<any>>();
 export const Hash = {

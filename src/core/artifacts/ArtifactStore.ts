@@ -1,5 +1,5 @@
+import { Hash } from "../utils/mod.ts";
 import { ArtifactManager } from "./ArtifactManager.ts";
-import { Hash } from "./Hash.ts";
 import { WrappedValue } from "./WrappedValue.ts";
 
 export interface ArtifactStore {

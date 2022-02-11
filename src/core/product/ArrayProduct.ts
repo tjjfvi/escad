@@ -1,4 +1,4 @@
-import { checkTypeProperty } from "./checkTypeProperty.ts";
+import { checkTypeProperty } from "../utils/mod.ts";
 import { _Product, Product, ProductType, ProductTypeish } from "./Product.ts";
 
 export interface ArrayProduct<T extends Product = Product> extends _Product {

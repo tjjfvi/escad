@@ -1,14 +1,19 @@
+import { Product } from "../product/mod.ts";
+import {
+  CallHierarchy,
+  Hierarchy,
+  HierarchyProp,
+  NameHierarchy,
+} from "../hierarchy/mod.ts";
+import {
+  checkTypeProperty,
+  contextStack,
+  type Hkt,
+  Promisish,
+} from "../utils/mod.ts";
+import { ConvertibleTo } from "../conversions/mod.ts";
 import { Element, Elementish } from "./Element.ts";
-import { Product } from "./Product.ts";
-import { Hierarchy, HierarchyProp } from "./Hierarchy.ts";
-import { checkTypeProperty } from "./checkTypeProperty.ts";
-import { ConvertibleTo } from "./Conversions.ts";
-import { contextStack } from "./ContextStack.ts";
 import { ExtensibleFunction } from "./ExtensibleFunction.ts";
-import { CallHierarchy } from "./CallHierarchy.ts";
-import { NameHierarchy } from "./NameHierarchy.ts";
-import { Promisish } from "./Promisish.ts";
-import { type Hkt } from "./Hkt.ts";
 
 export type ConvertibleOperation<I extends Product, O extends Product> =
   Operation<ConvertibleTo<I>, ConvertibleTo<O>>;

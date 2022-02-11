@@ -1,6 +1,5 @@
-import { __hash } from "./Hash.ts";
-import { ScopedId } from "./Id.ts";
-import { Product, ProductType, ProductTypeish } from "./Product.ts";
+import { __hash, ScopedId } from "../utils/mod.ts";
+import { Product, ProductType, ProductTypeish } from "../product/mod.ts";
 
 export interface Conversion<A, B> {
   (value: A): B;

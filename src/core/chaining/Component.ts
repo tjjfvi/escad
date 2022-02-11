@@ -1,10 +1,11 @@
-import { CallHierarchy } from "./CallHierarchy.ts";
-import { checkTypeProperty } from "./checkTypeProperty.ts";
-import { contextStack } from "./ContextStack.ts";
+import { checkTypeProperty, contextStack, type Hkt } from "../utils/mod.ts";
+import {
+  CallHierarchy,
+  Hierarchy,
+  HierarchyProp,
+  NameHierarchy,
+} from "../hierarchy/mod.ts";
 import { ExtensibleFunction } from "./ExtensibleFunction.ts";
-import { Hierarchy, HierarchyProp } from "./Hierarchy.ts";
-import { type Hkt } from "./Hkt.ts";
-import { NameHierarchy } from "./NameHierarchy.ts";
 import { StripRealm, Thing } from "./Thing.ts";
 
 export interface Component<I extends any[], O extends Thing> {

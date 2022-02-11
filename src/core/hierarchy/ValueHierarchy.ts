@@ -1,4 +1,4 @@
-import { checkTypeProperty } from "./checkTypeProperty.ts";
+import { checkTypeProperty } from "../utils/mod.ts";
 import { _Hierarchy } from "./Hierarchy.ts";
 
 type SerializableValue =
