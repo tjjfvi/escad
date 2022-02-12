@@ -1,6 +1,5 @@
-import "./mod.ts";
+import chainables from "./mod.ts";
 import { extendChainables } from "../core/mod.ts";
-import chainables from "./chainables/mod.ts";
 
 type Chainables = typeof chainables;
 

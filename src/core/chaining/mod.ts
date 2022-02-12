@@ -12,3 +12,4 @@ export * from "./RealmThing.ts";
 export * from "./Thing.ts";
 export * from "./defaultChainables.ts";
 export * from "./mapOperation.ts";
+export * from "./pickChainables.ts";
