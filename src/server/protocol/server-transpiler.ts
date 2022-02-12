@@ -1,4 +1,4 @@
-import { Messenger } from "../messages/mod.ts";
+import { Messenger } from "../../messages/mod.ts";
 
 export type ServerTranspilerShape = {/**/};
 

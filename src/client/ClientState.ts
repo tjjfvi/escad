@@ -1,4 +1,7 @@
-import { ClientServerMessenger, RenderInfo } from "../protocol/mod.ts";
+import {
+  ClientServerMessenger,
+  RenderInfo,
+} from "../server/protocol/server-client.ts";
 import { computed, observable } from "../deps/rhobo.ts";
 import {
   $wrappedValue,

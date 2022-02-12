@@ -1,6 +1,6 @@
-import { Messenger } from "../messages/mod.ts";
-import { Hash, Log } from "../core/mod.ts";
-import { RenderInfo } from "./serverRenderer.ts";
+import { Messenger } from "../../messages/mod.ts";
+import { Hash, Log } from "../../core/mod.ts";
+import { RenderInfo } from "./server-renderer.ts";
 
 export type ServerClientShape = {
   lookupRef(loc: readonly Hash<unknown>[]): Promise<Hash<unknown>>;
@@ -28,3 +28,5 @@ export type ClientServerMessenger = Messenger<
   ServerClientShape,
   ServerClientEvents
 >;
+
+export type { RenderInfo } from "./server-renderer.ts";

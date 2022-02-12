@@ -15,7 +15,7 @@ import {
 } from "../messages/mod.ts";
 import { createServer as _createServer } from "../server/server.ts";
 import { getTranspiledUrl } from "./getTranspiledUrl.ts";
-import { ServerTranspilerMessenger } from "../protocol/mod.ts";
+import { ServerTranspilerMessenger } from "../server/protocol/server-transpiler.ts";
 import { transformUrl } from "../server/transformUrl.ts";
 import { createProjectManager, ProjectId } from "./projectManager.ts";
 
