@@ -1,9 +1,9 @@
-import { viewerRegistry } from "../client/mod.ts";
-import { Face, Mesh } from "../builtins/mod.ts";
+import { viewerRegistry } from "../../client/mod.ts";
+import { Face, Mesh } from "../../builtins/mod.ts";
 import { viewer3d, Viewer3dInput } from "./Viewer3d.tsx";
 import { colors } from "./colors.ts";
 import { EdgesGeometry } from "./EdgesGeometry.ts";
-import * as t from "../deps/three.ts";
+import * as t from "../../deps/three.ts";
 
 viewerRegistry.register<Mesh, Viewer3dInput>({
   type: Mesh,

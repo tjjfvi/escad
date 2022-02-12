@@ -1,4 +1,4 @@
-import * as t from "../deps/three.ts";
+import * as t from "../../deps/three.ts";
 
 const axesData = [
   [new t.Vector3(+1, 0, 0), 0xe74c3c, 1],

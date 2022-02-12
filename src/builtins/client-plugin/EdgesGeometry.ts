@@ -4,7 +4,7 @@ import {
   BufferGeometry,
   Float32BufferAttribute,
   Geometry,
-} from "../deps/three.ts";
+} from "../../deps/three.ts";
 
 function EdgesGeometry(geometry, thresholdAngle = 1) {
   BufferGeometry.call(this);

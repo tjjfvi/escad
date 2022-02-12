@@ -1,4 +1,4 @@
-import * as t from "../deps/three.ts";
+import * as t from "../../deps/three.ts";
 import { colors } from "./colors.ts";
 import { createOrientCube } from "./orientCube.ts";
 import { createCylAxes, createLineAxes } from "./axes.ts";

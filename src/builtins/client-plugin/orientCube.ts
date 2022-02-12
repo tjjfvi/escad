@@ -1,4 +1,4 @@
-import * as t from "../deps/three.ts";
+import * as t from "../../deps/three.ts";
 import { colors } from "./colors.ts";
 
 const cubeSize = .5;

@@ -2,14 +2,14 @@ import { pickChainables } from "../core/mod.ts";
 import { registerPlugin } from "../register-client-plugin/mod.ts";
 
 registerPlugin(
-  new URL("../client-builtins/mod.ts", import.meta.url).toString(),
+  new URL("./client-plugin/mod.ts", import.meta.url).toString(),
 );
 
 import * as _chainables from "./chainables/mod.ts";
 
 export default pickChainables(_chainables);
 
-// moderate --exclude register.ts --exclude helpers.ts
+// moderate --exclude register.ts --exclude helpers.ts --exclude client-plugin
 
 export * from "./chainables/mod.ts";
 export * from "./serializers/mod.ts";

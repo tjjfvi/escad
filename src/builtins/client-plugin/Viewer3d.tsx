@@ -2,10 +2,10 @@
 
 // @style "./stylus/Viewer3d.styl"
 
-import React from "../deps/react.ts";
-import { Viewer, ViewerInput } from "../client/mod.ts";
+import React from "../../deps/react.ts";
+import { Viewer, ViewerInput } from "../../client/mod.ts";
 // eslint-disable-next-line @typescript-eslint/no-var-requires
-import * as t from "../deps/three.ts";
+import * as t from "../../deps/three.ts";
 import { createScene } from "./createScene.ts";
 
 export interface Viewer3dInput extends ViewerInput {
