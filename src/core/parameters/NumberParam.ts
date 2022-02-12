@@ -1,5 +1,5 @@
-import { Id } from "../core/mod.ts";
-import { Parameter } from "../core/mod.ts";
+import { Id } from "../utils/mod.ts";
+import { Parameter } from "./Parameter.ts";
 
 export interface NumberParamArgs {
   readonly defaultValue: number;
@@ -12,7 +12,7 @@ export interface NumberParamArgs {
 
 const numberParamId = Id.create(
   import.meta.url,
-  "@escad/builtins",
+  "@escad/core",
   "Parameter",
   "NumberParam",
 );

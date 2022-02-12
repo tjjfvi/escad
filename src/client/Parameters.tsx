@@ -1,7 +1,8 @@
 import { IdView } from "./IdView.tsx";
 import { Observable, Writeable } from "../deps/rhobo.ts";
 import React from "../deps/react.ts";
-import { Id, Parameter } from "../core/mod.ts";
+import { Id } from "../core/mod.ts";
+import { Parameter } from "../core/mod.ts";
 import { ClientState } from "./ClientState.ts";
 
 export interface ParameterRegistration<T, P extends Parameter<T>> {

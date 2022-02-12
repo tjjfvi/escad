@@ -1,5 +1,5 @@
-import { Id } from "../core/mod.ts";
-import { Parameter } from "../core/mod.ts";
+import { Id } from "../utils/mod.ts";
+import { Parameter } from "./Parameter.ts";
 
 export interface BooleanParamArgs {
   readonly defaultValue: boolean;
@@ -9,7 +9,7 @@ export interface BooleanParamArgs {
 
 const booleanParamId = Id.create(
   import.meta.url,
-  "@escad/builtins",
+  "@escad/core",
   "Parameter",
   "BooleanParam",
 );

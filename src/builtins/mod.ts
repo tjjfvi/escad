@@ -13,13 +13,11 @@ export default pickChainables(_chainables);
 
 export * from "./chainables/mod.ts";
 export * from "./serializers/mod.ts";
-export * from "./BooleanParam.ts";
 export * from "./BoundingBox.ts";
 export * from "./Bsp.ts";
 export * from "./Face.ts";
 export * from "./Matrix4.ts";
 export * from "./Mesh.ts";
-export * from "./NumberParam.ts";
 export * from "./Plane.ts";
 export * from "./Transformation.ts";
 export * from "./ValueWrapperProduct.ts";
