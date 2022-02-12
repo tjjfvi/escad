@@ -214,7 +214,8 @@ createRendererServerMessenger(
 
 function getInitialCode() {
   const base = `
-import escad, {
+import {
+  escad,
   booleanParam,
   numberParam,
   objectParam,

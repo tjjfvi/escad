@@ -1,4 +1,4 @@
-import escad, { ConvertibleTo, Operation } from "../packages/core/dist.ts";
+import { ConvertibleTo, escad, Operation } from "../packages/core/dist.ts";
 import { Mesh, Vector3 } from "../packages/builtins/dist.ts";
 import "../packages/builtins/register";
 

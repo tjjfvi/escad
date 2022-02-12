@@ -1,4 +1,4 @@
-import escad, { Element } from "../packages/core.ts";
+import { Element, escad } from "../packages/core.ts";
 import "../packages/builtins/register";
 import { renderFunction } from "../packages/renderer.ts";
 import { numberParam } from "../packages/renderer/node_modules/@escad/parameters/dist.ts";

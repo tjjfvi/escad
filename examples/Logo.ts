@@ -1,6 +1,7 @@
 import "../src/builtins/register.ts";
-import escad, {
+import {
   booleanParam,
+  escad,
   log,
   numberParam,
   objectParam,

@@ -1,4 +1,4 @@
-import escad, { ConvertibleTo } from "../packages/core.ts";
+import { ConvertibleTo, escad } from "../packages/core.ts";
 import "../packages/builtins/register";
 import { Mesh } from "../packages/csg/node_modules/@escad/builtins/dist.ts";
 import { smoothContext } from "../packages/builtins/node_modules/@escad/builtins/dist/smoothContext.ts";

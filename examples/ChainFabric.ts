@@ -1,4 +1,4 @@
-import escad from "../packages/core.ts";
+import { escad } from "../packages/core.ts";
 import "../packages/builtins/register";
 
 function range(max: number): number[];

@@ -1,7 +1,6 @@
 import { defaultChainables, Realm } from "./chaining/mod.ts";
 
 export const escad = Realm.create(() => defaultChainables);
-export default escad;
 
 // moderate
 
