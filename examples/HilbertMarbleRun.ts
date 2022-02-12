@@ -1,6 +1,6 @@
 import { ConvertibleTo, escad, Operation } from "../packages/core/dist.ts";
-import { Mesh, Vector3 } from "../packages/builtins/dist.ts";
-import "../packages/builtins/register";
+import { Mesh, Vector3 } from "../packages/3d/dist.ts";
+import "../packages/3d/register";
 
 export default () => {
   const trackAngle = 85,

@@ -17,7 +17,7 @@ import { Bsp, ClipOptions } from "../Bsp.ts";
 
 const intersectionId = Id.create(
   import.meta.url,
-  "@escad/builtins",
+  "@escad/3d",
   "Marker",
   "Intersection",
 );
@@ -30,7 +30,7 @@ export const Intersection = MarkedProduct.for(intersectionId);
 declare global {
   namespace escad {
     interface ConversionsObj {
-      "@escad/builtins/intersection": {
+      "@escad/3d/intersection": {
         computeIntersection: Conversion<Intersection<ArrayProduct<Bsp>>, Bsp>;
       };
     }
@@ -53,7 +53,7 @@ conversionRegistry.register({
   weight: 1,
   id: Id.create(
     import.meta.url,
-    "@escad/builtins",
+    "@escad/3d",
     "Conversion",
     "Intersection",
   ),

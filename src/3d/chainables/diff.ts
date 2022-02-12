@@ -15,14 +15,14 @@ import {
 import { Bsp, ClipOptions } from "../Bsp.ts";
 import { Union } from "./union.ts";
 
-const diffId = Id.create(import.meta.url, "@escad/builtins", "Marker", "Diff");
+const diffId = Id.create(import.meta.url, "@escad/3d", "Marker", "Diff");
 export type Diff<T extends Product> = MarkedProduct<typeof diffId, T>;
 export const Diff = MarkedProduct.for(diffId);
 
 declare global {
   namespace escad {
     interface ConversionsObj {
-      "@escad/builtins/diff": {
+      "@escad/3d/diff": {
         computeDiff: Conversion<Diff<TupleProduct<readonly [Bsp, Bsp]>>, Bsp>;
       };
     }
@@ -39,7 +39,7 @@ conversionRegistry.register({
     return Bsp.build(a, Bsp.allFaces(b)) ?? Bsp.null();
   },
   weight: 1,
-  id: Id.create(import.meta.url, "@escad/builtins", "Conversion", "Diff"),
+  id: Id.create(import.meta.url, "@escad/3d", "Conversion", "Diff"),
 });
 
 export const diff: ConvertibleOperation<Bsp, Bsp> = Operation.create(

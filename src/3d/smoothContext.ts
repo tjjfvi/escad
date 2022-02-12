@@ -8,7 +8,7 @@ export interface Smooth {
 
 const smoothContextId = Id.create(
   import.meta.url,
-  "@escad/builtins",
+  "@escad/3d",
   "Context",
   "SmoothContext",
 );

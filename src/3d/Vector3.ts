@@ -2,7 +2,7 @@ import { createLeafProductUtils, Id, LeafProduct } from "../core/mod.ts";
 
 const vector3Id = Id.create(
   import.meta.url,
-  "@escad/builtins",
+  "@escad/3d",
   "LeafProduct",
   "Vector3",
 );

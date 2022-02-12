@@ -221,7 +221,7 @@ import {
   objectParam,
   parametrize,
 } from "#escad/core/mod.ts";
-import "#escad/builtins/register.ts";
+import "#escad/3d/register.ts";
 
 const parameters = {
   dimensions: objectParam({

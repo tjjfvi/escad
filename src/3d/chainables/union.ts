@@ -17,7 +17,7 @@ import { Bsp, ClipOptions } from "../Bsp.ts";
 
 const unionId = Id.create(
   import.meta.url,
-  "@escad/builtins",
+  "@escad/3d",
   "Marker",
   "Union",
 );
@@ -27,7 +27,7 @@ export const Union = MarkedProduct.for(unionId);
 declare global {
   namespace escad {
     interface ConversionsObj {
-      "@escad/builtins/union": {
+      "@escad/3d/union": {
         computeUnion: Conversion<Union<ArrayProduct<Bsp>>, Bsp>;
       };
     }
@@ -44,7 +44,7 @@ conversionRegistry.register({
       return Bsp.build(a, Bsp.allFaces(b)) ?? Bsp.null();
     }),
   weight: 1,
-  id: Id.create(import.meta.url, "@escad/builtins", "Conversion", "Union"),
+  id: Id.create(import.meta.url, "@escad/3d", "Conversion", "Union"),
 });
 
 export const union: ConvertibleOperation<Bsp, Bsp> = Operation.create(

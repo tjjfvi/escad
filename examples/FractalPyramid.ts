@@ -1,8 +1,8 @@
 import { Element, escad } from "../packages/core.ts";
-import "../packages/builtins/register";
+import "../packages/3d/register";
 import { renderFunction } from "../packages/renderer.ts";
 import { numberParam } from "../packages/renderer/node_modules/@escad/parameters/dist.ts";
-import { Mesh } from "../packages/csg/node_modules/@escad/builtins/dist.ts";
+import { Mesh } from "../packages/csg/node_modules/@escad/3d/dist.ts";
 
 export default renderFunction(
   {

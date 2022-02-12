@@ -5,7 +5,7 @@ import { Bsp } from "./Bsp.ts";
 declare global {
   namespace escad {
     interface ConversionsObj {
-      "@escad/builtins/bspMeshConversion": {
+      "@escad/3d/bspMeshConversion": {
         meshToBsp: Conversion<Mesh, Bsp>;
         bspToMesh: Conversion<Bsp, Mesh>;
       };
@@ -18,7 +18,7 @@ conversionRegistry.register({
   toType: Bsp,
   convert: async (mesh) => Bsp.build(null, mesh.faces) ?? Bsp.null(),
   weight: 1,
-  id: Id.create(import.meta.url, "@escad/builtins", "Conversion", "MeshBsp"),
+  id: Id.create(import.meta.url, "@escad/3d", "Conversion", "MeshBsp"),
 });
 
 conversionRegistry.register({
@@ -26,5 +26,5 @@ conversionRegistry.register({
   toType: Mesh,
   convert: async (bsp) => Mesh.create(Bsp.allFaces(bsp)),
   weight: 1,
-  id: Id.create(import.meta.url, "@escad/builtins", "Conversion", "BspMesh"),
+  id: Id.create(import.meta.url, "@escad/3d", "Conversion", "BspMesh"),
 });

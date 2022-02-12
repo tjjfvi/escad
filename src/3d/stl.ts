@@ -5,7 +5,7 @@ import { Mesh } from "./Mesh.ts";
 exportTypeRegistry.register<Mesh>({
   id: Id.create(
     import.meta.url,
-    "@escad/builtins",
+    "@escad/3d",
     "ExportType",
     "MeshBinaryStl",
   ),
@@ -18,7 +18,7 @@ exportTypeRegistry.register<Mesh>({
     );
     const buffer = new ArrayBuffer(84 + triangles.length * 50);
     new TextEncoder().encodeInto(
-      "@escad/builtins/stl/" + Hash.create(meshes),
+      "@escad/3d/stl/" + Hash.create(meshes),
       new Uint8Array(buffer),
     );
     let dataView = new DataView(buffer);
@@ -40,7 +40,7 @@ exportTypeRegistry.register<Mesh>({
 exportTypeRegistry.register<Mesh>({
   id: Id.create(
     import.meta.url,
-    "@escad/builtins",
+    "@escad/3d",
     "ExportType",
     "MeshAsciiStl",
   ),
@@ -51,7 +51,7 @@ exportTypeRegistry.register<Mesh>({
     const triangles = meshes.flatMap((m) =>
       m.faces.flatMap((f) => Face.toTriangles(f))
     );
-    const name = `@escad/builtins/stl/${Hash.create(meshes)}`;
+    const name = `@escad/3d/stl/${Hash.create(meshes)}`;
     let str = "";
     str += `solid ${name}\n`;
     for (const triangle of triangles) {

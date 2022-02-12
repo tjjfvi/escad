@@ -6,7 +6,7 @@ const epsilon = 1e-5;
 
 const planeId = Id.create(
   import.meta.url,
-  "@escad/builtins",
+  "@escad/3d",
   "LeafProduct",
   "Plane",
 );

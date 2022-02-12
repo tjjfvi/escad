@@ -17,7 +17,7 @@ const tau = Math.PI * 2;
 
 const sphereId = Id.create(
   import.meta.url,
-  "@escad/builtins",
+  "@escad/3d",
   "LeafProduct",
   "Sphere",
 );
@@ -43,7 +43,7 @@ export const Sphere = {
 declare global {
   namespace escad {
     interface ConversionsObj {
-      "@escad/builtins/sphere": {
+      "@escad/3d/sphere": {
         cylToMesh: Conversion<Sphere, Mesh>;
       };
     }
@@ -94,7 +94,7 @@ conversionRegistry.register({
     );
   },
   weight: 1,
-  id: Id.create(import.meta.url, "@escad/builtins", "Conversion", "SphereMesh"),
+  id: Id.create(import.meta.url, "@escad/3d", "Conversion", "SphereMesh"),
 });
 
 type SphereArgs = number | {

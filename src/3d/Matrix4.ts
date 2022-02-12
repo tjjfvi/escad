@@ -28,7 +28,7 @@ export type Sixteen<T> = [
 
 const matrix4Id = Id.create(
   import.meta.url,
-  "@escad/builtins",
+  "@escad/3d",
   "LeafProduct",
   "Matrix4",
 );

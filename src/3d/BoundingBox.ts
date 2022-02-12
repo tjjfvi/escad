@@ -10,7 +10,7 @@ import { Vector3 } from "./Vector3.ts";
 
 const boundingBoxId = Id.create(
   import.meta.url,
-  "@escad/builtins",
+  "@escad/3d",
   "LeafProduct",
   "BoundingBox",
 );
@@ -42,7 +42,7 @@ export const BoundingBox = {
 declare global {
   namespace escad {
     interface ConversionsObj {
-      "@escad/builtins/BoundingBox": (Conversion<BoundingBox, Cube>);
+      "@escad/3d/BoundingBox": (Conversion<BoundingBox, Cube>);
     }
   }
 }
@@ -50,7 +50,7 @@ declare global {
 conversionRegistry.register({
   id: Id.create(
     import.meta.url,
-    "@escad/builtins",
+    "@escad/3d",
     "Conversion",
     "BoundingBoxToCube",
   ),

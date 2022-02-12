@@ -4,7 +4,7 @@ import { createLeafProductUtils, Id, LeafProduct } from "../core/mod.ts";
 
 const meshId = Id.create(
   import.meta.url,
-  "@escad/builtins",
+  "@escad/3d",
   "LeafProduct",
   "Mesh",
 );

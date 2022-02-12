@@ -4,7 +4,7 @@ import { Plane } from "./Plane.ts";
 
 const bspId = Id.create(
   import.meta.url,
-  "@escad/builtins",
+  "@escad/3d",
   "LeafProduct",
   "Bsp",
 );

@@ -17,7 +17,7 @@ const tau = Math.PI * 2;
 
 const cylinderId = Id.create(
   import.meta.url,
-  "@escad/builtins",
+  "@escad/3d",
   "LeafProduct",
   "Cylinder",
 );
@@ -50,7 +50,7 @@ export const Cylinder = {
 declare global {
   namespace escad {
     interface ConversionsObj {
-      "@escad/builtins/cylinder": {
+      "@escad/3d/cylinder": {
         cylinderToMesh: Conversion<Cylinder, Mesh>;
       };
     }
@@ -97,7 +97,7 @@ conversionRegistry.register({
     }));
   },
   weight: 1,
-  id: Id.create(import.meta.url, "@escad/builtins", "Conversion", "CylMesh"),
+  id: Id.create(import.meta.url, "@escad/3d", "Conversion", "CylMesh"),
 });
 
 export interface CylArgs {

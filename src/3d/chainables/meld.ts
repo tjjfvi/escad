@@ -13,14 +13,14 @@ import {
 } from "../../core/mod.ts";
 import { Mesh } from "../Mesh.ts";
 
-const meldId = Id.create(import.meta.url, "@escad/builtins", "Marker", "Meld");
+const meldId = Id.create(import.meta.url, "@escad/3d", "Marker", "Meld");
 export type Meld<T extends Product> = MarkedProduct<typeof meldId, T>;
 export const Meld = MarkedProduct.for(meldId);
 
 declare global {
   namespace escad {
     interface ConversionsObj {
-      "@escad/builtins/meld": {
+      "@escad/3d/meld": {
         computeMeld: Conversion<Meld<ArrayProduct<Mesh>>, Mesh>;
       };
     }
@@ -33,7 +33,7 @@ conversionRegistry.register({
   convert: async ({ child: { children } }) =>
     Mesh.create(children.flatMap((x) => x.faces)),
   weight: 1,
-  id: Id.create(import.meta.url, "@escad/builtins", "Conversion", "Meld"),
+  id: Id.create(import.meta.url, "@escad/3d", "Conversion", "Meld"),
 });
 
 export const meld: ConvertibleOperation<Mesh, Mesh> = (

@@ -57,9 +57,9 @@ let rootFiles = [
   workerFile,
   swFile,
   clientFile,
-  `file://${escadDir}/builtins/mod.ts`,
-  `file://${escadDir}/builtins/register.ts`,
-  `file://${escadDir}/builtins/client-plugin/mod.ts`,
+  `file://${escadDir}/3d/mod.ts`,
+  `file://${escadDir}/3d/register.ts`,
+  `file://${escadDir}/3d/client-plugin/mod.ts`,
   `file://${escadDir}/server/renderer.ts`,
 ];
 

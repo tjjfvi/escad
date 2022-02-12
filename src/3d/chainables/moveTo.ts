@@ -24,7 +24,7 @@ import { Vector3 } from "../Vector3.ts";
 
 const moveToId = Id.create(
   import.meta.url,
-  "@escad/builtins",
+  "@escad/3d",
   "Marker",
   "MoveTo",
 );
@@ -33,7 +33,7 @@ export const MoveTo = MarkedProduct.for(moveToId);
 
 const moveToArgsId = Id.create(
   import.meta.url,
-  "@escad/builtins",
+  "@escad/3d",
   "LeafProduct",
   "MoveToArgs",
 );
@@ -130,7 +130,7 @@ export const moveToZ = Component.create(
 declare global {
   namespace escad {
     interface ConversionsObj {
-      "@escad/builtins/moveTo": (Conversion<
+      "@escad/3d/moveTo": (Conversion<
         MoveTo<TupleProduct<readonly [MoveToArgs, BoundingBox, BoundingBox]>>,
         Matrix4
       >);
@@ -140,7 +140,7 @@ declare global {
 
 const moveToConversionMeshId = Id.create(
   import.meta.url,
-  "@escad/builtins",
+  "@escad/3d",
   "Conversion",
   "MoveToConversionMesh",
 );

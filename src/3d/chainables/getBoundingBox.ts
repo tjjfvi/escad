@@ -19,7 +19,7 @@ import { Vector3 } from "../Vector3.ts";
 
 const getBoundingBoxId = Id.create(
   import.meta.url,
-  "@escad/builtins",
+  "@escad/3d",
   "Marker",
   "GetBoundingBox",
 );
@@ -32,7 +32,7 @@ export const GetBoundingBox = MarkedProduct.for(getBoundingBoxId);
 declare global {
   namespace escad {
     interface ConversionsObj {
-      "@escad/builtins/getBoundingBox":
+      "@escad/3d/getBoundingBox":
         (Conversion<GetBoundingBox<ArrayProduct<Mesh>>, BoundingBox>);
     }
   }
@@ -41,7 +41,7 @@ declare global {
 conversionRegistry.register({
   id: Id.create(
     import.meta.url,
-    "@escad/builtins",
+    "@escad/3d",
     "Conversion",
     "GetBoundingBoxMesh",
   ),

@@ -13,7 +13,7 @@ import { Vector3 } from "../Vector3.ts";
 
 const cubeId = Id.create(
   import.meta.url,
-  "@escad/builtins",
+  "@escad/3d",
   "LeafProduct",
   "Cube",
 );
@@ -37,7 +37,7 @@ export const Cube = {
 declare global {
   namespace escad {
     interface ConversionsObj {
-      "@escad/builtins/cube": {
+      "@escad/3d/cube": {
         cubeToMesh: Conversion<Cube, Mesh>;
       };
     }
@@ -85,7 +85,7 @@ conversionRegistry.register({
     ]);
   },
   weight: 1,
-  id: Id.create(import.meta.url, "@escad/builtins", "Conversion", "CubeMesh"),
+  id: Id.create(import.meta.url, "@escad/3d", "Conversion", "CubeMesh"),
 });
 
 export interface CubeArgs extends TripletObj {

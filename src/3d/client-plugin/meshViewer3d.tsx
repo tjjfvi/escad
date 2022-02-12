@@ -1,5 +1,5 @@
 import { viewerRegistry } from "../../client/mod.ts";
-import { Face, Mesh } from "../../builtins/mod.ts";
+import { Face, Mesh } from "../../3d/mod.ts";
 import { viewer3d, Viewer3dInput } from "./Viewer3d.tsx";
 import { colors } from "./colors.ts";
 import { EdgesGeometry } from "./EdgesGeometry.ts";

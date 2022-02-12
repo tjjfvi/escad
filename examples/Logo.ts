@@ -1,4 +1,4 @@
-import "../src/builtins/register.ts";
+import "../src/3d/register.ts";
 import {
   booleanParam,
   escad,

@@ -13,7 +13,7 @@ import { Face } from "./Face.ts";
 
 const transformId = Id.create(
   import.meta.url,
-  "@escad/builtins",
+  "@escad/3d",
   "Marker",
   "Transform",
 );
@@ -27,7 +27,7 @@ export type Transformation<T extends Product> = Transform<
 declare global {
   namespace escad {
     interface ConversionsObj {
-      "@escad/builtins/Transformation": {
+      "@escad/3d/Transformation": {
         transformMesh: Conversion<
           Transform<TupleProduct<readonly [Matrix4, Mesh]>>,
           Mesh
@@ -53,7 +53,7 @@ conversionRegistry.register({
   weight: 1,
   id: Id.create(
     import.meta.url,
-    "@escad/builtins",
+    "@escad/3d",
     "Conversion",
     "Transformation",
   ),

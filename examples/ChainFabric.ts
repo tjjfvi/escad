@@ -1,5 +1,5 @@
 import { escad } from "../packages/core.ts";
-import "../packages/builtins/register";
+import "../packages/3d/register";
 
 function range(max: number): number[];
 function range(min: number, max: number): number[];
