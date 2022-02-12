@@ -214,25 +214,25 @@ createRendererServerMessenger(
 
 function getInitialCode() {
   const base = `
-import escad from "#escad/core/mod.ts";
-import { renderFunction, } from "#escad/server/renderer.ts";
-import { ObjectParam, } from "#escad/core/mod.ts";
-import { NumberParam, BooleanParam as BoolParam, } from "#escad/builtins/mod.ts";
+import escad, {
+  parametrize,
+  objectParam,
+  numberParam,
+  booleanParam,
+} from "#escad/core/mod.ts";
 import "#escad/builtins/register.ts";
 
 
 const parameters = {
-dimensions: ObjectParam.create({
-  coreSize:
-    NumberParam.create( { defaultValue: 4, }, ),
-  rodLength:
-    NumberParam.create( { defaultValue: 6, }, ),
+dimensions: objectParam({
+  coreSize: numberParam( { defaultValue: 4, }, ),
+  rodLength: numberParam( { defaultValue: 6, }, ),
 }),
-options: ObjectParam.create({
+options: objectParam({
   roundCore:
-    BoolParam.create( { defaultValue: false, }, ),
+    booleanParam( { defaultValue: false, }, ),
   atAxes:
-    BoolParam.create( { defaultValue: true, }, ),
+    booleanParam( { defaultValue: true, }, ),
 }),
 }
 
@@ -266,7 +266,7 @@ function model( {
 }
 
 export default
-  renderFunction( parameters, model, )
+  parametrize( parameters, model, )
 
 
 function angleX(){
@@ -277,10 +277,7 @@ function rad( rad : number ){
   return rad * (180 / Math.PI)
 }
 `;
-  const code = base.replace(
-    /\b((?:import|export)(?: .* from)? ")#escad\//g,
-    `$1${escadLocation}/`,
-  );
+  const code = base.replace(/#escad\//g, `${escadLocation}/`);
 
   console.log(code);
   return code;

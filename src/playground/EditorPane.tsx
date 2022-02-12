@@ -1,5 +1,4 @@
-import { debounce } from "./debounce.ts";
-import { ProjectManager } from "./projects.ts";
+import { ProjectManager } from "./projectManager.ts";
 import React from "../deps/react.ts";
 import { Pane } from "../client/Pane.tsx";
 import { Editor, monaco } from "../deps/monaco.ts";

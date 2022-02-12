@@ -59,7 +59,7 @@ let rootFiles = [
   clientFile,
   `file://${escadDir}/builtins/mod.ts`,
   `file://${escadDir}/builtins/register.ts`,
-  `file://${escadDir}/client-builtins/mod.ts`,
+  `file://${escadDir}/builtins/client-plugin/mod.ts`,
   `file://${escadDir}/server/renderer.ts`,
 ];
 
