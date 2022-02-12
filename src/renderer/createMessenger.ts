@@ -18,7 +18,6 @@ import {
 import { Connection, createMessenger } from "../messages/mod.ts";
 import { registeredPlugins } from "./registerClientPlugin.ts";
 import { lookupRef } from "./lookupRef.ts";
-import { RenderFunction } from "./renderFunction.ts";
 import { HashProduct } from "../core/mod.ts";
 
 export const createRendererServerMessenger = (
@@ -135,14 +134,13 @@ export const createRendererServerMessenger = (
     const exported = fullExported["default" as never] as unknown;
 
     if (
-      typeof exported !== "function" && !(exported instanceof RenderFunction)
+      typeof exported !== "function"
     ) {
-      throw new Error("Expected export type of function or RenderFunction");
+      throw new Error("Expected default export of type function");
     }
 
-    const [func, _paramDef] = exported instanceof RenderFunction
-      ? [exported.func, exported.paramDef]
-      : [exported, null];
+    const func = exported;
+    const _paramDef = (exported as any).paramDef;
     const paramDef = ObjectParam.create(_paramDef ?? {});
 
     const exportTypes = [...exportTypeRegistry.listRegistered()].map((x) => ({
