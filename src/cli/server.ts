@@ -1,4 +1,4 @@
-import { createServer as _createServer } from "../server/mod.ts";
+import { createServer as _createServer } from "../server/server.ts";
 import * as path from "../deps/path.ts";
 import {
   logConnection,

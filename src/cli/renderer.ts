@@ -3,7 +3,7 @@ import {
   parentWorkerConnection,
   serializeConnection,
 } from "../messages/mod.ts";
-import { createRendererServerMessenger } from "../renderer/mod.ts";
+import { createRendererServerMessenger } from "../server/renderer.ts";
 import { FsArtifactStore } from "./FsArtifactStore.ts";
 
 const artifactsDir = Deno.env.get("ARTIFACTS_DIR");

@@ -13,10 +13,10 @@ import {
   serializeConnection,
   workerConnection,
 } from "../messages/mod.ts";
-import { createServer as _createServer } from "../server/mod.ts";
+import { createServer as _createServer } from "../server/server.ts";
 import { getTranspiledUrl } from "./getTranspiledUrl.ts";
 import { ServerTranspilerMessenger } from "../protocol/mod.ts";
-import { transformUrl } from "../transpiler/transformUrl.ts";
+import { transformUrl } from "../server/transformUrl.ts";
 import { createProjectManager, ProjectId } from "./projectManager.ts";
 
 const escadLocation = location.hostname === "localhost"
@@ -199,7 +199,7 @@ import {
   serializeConnection,
   logConnection,
 } from "${escadLocation}/messages/mod.ts";
-import { createRendererServerMessenger } from "${escadLocation}/renderer/mod.ts";
+import { createRendererServerMessenger } from "${escadLocation}/server/renderer.ts";
 import { VfsArtifactStore } from "${escadLocation}/playground/VfsArtifactStore.ts";
 
 artifactManager.artifactStores.unshift(new VfsArtifactStore());
@@ -215,7 +215,7 @@ createRendererServerMessenger(
 function getInitialCode() {
   const base = `
 import escad from "#escad/core/mod.ts";
-import { renderFunction, } from "#escad/renderer/mod.ts";
+import { renderFunction, } from "#escad/server/renderer.ts";
 import { ObjectParam, } from "#escad/core/mod.ts";
 import { NumberParam, BooleanParam as BoolParam, } from "#escad/builtins/mod.ts";
 import "#escad/builtins/register.ts";

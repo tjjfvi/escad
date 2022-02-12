@@ -2,8 +2,8 @@ import { brandConnection, parentWorkerConnection } from "../messages/mod.ts";
 import {
   createTranspiler,
   createTranspilerServerMessenger,
-} from "../transpiler/mod.ts";
-import { transformUrl } from "../transpiler/transformUrl.ts";
+} from "../server/transpiler.ts";
+import { transformUrl } from "../server/transformUrl.ts";
 import { getTranspiledUrl } from "./getTranspiledUrl.ts";
 import { put } from "./swApi.ts";
 

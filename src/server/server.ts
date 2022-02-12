@@ -13,7 +13,7 @@ import {
   ServerRendererShape,
 } from "../protocol/mod.ts";
 import { ServerTranspilerMessenger } from "../protocol/mod.ts";
-import { transformUrl } from "../transpiler/transformUrl.ts";
+import { transformUrl } from "../server/transformUrl.ts";
 
 export interface ServerHost {
   createRendererConnection: () => Connection<unknown>;
