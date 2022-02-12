@@ -1,11 +1,11 @@
-import { Mesh } from "./Mesh.ts";
+import { Mesh } from "../Mesh.ts";
 import {
   ConvertibleElementish,
   ConvertibleOperation,
   Element,
   Operation,
-} from "../core/mod.ts";
-import { Bsp } from "./Bsp.ts";
+} from "../../core/mod.ts";
+import { Bsp } from "../Bsp.ts";
 import { diff } from "./diff.ts";
 
 export const udMeld: ConvertibleOperation<Bsp, Bsp> = Operation.create(

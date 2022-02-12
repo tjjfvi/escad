@@ -1,13 +1,13 @@
-import { Matrix4 } from "./Matrix4.ts";
+import { Matrix4 } from "../Matrix4.ts";
 import {
   Component,
   ConvertibleOperation,
   mapOperation,
   TupleProduct,
-} from "../core/mod.ts";
-import { Transform } from "./Transformation.ts";
+} from "../../core/mod.ts";
+import { Transform } from "../Transformation.ts";
 import { FlipFaces } from "./flip.ts";
-import { Mesh } from "./Mesh.ts";
+import { Mesh } from "../Mesh.ts";
 
 type ScaleArgs =
   | [number]

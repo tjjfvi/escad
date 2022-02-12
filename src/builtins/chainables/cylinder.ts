@@ -6,12 +6,12 @@ import {
   Element,
   Id,
   LeafProduct,
-} from "../core/mod.ts";
-import { Face } from "./Face.ts";
-import { interpretTriplet, Triplet } from "./helpers.ts";
-import { Mesh } from "./Mesh.ts";
-import { Smooth, smoothContext } from "./smoothContext.ts";
-import { Vector3 } from "./Vector3.ts";
+} from "../../core/mod.ts";
+import { Face } from "../Face.ts";
+import { interpretTriplet, Triplet } from "../helpers.ts";
+import { Mesh } from "../Mesh.ts";
+import { Smooth, smoothContext } from "../smoothContext.ts";
+import { Vector3 } from "../Vector3.ts";
 
 const tau = Math.PI * 2;
 

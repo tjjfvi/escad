@@ -4,8 +4,8 @@ import {
   Element,
   NameHierarchy,
   Operation,
-} from "../core/mod.ts";
-import { Mesh } from "./Mesh.ts";
+} from "../../core/mod.ts";
+import { Mesh } from "../Mesh.ts";
 
 export const label = Component.create(
   "label",

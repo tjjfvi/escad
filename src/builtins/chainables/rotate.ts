@@ -1,12 +1,12 @@
-import { Matrix4 } from "./Matrix4.ts";
+import { Matrix4 } from "../Matrix4.ts";
 import {
   Component,
   ConvertibleOperation,
   mapOperation,
   TupleProduct,
-} from "../core/mod.ts";
-import { Transform, Transformation } from "./Transformation.ts";
-import { Mesh } from "./Mesh.ts";
+} from "../../core/mod.ts";
+import { Transform, Transformation } from "../Transformation.ts";
+import { Mesh } from "../Mesh.ts";
 
 const tau = Math.PI * 2;
 

@@ -12,8 +12,8 @@ import {
   Operation,
   Product,
   TupleProduct,
-} from "../core/mod.ts";
-import { Bsp, ClipOptions } from "./Bsp.ts";
+} from "../../core/mod.ts";
+import { Bsp, ClipOptions } from "../Bsp.ts";
 
 const unionId = Id.create(
   import.meta.url,

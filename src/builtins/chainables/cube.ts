@@ -6,10 +6,10 @@ import {
   Element,
   Id,
   LeafProduct,
-} from "../core/mod.ts";
-import { interpretTriplet, Triplet, TripletObj } from "./helpers.ts";
-import { Mesh } from "./Mesh.ts";
-import { Vector3 } from "./Vector3.ts";
+} from "../../core/mod.ts";
+import { interpretTriplet, Triplet, TripletObj } from "../helpers.ts";
+import { Mesh } from "../Mesh.ts";
+import { Vector3 } from "../Vector3.ts";
 
 const cubeId = Id.create(
   import.meta.url,

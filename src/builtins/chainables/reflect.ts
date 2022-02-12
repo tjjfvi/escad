@@ -3,11 +3,11 @@ import {
   ConvertibleTo,
   mapOperation,
   TupleProduct,
-} from "../core/mod.ts";
-import { Mesh } from "./Mesh.ts";
-import { Transform } from "./Transformation.ts";
+} from "../../core/mod.ts";
+import { Mesh } from "../Mesh.ts";
+import { Transform } from "../Transformation.ts";
 import { FlipFaces } from "./flip.ts";
-import { Matrix4 } from "./Matrix4.ts";
+import { Matrix4 } from "../Matrix4.ts";
 
 export const reflect = Component.create(
   "reflect",

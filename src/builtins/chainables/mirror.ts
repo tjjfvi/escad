@@ -3,8 +3,8 @@ import {
   ConvertibleTo,
   Elementish,
   mapOperation,
-} from "../core/mod.ts";
-import { Mesh } from "./Mesh.ts";
+} from "../../core/mod.ts";
+import { Mesh } from "../Mesh.ts";
 import { reflect } from "./reflect.ts";
 
 export const mirror = Component.create(

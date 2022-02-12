@@ -11,8 +11,8 @@ import {
   Product,
   TupleProduct,
   TupleProductType,
-} from "../core/mod.ts";
-import { Bsp, ClipOptions } from "./Bsp.ts";
+} from "../../core/mod.ts";
+import { Bsp, ClipOptions } from "../Bsp.ts";
 import { Union } from "./union.ts";
 
 const diffId = Id.create(import.meta.url, "@escad/builtins", "Marker", "Diff");

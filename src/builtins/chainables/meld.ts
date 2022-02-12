@@ -10,8 +10,8 @@ import {
   Operation,
   Product,
   TupleProduct,
-} from "../core/mod.ts";
-import { Mesh } from "./Mesh.ts";
+} from "../../core/mod.ts";
+import { Mesh } from "../Mesh.ts";
 
 const meldId = Id.create(import.meta.url, "@escad/builtins", "Marker", "Meld");
 export type Meld<T extends Product> = MarkedProduct<typeof meldId, T>;

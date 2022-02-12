@@ -1,12 +1,12 @@
-import { Matrix4 } from "./Matrix4.ts";
-import { Mesh } from "./Mesh.ts";
+import { Matrix4 } from "../Matrix4.ts";
+import { Mesh } from "../Mesh.ts";
 import {
   Component,
   ConvertibleOperation,
   mapOperation,
   TupleProduct,
-} from "../core/mod.ts";
-import { Transform, Transformation } from "./Transformation.ts";
+} from "../../core/mod.ts";
+import { Transform, Transformation } from "../Transformation.ts";
 
 export type TranslateArgs =
   | [number, number, number]

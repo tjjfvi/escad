@@ -5,7 +5,7 @@ import {
   Id,
   LeafProduct,
 } from "../core/mod.ts";
-import { Cube } from "./cube.ts";
+import { Cube } from "./chainables/mod.ts";
 import { Vector3 } from "./Vector3.ts";
 
 const boundingBoxId = Id.create(

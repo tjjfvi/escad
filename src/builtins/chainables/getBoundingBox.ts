@@ -12,10 +12,10 @@ import {
   Operation,
   Product,
   TupleProduct,
-} from "../core/mod.ts";
-import { BoundingBox } from "./BoundingBox.ts";
-import { Mesh } from "./Mesh.ts";
-import { Vector3 } from "./Vector3.ts";
+} from "../../core/mod.ts";
+import { BoundingBox } from "../BoundingBox.ts";
+import { Mesh } from "../Mesh.ts";
+import { Vector3 } from "../Vector3.ts";
 
 const getBoundingBoxId = Id.create(
   import.meta.url,

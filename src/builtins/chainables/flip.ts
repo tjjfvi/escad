@@ -7,9 +7,9 @@ import {
   MarkedProduct,
   Operation,
   Product,
-} from "../core/mod.ts";
-import { Face } from "./Face.ts";
-import { Mesh } from "./Mesh.ts";
+} from "../../core/mod.ts";
+import { Face } from "../Face.ts";
+import { Mesh } from "../Mesh.ts";
 
 const flipFacesId = Id.create(
   import.meta.url,

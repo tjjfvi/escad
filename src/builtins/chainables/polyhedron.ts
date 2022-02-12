@@ -1,6 +1,6 @@
-import { Mesh } from "./Mesh.ts";
-import { Vector3 } from "./Vector3.ts";
-import { Component, Element } from "../core/mod.ts";
+import { Mesh } from "../Mesh.ts";
+import { Vector3 } from "../Vector3.ts";
+import { Component, Element } from "../../core/mod.ts";
 
 type PolyhedronVerts = Vector3[];
 type PolyhedronFaces = number[][];

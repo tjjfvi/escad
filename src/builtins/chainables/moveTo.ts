@@ -14,13 +14,13 @@ import {
   Promisish,
   TupleProduct,
   TupleProductType,
-} from "../core/mod.ts";
-import { BoundingBox } from "./BoundingBox.ts";
+} from "../../core/mod.ts";
+import { BoundingBox } from "../BoundingBox.ts";
 import { _boundingBox } from "./getBoundingBox.ts";
-import { Matrix4 } from "./Matrix4.ts";
-import { Mesh } from "./Mesh.ts";
-import { Transform, Transformation } from "./Transformation.ts";
-import { Vector3 } from "./Vector3.ts";
+import { Matrix4 } from "../Matrix4.ts";
+import { Mesh } from "../Mesh.ts";
+import { Transform, Transformation } from "../Transformation.ts";
+import { Vector3 } from "../Vector3.ts";
 
 const moveToId = Id.create(
   import.meta.url,
