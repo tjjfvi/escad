@@ -18,7 +18,7 @@ import {
   RendererServerMessenger,
   RenderInfo,
 } from "./protocol/server-renderer.ts";
-import { Connection, createMessenger } from "../messages/mod.ts";
+import { Connection, createMessenger } from "../messaging/mod.ts";
 import { registeredPlugins } from "./registerClientPlugin.ts";
 import { HashProduct } from "../core/mod.ts";
 

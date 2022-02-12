@@ -7,7 +7,7 @@ import {
   ObjectParamValue,
   Product,
 } from "../../core/mod.ts";
-import { Messenger } from "../../messages/mod.ts";
+import { Messenger } from "../../messaging/mod.ts";
 
 export interface LoadFileInfo {
   paramDef: ObjectParam<any>;

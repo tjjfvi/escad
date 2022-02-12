@@ -1,4 +1,4 @@
-import { Messenger } from "../../messages/mod.ts";
+import { Messenger } from "../../messaging/mod.ts";
 import { Hash, Log } from "../../core/mod.ts";
 import { RenderInfo } from "./server-renderer.ts";
 

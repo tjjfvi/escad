@@ -1,4 +1,4 @@
-import { createEventEmitter, EventEmitter } from "../messages/mod.ts";
+import { createEventEmitter, EventEmitter } from "../messaging/mod.ts";
 
 export interface ProjectManager {
   getProjects: () => ProjectId[];

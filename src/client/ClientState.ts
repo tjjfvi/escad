@@ -22,7 +22,7 @@ import {
   createMessenger,
   logConnection,
   serializeConnection,
-} from "../messages/mod.ts";
+} from "../messaging/mod.ts";
 import { StatusSet } from "./Status.tsx";
 import {
   HierarchySelection,

@@ -4,7 +4,7 @@ import {
   logConnection,
   serializeConnection,
   workerConnection,
-} from "../messages/mod.ts";
+} from "../messaging/mod.ts";
 import { Application, send } from "../deps/oak.ts";
 import { contentType } from "../deps/media_types.ts";
 

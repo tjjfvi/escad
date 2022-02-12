@@ -1,4 +1,4 @@
-import { brandConnection, parentWorkerConnection } from "../messages/mod.ts";
+import { brandConnection, parentWorkerConnection } from "../messaging/mod.ts";
 import {
   createTranspiler,
   createTranspilerServerMessenger,

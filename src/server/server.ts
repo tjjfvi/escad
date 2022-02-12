@@ -6,7 +6,7 @@ import {
   createMessenger,
   EventEmitter,
   logConnection,
-} from "../messages/mod.ts";
+} from "../messaging/mod.ts";
 import { ServerClientMessenger } from "./protocol/server-client.ts";
 import {
   ServerRendererMessenger,

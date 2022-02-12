@@ -3,7 +3,7 @@ import {
   createMessenger,
   filterConnection,
   transformConnection,
-} from "../messages/mod.ts";
+} from "../messaging/mod.ts";
 import React from "../deps/react.ts";
 import ReactDOM from "../deps/react-dom.ts";
 import { App, ClientState, Icon, Loading, mdi } from "../client/mod.ts";

@@ -5,7 +5,7 @@ import {
   filterConnection,
   logConnection,
   transformConnection,
-} from "../messages/mod.ts";
+} from "../messaging/mod.ts";
 import React from "../deps/react.ts";
 import { observer } from "../deps/rhobo.ts";
 import { Server } from "../server/server.ts";

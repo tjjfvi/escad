@@ -1,7 +1,7 @@
 import { ts } from "../deps/tsc.ts";
 import { stylus } from "../deps/stylus.ts";
 import { TranspilerServerMessenger } from "./protocol/server-transpiler.ts";
-import { Connection, createMessenger } from "../messages/mod.ts";
+import { Connection, createMessenger } from "../messaging/mod.ts";
 import { transformUrl } from "./transformUrl.ts";
 
 export interface TranspilerHost {

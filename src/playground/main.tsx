@@ -12,7 +12,7 @@ import {
   createMessenger,
   serializeConnection,
   workerConnection,
-} from "../messages/mod.ts";
+} from "../messaging/mod.ts";
 import { createServer as _createServer } from "../server/server.ts";
 import { getTranspiledUrl } from "./getTranspiledUrl.ts";
 import { ServerTranspilerMessenger } from "../server/protocol/server-transpiler.ts";
@@ -198,7 +198,7 @@ import {
   workerConnection,
   serializeConnection,
   logConnection,
-} from "${escadLocation}/messages/mod.ts";
+} from "${escadLocation}/messaging/mod.ts";
 import { createRendererServerMessenger } from "${escadLocation}/server/renderer.ts";
 import { VfsArtifactStore } from "${escadLocation}/playground/VfsArtifactStore.ts";
 

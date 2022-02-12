@@ -2,7 +2,7 @@ import { artifactManager, logger } from "../core/mod.ts";
 import {
   parentWorkerConnection,
   serializeConnection,
-} from "../messages/mod.ts";
+} from "../messaging/mod.ts";
 import { createRendererServerMessenger } from "../server/renderer.ts";
 import { FsArtifactStore } from "./FsArtifactStore.ts";
 
