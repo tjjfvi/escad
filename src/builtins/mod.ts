@@ -1,7 +1,7 @@
 import { pickChainables } from "../core/mod.ts";
-import { registerPlugin } from "../register-client-plugin/mod.ts";
+import { registerClientPlugin } from "../renderer/registerClientPlugin.ts";
 
-registerPlugin(
+registerClientPlugin(
   new URL("./client-plugin/mod.ts", import.meta.url).toString(),
 );
 
