@@ -103,7 +103,9 @@ export type GenericOperation<I extends Product, O extends Hkt<I, Product>> =
 export const GenericOperation = {
   create: <I extends Product, O extends Hkt<I, Product>>(
     name: string,
-    func: <J extends I>(arg: Element<J>) => Elementish<Hkt.Output<O, J>>,
+    func: <J extends I>(
+      arg: Element<J>,
+    ) => Promisish<Elementish<Hkt.Output<O, J>>>,
     opts?: OperationOptions,
   ): GenericOperation<I, O> =>
     Operation.create<I, Hkt.Output<O, I>>(name, func, opts) as never,

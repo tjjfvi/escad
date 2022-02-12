@@ -1,15 +1,13 @@
+import { conversionRegistry, ConvertibleTo } from "../conversions/mod.ts";
+import { type Hkt, Id } from "../utils/mod.ts";
+import { GenericComponent, mapOperation, Operation } from "../chaining/mod.ts";
 import {
-  conversionRegistry,
-  ConvertibleTo,
-  GenericComponent,
-  type Hkt,
-  mapOperation,
-  Operation,
+  createLeafProductUtils,
+  LeafProduct,
   Product,
   ProductType,
   ProductTypeish,
-} from "../../core/mod.ts";
-import { ValueWrapperProduct } from "../ValueWrapperProduct.ts";
+} from "../product/mod.ts";
 
 type StringKeys<T> = `${Exclude<keyof T, symbol>}`;
 type GetStringKey<T, K extends StringKeys<T>> = K extends keyof T ? T[K]
@@ -67,3 +65,27 @@ export const attribute = GenericComponent.create<
     }, { showOutput: false }),
   { showOutput: false },
 );
+
+const valueWrapperProductId = Id.create(
+  import.meta.url,
+  "@escad/core",
+  "LeafProduct",
+  "ValueWrapperProduct",
+);
+
+export interface ValueWrapperProduct<T = unknown> extends LeafProduct {
+  readonly type: typeof valueWrapperProductId;
+  readonly value: T;
+}
+
+export const ValueWrapperProduct = {
+  create: <T>(value: T): ValueWrapperProduct<T> => ({
+    type: valueWrapperProductId,
+    value,
+  }),
+  ...createLeafProductUtils<ValueWrapperProduct, "ValueWrapperProduct">(
+    valueWrapperProductId,
+    "ValueWrapperProduct",
+  ),
+  id: valueWrapperProductId,
+};

@@ -20,7 +20,6 @@ export * from "./Matrix4.ts";
 export * from "./Mesh.ts";
 export * from "./Plane.ts";
 export * from "./Transformation.ts";
-export * from "./ValueWrapperProduct.ts";
 export * from "./Vector3.ts";
 export * from "./bspMeshConversion.ts";
 export * from "./smoothContext.ts";
