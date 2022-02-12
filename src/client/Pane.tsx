@@ -14,7 +14,6 @@ export type PaneArgs = {
   minWidth?: number;
 };
 
-// eslint-disable-next-line react/prop-types
 export const Pane = ({
   name,
   className = name,
