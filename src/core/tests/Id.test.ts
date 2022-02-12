@@ -1,4 +1,4 @@
-import { snapshot, toError } from "../../testUtils/mod.ts";
+import { snapshot, toError } from "../../testing/mod.ts";
 import { Id } from "../mod.ts";
 
 Deno.test("Id.create", async (t) => {

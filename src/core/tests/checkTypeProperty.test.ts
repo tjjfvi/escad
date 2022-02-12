@@ -1,4 +1,4 @@
-import { assertEquals } from "../../testUtils/mod.ts";
+import { assertEquals } from "../../testing/mod.ts";
 import { checkTypeProperty, Id } from "../mod.ts";
 
 Deno.test("checkTypeProperty", async (t) => {

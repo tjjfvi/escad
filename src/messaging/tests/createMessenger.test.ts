@@ -1,4 +1,4 @@
-import { assertEquals, mock, snapshot } from "../../testUtils/mod.ts";
+import { assertEquals, mock, snapshot } from "../../testing/mod.ts";
 import {
   Connection,
   createConnectionPair,

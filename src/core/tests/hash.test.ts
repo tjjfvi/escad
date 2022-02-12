@@ -1,4 +1,4 @@
-import { assertEquals, snapshot } from "../../testUtils/mod.ts";
+import { assertEquals, snapshot } from "../../testing/mod.ts";
 import { Hash } from "../mod.ts";
 
 Deno.test("Hash.create", async () => {

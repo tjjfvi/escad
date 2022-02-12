@@ -1,4 +1,4 @@
-import { assertEquals, mock } from "../../testUtils/mod.ts";
+import { assertEquals, mock } from "../../testing/mod.ts";
 import { brandConnection, createConnectionPair } from "../mod.ts";
 
 Deno.test("brandConnection", () => {

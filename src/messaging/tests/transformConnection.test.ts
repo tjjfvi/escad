@@ -1,5 +1,5 @@
 import { createConnectionPair, transformConnection } from "../mod.ts";
-import { assertEquals, mock } from "../../testUtils/mod.ts";
+import { assertEquals, mock } from "../../testing/mod.ts";
 
 Deno.test("transformConnection", () => {
   const [_a, b] = createConnectionPair<string>();

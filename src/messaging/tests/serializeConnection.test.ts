@@ -1,4 +1,4 @@
-import { mock, snapshot } from "../../testUtils/mod.ts";
+import { mock, snapshot } from "../../testing/mod.ts";
 import { createConnectionPair, serializeConnection } from "../mod.ts";
 
 Deno.test("serializeConnection", async () => {

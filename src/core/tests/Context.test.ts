@@ -1,5 +1,5 @@
 import { Context, ContextStack, Id } from "../mod.ts";
-import { assertEquals } from "../../testUtils/mod.ts";
+import { assertEquals } from "../../testing/mod.ts";
 
 const id = Id.create(import.meta.url, "@escad/core", "Context", "test");
 

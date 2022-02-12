@@ -1,4 +1,4 @@
-import { assertEquals, snapshot } from "../../testUtils/mod.ts";
+import { assertEquals, snapshot } from "../../testing/mod.ts";
 import { depthFirst, Stack } from "../mod.ts";
 
 Deno.test("Stack", () => {
