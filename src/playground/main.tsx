@@ -215,66 +215,61 @@ createRendererServerMessenger(
 function getInitialCode() {
   const base = `
 import escad, {
-  parametrize,
-  objectParam,
-  numberParam,
   booleanParam,
+  numberParam,
+  objectParam,
+  parametrize,
 } from "#escad/core/mod.ts";
 import "#escad/builtins/register.ts";
 
-
 const parameters = {
-dimensions: objectParam({
-  coreSize: numberParam( { defaultValue: 4, }, ),
-  rodLength: numberParam( { defaultValue: 6, }, ),
-}),
-options: objectParam({
-  roundCore:
-    booleanParam( { defaultValue: false, }, ),
-  atAxes:
-    booleanParam( { defaultValue: true, }, ),
-}),
-}
+  dimensions: objectParam({
+    coreSize: numberParam({ defaultValue: 4 }),
+    rodLength: numberParam({ defaultValue: 6 }),
+  }),
+  options: objectParam({
+    roundCore: booleanParam({ defaultValue: false }),
+    atAxes: booleanParam({ defaultValue: true }),
+  }),
+};
 
-
-function model( {
-  dimensions: { coreSize: size, rodLength: ext, },
-  options: { atAxes, roundCore: round, },
-} ){
-
-  const core = ! round
+function model({
+  dimensions: { coreSize: size, rodLength: ext },
+  options: { atAxes, roundCore: round },
+}) {
+  const core = !round
     ? escad.cube({ size })
-    : escad.sphere({ radius: size / Math.SQRT2 })
+    : escad.sphere({ radius: size / Math.SQRT2 });
 
-  const cyl = escad.cylinder( {
-      radius: size / 4, height: ext * 2,
-    } )
+  const cyl = escad.cylinder({
+    radius: size / 4,
+    height: ext * 2,
+  });
 
-  const rod = atAxes ? cyl : cyl.rotateX( angleX() )
+  const rod = atAxes ? cyl : cyl.rotateX(angleX());
 
-  let rods = escad.union( atAxes
+  let rods = escad.union(
+    atAxes
       ? {
         z: rod,
         y: rod.rX(90),
         x: rod.rY(90),
       }
-      : [ 0, 90, 180, 270, ]
-        .map( a => rod.rotateZ( 45 + a ) )
-    )
+      : [0, 90, 180, 270]
+        .map((a) => rod.rotateZ(45 + a)),
+  );
 
-  return { core, rods, }
+  return { core, rods };
 }
 
-export default
-  parametrize( parameters, model, )
+export default parametrize(parameters, model);
 
-
-function angleX(){
-  return 90 - rad( Math.atan(Math.SQRT1_2) )
+function angleX() {
+  return 90 - rad(Math.atan(Math.SQRT1_2));
 }
 
-function rad( rad : number ){
-  return rad * (180 / Math.PI)
+function rad(rad: number) {
+  return rad * (180 / Math.PI);
 }
 `;
   const code = base.replace(/#escad\//g, `${escadLocation}/`);
