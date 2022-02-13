@@ -1,14 +1,5 @@
-**/node_modules
+/artifacts
 projects
-artifacts
-!src/core/artifacts
-test/index.js
-**/dist
 *.log
-**/bundle.*
-**/bundled/*
-**/*.tsbuildinfo
 coverage
 .DS_Store
-**/*.tgz
-package-lock.json
