@@ -1,15 +1,17 @@
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
 
 import { $string, $uint8, registerType, Serializer } from "../../serial/mod.ts";
-import { ArrayProductType } from "../ArrayProduct.ts";
-import { assertNever } from "../assertNever.ts";
-import { HashProductType } from "../HashProduct.ts";
-import { ScopedId } from "../Id.ts";
-import { LeafProductType } from "../LeafProduct.ts";
-import { MarkedProductType } from "../MarkedProduct.ts";
-import { Product, ProductType } from "../Product.ts";
-import { TupleProductType } from "../TupleProduct.ts";
-import { UnknownProductType } from "../UnknownProduct.ts";
+import {
+  ArrayProductType,
+  HashProductType,
+  LeafProductType,
+  MarkedProductType,
+  Product,
+  ProductType,
+  TupleProductType,
+  UnknownProductType,
+} from "../product/mod.ts";
+import { assertNever, ScopedId } from "../utils/mod.ts";
 import { $hash } from "./$hash.ts";
 import { $id } from "./$id.ts";
 

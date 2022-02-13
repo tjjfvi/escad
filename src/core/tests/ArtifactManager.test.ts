@@ -5,7 +5,7 @@ import {
   Id,
   WrappedValue,
 } from "../mod.ts";
-import { snapshot } from "../../testUtils/mod.ts";
+import { snapshot } from "../../testing/mod.ts";
 
 const createArtifactStoreMock = (
   name: string,

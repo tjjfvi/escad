@@ -1,10 +1,10 @@
-import { createServer as _createServer } from "../server/mod.ts";
+import { createServer as _createServer } from "../server/server.ts";
 import * as path from "../deps/path.ts";
 import {
   logConnection,
   serializeConnection,
   workerConnection,
-} from "../messages/mod.ts";
+} from "../messaging/mod.ts";
 import { Application, send } from "../deps/oak.ts";
 import { contentType } from "../deps/media_types.ts";
 

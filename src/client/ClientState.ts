@@ -1,4 +1,7 @@
-import { ClientServerMessenger, RenderInfo } from "../protocol/mod.ts";
+import {
+  ClientServerMessenger,
+  RenderInfo,
+} from "../server/protocol/server-client.ts";
 import { computed, observable } from "../deps/rhobo.ts";
 import {
   $wrappedValue,
@@ -19,7 +22,7 @@ import {
   createMessenger,
   logConnection,
   serializeConnection,
-} from "../messages/mod.ts";
+} from "../messaging/mod.ts";
 import { StatusSet } from "./Status.tsx";
 import {
   HierarchySelection,

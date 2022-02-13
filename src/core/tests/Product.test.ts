@@ -1,4 +1,4 @@
-import { assertEquals, snapshot } from "../../testUtils/mod.ts";
+import { assertEquals, snapshot } from "../../testing/mod.ts";
 import {
   ArrayProduct,
   ArrayProductType,

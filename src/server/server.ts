@@ -6,14 +6,14 @@ import {
   createMessenger,
   EventEmitter,
   logConnection,
-} from "../messages/mod.ts";
+} from "../messaging/mod.ts";
+import { ServerClientMessenger } from "./protocol/server-client.ts";
 import {
-  ServerClientMessenger,
   ServerRendererMessenger,
   ServerRendererShape,
-} from "../protocol/mod.ts";
-import { ServerTranspilerMessenger } from "../protocol/mod.ts";
-import { transformUrl } from "../transpiler/transformUrl.ts";
+} from "./protocol/server-renderer.ts";
+import { ServerTranspilerMessenger } from "./protocol/server-transpiler.ts";
+import { transformUrl } from "../server/transformUrl.ts";
 
 export interface ServerHost {
   createRendererConnection: () => Connection<unknown>;

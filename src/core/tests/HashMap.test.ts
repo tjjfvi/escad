@@ -1,4 +1,4 @@
-import { assertEquals } from "../../testUtils/mod.ts";
+import { assertEquals } from "../../testing/mod.ts";
 import { HashMap } from "../mod.ts";
 
 Deno.test("HashMap", () => {

@@ -1,8 +1,8 @@
-import { parentWorkerConnection } from "../messages/mod.ts";
+import { parentWorkerConnection } from "../messaging/mod.ts";
 import {
   createTranspiler,
   createTranspilerServerMessenger,
-} from "../transpiler/mod.ts";
+} from "../server/transpiler.ts";
 import * as path from "../deps/path.ts";
 
 const bundleDir = Deno.env.get("BUNDLE_DIR")!;

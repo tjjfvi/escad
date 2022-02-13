@@ -5,6 +5,7 @@
 
 export * from "./HierarchyView/mod.ts";
 export * from "./App.tsx";
+export * from "./BooleanParam.tsx";
 export * from "./ClientState.ts";
 export * from "./Dropdown.tsx";
 export * from "./Export.tsx";
@@ -16,6 +17,7 @@ export * from "./Icon.tsx";
 export * from "./IdView.tsx";
 export * from "./Loading.tsx";
 export * from "./LogsPane.tsx";
+export * from "./NumberParam.tsx";
 export * from "./ObjectParam.tsx";
 export * from "./Pane.tsx";
 export * from "./Parameters.tsx";

@@ -18,7 +18,7 @@ lint-check:
 
 check:
   @just lint-check
-  deno cache --config deno.jsonc --no-check=remote src/*/mod.ts | cat
+  deno cache --config deno.jsonc --no-check=remote src/*/mod.ts src/*/client-plugin/mod.ts src/playground/main.tsx | cat
 
 check-force:
   @just lint-check

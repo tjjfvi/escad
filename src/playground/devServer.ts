@@ -1,9 +1,9 @@
 import { Application, Router, send } from "../deps/oak.ts";
 import * as path from "../deps/path.ts";
 
-import { createTranspiler } from "../transpiler/mod.ts";
+import { createTranspiler } from "../server/transpiler.ts";
 import { contentType } from "../deps/media_types.ts";
-import { transformUrl } from "../transpiler/transformUrl.ts";
+import { transformUrl } from "../server/transformUrl.ts";
 
 const prod = Deno.env.get("PROD");
 
@@ -57,10 +57,10 @@ let rootFiles = [
   workerFile,
   swFile,
   clientFile,
-  `file://${escadDir}/builtins/mod.ts`,
-  `file://${escadDir}/builtins/register.ts`,
-  `file://${escadDir}/client-builtins/mod.ts`,
-  `file://${escadDir}/renderer/mod.ts`,
+  `file://${escadDir}/3d/mod.ts`,
+  `file://${escadDir}/3d/register.ts`,
+  `file://${escadDir}/3d/client-plugin/mod.ts`,
+  `file://${escadDir}/server/renderer.ts`,
 ];
 
 await transpiler.transpileAll(rootFiles);

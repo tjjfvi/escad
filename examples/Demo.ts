@@ -1,7 +1,7 @@
-import "../src/builtins/register.ts";
-import { renderFunction } from "../src/renderer/mod.ts";
-import { booleanParam, numberParam } from "../src/builtins/mod.ts";
-import escad, { log, objectParam } from "../src/core/mod.ts";
+import "../src/3d/register.ts";
+import { renderFunction } from "../src/server/renderer.ts";
+import { booleanParam, numberParam } from "../src/3d/mod.ts";
+import { escad, log, objectParam } from "../src/core/mod.ts";
 
 export default renderFunction(
   {

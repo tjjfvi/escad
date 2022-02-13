@@ -12,11 +12,11 @@ import {
   createMessenger,
   serializeConnection,
   workerConnection,
-} from "../messages/mod.ts";
-import { createServer as _createServer } from "../server/mod.ts";
+} from "../messaging/mod.ts";
+import { createServer as _createServer } from "../server/server.ts";
 import { getTranspiledUrl } from "./getTranspiledUrl.ts";
-import { ServerTranspilerMessenger } from "../protocol/mod.ts";
-import { transformUrl } from "../transpiler/transformUrl.ts";
+import { ServerTranspilerMessenger } from "../server/protocol/server-transpiler.ts";
+import { transformUrl } from "../server/transformUrl.ts";
 import { createProjectManager, ProjectId } from "./projectManager.ts";
 
 const escadLocation = location.hostname === "localhost"
@@ -198,8 +198,8 @@ import {
   workerConnection,
   serializeConnection,
   logConnection,
-} from "${escadLocation}/messages/mod.ts";
-import { createRendererServerMessenger } from "${escadLocation}/renderer/mod.ts";
+} from "${escadLocation}/messaging/mod.ts";
+import { createRendererServerMessenger } from "${escadLocation}/server/renderer.ts";
 import { VfsArtifactStore } from "${escadLocation}/playground/VfsArtifactStore.ts";
 
 artifactManager.artifactStores.unshift(new VfsArtifactStore());
@@ -214,73 +214,66 @@ createRendererServerMessenger(
 
 function getInitialCode() {
   const base = `
-import escad from "#escad/core/mod.ts";
-import { renderFunction, } from "#escad/renderer/mod.ts";
-import { ObjectParam, } from "#escad/core/mod.ts";
-import { NumberParam, BooleanParam as BoolParam, } from "#escad/builtins/mod.ts";
-import "#escad/builtins/register.ts";
-
+import {
+  escad,
+  booleanParam,
+  numberParam,
+  objectParam,
+  parametrize,
+} from "#escad/core/mod.ts";
+import "#escad/3d/register.ts";
 
 const parameters = {
-dimensions: ObjectParam.create({
-  coreSize:
-    NumberParam.create( { defaultValue: 4, }, ),
-  rodLength:
-    NumberParam.create( { defaultValue: 6, }, ),
-}),
-options: ObjectParam.create({
-  roundCore:
-    BoolParam.create( { defaultValue: false, }, ),
-  atAxes:
-    BoolParam.create( { defaultValue: true, }, ),
-}),
-}
+  dimensions: objectParam({
+    coreSize: numberParam({ defaultValue: 4 }),
+    rodLength: numberParam({ defaultValue: 6 }),
+  }),
+  options: objectParam({
+    roundCore: booleanParam({ defaultValue: false }),
+    atAxes: booleanParam({ defaultValue: true }),
+  }),
+};
 
-
-function model( {
-  dimensions: { coreSize: size, rodLength: ext, },
-  options: { atAxes, roundCore: round, },
-} ){
-
-  const core = ! round
+function model({
+  dimensions: { coreSize: size, rodLength: ext },
+  options: { atAxes, roundCore: round },
+}) {
+  const core = !round
     ? escad.cube({ size })
-    : escad.sphere({ radius: size / Math.SQRT2 })
+    : escad.sphere({ radius: size / Math.SQRT2 });
 
-  const cyl = escad.cylinder( {
-      radius: size / 4, height: ext * 2,
-    } )
+  const cyl = escad.cylinder({
+    radius: size / 4,
+    height: ext * 2,
+  });
 
-  const rod = atAxes ? cyl : cyl.rotateX( angleX() )
+  const rod = atAxes ? cyl : cyl.rotateX(angleX());
 
-  let rods = escad.union( atAxes
+  let rods = escad.union(
+    atAxes
       ? {
         z: rod,
         y: rod.rX(90),
         x: rod.rY(90),
       }
-      : [ 0, 90, 180, 270, ]
-        .map( a => rod.rotateZ( 45 + a ) )
-    )
+      : [0, 90, 180, 270]
+        .map((a) => rod.rotateZ(45 + a)),
+  );
 
-  return { core, rods, }
+  return { core, rods };
 }
 
-export default
-  renderFunction( parameters, model, )
+export default parametrize(parameters, model);
 
-
-function angleX(){
-  return 90 - rad( Math.atan(Math.SQRT1_2) )
+function angleX() {
+  return 90 - rad(Math.atan(Math.SQRT1_2));
 }
 
-function rad( rad : number ){
-  return rad * (180 / Math.PI)
+function rad(rad: number) {
+  return rad * (180 / Math.PI);
 }
 `;
-  const code = base.replace(
-    /\b((?:import|export)(?: .* from)? ")#escad\//g,
-    `$1${escadLocation}/`,
-  );
+  const code = base.replace(/#escad\//g, `${escadLocation}/`);
 
   console.log(code);
   return code;

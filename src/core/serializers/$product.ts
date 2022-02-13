@@ -7,13 +7,14 @@ import {
   registerType,
   Serializer,
 } from "../../serial/mod.ts";
-import { assertNever } from "../assertNever.ts";
-import { HashProduct } from "../HashProduct.ts";
-import { Id } from "../Id.ts";
-import { LeafProduct } from "../LeafProduct.ts";
-import { MarkedProduct } from "../MarkedProduct.ts";
-import { Product } from "../Product.ts";
-import { UnknownProduct } from "../UnknownProduct.ts";
+import { assertNever, Id } from "../utils/mod.ts";
+import {
+  HashProduct,
+  LeafProduct,
+  MarkedProduct,
+  Product,
+  UnknownProduct,
+} from "../product/mod.ts";
 import { $hash } from "./$hash.ts";
 import { $id } from "./$id.ts";
 
