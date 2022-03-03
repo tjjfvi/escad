@@ -1,0 +1,105 @@
+/**
+ * Any CSS included here will be global. The classic template
+ * bundles Infima by default. Infima is a CSS framework designed to
+ * work well for content-centric websites.
+ */
+
+/* You can override the default Infima variables here. */
+:root {
+  --ifm-color-primary: #2e8555;
+  --ifm-color-primary-dark: #29784c;
+  --ifm-color-primary-darker: #277148;
+  --ifm-color-primary-darkest: #205d3b;
+  --ifm-color-primary-light: #33925d;
+  --ifm-color-primary-lighter: #359962;
+  --ifm-color-primary-lightest: #3cad6e;
+  --ifm-code-font-size: 95%;
+}
+
+/* For readability concerns, you should choose a lighter palette in dark mode. */
+html[data-theme="dark"] {
+  --ifm-color-primary: #0984e3;
+  --ifm-color-primary-dark: #0877cc;
+  --ifm-color-primary-darker: #0870c1;
+  --ifm-color-primary-darkest: #065c9f;
+  --ifm-color-primary-light: #0e91f5;
+  --ifm-color-primary-lighter: #1996f6;
+  --ifm-color-primary-lightest: #3ca5f7;
+
+  --ifm-color-scheme: dark;
+
+  --ifm-color-emphasis-0: var(--ifm-color-gray-1000);
+  --ifm-color-emphasis-100: var(--ifm-color-gray-900);
+  --ifm-color-emphasis-200: var(--ifm-color-gray-800);
+  --ifm-color-emphasis-300: var(--ifm-color-gray-700);
+  --ifm-color-emphasis-400: var(--ifm-color-gray-600);
+  --ifm-color-emphasis-500: var(--ifm-color-gray-500);
+  --ifm-color-emphasis-600: var(--ifm-color-gray-400);
+  --ifm-color-emphasis-700: var(--ifm-color-gray-300);
+  --ifm-color-emphasis-800: var(--ifm-color-gray-200);
+  --ifm-color-emphasis-900: var(--ifm-color-gray-100);
+  --ifm-color-emphasis-1000: var(--ifm-color-gray-0);
+
+  --ifm-toc-border-color: transparent;
+
+  --ifm-background-color: #151820;
+  --ifm-background-surface-color: #1d2028;
+
+  --ifm-hover-overlay: rgba(255, 255, 255, 0.05);
+
+  --ifm-color-content-secondary: rgba(255, 255, 255, 1);
+
+  --ifm-font-color-base: #bdc3c7;
+
+  --ifm-color-danger-dark: #c0392b;
+  --ifm-color-success-dark: #2ecc71;
+  --ifm-color-warning-dark: #f1c40f;
+  --ifm-color-info-dark: #0984e3;
+  --ifm-color-secondary-dark: #bdc3c7;
+
+  --ifm-breadcrumb-separator-filter: invert(64%) sepia(11%) saturate(0%)
+    hue-rotate(149deg) brightness(99%) contrast(95%);
+
+  --ifm-scrollbar-track-background-color: #444444;
+  --ifm-scrollbar-thumb-background-color: #686868;
+  --ifm-scrollbar-thumb-hover-background-color: #7a7a7a;
+  --ifm-color-primary-contrast-background: rgb(16, 36, 69);
+  --ifm-color-primary-contrast-foreground: rgb(235, 242, 252);
+  --ifm-color-secondary-contrast-background: #bdc3c722;
+  --ifm-color-secondary-contrast-foreground: var(--ifm-font-color-base);
+  --ifm-color-success-contrast-background: #2ecc7122;
+  --ifm-color-success-contrast-foreground: var(--ifm-font-color-base);
+  --ifm-color-info-contrast-background: #0984e322;
+  --ifm-color-info-contrast-foreground: var(--ifm-font-color-base);
+  --ifm-color-warning-contrast-background: #f1c40f22;
+  --ifm-color-warning-contrast-foreground: var(--ifm-font-color-base);
+  --ifm-color-danger-contrast-background: #c0392b22;
+  --ifm-color-danger-contrast-foreground: var(--ifm-font-color-base);
+}
+
+/* Hide the external link icon */
+.navbar__item svg {
+  display: none;
+}
+
+.navbar__items--right:after {
+  content: "Under Construction";
+  color: #f1c40f;
+}
+
+code {
+  border: none;
+  background: none;
+  padding: 0;
+}
+
+.docusaurus-highlight-code-line {
+  background-color: rgba(0, 0, 0, 0.1);
+  display: block;
+  margin: 0 calc(-1 * var(--ifm-pre-padding));
+  padding: 0 var(--ifm-pre-padding);
+}
+
+[data-theme="dark"] .docusaurus-highlight-code-line {
+  background-color: #252830;
+}

@@ -44,9 +44,14 @@ build-escad-run:
 build-escad-dev:
   mkdir escad.dev
   cp -r src/* logo examples escad.dev
+  cd docs; npm run build
+  cp -r docs/build/* escad.dev
 
 serve file:
   deno run -A --unstable --no-check src/cli/start.ts {{file}}
 
 moderate:
   @deno run -A https://deno.land/x/moderate@0.0.5/mod.ts
+
+run-docs:
+  cd docs; npm start
