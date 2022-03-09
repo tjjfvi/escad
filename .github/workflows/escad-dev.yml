@@ -2,7 +2,7 @@ name: Publish escad.dev
 
 on:
   push:
-    branches: [prod]
+    branches: [prod, docusaurus]
 jobs:
   deploy:
     runs-on: ubuntu-latest

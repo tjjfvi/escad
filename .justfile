@@ -44,7 +44,7 @@ build-escad-run:
 build-escad-dev:
   mkdir escad.dev
   cp -r src/* logo examples escad.dev
-  cd docs; npm run build
+  cd docs && npm ci && npm run build
   cp -r docs/build/* escad.dev
 
 serve file:
