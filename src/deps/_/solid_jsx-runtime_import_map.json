@@ -1,0 +1,5 @@
+{
+  "imports": {
+    "solid/jsx-runtime": "../solid.ts"
+  }
+}

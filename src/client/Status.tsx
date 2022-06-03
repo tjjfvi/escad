@@ -1,50 +1,41 @@
+/** @jsxImportSource solid */
 // @style "./stylus/Status.styl"
-import React from "../deps/react.ts";
-import { observer, Readable } from "../deps/rhobo.ts";
-import { ClientState } from "./ClientState.ts";
+import { Index } from "../deps/solid.ts";
 import { Icon } from "./Icon.tsx";
 
-export interface StatusSet {
-  name: string;
-  icon?: Icon;
-  statuses: Record<string, Status>;
-  state: Readable<string>;
-}
-
 export interface Status {
-  className?: string;
-  name: string;
-  icon: Icon;
+  class?: string;
+  description: string;
+  icon1?: Icon;
+  icon2?: Icon;
   onClick?: () => void;
 }
 
-export const Statuses = observer(() => {
-  const state = React.useContext(ClientState.Context);
-  const statuses = state.statuses();
+export const Statuses = (props: { statuses: Status[] }) => {
   return (
-    <div className="Statuses">
-      {statuses.map((statusSet) => (
-        <Status key={statusSet.name} statusSet={statusSet} />
-      ))}
+    <div class="Statuses">
+      <Index each={props.statuses}>
+        {(status) => <Status {...status()} />}
+      </Index>
     </div>
   );
-});
+};
 
-const Status = ({ statusSet }: { statusSet: StatusSet }) => {
-  const state = statusSet.state.use()();
-  const status = statusSet.statuses[state];
-  if (!status) {
-    throw new Error(`Invalid StatusSet.state "${state}"`);
-  }
-  const className = "Status " + (status.className ?? "") +
-    (status.onClick ? " clickable" : "");
+const Status = (status: Status) => {
   return (
-    <div className={className} onClick={status.onClick}>
-      <div className="icons">
-        {statusSet.icon && <Icon className="icon1" icon={statusSet.icon} />}
-        {status.icon && <Icon className="icon2" icon={status.icon} />}
+    <div
+      class="Status"
+      classList={{
+        [status.class ?? ""]: true,
+        clickable: !!status.onClick,
+      }}
+      onClick={() => status.onClick?.()}
+    >
+      <div class="icons">
+        {<Icon class="icon1" icon={status.icon1} />}
+        {<Icon class="icon2" icon={status.icon2} />}
       </div>
-      <span>{status.name}</span>
+      <span>{status.description}</span>
     </div>
   );
 };

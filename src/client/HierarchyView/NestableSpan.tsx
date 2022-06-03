@@ -1,33 +1,35 @@
-import React from "../../deps/react.ts";
+/** @jsxImportSource solid */
+import { createSignal, JSX } from "../../deps/solid.ts";
 
 export interface NestableSpanProps {
-  className?: string;
-  onClick?: (event: React.MouseEvent) => void;
-  children: React.ReactNode;
+  class?: string;
+  onClick?: (event: MouseEvent) => void;
+  children: JSX.Element;
 }
 
 /**
  * Correctly handles hover & click logic when nested
  */
-export const NestableSpan = (
-  { className, onClick, children }: NestableSpanProps,
-) => {
-  const [hovered, setHovered] = React.useState(false);
+export const NestableSpan = (props: NestableSpanProps) => {
+  const [hovered, setHovered] = createSignal(false);
   return (
     <span
-      className={(className ?? "") + (hovered ? " hover" : "")}
-      onClick={onClick && ((event) => {
-        if (!onClick) return;
-        event.stopPropagation();
-        onClick(event);
-      })}
-      onMouseOver={(event) => {
-        const newHovered = !handledMoverOverEvents.has(event.nativeEvent);
-        if (hovered !== newHovered) setHovered(newHovered);
-        handledMoverOverEvents.add(event.nativeEvent);
+      classList={{
+        [props.class ?? ""]: true,
+        hover: hovered(),
       }}
-      onMouseLeave={() => hovered && setHovered(false)}
-      children={children}
+      onClick={(event) => {
+        if (!props.onClick) return;
+        event.stopPropagation();
+        props.onClick(event);
+      }}
+      onMouseOver={(event) => {
+        const newHovered = !handledMoverOverEvents.has(event);
+        setHovered(newHovered);
+        handledMoverOverEvents.add(event);
+      }}
+      onMouseLeave={() => setHovered(false)}
+      children={props.children}
     />
   );
 };

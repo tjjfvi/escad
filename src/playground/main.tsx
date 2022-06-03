@@ -1,9 +1,9 @@
+/** @jsxImportSource solid */
 // @style "../client/stylus/index.styl"
 // @style "../client/stylus/fonts.css"
 
 import { clientId, put } from "./swApi.ts";
-import ReactDOM from "../deps/react-dom.ts";
-import React from "../deps/react.ts";
+import { render } from "../deps/solid.ts";
 import { ProjectPane } from "./ProjectPane.tsx";
 import { EditorPane } from "./EditorPane.tsx";
 import { ClientFrame } from "./ClientFrame.tsx";
@@ -76,13 +76,17 @@ const server = await createServer();
 
 await clientHtmlProm;
 
-ReactDOM.render(
-  <>
-    <ProjectPane {...{ projectManager }} />
-    <EditorPane {...{ projectManager }} />
-    <ClientFrame {...{ clientUrl, server, share }} />
-  </>,
-  document.getElementById("root"),
+const root = document.getElementById("root")!;
+while (root.firstChild) root.removeChild(root.firstChild);
+render(
+  () => (
+    <>
+      <ProjectPane projectManager={projectManager} />
+      <EditorPane projectManager={projectManager} />
+      <ClientFrame clientUrl={clientUrl} server={server} share={share} />
+    </>
+  ),
+  root,
 );
 
 async function getInitialProjects() {
@@ -206,7 +210,7 @@ artifactManager.artifactStores.unshift(new VfsArtifactStore());
 
 createRendererServerMessenger(
   logConnection(serializeConnection(workerConnection(self as any))),
-  () => import(${JSON.stringify(`/${clientId}/transpiled/main.js`)})
+  () => import(${JSON.stringify(`/${clientId}/transpiled/main.js`)}),
   logger,
 ).requestRetry();
 	`.trim();

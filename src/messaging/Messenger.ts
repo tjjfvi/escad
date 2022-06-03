@@ -13,7 +13,9 @@ export type Messenger<
   E extends EventsShape,
 > = T & {
   impl: F;
+  connection: Connection<unknown[], unknown>;
   destroy(awaitCompletion?: boolean): void;
+  getRunningCount(): number;
   retryAll(): void;
   requestRetry(): void;
   emit<K extends keyof E>(event: K, iterable: AsyncIterable<E[K]>): void;
@@ -75,7 +77,11 @@ export const createMessenger = (
       Object.create(other) as T,
       {
         impl,
+        connection,
         then: undefined,
+        getRunningCount() {
+          return retryMessages.size;
+        },
         retryAll() {
           if (destroyed) {
             throw new Error("Attempted to retryAll on destroyed messenger");

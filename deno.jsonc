@@ -1,10 +1,7 @@
 {
   "compilerOptions": {
-    "lib": [
-      "deno.ns",
-      "dom",
-      "esnext"
-    ]
+    "lib": ["deno.ns", "dom", "esnext"],
+    "jsx": "preserve"
   },
   "fmt": {
     "files": {

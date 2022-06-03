@@ -13,8 +13,6 @@
   &.right
     flex-direction row
 
-  color $grey
-
   font-weight normal
 
   .border
@@ -26,6 +24,7 @@
     cursor ew-resize
 
   .side
+    color $grey
     cursor pointer
     min-width 45px
     max-width 45px
@@ -46,3 +45,10 @@
 
   &.resizing
     transition none
+
+  .content > .Loading:only-child
+    --size 75px
+    left 50%
+    top 50%
+    transform translate(-50%, -50%)
+    color $grey

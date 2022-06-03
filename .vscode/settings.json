@@ -1,4 +1,5 @@
 {
   "deno.enable": true,
-  "deno.unstable": true
+  "deno.unstable": true,
+  "deno.importMap": "src/deps/_/solid_jsx-runtime_import_map.json"
 }

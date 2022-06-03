@@ -3,6 +3,7 @@ import { Face } from "./Face.ts";
 import { Mesh } from "./Mesh.ts";
 
 exportTypeRegistry.register<Mesh>({
+  type: "ExportType",
   id: Id.create(
     import.meta.url,
     "@escad/3d",
@@ -33,11 +34,12 @@ exportTypeRegistry.register<Mesh>({
       }
       position += 2;
     }
-    return buffer;
+    return new Uint8Array(buffer);
   },
 });
 
 exportTypeRegistry.register<Mesh>({
+  type: "ExportType",
   id: Id.create(
     import.meta.url,
     "@escad/3d",

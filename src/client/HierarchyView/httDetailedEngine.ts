@@ -6,10 +6,7 @@ import {
 } from "../../core/mod.ts";
 import { getState } from "./State.ts";
 import { HierarchyPath } from "../HierarchyPath.ts";
-import {
-  HierarchyToTreeEngine,
-  wrapTreeSelectable,
-} from "./hierarchyToTree.ts";
+import { HierarchyToTreeEngine } from "./hierarchyToTree.tsx";
 import { Tree, TreePart } from "./Tree.ts";
 
 export const httDetailedEngine: HierarchyToTreeEngine = {
@@ -25,7 +22,13 @@ export const httDetailedEngine: HierarchyToTreeEngine = {
       : JSON.stringify(hierarchy.value),
   )],
 
-  ObjectHierarchy: ({ path, hierarchy, stateMemo, hierarchyToTree }) => [
+  ObjectHierarchy: ({
+    path,
+    hierarchy,
+    stateMemo,
+    hierarchyToTree,
+    wrapTreeSelectable,
+  }) => [
     TreePart.Line.String("{"),
     TreePart.Block({
       children: Object.entries(hierarchy.children).map(([key, value]) => {
@@ -65,7 +68,13 @@ export const httDetailedEngine: HierarchyToTreeEngine = {
     TreePart.Line.String("]"),
   ],
 
-  CallHierarchy: ({ path, hierarchy, stateMemo, hierarchyToTree }) => {
+  CallHierarchy: ({
+    path,
+    hierarchy,
+    stateMemo,
+    hierarchyToTree,
+    wrapTreeSelectable,
+  }) => {
     if (!hierarchy.composable) {
       return [
         ...hierarchyToTree({

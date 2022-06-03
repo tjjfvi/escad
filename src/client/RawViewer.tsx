@@ -1,32 +1,42 @@
+/** @jsxImportSource solid */
 // @style "./stylus/RawViewer.styl"
-import { Hierarchy } from "../core/mod.ts";
-import { UnknownProduct, UnknownProductType } from "../core/mod.ts";
-import React from "../deps/react.ts";
-import { observer, useFromPromise } from "../deps/rhobo.ts";
+import { Hierarchy, UnknownProduct } from "../core/mod.ts";
+import { UnknownProductType } from "../core/mod.ts";
+import { createResource } from "../deps/solid.ts";
+import { registerViewer } from "./DisplayPane.tsx";
 import { HierarchyView } from "./HierarchyView/mod.ts";
-import { viewerRegistry } from "./ViewerRegistry.ts";
 import { Loading } from "./Loading.tsx";
 
-viewerRegistry.register<UnknownProduct, { product: UnknownProduct }>({
-  type: UnknownProductType.create(),
-  map: async (x) => ({ product: x }),
-  context: {
-    name: "Raw",
-    className: "RawViewer",
-    component: observer(({ inputs }) => {
-      const hierarchyPromise = Promise.all(inputs).then((x) =>
-        Hierarchy.from(x.map((x) => x.product.product), true)
-      );
-      const hierarchy = useFromPromise(hierarchyPromise)();
+registerViewer<UnknownProduct>({
+  type: "Viewer",
+  name: "Raw",
+  productType: UnknownProductType.create(),
+  component: (props) => {
+    const [hierarchySig] = createResource(
+      () => props.productPromises,
+      async (productPromises) =>
+        await Hierarchy.from(
+          (await Promise.all(productPromises)).map((p) => p.product),
+          true,
+        ),
+    );
+    return () => {
+      const hierarchy = hierarchySig();
       if (!hierarchy) {
-        return <Loading />;
+        return (
+          <div class="RawViewer">
+            <Loading />
+          </div>
+        );
       }
       return (
-        <div className="inner">
-          <HierarchyView hierarchy={hierarchy} />
+        <div class="RawViewer">
+          <div class="inner">
+            <HierarchyView hierarchy={hierarchy} />
+          </div>
         </div>
       );
-    }),
-    weight: 0,
+    };
   },
+  weight: 0,
 });

@@ -1,8 +1,5 @@
 import { HierarchyPath } from "../HierarchyPath.ts";
-import {
-  HierarchyToTreeEngine,
-  wrapTreeSelectable,
-} from "./hierarchyToTree.ts";
+import { HierarchyToTreeEngine } from "./hierarchyToTree.tsx";
 import { getState, State } from "./State.ts";
 import { Tree, TreePart } from "./Tree.ts";
 
@@ -22,7 +19,13 @@ export const httOutlineEngine: HierarchyToTreeEngine = {
       getState(stateMemo, path, ""),
     ),
 
-  ObjectHierarchy: ({ hierarchy, path, stateMemo, hierarchyToTree }) => [
+  ObjectHierarchy: ({
+    hierarchy,
+    path,
+    stateMemo,
+    hierarchyToTree,
+    wrapTreeSelectable,
+  }) => [
     TreePart.Line.String("{"),
     TreePart.Block({
       children: Object.entries(hierarchy.children).map(([key, value]) => {

@@ -1,51 +1,51 @@
+/** @jsxImportSource solid */
 // @style "./stylus/NumberParam.styl"
+import { createSignal } from "../deps/solid.ts";
 import { NumberParam } from "../core/mod.ts";
-import React from "../deps/react.ts";
-import { observer, useComputed, useObservable } from "../deps/rhobo.ts";
-import { NameDesc, registerParameter } from "../client/mod.ts";
+import { NameDesc, registerParameter } from "./ParametersPane.tsx";
 
 registerParameter<number, NumberParam>({
   id: NumberParam.id,
-  className: "NumberParam",
-  component: observer(({ parameter, value }) => {
+  class: "NumberParam",
+  component: (props) => {
     const validate = (val: number) =>
       !(
         (isNaN(val)) ||
-        (parameter.integer && Math.floor(val) !== val) ||
-        (parameter.min !== undefined && val < parameter.min) ||
-        (parameter.max !== undefined && val > parameter.max)
+        (props.parameter.integer && Math.floor(val) !== val) ||
+        (props.parameter.min !== undefined && val < props.parameter.min) ||
+        (props.parameter.max !== undefined && val > props.parameter.max)
       );
-    const _fieldValue = useObservable(value() + "");
-    const valid = useComputed(() => validate(+_fieldValue()));
-    const fieldValue = useComputed(() => _fieldValue(), (v) => {
-      _fieldValue(v);
-      if (validate(+v)) {
-        value(+v);
+    const [fieldValue, _setFieldValue] = createSignal(props.value + "");
+    const valid = () => validate(+fieldValue());
+    const setFieldValue = (value: string) => {
+      _setFieldValue(value);
+      if (validate(+value)) {
+        props.setValue(+value);
       }
-    });
+    };
     return (
       <>
-        <NameDesc parameter={parameter} />
-        <div className={"NumberParam " + (valid() ? "" : "invalid")}>
+        <NameDesc parameter={props.parameter} />
+        <div class="NumberParam" classList={{ invalid: !valid() }}>
           <input
             type="text"
             value={fieldValue() || ""}
-            onChange={(e) => fieldValue(e.target.value)}
+            onChange={(e) => setFieldValue(e.currentTarget.value)}
           />
-          <div className="incDec">
+          <div class="incDec">
             <div
-              className="inc"
-              onClick={() => fieldValue((+fieldValue.value + 1) + "")}
+              class="inc"
+              onClick={() => setFieldValue((+fieldValue() + 1) + "")}
             >
             </div>
             <div
-              className="dec"
-              onClick={() => fieldValue((+fieldValue.value - 1) + "")}
+              class="dec"
+              onClick={() => setFieldValue((+fieldValue() - 1) + "")}
             >
             </div>
           </div>
         </div>
       </>
     );
-  }),
+  },
 });

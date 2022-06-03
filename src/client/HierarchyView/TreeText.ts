@@ -1,4 +1,4 @@
-import { HierarchyPath } from "../HierarchyPath.ts";
+import { JSX } from "../../deps/solid.ts";
 import { State } from "./State.ts";
 
 export type TreeText = TreeTextPart[];
@@ -29,13 +29,15 @@ export namespace TreeTextPart {
     readonly target: State;
   }
 
-  export const RangeStart = (range: TreeTextRange): RangeStart => ({
+  export const RangeStart = (
+    component: RangeStart["component"],
+  ): RangeStart => ({
     kind: "rangeStart",
-    range,
+    component,
   });
   export interface RangeStart {
     readonly kind: "rangeStart";
-    readonly range: TreeTextRange;
+    readonly component: (props: { children: JSX.Element }) => JSX.Element;
   }
 
   export const RangeEnd = (): RangeEnd => ({
@@ -43,27 +45,5 @@ export namespace TreeTextPart {
   });
   export interface RangeEnd {
     readonly kind: "rangeEnd";
-  }
-}
-
-export type TreeTextRange =
-  | TreeTextRange.Selectable
-  | TreeTextRange.Dummy;
-
-export namespace TreeTextRange {
-  export const Dummy = (): Dummy => ({
-    kind: "dummy",
-  });
-  export interface Dummy {
-    readonly kind: "dummy";
-  }
-
-  export const Selectable = (path: HierarchyPath): Selectable => ({
-    kind: "selectable",
-    path,
-  });
-  export interface Selectable {
-    readonly kind: "selectable";
-    readonly path: HierarchyPath;
   }
 }

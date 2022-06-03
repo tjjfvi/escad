@@ -2,7 +2,7 @@ import "./_polyfills.ts";
 
 import { restore } from "./_redefineProto.ts";
 
-import * as stylus from "https://esm.sh/stylus/lib/stylus.js";
+import * as stylus from "https://esm.sh/stylus/lib/stylus.js?target=esnext";
 export { stylus };
 
 restore();

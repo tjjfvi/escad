@@ -1,13 +1,20 @@
-import React from "../deps/react.ts";
-import { MdiIcon, mdiIcons } from "../deps/mdi.ts";
+/** @jsxImportSource solid */
+import { JSX } from "../deps/solid.ts";
+import { mdiIcons } from "../deps/mdi.ts";
 
-export type Icon = ((
-  props: { className?: string },
-) => React.ReactElement | null);
+export type Icon = (props: { class?: string }) => JSX.Element;
 
-export const Icon = (props: { icon: Icon; className?: string }) => (
-  <props.icon className={props.className} />
-);
+interface IconProps {
+  icon: Icon | null | undefined;
+  class?: string;
+}
+
+export const Icon = (
+  props: IconProps,
+) =>
+  () => (
+    props.icon && <props.icon class={props.class} />
+  );
 
 export const mdi: {
   [
@@ -19,11 +26,13 @@ export const mdi: {
     if (key in target || typeof key === "symbol" || typeof key === "number") {
       return target[key as never];
     }
-    const icon: Icon = ({ className }) => (
-      <MdiIcon
-        path={mdiIcons[("mdi" + key[0].toUpperCase() + key.slice(1)) as never]}
-        className={(className ?? "") + ` mdi ${key}`}
-      />
+    const icon: Icon = (props) => (
+      <svg viewBox="0 0 24 24" class={(props.class ?? "") + ` mdi ${key}`}>
+        <path
+          style="fill: currentColor"
+          d={mdiIcons[("mdi" + key[0].toUpperCase() + key.slice(1)) as never]}
+        />
+      </svg>
     );
     return (target[key as never] as any) = icon;
   },

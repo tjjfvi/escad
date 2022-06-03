@@ -18,11 +18,11 @@ lint-check:
 
 check:
   @just lint-check
-  deno cache --config deno.jsonc --no-check=remote src/*/mod.ts src/*/client-plugin/mod.ts src/playground/main.tsx | cat
+  deno cache --config deno.jsonc --no-check=remote --import-map src/deps/_/solid_jsx-runtime_import_map.json src/*/mod.ts src/*/client-plugin/mod.ts src/playground/main.tsx | cat
 
 check-force:
   @just lint-check
-  deno cache --config deno.jsonc --no-check=remote --reload src/*/mod.ts
+  deno cache --config deno.jsonc --no-check=remote --import-map src/deps/_/solid_jsx-runtime_import_map.json --reload src/*/mod.ts src/*/client-plugin/mod.ts src/playground/main.tsx
 
 test:
   deno test -A --unstable

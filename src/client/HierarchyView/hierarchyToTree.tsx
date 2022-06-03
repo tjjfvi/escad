@@ -1,8 +1,10 @@
+/** @jsxImportSource solid */
+import { JSX } from "../../deps/solid.ts";
 import { Hash, Hierarchy, Product } from "../../core/mod.ts";
 import { HierarchyPath } from "../HierarchyPath.ts";
 import { StateMemo } from "./State.ts";
 import { Tree, TreePart } from "./Tree.ts";
-import { TreeTextPart, TreeTextRange } from "./TreeText.ts";
+import { TreeTextPart } from "./TreeText.ts";
 
 /**
  * Converts a `Hierarchy` to a `Tree`
@@ -20,12 +22,14 @@ export function hierarchyToTree(
   engine: HierarchyToTreeEngine,
   hierarchy: Hierarchy,
   stateMemo: StateMemo,
+  Selectable: SelectableComponent,
   path: HierarchyPath = [],
 ): Tree {
   return wrapTreeSelectable(
     path,
     hierarchy.linkedProducts,
-    _hierarchyToTree(engine, hierarchy, stateMemo, path),
+    _hierarchyToTree(engine, hierarchy, stateMemo, path, Selectable),
+    Selectable,
   );
 }
 
@@ -40,6 +44,11 @@ export type HierarchyToTreeEngine = {
     hierarchyToTree: (
       props: { path: HierarchyPath; hierarchy: Hierarchy },
     ) => Tree;
+    wrapTreeSelectable: (
+      path: HierarchyPath,
+      linkedProducts: readonly Hash<Product>[] | undefined,
+      tree: Tree,
+    ) => Tree;
   }) => Tree;
 };
 
@@ -48,13 +57,16 @@ function _hierarchyToTree(
   hierarchy: Hierarchy,
   stateMemo: StateMemo,
   path: HierarchyPath,
+  Selectable: SelectableComponent,
 ) {
   return engine[hierarchy.type]({
     path,
     hierarchy: hierarchy as never,
     stateMemo,
     hierarchyToTree: ({ path, hierarchy }) =>
-      hierarchyToTree(engine, hierarchy, stateMemo, path),
+      hierarchyToTree(engine, hierarchy, stateMemo, Selectable, path),
+    wrapTreeSelectable: (path, linkedProducts, tree) =>
+      wrapTreeSelectable(path, linkedProducts, tree, Selectable),
   });
 }
 
@@ -71,13 +83,26 @@ export function wrapTreeSelectable(
   path: HierarchyPath,
   linkedProducts: readonly Hash<Product>[] | undefined,
   tree: Tree,
+  Selectable: SelectableComponent,
 ): Tree {
   if (!linkedProducts?.length || !tree.length) {
     return tree;
   }
   return [
-    TreePart.Line(TreeTextPart.RangeStart(TreeTextRange.Selectable(path))),
+    TreePart.Line(TreeTextPart.RangeStart((props) => (
+      <Selectable
+        path={path}
+        linkedProducts={linkedProducts}
+        children={props.children}
+      />
+    ))),
     ...tree,
     TreePart.Line(TreeTextPart.RangeEnd()),
   ];
 }
+
+export type SelectableComponent = (props: {
+  path: HierarchyPath;
+  linkedProducts: readonly Hash<Product>[] | undefined;
+  children: JSX.Element;
+}) => JSX.Element;

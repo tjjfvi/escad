@@ -1,41 +1,50 @@
+/** @jsxImportSource solid */
 import { Hierarchy } from "../../core/mod.ts";
-import React from "../../deps/react.ts";
-import { useValue } from "../../deps/rhobo.ts";
 import { ResizeSensor } from "../../deps/css-element-queries.ts";
 import { StateMemo } from "./State.ts";
 import { TreeView } from "./TreeView.tsx";
-import { hierarchyToTree, HierarchyToTreeEngine } from "./hierarchyToTree.ts";
+import {
+  hierarchyToTree,
+  HierarchyToTreeEngine,
+  SelectableComponent,
+} from "./hierarchyToTree.tsx";
 import { httDetailedEngine } from "./httDetailedEngine.ts";
+import {
+  createRenderEffect,
+  createSignal,
+  onCleanup,
+} from "../../deps/solid.ts";
 
 export interface HierarchyViewProps {
   hierarchy: Hierarchy;
-  selectable?: boolean;
   engine?: HierarchyToTreeEngine;
+  Selectable?: SelectableComponent;
 }
 
-export const HierarchyView = (
-  { hierarchy, selectable = false, engine = httDetailedEngine }:
-    HierarchyViewProps,
-) => {
-  const [width, setWidth] = React.useState<number>(0);
-  const sensorRef = React.useRef<ResizeSensor>();
-  const stateMemo = useValue<StateMemo>(() => new Map());
-  return (
-    <div
-      ref={(el) => {
-        sensorRef.current?.detach();
-        if (!el) return;
-        const sensor = new ResizeSensor(el, () => {
-          if (el.clientWidth !== width) setWidth(el.clientWidth);
-        });
-        sensorRef.current = sensor;
-      }}
-    >
+export const HierarchyView = (props: HierarchyViewProps) => {
+  const [width, setWidth] = createSignal(0);
+  const stateMemo = new Map();
+  const el = (
+    <div>
       <TreeView
-        width={width}
-        tree={hierarchyToTree(engine, hierarchy, stateMemo)}
-        selectable={selectable}
+        width={width()}
+        tree={hierarchyToTree(
+          props.engine ?? httDetailedEngine,
+          props.hierarchy,
+          stateMemo,
+          props.Selectable ?? DummySelectable,
+        )}
       />
     </div>
-  );
+  ) as Element;
+  createRenderEffect(() => {
+    const sensor = new ResizeSensor(el, () => {
+      setWidth(el.clientWidth);
+    });
+    onCleanup(() => sensor.detach());
+  });
+  return el;
 };
+
+export const DummySelectable: SelectableComponent = (props) =>
+  () => props.children;
