@@ -12,9 +12,11 @@ export class FsArtifactStore implements ArtifactStore {
   constructor(public rootDir: string) {}
 
   async storeRaw(hash: Hash<unknown>, value: WrappedValue) {
+    const tmp = await this.getPathTmp();
     const path = await this.getPathRaw(hash);
-    const file = await Deno.open(path, { write: true, create: true });
+    const file = await Deno.open(tmp, { write: true, create: true });
     await copy(readerFromIterable($wrappedValue.serialize(value)), file);
+    await Deno.rename(tmp, path);
   }
 
   async storeRef(loc: readonly unknown[], hash: Hash<unknown>) {
@@ -47,7 +49,7 @@ export class FsArtifactStore implements ArtifactStore {
 
   private async getPathRaw(hash: Hash<unknown>) {
     const path = join(this.rootDir, "raw", hash);
-    this.mkdirp(dirname(path));
+    await this.mkdirp(dirname(path));
     return path;
   }
 
@@ -57,6 +59,12 @@ export class FsArtifactStore implements ArtifactStore {
       ...loc.map((x) => Id.isId(x) ? x.replace(/\//g, "-") : Hash.create(x)),
     );
     await Deno.mkdir(dirname(path), { recursive: true });
+    return path;
+  }
+
+  private async getPathTmp() {
+    const path = join(this.rootDir, "tmp", crypto.randomUUID());
+    await this.mkdirp(dirname(path));
     return path;
   }
 

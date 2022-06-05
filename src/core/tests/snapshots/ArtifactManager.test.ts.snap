@@ -225,26 +225,6 @@
   [
     "store0",
     "storeRaw",
-    "9057425f657d25f62d1adaf518df899b1703b0694e6f3e0a2ea64457be49b90f",
-    {
-      value: {
-        isTestArtifact: true,
-      },
-    },
-  ],
-  [
-    "store1",
-    "storeRaw",
-    "9057425f657d25f62d1adaf518df899b1703b0694e6f3e0a2ea64457be49b90f",
-    {
-      value: {
-        isTestArtifact: true,
-      },
-    },
-  ],
-  [
-    "store0",
-    "storeRaw",
     "6e9c3da9ea693b2a19048fc7312e0c877018aa0ee5195867051372f2e58dadd0",
     {
       value: "0a843fe2c3373dd9f5072dc37674ccab20eb807c564ca34b6384e4cae0f318c2",

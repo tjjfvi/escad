@@ -25,21 +25,28 @@ export class ArtifactManager {
   ) {
     const artifact = await artifactPromise;
 
-    this.timers.storeRaw.start();
     const artifactHash = Hash.create(artifact);
 
-    this.getCache(excludeStores).set(
-      artifactHash,
-      WrappedValue.create(artifact),
-    );
+    const cache = this.getCache(excludeStores);
+    await cache.getAsync(this.getWriteCacheKey(artifactHash), async () => {
+      this.timers.storeRaw.start();
 
-    await Promise.all(this.artifactStores.map(async (s) => {
-      if (!excludeStores?.has(s)) {
-        await s.storeRaw?.(artifactHash, WrappedValue.create(artifact), this);
-      }
-    }));
+      cache.set(
+        artifactHash,
+        WrappedValue.create(artifact),
+      );
 
-    this.timers.storeRaw.end();
+      await Promise.all(this.artifactStores.map(async (s) => {
+        if (!excludeStores?.has(s)) {
+          await s.storeRaw?.(artifactHash, WrappedValue.create(artifact), this);
+        }
+      }));
+
+      this.timers.storeRaw.end();
+
+      return null;
+    });
+
     return artifactHash;
   }
 
@@ -48,27 +55,38 @@ export class ArtifactManager {
     artifactPromise: T | Promise<T>,
     excludeStores?: ReadonlySet<ArtifactStore>,
   ) {
-    this.getCache(excludeStores).setAsync(
-      this.getRefCacheKey(loc),
-      Promise.resolve(WrappedValue.create(artifactPromise)),
-    );
-    const artifact = await artifactPromise;
+    const cache = this.getCache(excludeStores);
+    const cacheKey = this.getRefCacheKey(loc);
+    let artifactHash: Hash<T>;
+    await cache.getAsync(this.getWriteCacheKey(cacheKey), async () => {
+      cache.setAsync(
+        cacheKey,
+        Promise.resolve(artifactPromise).then(WrappedValue.create),
+      );
+      const artifact = await artifactPromise;
 
-    this.timers.storeRef.start();
-    const artifactHash = Hash.create(artifact);
+      artifactHash = Hash.create(artifact);
 
-    await Promise.all<unknown>([
-      this.storeRaw(artifact, excludeStores),
-      ...loc.map((l) => this.storeRaw(l, excludeStores)),
-      ...this.artifactStores.map((s) => {
-        if (!excludeStores?.has(s)) {
-          s.storeRef?.(loc, artifactHash, this);
-        }
-      }),
-    ]);
+      this.timers.storeRef.start();
 
-    this.timers.storeRef.end();
-    return artifactHash;
+      await cache.setAsync(
+        this.getWriteCacheKey(cacheKey),
+        Promise.all<unknown>([
+          this.storeRaw(artifact, excludeStores),
+          ...loc.map((l) => this.storeRaw(l, excludeStores)),
+          ...this.artifactStores.map((s) => {
+            if (!excludeStores?.has(s)) {
+              s.storeRef?.(loc, artifactHash, this);
+            }
+          }),
+        ]).then(() => null),
+      );
+
+      this.timers.storeRef.end();
+
+      return null;
+    });
+    return artifactHash! ?? Hash.create(await artifactPromise);
   }
 
   async lookupRaw<T>(
@@ -169,6 +187,10 @@ export class ArtifactManager {
     }
     this.timers.getRefCacheKey.end();
     return key;
+  }
+
+  private getWriteCacheKey(key: string) {
+    return "~" + key;
   }
 }
 
