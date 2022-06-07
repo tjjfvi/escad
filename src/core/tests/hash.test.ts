@@ -1,10 +1,9 @@
-import { assertEquals, snapshot } from "../../testing/mod.ts";
+import { assertEquals, assertSnapshot } from "../../testing/mod.ts";
 import { Hash } from "../mod.ts";
 
-Deno.test("Hash.create", async () => {
-  await snapshot(
-    import.meta.url,
-    "create",
+Deno.test("Hash.create", async (t) => {
+  await assertSnapshot(
+    t,
     [
       10,
       null,

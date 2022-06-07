@@ -1,7 +1,7 @@
-import { mock, snapshot } from "../../testing/mod.ts";
+import { assertSnapshot, mock } from "../../testing/mod.ts";
 import { createConnectionPair, serializeConnection } from "../mod.ts";
 
-Deno.test("serializeConnection", async () => {
+Deno.test("serializeConnection", async (t) => {
   const [_a, b] = createConnectionPair<Uint8Array>();
   const a = serializeConnection(_a);
   const fn = mock();
@@ -12,5 +12,5 @@ Deno.test("serializeConnection", async () => {
   while (fn.calls.length < 2) {
     await Promise.resolve();
   }
-  await snapshot(import.meta.url, "", fn.calls);
+  await assertSnapshot(t, fn.calls);
 });

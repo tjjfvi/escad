@@ -24,7 +24,7 @@ import {
   Serializer,
 } from "../mod.ts";
 
-import { assertEquals, snapshot } from "../../testing/mod.ts";
+import { assertEquals, assertSnapshot } from "../../testing/mod.ts";
 
 // deno-fmt-ignore
 const lorem = "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.";
@@ -226,7 +226,7 @@ const serialRoundTripTestData: [string, Serializer<any>, any[]][] = [
 ];
 
 for (const [name, serializer, values] of serialRoundTripTestData) {
-  Deno.test(name, async () => {
+  Deno.test(name, async (t) => {
     const data = new Map<any, any>();
     for (const value of values) {
       const buffers = [...serializer.serialize(value, { chunkSize: 16 })];
@@ -254,7 +254,7 @@ for (const [name, serializer, values] of serialRoundTripTestData) {
       })());
       assertEquals(deserialized, value);
     }
-    await snapshot(import.meta.url, name, data);
+    await assertSnapshot(t, data);
   });
 }
 

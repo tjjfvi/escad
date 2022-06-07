@@ -1,3 +1,6 @@
+export const snapshot = {};
+
+snapshot[`ArtifactManager 1`] = `
 [
   [
     "store0",
@@ -270,3 +273,4 @@
     },
   ],
 ]
+`;

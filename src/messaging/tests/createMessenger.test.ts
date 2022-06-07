@@ -1,4 +1,4 @@
-import { assertEquals, mock, snapshot } from "../../testing/mod.ts";
+import { assertEquals, assertSnapshot, mock } from "../../testing/mod.ts";
 import {
   Connection,
   createConnectionPair,
@@ -34,7 +34,7 @@ const createTestMessenger = (connection: Connection<unknown>) => {
   return messenger;
 };
 
-Deno.test("createMessenger", async () => {
+Deno.test("createMessenger", async (t) => {
   const [a, b] = createConnectionPair();
   const fn = mock();
   a.onMsg((x) => fn("b->a", x));
@@ -75,5 +75,5 @@ Deno.test("createMessenger", async () => {
   b.send(["missingno", 1, 2, 3]);
   b.send(["call", null, 1, 1]);
   b.send(["call", 1, {}, 1]);
-  await snapshot(import.meta.url, "", fn.calls);
+  await assertSnapshot(t, fn.calls);
 });

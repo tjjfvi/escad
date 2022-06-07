@@ -1,0 +1,207 @@
+export const snapshot = {};
+
+snapshot[`createLeafProductUtils > Consistent keys 1`] = `
+[
+  "create",
+  "id",
+  "productType",
+  "isProductA",
+  "convert",
+]
+`;
+
+snapshot[`createLeafProductUtils > .productType 1`] = `
+{
+  id: "@escad/core/LeafProduct/ProductA",
+  type: "LeafProductType",
+}
+`;
+
+snapshot[`ProductA > .create 1`] = `
+{
+  type: "@escad/core/LeafProduct/ProductA",
+}
+`;
+
+snapshot[`ProductA > Product.getProductType 1`] = `
+{
+  id: "@escad/core/LeafProduct/ProductA",
+  type: "LeafProductType",
+}
+`;
+
+snapshot[`TupleProduct<[]> > .create 1`] = `
+{
+  children: [
+  ],
+  type: "TupleProduct",
+}
+`;
+
+snapshot[`TupleProduct<[]> > Product.getProductType 1`] = `
+{
+  elementTypes: [
+  ],
+  type: "TupleProductType",
+}
+`;
+
+snapshot[`TupleProduct<[ProductA, ProductB]> > .create 1`] = `
+{
+  children: [
+    {
+      type: "@escad/core/LeafProduct/ProductA",
+    },
+    {
+      type: "@escad/core/LeafProduct/ProductB",
+    },
+  ],
+  type: "TupleProduct",
+}
+`;
+
+snapshot[`TupleProduct<[ProductA, ProductB]> > Product.getProductType 1`] = `
+{
+  elementTypes: [
+    {
+      id: "@escad/core/LeafProduct/ProductA",
+      type: "LeafProductType",
+    },
+    {
+      id: "@escad/core/LeafProduct/ProductB",
+      type: "LeafProductType",
+    },
+  ],
+  type: "TupleProductType",
+}
+`;
+
+snapshot[`ArrayProduct<ProductA> > .create 1`] = `
+{
+  children: [
+    {
+      type: "@escad/core/LeafProduct/ProductA",
+    },
+    {
+      type: "@escad/core/LeafProduct/ProductA",
+    },
+  ],
+  type: "ArrayProduct",
+}
+`;
+
+snapshot[`ArrayProduct<ProductA> > Product.getProductType 1`] = `
+{
+  elementType: {
+    id: "@escad/core/LeafProduct/ProductA",
+    type: "LeafProductType",
+  },
+  type: "ArrayProductType",
+}
+`;
+
+snapshot[`UnknownProduct > .create 1`] = `
+{
+  product: {
+    type: "@escad/core/LeafProduct/ProductB",
+  },
+  type: "UnknownProduct",
+}
+`;
+
+snapshot[`UnknownProduct > Product.getProductType 1`] = `
+{
+  type: "UnknownProductType",
+}
+`;
+
+snapshot[`Complex > .create 1`] = `
+{
+  children: [
+    {
+      type: "@escad/core/LeafProduct/ProductA",
+    },
+    {
+      children: [
+      ],
+      type: "TupleProduct",
+    },
+    {
+      children: [
+        {
+          type: "@escad/core/LeafProduct/ProductA",
+        },
+        {
+          type: "@escad/core/LeafProduct/ProductA",
+        },
+      ],
+      type: "ArrayProduct",
+    },
+    {
+      children: [
+        {
+          type: "@escad/core/LeafProduct/ProductA",
+        },
+        {
+          type: "@escad/core/LeafProduct/ProductB",
+        },
+        {
+          type: "@escad/core/LeafProduct/ProductC",
+        },
+      ],
+      type: "TupleProduct",
+    },
+    {
+      product: {
+        type: "@escad/core/LeafProduct/ProductB",
+      },
+      type: "UnknownProduct",
+    },
+  ],
+  type: "TupleProduct",
+}
+`;
+
+snapshot[`Complex > Product.getProductType 1`] = `
+{
+  elementTypes: [
+    {
+      id: "@escad/core/LeafProduct/ProductA",
+      type: "LeafProductType",
+    },
+    {
+      elementTypes: [
+      ],
+      type: "TupleProductType",
+    },
+    {
+      elementType: {
+        id: "@escad/core/LeafProduct/ProductA",
+        type: "LeafProductType",
+      },
+      type: "ArrayProductType",
+    },
+    {
+      elementTypes: [
+        {
+          id: "@escad/core/LeafProduct/ProductA",
+          type: "LeafProductType",
+        },
+        {
+          id: "@escad/core/LeafProduct/ProductB",
+          type: "LeafProductType",
+        },
+        {
+          id: "@escad/core/LeafProduct/ProductC",
+          type: "LeafProductType",
+        },
+      ],
+      type: "TupleProductType",
+    },
+    {
+      type: "UnknownProductType",
+    },
+  ],
+  type: "TupleProductType",
+}
+`;

@@ -28,7 +28,7 @@ test:
   deno test -A --unstable
 
 test-update:
-  WRITE_SNAPSHOTS=1 deno test -A --unstable
+  deno test -A --unstable -- --update
 
 run-playground:
   deno run -A --unstable --no-check src/playground/devServer.ts
