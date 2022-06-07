@@ -14,11 +14,11 @@ const createArtifactStoreMock = (
 ): ArtifactStore => ({
   lookupRaw: async (hash) => {
     output.push([name, "lookupRaw", hash]);
-    return returnValues.pop() ?? null;
+    return returnValues.shift() ?? null;
   },
   lookupRef: async (loc) => {
     output.push([name, "lookupRef", loc]);
-    return returnValues.pop() ?? null;
+    return returnValues.shift() ?? null;
   },
   storeRaw: async (hash, value) => {
     output.push([name, "storeRaw", hash, value]);
@@ -31,9 +31,13 @@ const createArtifactStoreMock = (
 Deno.test("ArtifactManager", async () => {
   const artifactManager = new ArtifactManager();
   const output = [] as unknown[];
-  const store0 = createArtifactStoreMock("store0", output, []);
-  const store1 = createArtifactStoreMock("store1", output, [
+  const store0 = createArtifactStoreMock("store0", output, [
     WrappedValue.create({ test0: true }),
+    null,
+    WrappedValue.create(Hash.create("test")),
+  ]);
+  const store1 = createArtifactStoreMock("store1", output, [
+    WrappedValue.create({ isTestArtifact: true }),
     WrappedValue.create({ test1: true }),
     WrappedValue.create({ test2: true }),
     WrappedValue.create({ test3: true }),
@@ -46,8 +50,12 @@ Deno.test("ArtifactManager", async () => {
     Id.create(import.meta.url, "@escad/core", "Test", "ArtifactTest"),
   ];
   for (const artifact of artifacts) {
-    await artifactManager.lookupRaw(Hash.create(artifact));
-    await artifactManager.lookupRaw(Hash.create(artifact), excludeStores);
+    output.push(
+      await artifactManager.lookupRaw(Hash.create(artifact)),
+    );
+    output.push(
+      await artifactManager.lookupRaw(Hash.create(artifact), excludeStores),
+    );
     await artifactManager.storeRaw(artifact);
     await artifactManager.storeRaw(Promise.resolve(artifact), excludeStores);
   }
