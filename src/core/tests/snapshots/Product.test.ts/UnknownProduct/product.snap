@@ -1,6 +1,0 @@
-{
-  product: {
-    type: "@escad/core/LeafProduct/ProductB",
-  },
-  type: "UnknownProduct",
-}

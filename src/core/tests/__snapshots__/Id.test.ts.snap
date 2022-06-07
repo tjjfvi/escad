@@ -1,0 +1,5 @@
+export const snapshot = {};
+
+snapshot[`Id.create > @escad/core/Test/test0 1`] = `"@escad/core/Test/test0"`;
+
+snapshot[`Id.create > Throws on duplicate 1`] = `"Duplicate ids created under @escad/core/Test/test0"`;

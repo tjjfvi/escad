@@ -1,4 +1,4 @@
-import { assertEquals, snapshot } from "../../testing/mod.ts";
+import { assertEquals, assertSnapshot } from "../../testing/mod.ts";
 import {
   ArrayProduct,
   ArrayProductType,
@@ -56,19 +56,11 @@ const ProductC = {
 };
 
 Deno.test("createLeafProductUtils", async (t) => {
-  await t.step("Consistent keys", async () => {
-    await snapshot(
-      import.meta.url,
-      "createLeafProductUtils/keys",
-      Object.keys(ProductA),
-    );
+  await t.step("Consistent keys", async (t) => {
+    await assertSnapshot(t, Object.keys(ProductA));
   });
-  await t.step(".productType", async () => {
-    await snapshot(
-      import.meta.url,
-      "createLeafProductUtils/productType",
-      ProductA.productType,
-    );
+  await t.step(".productType", async (t) => {
+    await assertSnapshot(t, ProductA.productType);
   });
   await t.step(".isProductA", async (t) => {
     const productA = ProductA.create();
@@ -125,16 +117,15 @@ const altProductTypes: [string, ProductType][] = [
 
 for (const [name, createProduct] of productTests) {
   Deno.test(name, async (t) => {
-    await t.step(".create", async () => {
-      await snapshot(import.meta.url, `${name}/product`, createProduct());
+    await t.step(".create", async (t) => {
+      await assertSnapshot(t, createProduct());
     });
     await t.step("Product.isProduct", () => {
       assertEquals(Product.isProduct(createProduct()), true);
     });
-    await t.step("Product.getProductType", async () => {
-      await snapshot(
-        import.meta.url,
-        `${name}/producType`,
+    await t.step("Product.getProductType", async (t) => {
+      await assertSnapshot(
+        t,
         Product.getProductType(createProduct()),
       );
     });

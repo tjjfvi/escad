@@ -1,4 +1,4 @@
-import { assertEquals, snapshot } from "../../testing/mod.ts";
+import { assertEquals, assertSnapshot } from "../../testing/mod.ts";
 import { depthFirst, Stack } from "../mod.ts";
 
 Deno.test("Stack", () => {
@@ -9,7 +9,7 @@ Deno.test("Stack", () => {
   assertEquals(stack.pop(), undefined);
 });
 
-Deno.test("depthFirst", async () => {
+Deno.test("depthFirst", async (t) => {
   type Node = number | Node[];
   const nodes: Node[] = [];
   const tree = [[[[5]], 4], [[3], [2, [1], 0]]];
@@ -17,5 +17,5 @@ Deno.test("depthFirst", async () => {
     nodes.push(x);
     yield* x instanceof Array ? x : [];
   });
-  await snapshot(import.meta.url, "depthFirst", nodes);
+  await assertSnapshot(t, nodes);
 });

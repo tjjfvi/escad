@@ -1,7 +1,7 @@
-import { mock, snapshot } from "../../testing/mod.ts";
+import { assertSnapshot, mock } from "../../testing/mod.ts";
 import { createConnectionPair } from "../mod.ts";
 
-Deno.test("createConnectionPair", async () => {
+Deno.test("createConnectionPair", async (t) => {
   const [a, b] = createConnectionPair<number>();
   const fn0 = mock();
   const fn1 = mock();
@@ -23,9 +23,5 @@ Deno.test("createConnectionPair", async () => {
   b.send(5);
   offMsgB();
   a.send(6);
-  await snapshot(
-    import.meta.url,
-    "",
-    [fn0, fn1, fn2, fn3].map((f) => f.calls),
-  );
+  await assertSnapshot(t, [fn0, fn1, fn2, fn3].map((f) => f.calls));
 });
