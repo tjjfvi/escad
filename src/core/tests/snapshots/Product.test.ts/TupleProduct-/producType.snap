@@ -1,6 +1,5 @@
 {
   elementTypes: [
-    ,
   ],
   type: "TupleProductType",
 }

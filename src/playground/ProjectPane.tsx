@@ -1,50 +1,78 @@
+/** @jsxImportSource solid */
 // @style "./stylus/ProjectPane.styl"
-
-import React from "../deps/react.ts";
+import { createEffect, createSignal, For, onCleanup } from "../deps/solid.ts";
 import { Pane } from "../client/Pane.tsx";
-import { ProjectManager } from "./projectManager.ts";
+import { ProjectId, ProjectManager } from "./projectManager.ts";
 
-export const ProjectPane = (
-  { projectManager }: { projectManager: ProjectManager },
-) => {
-  let [, setState] = React.useState({});
-  React.useEffect(() => {
-    return projectManager.events.on("projectsChange", () => setState({}));
-  }, []);
+export const ProjectPane = (props: { projectManager: ProjectManager }) => {
+  const [projects, setProjects] = createSignal<ProjectId[]>(
+    props.projectManager.getProjects(),
+    {
+      equals: false,
+    },
+  );
+  const [curProject, setCurProject] = createSignal<ProjectId>(
+    props.projectManager.getCurProject(),
+  );
+  createEffect(() => {
+    onCleanup(
+      props.projectManager.events.on(
+        "projectsChange",
+        () => {
+          setProjects(props.projectManager.getProjects());
+          setCurProject(props.projectManager.getCurProject());
+        },
+      ),
+    );
+  });
   return (
     <Pane
       name="Projects"
-      left
+      class="ProjectPane"
+      side="left"
       defaultWidth={300}
       resizable={false}
       defaultOpen={false}
     >
-      {projectManager.getProjects().map((project) => {
-        const isSelected = project === projectManager.getCurProject();
-        const titleEditable = isSelected && project.type === "local";
-        return (
-          <input
-            key={project.type === "local" ? project.id : project.url}
-            className={isSelected ? "selected row" : "row"}
-            readOnly={!titleEditable}
-            value={project.name}
-            onChange={(e) =>
-              projectManager.renameProject(project, e.target.value)}
-            onAuxClick={() => projectManager.deleteProject(project)}
-            onClick={(e) => {
-              if (!isSelected) {
+      <For each={projects()}>
+        {(project) => {
+          const isSelected = () => project === curProject();
+          const titleEditable = () => isSelected() && project.type === "local";
+          return (
+            <input
+              class="row"
+              classList={{ selected: isSelected() }}
+              readOnly={!titleEditable()}
+              value={project.name}
+              onChange={(e) =>
+                props.projectManager.renameProject(
+                  project,
+                  e.currentTarget.value,
+                )}
+              onContextMenu={(e) => {
                 e.preventDefault();
-                projectManager.setCurProject(project);
-              }
-            }}
-          />
-        );
-      })}
-      <div
-        onClick={() => {
-          projectManager.createProject();
+                props.projectManager.deleteProject(project);
+              }}
+              onFocus={(e) => {
+                if (!isSelected()) {
+                  e.currentTarget.blur();
+                }
+              }}
+              onClick={(e) => {
+                if (!isSelected()) {
+                  e.preventDefault();
+                  props.projectManager.setCurProject(project);
+                }
+              }}
+            />
+          );
         }}
-        className="row new"
+      </For>
+      <div
+        class="row new"
+        onClick={() => {
+          props.projectManager.createProject();
+        }}
       >
         new
       </div>

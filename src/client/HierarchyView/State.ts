@@ -1,3 +1,4 @@
+import { createSignal } from "../../deps/solid.ts";
 import { HierarchyPath } from "../HierarchyPath.ts";
 
 export type State = { open: boolean };
@@ -17,7 +18,19 @@ export function getState(
       ? part.index
       : part.location,
   ]).concat(str).join("//");
-  const state = stateMemo.get(key) ?? { open: false };
+  const state = stateMemo.get(key) ?? createState();
   stateMemo.set(key, state);
   return state;
+}
+
+function createState() {
+  const [open, setOpen] = createSignal(false);
+  return {
+    get open() {
+      return open();
+    },
+    set open(value: boolean) {
+      setOpen(value);
+    },
+  };
 }

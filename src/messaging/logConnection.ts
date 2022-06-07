@@ -1,16 +1,24 @@
 import { Connection } from "./Connection.ts";
-import { transformConnection } from "./transformConnection.ts";
 
 /* istanbul ignore next: covered by types, noisy to test */
-export const logConnection = <T>(connection: Connection<T>): Connection<T> =>
-  transformConnection(
-    connection,
-    (value) => {
-      console.log("send", ...([] as unknown[]).concat(value));
-      return value;
+export const logConnection = <T>(
+  connection: Connection<T>,
+  ...label: string[]
+): Connection<T> => {
+  const off = connection.onMsg((value) => {
+    console.log(...label, "recv", ...([] as unknown[]).concat(value));
+  });
+  return {
+    send: (value) => {
+      console.log(...label, "send", ...([] as unknown[]).concat(value));
+      connection.send(value);
     },
-    (value) => {
-      console.log("recv", ...([] as unknown[]).concat(value));
-      return value;
+    onMsg: (cb) => {
+      return connection.onMsg(cb);
     },
-  );
+    destroy: () => {
+      off();
+      connection.destroy?.();
+    },
+  };
+};

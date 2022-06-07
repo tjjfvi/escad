@@ -1,145 +1,60 @@
-import { assertNever, Hash } from "../../core/mod.ts";
-import React from "../../deps/react.ts";
-import { observer } from "../../deps/rhobo.ts";
-import { ClientState } from "../ClientState.ts";
-import { getHierarchyPath } from "../HierarchyPath.ts";
+/** @jsxImportSource solid */
+import { assertNever } from "../../core/mod.ts";
+import { JSX } from "../../deps/solid.ts";
 import { NestableSpan } from "./NestableSpan.tsx";
-import { TreeText, TreeTextRange } from "./TreeText.ts";
+import { TreeText, TreeTextPart } from "./TreeText.ts";
 
 export interface TreeTextViewProps {
   text: TreeText;
-  selectable: boolean;
-  onUpdate: () => void;
 }
 
-export const TreeTextView = (
-  { text, selectable, onUpdate }: TreeTextViewProps,
-) => {
-  type Wrapper = {
-    children: Array<string | React.ReactElement>;
-    range: TreeTextRange;
-  };
-  let wrapperStack: Wrapper[] = [{
-    children: [],
-    range: TreeTextRange.Dummy(),
-  }];
-  for (const [index, part] of text.entries()) {
-    const currentWrapper = wrapperStack[wrapperStack.length - 1];
-    if (part.kind === "string") {
-      currentWrapper.children.push(part.string);
-      continue;
-    }
-    if (part.kind === "ellipsis") {
-      currentWrapper.children.push(
-        <NestableSpan
-          key={index}
-          className="openable ellipsis"
-          onClick={() => {
-            opener.target.open = true;
-            onUpdate();
-          }}
-          children={"···"}
-        />,
-      );
-      continue;
-    }
-    if (part.kind === "rangeStart") {
-      wrapperStack.push({
-        children: [],
-        range: part.range,
-      });
-      continue;
-    }
-    if (part.kind === "rangeEnd") {
-      const previousWrapper = wrapperStack[wrapperStack.length - 2];
-      previousWrapper.children.push(
-        <TreeTextPartView
-          key={index}
-          onUpdate={onUpdate}
-          selectable={selectable}
-          range={currentWrapper.range}
-          children={currentWrapper.children}
-        />,
-      );
-      wrapperStack.pop();
-      continue;
-    }
-    assertNever(part);
-  }
-  return <span>{wrapperStack[wrapperStack.length - 1].children}</span>;
-};
-
-interface TreeTextPartViewProps {
-  children: React.ReactNode;
-  range: TreeTextRange;
-  onUpdate: () => void;
-  selectable: boolean;
-}
-
-const TreeTextPartView = observer(
-  ({ range, children, selectable }: TreeTextPartViewProps) => {
-    const state = React.useContext(ClientState.Context);
-    if (range.kind === "dummy") {
-      return <>{children}</>;
-    }
-    if (range.kind === "selectable") {
-      if (!selectable) {
-        return <>{children}</>;
+export const TreeTextView = (props: TreeTextViewProps) =>
+  () => {
+    const { text } = props;
+    type Wrapper = {
+      children: JSX.Element[];
+      component: TreeTextPart.RangeStart["component"];
+    };
+    let wrapperStack: Wrapper[] = [{
+      children: [],
+      component: (props) => () => props.children,
+    }];
+    for (const part of text) {
+      const currentWrapper = wrapperStack[wrapperStack.length - 1];
+      if (part.kind === "string") {
+        currentWrapper.children.push(part.string);
+        continue;
       }
-      const { path } = range;
-      const selectionClass = getSelectionClass() ?? "";
-      return (
-        <NestableSpan
-          className={"selectable " + selectionClass}
-          onClick={(event) => {
-            if (event.ctrlKey || event.metaKey || event.altKey) {
-              state.selection([
-                ...(state.selection.value ?? []),
-                {
-                  type: event.altKey ? "exclude" : "include",
-                  path,
-                },
-              ]);
-            } else {
-              state.selection([{
-                type: "include",
-                path,
-              }]);
-            }
-          }}
-          children={children}
-        />
-      );
-
-      function getSelectionClass() {
-        const hierarchy = state.hierarchy();
-        if (!hierarchy) return;
-        const linkedProducts = getHierarchyPath(path, hierarchy)
-          ?.linkedProducts;
-        if (!linkedProducts) return;
-        const resolvedSelection = state.resolvedSelection();
-        if (!resolvedSelection) return;
-        const selectionStates = linkedProducts.map((x) =>
-          resolvedSelection.get(x)
+      if (part.kind === "ellipsis") {
+        currentWrapper.children.push(
+          <NestableSpan
+            class="openable ellipsis"
+            onClick={() => {
+              part.target.open = true;
+            }}
+            children={"···"}
+          />,
         );
-        const directly = findLast(state.selection() ?? [], (x) =>
-          Hash.equal(x.path, path))
-          ?.type ?? null;
-        const someNull = selectionStates.some((x) => x == null);
-        const included = selectionStates.some((x) => x === true);
-        const excluded = selectionStates.some((x) => x === false);
-        return `directly-${directly} someNull-${someNull} included-${included} excluded-${excluded}`;
+        continue;
       }
+      if (part.kind === "rangeStart") {
+        wrapperStack.push({
+          children: [],
+          component: part.component,
+        });
+        continue;
+      }
+      if (part.kind === "rangeEnd") {
+        const previousWrapper = wrapperStack[wrapperStack.length - 2];
+        previousWrapper.children.push(
+          <currentWrapper.component>
+            {currentWrapper.children}
+          </currentWrapper.component>,
+        );
+        wrapperStack.pop();
+        continue;
+      }
+      assertNever(part);
     }
-    assertNever(range);
-  },
-);
-
-/** Like [].find but it starts from the end */
-function findLast<T>(array: T[], predicate: (value: T) => boolean) {
-  for (let i = array.length - 1; i >= 0; i--) {
-    if (predicate(array[i])) {
-      return array[i];
-    }
-  }
-}
+    return <span>{wrapperStack[wrapperStack.length - 1].children}</span>;
+  };

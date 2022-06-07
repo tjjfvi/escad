@@ -1,4 +1,4 @@
-import React from "../deps/react.ts";
+/** @jsxImportSource solid */
 import { Id } from "../core/mod.ts";
 
-export const IdView = ({ id }: { id: Id }) => <span className="Id">{id}</span>;
+export const IdView = ({ id }: { id: Id }) => <span class="Id">{id}</span>;

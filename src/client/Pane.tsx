@@ -1,77 +1,85 @@
+/** @jsxImportSource solid */
 // @style "./stylus/Pane.styl"
-import React from "../deps/react.ts";
-import { useObservable } from "../deps/rhobo.ts";
+
+import {
+  children as resolveChildren,
+  createSignal,
+  JSX,
+  Show,
+} from "../deps/solid.ts";
 
 export type PaneArgs = {
   name: string;
-  className?: string;
-  children: React.ReactNode;
-  left?: boolean;
-  right?: boolean;
+  class?: string;
+  children: JSX.Element;
+  side: "left" | "right";
   defaultWidth?: number;
   resizable?: boolean;
   defaultOpen?: boolean;
   minWidth?: number;
 };
 
-export const Pane = ({
-  name,
-  className = name,
-  children,
-  right = false,
-  left = !right,
-  defaultWidth = 500,
-  resizable = true,
-  defaultOpen = false,
-  minWidth = 100,
-}: PaneArgs) => {
-  const width = useObservable.use(defaultWidth);
-  const open = useObservable.use(defaultOpen);
-  const resizing = useObservable.use(false);
-  if (!resizing() && width() < minWidth) {
-    width(minWidth);
-  }
+export const Pane = (props: PaneArgs) => {
+  const minWidth = () => props.minWidth ?? 100;
+  const resizable = () => props.resizable ?? true;
+
+  const [open, setOpen] = createSignal(props.defaultOpen ?? false);
+  const [resizing, setResizing] = createSignal(false);
+  const [_width, setWidth] = createSignal(props.defaultWidth ?? 500);
+  const width = () => Math.max(_width(), minWidth());
+
+  const children = resolveChildren(() => props.children);
+
   return (
-    <div
-      className={"Pane " +
-        (left ? "left " : "right ") +
-        (open() ? "open " : "") +
-        (resizing() ? "resizing " : "") +
-        (resizable && open() ? "resizable " : "") +
-        className}
-      style={{ maxWidth: open() ? Math.max(width(), minWidth) : 50 }}
-    >
+    <Show when={children()}>
       <div
-        className="border"
-        onMouseDown={() => {
-          if (!resizable || !open()) return;
-          resizing(true);
-          const mouseMoveHandler = (e: MouseEvent) => {
-            if (e.buttons) {
-              width(width() + e.movementX * (left ? 1 : -1));
-            } else {
-              document.documentElement.removeEventListener(
-                "mousemove",
-                mouseMoveHandler,
-              );
-              resizing(false);
-            }
-          };
-          document.documentElement.addEventListener(
-            "mousemove",
-            mouseMoveHandler,
-          );
+        class="Pane"
+        classList={{
+          [props.side]: true,
+          open: open(),
+          resizing: resizing(),
+          resizable: resizable() && open(),
+          [props.class ?? ""]: true,
         }}
-      />
-      <div className="side" onClick={() => open(!open())}>
-        <span>{name}</span>
-      </div>
-      <div
-        className="content"
-        style={{ minWidth: Math.max(width(), minWidth) - 50 }}
+        style={{ "max-width": `${open() ? width() : 50}px` }}
       >
-        {children}
+        <div
+          class="border"
+          onMouseDown={() => {
+            if (!resizable() || !open()) return;
+            setResizing(true);
+            const mouseMoveHandler = (e: MouseEvent) => {
+              if (e.buttons) {
+                setWidth((w) =>
+                  w + e.movementX * (props.side === "left" ? 1 : -1)
+                );
+              } else {
+                document.documentElement.removeEventListener(
+                  "mousemove",
+                  mouseMoveHandler,
+                );
+                setResizing(false);
+                if (width() < minWidth()) {
+                  setWidth(minWidth());
+                }
+              }
+            };
+            document.documentElement.addEventListener(
+              "mousemove",
+              mouseMoveHandler,
+            );
+          }}
+        />
+        <div class="side" onClick={() => setOpen((o) => !o)}>
+          <span>{props.name}</span>
+        </div>
+        <div
+          class="content"
+          style={{ "min-width": `${width() - 50}px` }}
+        >
+          {children()}
+        </div>
       </div>
-    </div>
+    </Show>
   );
 };

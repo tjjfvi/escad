@@ -1,15 +1,52 @@
+/** @jsxImportSource solid */
 // @style "./stylus/LogsPane.styl"
 import { IdView } from "./IdView.tsx";
-import { observer, useFromProm } from "../deps/rhobo.ts";
-import React from "../deps/react.ts";
-import { Id, Log } from "../core/mod.ts";
-import { ClientState } from "./ClientState.ts";
-import { Pane } from "./Pane.tsx";
+import { ArtifactManager, Hash, Id, Log } from "../core/mod.ts";
+import { ClientServerMessenger } from "../server/protocol/server-client.ts";
+import {
+  createEffect,
+  createResource,
+  createSignal,
+  For,
+  JSX,
+  onCleanup,
+} from "../deps/solid.ts";
 import { Loading } from "./Loading.tsx";
+import { fetchArtifact } from "./fetchArtifact.ts";
+
+export interface LogsPaneProps {
+  artifactManager: ArtifactManager;
+  messenger: ClientServerMessenger;
+}
+
+export const LogsPane = (props: LogsPaneProps) => {
+  const [logs, setLogs] = createSignal<Hash<Log>[]>([], { equals: false });
+  createEffect(() =>
+    onCleanup(props.messenger.on("log", (log) => {
+      if (!log) setLogs([]);
+      else {
+        setLogs((logs) => {
+          logs.push(log);
+          return logs;
+        });
+      }
+    }))
+  );
+  return (
+    <div class="LogsPane">
+      <For each={logs()}>
+        {(logHash) => (
+          <LogView artifactManager={props.artifactManager} logHash={logHash} />
+        )}
+      </For>
+      <div />
+    </div>
+  );
+};
 
 export interface LogTypeRegistration<T extends Log> {
   id: T["type"];
-  className?: string;
+  class?: string;
   component: (props: { log: T }) => JSX.Element | null;
 }
 
@@ -24,38 +61,37 @@ export const registerLogType = async <T extends Log>(
   logTypeRegistrations.set(registration.id, registration);
 };
 
-const LogView = ({ log: logPromise }: { log: Promise<Log> }) => {
-  const log = useFromProm.use(logPromise)();
-  if (!log) {
-    return (
-      <div className="Log loading">
-        <Loading />
-      </div>
-    );
-  }
-  const registration = logTypeRegistrations.get(log.type);
-  if (!registration) {
-    return (
-      <div className="Log none">
-        <span>Cannot display log</span>
-        <IdView id={log.type} />
-      </div>
-    );
-  }
-  return (
-    <div className={"Log " + (registration.className ?? "")}>
-      <registration.component {...{ log }} />
-    </div>
+interface LogViewProps {
+  artifactManager: ArtifactManager;
+  logHash: Hash<Log>;
+}
+const LogView = (props: LogViewProps) => {
+  const logSig = fetchArtifact(
+    props.artifactManager,
+    () => props.logHash,
   );
+  return () => {
+    const log = logSig();
+    if (!log) {
+      return (
+        <div class="Log loading">
+          <Loading />
+        </div>
+      );
+    }
+    const registration = logTypeRegistrations.get(log.type);
+    if (!registration) {
+      return (
+        <div class="Log none">
+          <span>Cannot display log</span>
+          <IdView id={log.type} />
+        </div>
+      );
+    }
+    return (
+      <div class={"Log " + (registration.class ?? "")}>
+        <registration.component {...{ log }} />
+      </div>
+    );
+  };
 };
-
-export const LogsPane = observer(() => {
-  const state = React.useContext(ClientState.Context);
-
-  return (
-    <Pane right name="Logs">
-      {state.logs().map((log, i) => <LogView key={i} log={log} />)}
-      <div />
-    </Pane>
-  );
-});

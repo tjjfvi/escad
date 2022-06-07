@@ -1,8 +1,12 @@
-import { ts } from "../deps/tsc.ts";
 import { stylus } from "../deps/stylus.ts";
 import { TranspilerServerMessenger } from "./protocol/server-transpiler.ts";
 import { Connection, createMessenger } from "../messaging/mod.ts";
 import { transformUrl } from "./transformUrl.ts";
+import {
+  babel,
+  babelPluginSolidJsx,
+  babelPresetTypeScript,
+} from "../deps/babel.ts";
 
 export interface TranspilerHost {
   cache: {
@@ -83,46 +87,62 @@ export function createTranspiler(ctx: TranspilerHost): Transpiler {
       return "import " + JSON.stringify(jsUrl);
     });
     let deps: string[] = [];
-    let result = ts.transpileModule(content, {
-      fileName: url,
-      compilerOptions: {
-        target: ts.ScriptTarget.ESNext,
-        allowJs: true,
-        jsx: url.endsWith(".tsx") || url.endsWith(".jsx")
-          ? ts.JsxEmit.React
-          : ts.JsxEmit.None,
-      },
-      transformers: {
-        after: [
-          (context) =>
-            (sourceFile) => {
-              function visitor(node: ts.Node): ts.Node {
-                if (
-                  node.kind === ts.SyntaxKind.StringLiteral &&
-                  [
-                    ts.SyntaxKind.ImportDeclaration,
-                    ts.SyntaxKind.ImportSpecifier,
-                    ts.SyntaxKind.ExportDeclaration,
-                  ].includes(node.parent?.kind)
-                ) {
-                  let str = JSON.parse(
-                    `"${node.getText(sourceFile).slice(1, -1)}"`,
-                  );
-                  let resolved = (new URL(str, url)).toString();
-                  deps.push(resolved);
-                  return ts.factory.createStringLiteral(
-                    ctx.transformUrl(transformUrl(resolved)),
-                  );
-                }
-                return ts.visitEachChild(node, visitor, context);
+    let result = await babel.transformAsync(content, {
+      filename: url,
+      presets: [
+        [babelPresetTypeScript, {
+          allowDeclareFields: true,
+        }],
+      ],
+      plugins: [
+        ...url.endsWith(".jsx") || url.endsWith(".tsx")
+          ? [[babelPluginSolidJsx, {
+            moduleName: "https://esm.sh/solid-js@1.4.3/web",
+            builtIns: [
+              "For",
+              "Show",
+              "Switch",
+              "Match",
+              "Suspense",
+              "SuspenseList",
+              "Portal",
+              "Index",
+              "Dynamic",
+              "ErrorBoundary",
+            ],
+            contextToCustomElements: true,
+            wrapConditionals: true,
+            generate: "dom",
+          }]]
+          : [],
+        {
+          visitor: {
+            StringLiteral(path) {
+              if (
+                ![
+                  "ImportDeclaration",
+                  "ExportNamedDeclaration",
+                  "ExportAllDeclaration",
+                ].includes(
+                  path.parent.type,
+                )
+              ) {
+                return;
               }
-
-              return ts.visitNode(sourceFile, visitor);
+              let str = path.node.value;
+              let resolved = (new URL(str, url)).toString();
+              deps.push(resolved);
+              path.replaceWith(babel.types.stringLiteral(
+                ctx.transformUrl(transformUrl(resolved)),
+              ));
+              path.skip();
             },
-        ],
-      },
+          },
+        },
+      ],
     });
-    return [result.outputText, deps] as const;
+    if (result?.code == null) throw new Error("Babel returned null");
+    return [result.code, deps] as const;
   }
 
   function _transpileStyl(

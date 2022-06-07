@@ -1,12 +1,12 @@
+/** @jsxImportSource solid */
 // @style "./stylus/Viewer3d.styl"
-import React from "../../deps/react.ts";
-import { Viewer, ViewerInput } from "../../client/mod.ts";
+import { createEffect, onCleanup } from "../../deps/solid.ts";
+import { registerViewer } from "../../client/mod.ts";
 import * as t from "../../deps/three.ts";
 import { createScene } from "./createScene.ts";
-
-export interface Viewer3dInput extends ViewerInput {
-  group: t.Group;
-}
+import { Face, Mesh } from "../mod.ts";
+import { colors } from "./colors.ts";
+import { EdgesGeometry } from "./EdgesGeometry.ts";
 
 const s = createScene();
 const {
@@ -28,39 +28,35 @@ const {
   raycaster,
 } = s;
 
-const Viewer3d = ({ inputs }: { inputs: Promise<Viewer3dInput>[] }) => {
-  let el: HTMLDivElement | null = null;
+const Viewer3d = (props: { productPromises: Promise<Mesh>[] }) =>
+  () => {
+    let active = true;
 
-  let active = true;
-  React.useEffect(() =>
-    () => {
-      active = false;
-    }
-  );
+    inputGroup.remove(...inputGroup.children);
+    props.productPromises.map(async (p) => {
+      if (active) inputGroup.add(meshToGroup(await p));
+    });
 
-  inputGroup.remove(...inputGroup.children);
-  inputs.map(async (i) => {
-    const { group } = await i;
-    if (active) inputGroup.add(group);
-  });
+    const el = <div class="Viewer3d" /> as HTMLDivElement;
+    el.appendChild(renderer.domElement);
+    el.appendChild(orientRenderer.domElement);
+    createEffect(async () => {
+      onCleanup(() => active = false);
+      while (active) {
+        render(el);
+        await new Promise((r) => requestAnimationFrame(r));
+      }
+    });
+    return el;
+  };
 
-  return (
-    <div
-      className="Viewer3d"
-      ref={async (newEl) => {
-        el = newEl;
-        if (!el) return;
-        el.appendChild(renderer.domElement);
-        el.appendChild(orientRenderer.domElement);
-        while (el) {
-          render(el);
-          await new Promise((r) => requestAnimationFrame(r));
-        }
-      }}
-    >
-    </div>
-  );
-};
+registerViewer<Mesh>({
+  type: "Viewer",
+  name: "3D",
+  productType: Mesh,
+  weight: 1,
+  component: Viewer3d,
+});
 
 orientRenderer.domElement.classList.add("orient");
 renderer.domElement.addEventListener(
@@ -161,9 +157,49 @@ function render(el: HTMLDivElement) {
   orientRaycast(orientMouse);
 }
 
-export const viewer3d: Viewer<Viewer3dInput> = {
-  name: "3D",
-  className: "3d",
-  component: Viewer3d,
-  weight: 1,
-};
+function meshToGroup(product: Mesh) {
+  let arr = new Float32Array(function* () {
+    for (const face of product.faces) {
+      for (const triangle of Face.toTriangles(face)) {
+        for (const vertex of triangle.points) {
+          yield vertex.x;
+          yield vertex.y;
+          yield vertex.z;
+        }
+      }
+    }
+  }());
+  let attr = new t.BufferAttribute(arr, 3);
+  let geo = new t.BufferGeometry();
+  geo.setAttribute("position", attr);
+  geo.computeVertexNormals();
+  let mat = new t.MeshBasicMaterial({
+    color: colors.darkgrey,
+    polygonOffset: true,
+    polygonOffsetFactor: 1,
+    polygonOffsetUnits: 1,
+  });
+  let inMat = new t.MeshBasicMaterial({
+    color: colors.red,
+    side: t.BackSide,
+    polygonOffset: true,
+    polygonOffsetFactor: 1,
+    polygonOffsetUnits: 1,
+  });
+  let lines = new t.LineSegments(
+    // @ts-ignore
+    new EdgesGeometry(geo),
+    new t.LineBasicMaterial({ color: colors.white }),
+  );
+  let mesh = new t.Mesh(geo, mat);
+  let inMesh = new t.Mesh(geo, inMat);
+  let group = new t.Group();
+  group.add(lines);
+  group.add(mesh);
+  group.add(inMesh);
+  lines.visible = false;
+  setTimeout(() => {
+    lines.visible = true;
+  }, 0);
+  return group;
+}

@@ -1,25 +1,24 @@
+/** @jsxImportSource solid */
 // @style "./stylus/BooleanParam.styl"
 import { BooleanParam } from "../core/mod.ts";
-import React from "../deps/react.ts";
-import { observer } from "../deps/rhobo.ts";
-import { NameDesc, registerParameter } from "../client/mod.ts";
+import { NameDesc, registerParameter } from "./ParametersPane.tsx";
 
 registerParameter<boolean, BooleanParam>({
   id: BooleanParam.id,
-  className: "BooleanParam",
-  component: observer(({ parameter, value }) => (
+  class: "BooleanParam",
+  component: (props) => (
     <>
-      <NameDesc parameter={parameter} />
-      <div className="checkbox">
+      <NameDesc parameter={props.parameter} />
+      <div class="checkbox">
         <label>
           <input
             type="checkbox"
-            checked={value()}
-            onChange={() => value(!value.value)}
+            checked={props.value}
+            onChange={() => props.setValue(!props.value)}
           />
           <div />
         </label>
       </div>
     </>
-  )),
+  ),
 });

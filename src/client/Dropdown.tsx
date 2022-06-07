@@ -1,25 +1,31 @@
+/** @jsxImportSource solid */
 // @style "./stylus/Dropdown.styl"
-import React from "../deps/react.ts";
-import { Observable, observer } from "../deps/rhobo.ts";
+import { For } from "../deps/solid.ts";
 
 export interface DropdownProps<T> {
   options: Record<string, T>;
-  value: Observable<T>;
+  value: T;
+  setValue: (value: T) => void;
 }
 
-export const Dropdown = observer(<T,>({ options, value }: DropdownProps<T>) => {
-  const key = Object.entries(options).find(([, v]) => v === value())?.[0];
-  if (!key) throw new Error("Value passed to Dropdown not in options");
+export const Dropdown = <T,>(props: DropdownProps<T>) => {
+  const key = () => {
+    const key = Object.entries(props.options).find(([, v]) => v === props.value)
+      ?.[0];
+    if (!key) throw new Error("Value passed to Dropdown not in options");
+    return key;
+  };
   return (
-    <div className="Dropdown">
+    <div class="Dropdown">
       <select
-        value={key}
-        onChange={(event) => value(options[event.target.value])}
+        value={key()}
+        onChange={(event) =>
+          props.setValue(props.options[event.currentTarget.value])}
       >
-        {Object.keys(options).map((key) => (
-          <option key={key} value={key}>{key}</option>
-        ))}
+        <For each={Object.keys(props.options)}>
+          {(key) => <option value={key}>{key}</option>}
+        </For>
       </select>
     </div>
   );
-});
+};

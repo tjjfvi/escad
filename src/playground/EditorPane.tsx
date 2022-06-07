@@ -1,33 +1,45 @@
+/** @jsxImportSource solid */
 import { ProjectManager } from "./projectManager.ts";
-import React from "../deps/react.ts";
 import { Pane } from "../client/Pane.tsx";
-import { Editor, monaco } from "../deps/monaco.ts";
+import { monaco } from "../deps/monaco.ts";
+import { createEffect } from "../deps/solid.ts";
 
-export const EditorPane = (
-  { projectManager }: { projectManager: ProjectManager },
-) => (
-  <Pane name="Editor" left defaultWidth={600} minWidth={200} defaultOpen={true}>
-    <Editor
-      onMount={(editor) => {
-        augmentMonacoEditor(editor as never, projectManager);
-      }}
-      options={{
-        minimap: {
-          enabled: false,
-        },
-        scrollbar: {
-          useShadows: false,
-        },
-        guides: {
-          indentation: false,
-        },
-        tabSize: 2,
-      }}
-      defaultLanguage="typescript"
-      theme={"escad"}
-    />
-  </Pane>
-);
+export const EditorPane = (props: { projectManager: ProjectManager }) => {
+  const container = <div style="width: 100%; height: 100%" /> as HTMLDivElement;
+  const editor = monaco.editor.create(container, {
+    model: monaco.editor.createModel(
+      "",
+      "typescript",
+      monaco.Uri.parse("/project/index.ts"),
+    ),
+    theme: "escad",
+    minimap: {
+      enabled: false,
+    },
+    scrollbar: {
+      useShadows: false,
+    },
+    guides: {
+      indentation: false,
+    },
+    tabSize: 2,
+    automaticLayout: true,
+  });
+  createEffect(() => {
+    augmentMonacoEditor(editor, props.projectManager);
+  });
+  return (
+    <Pane
+      name="Editor"
+      side="left"
+      defaultWidth={600}
+      minWidth={200}
+      defaultOpen={true}
+    >
+      {container}
+    </Pane>
+  );
+};
 
 monaco.editor.defineTheme("escad", {
   base: "vs-dark",
@@ -44,13 +56,7 @@ export const augmentMonacoEditor = (
   editor: monaco.editor.IStandaloneCodeEditor,
   projectManager: ProjectManager,
 ) => {
-  const mainModel = monaco.editor.createModel(
-    "",
-    "typescript",
-    monaco.Uri.parse("/project/index.ts"),
-  );
-
-  editor.setModel(mainModel);
+  const mainModel = editor.getModel()!;
 
   mainModel.onDidChangeContent(debounce(onChange, 1000));
 
