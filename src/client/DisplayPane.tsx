@@ -4,6 +4,7 @@ import {
   createResource,
   createSignal,
   Dynamic,
+  For,
   JSX,
   Show,
 } from "../deps/solid.ts";
@@ -18,6 +19,7 @@ import {
   ProductTypeish,
 } from "../core/mod.ts";
 import { Loading } from "./Loading.tsx";
+import { MemoShow } from "./MemoShow.tsx";
 
 export interface DisplayPaneProps {
   artifactManager: ArtifactManager;
@@ -33,9 +35,14 @@ export const DisplayPane = (props: DisplayPaneProps) => {
       if (!product) throw new Error("Unexpected null");
       return product;
     });
-    const [viewers, exportTypes] = await Promise.all([
+    const [viewers, stats, exportTypes] = await Promise.all([
       filterDisplays(
         viewerRegistry,
+        props.conversionRegistry,
+        productPromises,
+      ),
+      filterDisplays(
+        statRegistry,
         props.conversionRegistry,
         productPromises,
       ),
@@ -45,92 +52,159 @@ export const DisplayPane = (props: DisplayPaneProps) => {
         productPromises,
       ),
     ]);
-    return { productPromises, viewers, exportTypes };
+    return { productPromises, viewers, stats, exportTypes };
   });
   const [selectedViewer, setSelectedViewer] = createSignal<Viewer<any>>();
-  return () => {
-    const val = sig();
-    if (!val) {
-      return (
+  const viewer = () =>
+    selectedViewer() && sig()!.viewers.includes(selectedViewer()!)
+      ? selectedViewer()!
+      : sig()!.viewers[0]!;
+  return (
+    <MemoShow
+      when={sig()}
+      fallback={
         <div class="DisplayPane loading">
           <Loading />
         </div>
-      );
-    }
-    const { productPromises, viewers, exportTypes } = val;
-
-    if (!productPromises.length) {
-      return (
-        <div class="DisplayPane none">
-          <span class="header">No products to display.</span>
-        </div>
-      );
-    }
-
-    const viewer = () =>
-      selectedViewer() && viewers.includes(selectedViewer()!)
-        ? selectedViewer()!
-        : viewers[0]!;
-
-    return (
-      <div class="DisplayPane">
-        <Dynamic
-          component={viewer().component}
-          productPromises={productPromises.map(async (product) =>
-            await props.conversionRegistry.convertProduct(
-              ProductType.fromProductTypeish(viewer().productType),
-              await product,
-            )
-          )}
-        />
-        <div class="menubar">
-          <div>
-            {viewers.map((v) => (
-              <span onClick={() => setSelectedViewer(v)}>{v.name}</span>
-            ))}
-            <span>Viewer</span>
-          </div>
-          <Show when={exportTypes.length}>
-            <div>
-              {exportTypes.map((exportType) => (
-                <span
-                  onClick={() =>
-                    exportProducts(
-                      props.artifactManager,
-                      exportType,
-                      productPromises,
-                    )}
-                >
-                  {exportType.name}
-                </span>
-              ))}
-              <span>Export</span>
+      }
+    >
+      {(sig) => (
+        <Show
+          when={sig().productPromises.length}
+          fallback={
+            <div class="DisplayPane none">
+              <span class="header">No products to display.</span>
             </div>
-          </Show>
+          }
+        >
+          <div class="DisplayPane">
+            <Dynamic
+              component={viewer().component}
+              productPromises={sig().productPromises.map(async (product) =>
+                await props.conversionRegistry.convertProduct(
+                  ProductType.fromProductTypeish(viewer().productType),
+                  await product,
+                )
+              )}
+            />
+            <div class="menubar">
+              <div>
+                <For each={sig().viewers}>
+                  {(v) => (
+                    <span onClick={() => setSelectedViewer(v)}>
+                      {v.name}
+                    </span>
+                  )}
+                </For>
+                <span>Viewer</span>
+              </div>
+              <Show when={sig().exportTypes.length}>
+                <div>
+                  <For each={sig().exportTypes}>
+                    {(exportType) => (
+                      <span
+                        onClick={() =>
+                          exportProducts(
+                            props.artifactManager,
+                            exportType,
+                            sig().productPromises,
+                          )}
+                      >
+                        {exportType.name}
+                      </span>
+                    )}
+                  </For>
+                  <span>Export</span>
+                </div>
+              </Show>
+            </div>
+            <Stats
+              conversionRegistry={props.conversionRegistry}
+              stats={sig().stats}
+              productPromises={sig().productPromises}
+            />
+          </div>
+        </Show>
+      )}
+    </MemoShow>
+  );
+};
+
+interface StatsProps {
+  conversionRegistry: ConversionRegistry;
+  stats: Stat<any>[];
+  productPromises: Promise<Product>[];
+}
+const Stats = (
+  props: StatsProps,
+) => {
+  const [statsOpen, setStatsOpen] = createSignal(false);
+  return (
+    <Show when={props.stats.length}>
+      <div class="Stats" classList={{ open: statsOpen() }}>
+        <span onClick={() => setStatsOpen((x) => !x)}>Stats</span>
+        <div class="content">
+          <For each={props.stats}>
+            {(stat) => {
+              const [value] = createResource(
+                () => props.productPromises,
+                async (productPromises) => {
+                  const products = await Promise.all(
+                    productPromises.map(async (productPromise) => {
+                      const product = await productPromise;
+                      return props.conversionRegistry.convertProduct(
+                        ProductType.fromProductTypeish(stat.productType),
+                        product,
+                      );
+                    }),
+                  );
+                  return await stat.value(products);
+                },
+              );
+              return (
+                <div class="stat">
+                  <span>{stat.label}</span>
+                  <Show when={value()} fallback={<Loading />}>
+                    <span>{value()}</span>
+                  </Show>
+                </div>
+              );
+            }}
+          </For>
         </div>
       </div>
-    );
-  };
+    </Show>
+  );
 };
 
 export interface Viewer<P extends Product> {
-  type: "Viewer";
   name: string;
   productType: ProductTypeish<P>;
   component: (props: { productPromises: Promise<P>[] }) => JSX.Element;
   weight: number;
 }
 
-type Display = Viewer<any> | ExportTypeInfo;
+export interface Stat<P extends Product> {
+  label: string;
+  productType: ProductTypeish<P>;
+  value: (products: P[]) => string | Promise<string>;
+  weight: number;
+}
 
 const viewerRegistry: Viewer<any>[] = [];
+const statRegistry: Stat<any>[] = [];
 
-export function registerViewer<P extends Product>(display: Viewer<P>) {
-  viewerRegistry.push(display);
+export function registerViewer<P extends Product>(viewer: Viewer<P>) {
+  viewerRegistry.push(viewer);
   viewerRegistry.sort((a, b) => b.weight - a.weight);
 }
 
-async function filterDisplays<D extends Display>(
+export function registerStat<P extends Product>(stat: Stat<P>) {
+  statRegistry.push(stat);
+  statRegistry.sort((a, b) => b.weight - a.weight);
+}
+
+async function filterDisplays<D extends { productType: ProductTypeish<any> }>(
   displays: readonly D[],
   conversionRegistry: ConversionRegistry,
   productPromises: Promise<Product>[],

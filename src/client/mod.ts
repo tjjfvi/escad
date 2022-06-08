@@ -16,6 +16,7 @@ export * from "./Icon.tsx";
 export * from "./IdView.tsx";
 export * from "./Loading.tsx";
 export * from "./LogsPane.tsx";
+export * from "./MemoShow.tsx";
 export * from "./NumberParam.tsx";
 export * from "./ObjectParam.tsx";
 export * from "./Pane.tsx";

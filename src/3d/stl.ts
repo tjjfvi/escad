@@ -3,7 +3,6 @@ import { Face } from "./Face.ts";
 import { Mesh } from "./Mesh.ts";
 
 exportTypeRegistry.register<Mesh>({
-  type: "ExportType",
   id: Id.create(
     import.meta.url,
     "@escad/3d",
@@ -39,7 +38,6 @@ exportTypeRegistry.register<Mesh>({
 });
 
 exportTypeRegistry.register<Mesh>({
-  type: "ExportType",
   id: Id.create(
     import.meta.url,
     "@escad/3d",
