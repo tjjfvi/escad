@@ -13,7 +13,7 @@ registerStat({
 });
 
 registerStat({
-  label: "Faces",
+  label: "Polygons",
   productType: Mesh,
   value: (meshes) => {
     const faces = meshes.map((mesh) => mesh.faces.length).reduce(
