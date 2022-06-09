@@ -51,7 +51,6 @@ const Viewer3d = (props: { productPromises: Promise<Mesh>[] }) =>
   };
 
 registerViewer<Mesh>({
-  type: "Viewer",
   name: "3D",
   productType: Mesh,
   weight: 1,

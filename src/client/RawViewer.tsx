@@ -6,13 +6,13 @@ import { createResource } from "../deps/solid.ts";
 import { registerViewer } from "./DisplayPane.tsx";
 import { HierarchyView } from "./HierarchyView/mod.ts";
 import { Loading } from "./Loading.tsx";
+import { MemoShow } from "./MemoShow.tsx";
 
 registerViewer<UnknownProduct>({
-  type: "Viewer",
   name: "Raw",
   productType: UnknownProductType.create(),
   component: (props) => {
-    const [hierarchySig] = createResource(
+    const [hierarchy] = createResource(
       () => props.productPromises,
       async (productPromises) =>
         await Hierarchy.from(
@@ -20,23 +20,17 @@ registerViewer<UnknownProduct>({
           true,
         ),
     );
-    return () => {
-      const hierarchy = hierarchySig();
-      if (!hierarchy) {
-        return (
-          <div class="RawViewer">
-            <Loading />
-          </div>
-        );
-      }
-      return (
-        <div class="RawViewer">
-          <div class="inner">
-            <HierarchyView hierarchy={hierarchy} />
-          </div>
-        </div>
-      );
-    };
+    return (
+      <div class="RawViewer">
+        <MemoShow when={hierarchy()} fallback={<Loading />}>
+          {(hierarchy) => (
+            <div class="inner">
+              <HierarchyView hierarchy={hierarchy()} />
+            </div>
+          )}
+        </MemoShow>
+      </div>
+    );
   },
   weight: 0,
 });

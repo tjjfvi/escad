@@ -19,6 +19,7 @@ import {
 } from "../core/mod.ts";
 import { Loading } from "./Loading.tsx";
 import { fetchArtifact } from "./fetchArtifact.ts";
+import { MemoShow } from "./MemoShow.tsx";
 
 export interface ParametersPane {
   artifactManager: ArtifactManager;
@@ -28,38 +29,36 @@ export interface ParametersPane {
 }
 
 export const ParametersPane = (props: ParametersPane) => {
-  const paramDefSig = fetchArtifact(
+  const paramDef = fetchArtifact(
     props.artifactManager,
     () => props.paramDefHash,
   );
 
-  return () => {
-    if (paramDefSig.loading) return <Loading />;
-    const paramDef = paramDefSig();
-    if (!paramDef) {
-      return null;
-    }
-    return (
-      <div class="ParametersPane">
-        <For each={Object.keys(paramDef.children)}>
-          {(key) => {
-            const parameter = paramDef.children[key] as Parameter<any>;
-            return (
-              <ParameterView
-                parameter={parameter}
-                value={(props.params ?? paramDef.defaultValue)[key]}
-                setValue={(value) =>
-                  props.setParams({
-                    ...props.params ?? paramDef.defaultValue,
-                    [key]: value,
-                  })}
-              />
-            );
-          }}
-        </For>
-      </div>
-    );
-  };
+  const params = () => props.params ?? paramDef()!.defaultValue;
+
+  return (
+    <MemoShow when={paramDef()} fallback={<Loading />}>
+      {(paramDef) => (
+        <div class="ParametersPane">
+          <For each={Object.keys(paramDef().children)}>
+            {(key) => {
+              return (
+                <ParameterView
+                  parameter={paramDef().children[key]}
+                  value={params()[key]}
+                  setValue={(value) =>
+                    props.setParams({
+                      ...params(),
+                      [key]: value,
+                    })}
+                />
+              );
+            }}
+          </For>
+        </div>
+      )}
+    </MemoShow>
+  );
 };
 
 export interface ParameterRegistration<T, P extends Parameter<T>> {
