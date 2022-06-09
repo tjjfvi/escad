@@ -5,14 +5,15 @@ import { ArtifactManager, Hash, Id, Log } from "../core/mod.ts";
 import { ClientServerMessenger } from "../server/protocol/server-client.ts";
 import {
   createEffect,
-  createResource,
   createSignal,
   For,
   JSX,
   onCleanup,
+  Show,
 } from "../deps/solid.ts";
 import { Loading } from "./Loading.tsx";
 import { fetchArtifact } from "./fetchArtifact.ts";
+import { MemoShow } from "./MemoShow.tsx";
 
 export interface LogsPaneProps {
   artifactManager: ArtifactManager;
@@ -66,32 +67,33 @@ interface LogViewProps {
   logHash: Hash<Log>;
 }
 const LogView = (props: LogViewProps) => {
-  const logSig = fetchArtifact(
-    props.artifactManager,
-    () => props.logHash,
-  );
-  return () => {
-    const log = logSig();
-    if (!log) {
-      return (
+  const log = fetchArtifact(props.artifactManager, () => props.logHash);
+  return (
+    <MemoShow
+      when={log()}
+      fallback={
         <div class="Log loading">
           <Loading />
         </div>
-      );
-    }
-    const registration = logTypeRegistrations.get(log.type);
-    if (!registration) {
-      return (
-        <div class="Log none">
-          <span>Cannot display log</span>
-          <IdView id={log.type} />
-        </div>
-      );
-    }
-    return (
-      <div class={"Log " + (registration.class ?? "")}>
-        <registration.component {...{ log }} />
-      </div>
-    );
-  };
+      }
+    >
+      {(log) => (
+        <Show
+          when={logTypeRegistrations.get(log().type)}
+          fallback={
+            <div class="Log none">
+              <span>Cannot display log</span>
+              <IdView id={log().type} />
+            </div>
+          }
+        >
+          {(registration) => (
+            <div class={"Log " + (registration.class ?? "")}>
+              <registration.component log={log()} />
+            </div>
+          )}
+        </Show>
+      )}
+    </MemoShow>
+  );
 };
