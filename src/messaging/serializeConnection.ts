@@ -1,4 +1,4 @@
-import { createEventEmitter } from "./EventEmitter.ts";
+import { EventEmitter } from "./EventEmitter.ts";
 import { $unknown } from "../serial/mod.ts";
 import { Connection } from "./Connection.ts";
 import { transformConnection } from "./transformConnection.ts";
@@ -18,7 +18,7 @@ export const serializeConnection = (
       return new Uint8Array(v as any);
     },
   );
-  const ee = createEventEmitter<{
+  const ee = new EventEmitter<{
     send: [unknown];
     recv: [unknown];
     _send: [Uint8Array];

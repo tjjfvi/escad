@@ -2,7 +2,6 @@ import "../core/mod.ts"; // register serializers, needed for talking to renderer
 
 import {
   Connection,
-  createEventEmitter,
   createMessenger,
   EventEmitter,
   logConnection,
@@ -57,13 +56,14 @@ export const createServer = async ({
     connection: transpilerConnection,
   });
 
-  let events = createEventEmitter<ServerEvents>();
+  let events = new EventEmitter<ServerEvents>();
 
   let lastClientPlugins: readonly string[] = ["_"];
 
   if (initialPump) {
     const rootRenderer = createRendererMessenger(async () => null);
     const loadInfo = await rootRenderer.loadFile();
+    console.log(loadInfo);
     rootRenderer.destroy();
     await updateClientPlugins(loadInfo.clientPlugins);
   } else {
