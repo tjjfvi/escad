@@ -1,8 +1,13 @@
-import { Component, ConvertibleElement, Realm } from "../packages/core/dist.ts";
-import builtinChainables, { Mesh } from "../packages/3d/dist.ts";
+import chainablesCore, {
+  Component,
+  ConvertibleElement,
+  Realm,
+} from "../src/core/mod.ts";
+import chainables3d, { Mesh } from "../src/3d/mod.ts";
 
 const escad = Realm.create(() => ({
-  ...builtinChainables,
+  ...chainablesCore,
+  ...chainables3d,
   beam,
   bracket,
 }));
@@ -83,10 +88,10 @@ const bracket = Component.create(
     };
     const rot = obj[orientation];
     return escad.union(
-      escad.cube({ size: [1, .1, 1], center: [false, true, true] }).translateX(
+      escad.cube({ size: [1, .1, 1], shift: [1, 0, 0] }).translateX(
         -.05,
       ),
-      escad.cube({ size: [.1, 1, 1], center: [true, false, true] }).translateY(
+      escad.cube({ size: [.1, 1, 1], shift: [0, 1, 0] }).translateY(
         -.05,
       ),
     ).translate([.05, .05, 0]).rotate(rot).translate(...xyz);
