@@ -145,7 +145,10 @@ const moveToConversionMeshId = Id.create(
   "MoveToConversionMesh",
 );
 
-conversionRegistry.register({
+conversionRegistry.register<
+  MoveTo<TupleProduct<readonly [MoveToArgs, BoundingBox, BoundingBox]>>,
+  Matrix4
+>({
   id: moveToConversionMeshId,
   fromType: MoveTo.createProductType(
     TupleProductType.create([MoveToArgs, BoundingBox, BoundingBox]),

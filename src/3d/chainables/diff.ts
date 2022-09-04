@@ -29,7 +29,7 @@ declare global {
   }
 }
 
-conversionRegistry.register({
+conversionRegistry.register<Diff<TupleProduct<readonly [Bsp, Bsp]>>, Bsp>({
   fromType: Diff.createProductType(TupleProductType.create([Bsp, Bsp])),
   toType: Bsp,
   convert: async ({ child: { children: [a, b] } }) => {

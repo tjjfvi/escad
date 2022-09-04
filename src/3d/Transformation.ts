@@ -37,7 +37,10 @@ declare global {
   }
 }
 
-conversionRegistry.register({
+conversionRegistry.register<
+  Transform<TupleProduct<readonly [Matrix4, Mesh]>>,
+  Mesh
+>({
   fromType: Transform.createProductType(
     TupleProductType.create([Matrix4, Mesh]),
   ),
