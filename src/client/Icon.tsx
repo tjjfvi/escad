@@ -12,9 +12,9 @@ interface IconProps {
 export const Icon = (
   props: IconProps,
 ) =>
-  () => (
-    props.icon && <props.icon class={props.class} />
-  );
+() => (
+  props.icon && <props.icon class={props.class} />
+);
 
 export const mdi: {
   [

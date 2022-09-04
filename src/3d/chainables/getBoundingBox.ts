@@ -32,8 +32,10 @@ export const GetBoundingBox = MarkedProduct.for(getBoundingBoxId);
 declare global {
   namespace escad {
     interface ConversionsObj {
-      "@escad/3d/getBoundingBox":
-        (Conversion<GetBoundingBox<ArrayProduct<Mesh>>, BoundingBox>);
+      "@escad/3d/getBoundingBox": Conversion<
+        GetBoundingBox<ArrayProduct<Mesh>>,
+        BoundingBox
+      >;
     }
   }
 }

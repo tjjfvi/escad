@@ -36,15 +36,14 @@ export type ConversionsUnion<C = escad.ConversionsObj> = Values<
   }
 >;
 
-export type ConversionImpls<C = ConversionsUnion> = (
-  C extends Conversion<infer A, infer B>
-    ? A extends Product
-      ? B extends Product
-        ? ConversionImpl<Extract<A, Product>, Extract<B, Product>>
-      : never
+export type ConversionImpls<C = ConversionsUnion> = C extends
+  Conversion<infer A, infer B>
+  ? A extends Product
+    ? B extends Product
+      ? ConversionImpl<Extract<A, Product>, Extract<B, Product>>
     : never
-    : never
-);
+  : never
+  : never;
 
 export type DirectConvertibleTo<T, C = ConversionsUnion> = C extends
   Conversion<infer F, infer T2>
@@ -74,32 +73,32 @@ type Match<T, U> = keyof U extends keyof T
 type _ImplicitlyConvertibleTo<A> = A extends A
   ? Match<A, { type: "TupleProduct" }> extends true
     ? "children" extends keyof A ? {
-      readonly type: "TupleProduct";
-      readonly children: {
-        readonly [K in keyof A["children"] & (number | `${number}`)]:
-          _ConvertibleTo<A["children"][K]>;
-      };
-    }
+        readonly type: "TupleProduct";
+        readonly children: {
+          readonly [K in keyof A["children"] & (number | `${number}`)]:
+            _ConvertibleTo<A["children"][K]>;
+        };
+      }
     : never
   : Match<A, { type: "ArrayProduct" }> extends true
     ? "children" extends keyof A ? number extends keyof A["children"] ? 
-      | {
-        readonly type: "ArrayProduct";
-        readonly children: readonly _ConvertibleTo<A["children"][number]>[];
-      }
-      | {
-        readonly type: "TupleProduct";
-        readonly children: Readonly<
-          Record<number, _ConvertibleTo<A["children"][number]>>
-        >;
-      }
-    : never
+          | {
+            readonly type: "ArrayProduct";
+            readonly children: readonly _ConvertibleTo<A["children"][number]>[];
+          }
+          | {
+            readonly type: "TupleProduct";
+            readonly children: Readonly<
+              Record<number, _ConvertibleTo<A["children"][number]>>
+            >;
+          }
+      : never
     : never
   : Match<A, { type: "MarkedProduct" }> extends true
     ? "child" extends keyof A ? {
-      readonly type: "MarkedProduct";
-      readonly child: _ConvertibleTo<A["child"]>;
-    }
+        readonly type: "MarkedProduct";
+        readonly child: _ConvertibleTo<A["child"]>;
+      }
     : never
   : Match<A, { type: "HashProduct" }> extends true
     ? "hash" extends keyof A

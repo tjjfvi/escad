@@ -30,61 +30,60 @@ export const TreeView = (props: TreeViewProps) => {
   return (
     <div class="TreeNode">
       <For each={joinedCollapsedTree()}>
-        {(part, i) =>
-          () => {
-            const prev = joinedCollapsedTree()[i() - 1];
-            const next = joinedCollapsedTree()[i() + 1];
+        {(part, i) => () => {
+          const prev = joinedCollapsedTree()[i() - 1];
+          const next = joinedCollapsedTree()[i() + 1];
 
-            if (part.kind === "block") {
-              return (
-                <div class="block">
-                  {part.children.map((y, i) => (
-                    <TreeView
-                      width={innerWidth()}
-                      tree={y}
-                    />
-                  ))}
-                </div>
-              );
-            }
-
-            if (next && next.kind === "block") {
-              return (
-                <Line
-                  arrowState="open"
-                  text={part.text}
-                  onClick={() => next.state.open = false}
-                />
-              );
-            }
-
-            const sectionsSplitInd = prev?.kind === "block"
-              ? expandableSections().findIndex((v) => v.state === prev.state) +
-                1
-              : 0;
-            const relevantSections = expandableSections().slice(
-              sectionsSplitInd,
+          if (part.kind === "block") {
+            return (
+              <div class="block">
+                {part.children.map((y, i) => (
+                  <TreeView
+                    width={innerWidth()}
+                    tree={y}
+                  />
+                ))}
+              </div>
             );
+          }
 
-            if (!relevantSections.length) {
-              return (
-                <Line
-                  arrowState="leaf"
-                  text={part.text}
-                />
-              );
-            }
-
+          if (next && next.kind === "block") {
             return (
               <Line
-                arrowState="closed"
+                arrowState="open"
                 text={part.text}
-                onClick={() => {
-                  relevantSections.forEach((x) => x.state.open = true);
-                }}
+                onClick={() => next.state.open = false}
               />
             );
-          }}
+          }
+
+          const sectionsSplitInd = prev?.kind === "block"
+            ? expandableSections().findIndex((v) => v.state === prev.state) +
+              1
+            : 0;
+          const relevantSections = expandableSections().slice(
+            sectionsSplitInd,
+          );
+
+          if (!relevantSections.length) {
+            return (
+              <Line
+                arrowState="leaf"
+                text={part.text}
+              />
+            );
+          }
+
+          return (
+            <Line
+              arrowState="closed"
+              text={part.text}
+              onClick={() => {
+                relevantSections.forEach((x) => x.state.open = true);
+              }}
+            />
+          );
+        }}
       </For>
     </div>
   );

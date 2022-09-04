@@ -23,10 +23,9 @@ export const TupleProduct = {
 
 export interface TupleProductType<T extends TupleProduct = TupleProduct> {
   readonly type: "TupleProductType";
-  readonly elementTypes: (
-    T extends TupleProduct<infer U> ? ProductTypeTupleMap<U>
-      : never
-  );
+  readonly elementTypes: T extends TupleProduct<infer U>
+    ? ProductTypeTupleMap<U>
+    : never;
 }
 
 type ProductTypeTupleMap<T extends readonly Product[]> = {

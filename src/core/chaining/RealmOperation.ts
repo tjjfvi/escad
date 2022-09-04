@@ -14,20 +14,20 @@ type Assert<T, U extends T> = U;
 type RealmOperationOut<I extends Product, O extends Product, Arg, C> =
   [I] extends [Product]
     ? [O] extends [Product] ? Arg extends Element<I> ? RealmElement<O, C>
-    : Arg extends GenericOperation<infer T, Assert<Hkt<infer T, I>, infer U>>
-      ? RealmGenericOperation<T, Hkt.Compose<Product, Hkt.Constant<O>, U>, C>
-    : Arg extends Operation<infer T, I> ? RealmOperation<T, O, C>
-    : Arg extends GenericComponent<infer G, infer A, infer T>
-      ? RealmGenericComponent<
-        G,
-        A,
-        Hkt.Compose<G, RealmOperationOutHkt<I, O, C>, T>,
-        C
-      >
-    : Arg extends Component<infer A, infer T>
-      ? Component<A, RealmOperationOut<I, O, T, C>>
-    : Arg extends { type: "Realm" } ? RealmOperation<I, O, C>
-    : never
+      : Arg extends GenericOperation<infer T, Assert<Hkt<infer T, I>, infer U>>
+        ? RealmGenericOperation<T, Hkt.Compose<Product, Hkt.Constant<O>, U>, C>
+      : Arg extends Operation<infer T, I> ? RealmOperation<T, O, C>
+      : Arg extends GenericComponent<infer G, infer A, infer T>
+        ? RealmGenericComponent<
+          G,
+          A,
+          Hkt.Compose<G, RealmOperationOutHkt<I, O, C>, T>,
+          C
+        >
+      : Arg extends Component<infer A, infer T>
+        ? Component<A, RealmOperationOut<I, O, T, C>>
+      : Arg extends { type: "Realm" } ? RealmOperation<I, O, C>
+      : never
     : never
     : never;
 

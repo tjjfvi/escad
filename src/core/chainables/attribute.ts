@@ -16,8 +16,8 @@ type AutoPath<O, P extends string> = P extends `${infer A}.${infer B}`
   ? A extends StringKeys<O> ? `${A}.${AutoPath<GetStringKey<O, A>, B>}`
   : never
   : P extends StringKeys<O> ? 
-    | P
-    | `${P}.`
+      | P
+      | `${P}.`
   : StringKeys<O>;
 type GetPath<O, P extends string> = P extends `${infer A}.${infer B}`
   ? A extends StringKeys<O> ? GetPath<GetStringKey<O, A>, B>

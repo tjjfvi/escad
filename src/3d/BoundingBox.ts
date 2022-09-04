@@ -42,7 +42,7 @@ export const BoundingBox = {
 declare global {
   namespace escad {
     interface ConversionsObj {
-      "@escad/3d/BoundingBox": (Conversion<BoundingBox, Cube>);
+      "@escad/3d/BoundingBox": Conversion<BoundingBox, Cube>;
     }
   }
 }

@@ -28,27 +28,26 @@ const {
   raycaster,
 } = s;
 
-const Viewer3d = (props: { productPromises: Promise<Mesh>[] }) =>
-  () => {
-    let active = true;
+const Viewer3d = (props: { productPromises: Promise<Mesh>[] }) => () => {
+  let active = true;
 
-    inputGroup.remove(...inputGroup.children);
-    props.productPromises.map(async (p) => {
-      if (active) inputGroup.add(meshToGroup(await p));
-    });
+  inputGroup.remove(...inputGroup.children);
+  props.productPromises.map(async (p) => {
+    if (active) inputGroup.add(meshToGroup(await p));
+  });
 
-    const el = <div class="Viewer3d" /> as HTMLDivElement;
-    el.appendChild(renderer.domElement);
-    el.appendChild(orientRenderer.domElement);
-    createEffect(async () => {
-      onCleanup(() => active = false);
-      while (active) {
-        render(el);
-        await new Promise((r) => requestAnimationFrame(r));
-      }
-    });
-    return el;
-  };
+  const el = <div class="Viewer3d" /> as HTMLDivElement;
+  el.appendChild(renderer.domElement);
+  el.appendChild(orientRenderer.domElement);
+  createEffect(async () => {
+    onCleanup(() => active = false);
+    while (active) {
+      render(el);
+      await new Promise((r) => requestAnimationFrame(r));
+    }
+  });
+  return el;
+};
 
 registerViewer<Mesh>({
   name: "3D",

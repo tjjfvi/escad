@@ -46,5 +46,5 @@ export const HierarchyView = (props: HierarchyViewProps) => {
   return el;
 };
 
-export const DummySelectable: SelectableComponent = (props) =>
-  () => props.children;
+export const DummySelectable: SelectableComponent = (props) => () =>
+  props.children;

@@ -17,16 +17,15 @@ export interface _Product {
   readonly type: string | ScopedId<"LeafProduct">;
   readonly [__convertibleToTransitivityOverride]?: TransitivityOverride.A;
   /** @ts-ignore **/
-  readonly [__convertibleTo]?: (
-    __convertibleToOverride extends keyof this ? unknown
-      : LeafProduct extends this ? unknown
-      : MarkedProduct extends this ? unknown
-      : TupleProduct extends this ? unknown
-      : ArrayProduct extends this ? unknown
-      : HashProduct extends this ? unknown
-      : UnknownProduct extends this ? unknown
-      : _ConvertibleTo<this>
-  );
+  readonly [__convertibleTo]?: __convertibleToOverride extends keyof this
+    ? unknown
+    : LeafProduct extends this ? unknown
+    : MarkedProduct extends this ? unknown
+    : TupleProduct extends this ? unknown
+    : ArrayProduct extends this ? unknown
+    : HashProduct extends this ? unknown
+    : UnknownProduct extends this ? unknown
+    : _ConvertibleTo<this>;
 }
 
 export type Product =
