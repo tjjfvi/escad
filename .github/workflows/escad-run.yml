@@ -2,10 +2,13 @@ name: Publish escad.run
 
 on:
   push:
-    branches: [prod]
+    branches: [deno-deploy]
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
 
     steps:
       - uses: actions/checkout@v2
@@ -18,9 +21,8 @@ jobs:
 
       - run: just build-escad-run
 
-      - uses: peaceiris/actions-gh-pages@v3
+      - uses: denoland/deployctl@v1
         with:
-          personal_token: ${{ secrets.PAT }}
-          external_repository: tjjfvi/escad.run
-          publish_dir: ./escad.run
-          cname: escad.run
+          project: escad-run
+          entrypoint: https://deno.land/std/http/file_server.ts
+          root: escad.run

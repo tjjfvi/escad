@@ -23,6 +23,6 @@ jobs:
 
       - uses: denoland/deployctl@v1
         with:
-          project: tjjfvi-escad-deno-deploy
+          project: escad-dev
           entrypoint: https://deno.land/std/http/file_server.ts
           root: escad.dev
