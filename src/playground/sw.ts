@@ -61,7 +61,7 @@ sw.addEventListener("fetch", function (event) {
       return new Response(null, { status: 404 });
     }
     const response = await fetch(event.request);
-    if (response.ok && response.type !== "basic") {
+    if (response.ok) {
       console.log("put cache", event.request.url, response.status);
       const cachedResponse = response.clone();
       caches.open(generalCache).then((cache) =>
