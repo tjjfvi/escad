@@ -37,7 +37,10 @@ export const ObjectParam = {
 
 export const objectParam = ObjectParam.create;
 
-const mapObj = <O>(o: O, f: (v: O[keyof O], k: keyof O) => unknown): unknown =>
+const mapObj = <O extends {}>(
+  o: O,
+  f: (v: O[keyof O], k: keyof O) => unknown,
+): unknown =>
   Object.assign(
     {},
     ...Object.entries(o).map(([k, v]: any) => ({ [k]: f(v, k) })),
