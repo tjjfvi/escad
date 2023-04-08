@@ -1,4 +1,4 @@
-import { createEventEmitter, EventEmitter } from "../messaging/mod.ts";
+import { EventEmitter } from "../messaging/mod.ts";
 
 export interface ProjectManager {
   getProjects: () => ProjectId[];
@@ -28,7 +28,7 @@ export function createProjectManager(host: ProjectManagerHost): ProjectManager {
   };
   let code = "";
 
-  const events: ProjectManager["events"] = createEventEmitter();
+  const events: ProjectManager["events"] = new EventEmitter();
 
   setCurProject(curProject);
 

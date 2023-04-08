@@ -212,7 +212,7 @@ createRendererServerMessenger(
   logConnection(serializeConnection(workerConnection(self as any))),
   () => import(${JSON.stringify(`/${clientId}/transpiled/main.js`)}),
   logger,
-).requestRetry();
+);
 	`.trim();
 }
 
